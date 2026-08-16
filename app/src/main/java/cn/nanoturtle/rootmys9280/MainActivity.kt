@@ -649,41 +649,64 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
         }
         Spacer(Modifier.height(16.dp))
 
-        // ---- 通用（KSU 设置分组）----
+        // ---- 通用（照搬 KSU 设置：miuix preference 条目）----
         SectionTitle("通用")
         MiuixCard(modifier = Modifier.fillMaxWidth()) {
-            // 主题模式（KSU 风格）
-            ClickableRow(
-                icon = Icons.Filled.Settings,
+            top.yukonga.miuix.kmp.preference.ArrowPreference(
                 title = "主题模式",
-                subtitle = themeModeName(cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.themeMode),
+                summary = themeModeName(cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.themeMode),
+                startAction = {
+                    Icon(
+                        Icons.Filled.Settings,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(end = 6.dp),
+                    )
+                },
                 onClick = { showThemeDialog = true },
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            // 动态取色（Material You）
-            SettingSwitchRow(
-                icon = Icons.Filled.CheckCircle,
+            top.yukonga.miuix.kmp.preference.SwitchPreference(
                 title = "动态取色",
-                subtitle = "Material You 动态配色",
+                summary = "Material You 动态配色",
+                startAction = {
+                    Icon(
+                        Icons.Filled.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(end = 6.dp),
+                    )
+                },
                 checked = cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.dynamicColor,
                 onCheckedChange = { setDynamicColor(context, it) },
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            SettingSwitchRow(
-                icon = Icons.Filled.Settings,
+            top.yukonga.miuix.kmp.preference.SwitchPreference(
                 title = "日志默认模式",
-                subtitle = "打开日志页时默认使用粗略模式",
+                summary = "打开日志页时默认使用粗略模式",
+                startAction = {
+                    Icon(
+                        Icons.Filled.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(end = 6.dp),
+                    )
+                },
                 checked = briefLog,
                 onCheckedChange = {
                     briefLog = it
                     prefs.edit().putBoolean(PREFS_BRIEF_LOG, it).apply()
                 },
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            SettingSwitchRow(
-                icon = Icons.AutoMirrored.Filled.List,
+            top.yukonga.miuix.kmp.preference.SwitchPreference(
                 title = "开始后自动跳转日志页",
-                subtitle = "点击“开始 Root”后自动切到日志页",
+                summary = "点击“开始 Root”后自动切到日志页",
+                startAction = {
+                    Icon(
+                        Icons.AutoMirrored.Filled.List,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(end = 6.dp),
+                    )
+                },
                 checked = autoJump,
                 onCheckedChange = {
                     autoJump = it
@@ -696,17 +719,30 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
         // ---- 关于 ----
         SectionTitle("关于")
         MiuixCard(modifier = Modifier.fillMaxWidth()) {
-            ClickableRow(
-                icon = Icons.Filled.Info,
+            top.yukonga.miuix.kmp.preference.ArrowPreference(
                 title = "检查更新",
-                subtitle = "查看 GitHub Releases",
+                summary = "查看 GitHub Releases",
+                startAction = {
+                    Icon(
+                        Icons.Filled.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(end = 6.dp),
+                    )
+                },
                 onClick = { openUrl(context, "$REPO_URL/releases") },
             )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-            ClickableRow(
-                icon = Icons.Filled.Home,
+            top.yukonga.miuix.kmp.preference.ArrowPreference(
                 title = "项目主页",
-                subtitle = REPO_URL.removePrefix("https://"),
+                summary = REPO_URL.removePrefix("https://"),
+                startAction = {
+                    Icon(
+                        Icons.Filled.Home,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(end = 6.dp),
+                    )
+                },
                 onClick = { openUrl(context, REPO_URL) },
             )
         }

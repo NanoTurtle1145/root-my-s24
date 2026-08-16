@@ -44,6 +44,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core")
     implementation(libs.androidx.compose.ui)
     implementation("top.yukonga.miuix.kmp:miuix-ui:0.9.3")
+    implementation("top.yukonga.miuix.kmp:miuix-preference:0.9.3")
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
