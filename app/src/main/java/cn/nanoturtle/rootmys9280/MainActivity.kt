@@ -72,6 +72,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.nanoturtle.rootmys9280.ui.theme.RootMyS9280Theme
 import kotlinx.coroutines.launch
+import top.yukonga.miuix.kmp.basic.Card as MiuixCard
+import top.yukonga.miuix.kmp.basic.NavigationBar as MiuixNavigationBar
+import top.yukonga.miuix.kmp.basic.NavigationBarItem as MiuixNavigationBarItem
+import top.yukonga.miuix.kmp.basic.Switch as MiuixSwitch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,13 +109,13 @@ fun RootScreen(vm: RootViewModel = viewModel()) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            NavigationBar {
+            MiuixNavigationBar {
                 RootTab.entries.forEach { item ->
-                    NavigationBarItem(
+                    MiuixNavigationBarItem(
                         selected = tab == item,
                         onClick = { tab = item },
-                        icon = { Icon(item.icon, contentDescription = item.label) },
-                        label = { Text(item.label) },
+                        icon = item.icon,
+                        label = item.label,
                     )
                 }
             }
@@ -158,7 +162,7 @@ private fun HomeScreen(
         )
         Spacer(Modifier.height(16.dp))
 
-        Card(modifier = Modifier.fillMaxWidth()) {
+        MiuixCard(modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp)) {
                 Text("流程", style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(4.dp))
@@ -355,7 +359,7 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
             .padding(16.dp),
     ) {
         // ---- 头部 ----
-        Card(modifier = Modifier.fillMaxWidth()) {
+        MiuixCard(modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -423,7 +427,7 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
 
         // ---- 设置 ----
         SectionTitle("设置")
-        Card(modifier = Modifier.fillMaxWidth()) {
+        MiuixCard(modifier = Modifier.fillMaxWidth()) {
             SettingSwitchRow(
                 icon = Icons.Filled.Settings,
                 title = "日志默认模式",
@@ -475,7 +479,7 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
 
         // ---- 源代码与许可 ----
         SectionTitle("源代码与许可")
-        Card(modifier = Modifier.fillMaxWidth()) {
+        MiuixCard(modifier = Modifier.fillMaxWidth()) {
             ClickableRow(
                 icon = Icons.Filled.CheckCircle,
                 title = "RootMyS9280（本项目）",
@@ -522,7 +526,7 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
 
         // ---- 许可原文 ----
         SectionTitle("许可原文")
-        Card(modifier = Modifier.fillMaxWidth()) {
+        MiuixCard(modifier = Modifier.fillMaxWidth()) {
             ClickableRow(
                 icon = Icons.Filled.Warning,
                 title = "GNU GPL v3.0 全文",
@@ -585,7 +589,7 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(16.dp))
 
         // ---- 免责声明 ----
-        Card(modifier = Modifier.fillMaxWidth()) {
+        MiuixCard(modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
@@ -649,7 +653,7 @@ private fun SettingSwitchRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        MiuixSwitch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 
@@ -700,7 +704,7 @@ private fun IconContainer(icon: ImageVector) {
 
 @Composable
 private fun InfoCard(rows: List<Pair<String, String>>) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    MiuixCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             rows.forEachIndexed { index, (k, v) ->
                 if (index > 0) Spacer(Modifier.height(6.dp))
@@ -724,7 +728,7 @@ private fun InfoCard(rows: List<Pair<String, String>>) {
 
 @Composable
 private fun FaqCard(faqs: List<Pair<String, String>>) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    MiuixCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
             faqs.forEachIndexed { index, (q, a) ->
                 if (index > 0) Spacer(Modifier.height(10.dp))

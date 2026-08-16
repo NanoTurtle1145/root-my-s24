@@ -6,17 +6,15 @@ plugins {
 android {
     namespace = "cn.nanoturtle.rootmys9280"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "cn.nanoturtle.rootmys9280"
         minSdk = 24
         targetSdk = 36
-        versionCode = 9
-        versionName = "1.8"
+        versionCode = 10
+        versionName = "1.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,6 +43,7 @@ dependencies {
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation("androidx.compose.material:material-icons-core")
     implementation(libs.androidx.compose.ui)
+    implementation("top.yukonga.miuix.kmp:miuix-ui:0.9.3")
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
