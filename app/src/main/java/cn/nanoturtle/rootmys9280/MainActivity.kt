@@ -146,57 +146,97 @@ private fun HomeScreen(
     onStart: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var knox by remember { mutableStateOf("…") }
+    LaunchedEffect(Unit) {
+        knox = readProp("ro.boot.warranty_bit")?.let {
+            if (it == "1") "已熔断" else "完好"
+        } ?: "未知"
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
     ) {
-        Text(
-            text = "RootMyS9280",
-            style = MaterialTheme.typography.headlineMedium,
-        )
-        Text(
-            text = "SM-S9280 | S9280ZCS6DZF2 | 免解锁 root",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(Modifier.height(16.dp))
-
+        // ---- 状态大卡（KSU Manager 风格）----
         MiuixCard(modifier = Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp)) {
-                Text("流程", style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    "1. Shizuku 授权\n" +
-                        "2. 推送载荷 → LD_PRELOAD 触发 CVE-2026-43499\n" +
-                        "3. 等待 root → KernelSU late-load\n\n" +
-                        "提示：exploit 是概率性的，失败可重试；运行期间建议熄屏；\n每次重启手机后都需要重新运行本流程。",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+            Column(Modifier.padding(20.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        modifier = Modifier.size(52.dp),
+                    ) {
+                        Icon(
+                            Icons.Filled.Lock,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(13.dp),
+                        )
+                    }
+                    Spacer(Modifier.width(14.dp))
+                    Column {
+                        Text("RootMyS9280", style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            "SM-S9280 国行 · 免解锁 root",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val (statusText, statusColor) = when {
+                        state.busy -> "运行中" to MaterialTheme.colorScheme.primary
+                        state.rooted -> "已完成" to Color(0xFF4CAF50)
+                        else -> "就绪" to MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                    Surface(
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(50),
+                        color = statusColor.copy(alpha = 0.12f),
+                    ) {
+                        Text(
+                            statusText,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = statusColor,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        )
+                    }
+                    Spacer(Modifier.weight(1f))
+                    if (state.busy) {
+                        CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                    }
+                    if (state.rooted) {
+                        Text("✓", color = Color(0xFF4CAF50), style = MaterialTheme.typography.titleLarge)
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+                Button(
+                    onClick = onStart,
+                    enabled = !state.busy,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                ) {
+                    Text(if (state.busy) "运行中..." else "开始 Root", style = MaterialTheme.typography.titleMedium)
+                }
             }
+        }
+        Spacer(Modifier.height(12.dp))
+
+        // ---- 指标 2×2 ----
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MetricCard("KernelSU", "v3.2.5", Modifier.weight(1f))
+            MetricCard("KNOX", knox, Modifier.weight(1f))
+        }
+        Spacer(Modifier.height(12.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MetricCard("载荷", "修正版", Modifier.weight(1f))
+            MetricCard("阶段", stageName(state.currentStage), Modifier.weight(1f))
         }
         Spacer(Modifier.height(16.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Button(
-                onClick = onStart,
-                enabled = !state.busy,
-            ) {
-                Text(if (state.busy) "运行中..." else "开始 Root")
-            }
-            if (state.busy) {
-                CircularProgressIndicator(modifier = Modifier.size(24.dp))
-            }
-            if (state.rooted) {
-                Text("✓ root 完成", color = Color(0xFF4CAF50))
-            }
-        }
-        Spacer(Modifier.height(16.dp))
-
+        // ---- 当前阶段日志预览 ----
         Text("当前阶段日志", style = MaterialTheme.typography.titleSmall)
         Spacer(Modifier.height(4.dp))
         val stageLines = state.logLines.filter { it.stage == state.currentStage }.takeLast(8)
@@ -222,6 +262,34 @@ private fun HomeScreen(
             }
         }
     }
+}
+
+@Composable
+private fun MetricCard(title: String, value: String, modifier: Modifier = Modifier) {
+    MiuixCard(modifier = modifier) {
+        Column(Modifier.padding(14.dp)) {
+            Text(
+                title,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                value,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+            )
+        }
+    }
+}
+
+private fun stageName(stage: Int): String = when (stage) {
+    1 -> "Shizuku"
+    2 -> "推送载荷"
+    3 -> "exploit"
+    4 -> "late-load"
+    5 -> "验证"
+    else -> "未开始"
 }
 
 // ---------------------------------------------------------------- 日志页
