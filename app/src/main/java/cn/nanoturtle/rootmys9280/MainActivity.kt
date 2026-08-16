@@ -45,6 +45,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -70,7 +71,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cn.nanoturtle.rootmys9280.ui.theme.PREFS_NAME
 import cn.nanoturtle.rootmys9280.ui.theme.RootMyS9280Theme
+import cn.nanoturtle.rootmys9280.ui.theme.initAppTheme
+import cn.nanoturtle.rootmys9280.ui.theme.setDynamicColor
+import cn.nanoturtle.rootmys9280.ui.theme.setThemeMode
 import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.Card as MiuixCard
 import top.yukonga.miuix.kmp.basic.NavigationBar as MiuixNavigationBar
@@ -80,6 +85,7 @@ import top.yukonga.miuix.kmp.basic.Switch as MiuixSwitch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initAppTheme(this)
         enableEdgeToEdge()
         setContent {
             RootMyS9280Theme {
@@ -95,7 +101,6 @@ enum class RootTab(val label: String, val icon: ImageVector) {
     About("关于", Icons.Filled.Info),
 }
 
-private const val PREFS_NAME = "settings"
 private const val PREFS_BRIEF_LOG = "brief_log"
 private const val PREFS_AUTO_JUMP = "auto_jump_log"
 private const val REPO_URL = "https://github.com/nanoturtle1145/root-my-s9280"
@@ -292,6 +297,48 @@ private fun stageName(stage: Int): String = when (stage) {
     else -> "未开始"
 }
 
+private fun themeModeName(mode: Int): String = when (mode) {
+    1 -> "浅色"
+    2 -> "深色"
+    else -> "跟随系统"
+}
+
+/** 主题模式选择对话框（KSU 风格单选） */
+@Composable
+private fun ThemeModeDialog(
+    current: Int,
+    onSelect: (Int) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("主题模式") },
+        text = {
+            Column {
+                listOf(0 to "跟随系统", 1 to "浅色", 2 to "深色").forEach { (mode, name) ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(mode) }
+                            .padding(vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(
+                            selected = current == mode,
+                            onClick = { onSelect(mode) },
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(name, style = MaterialTheme.typography.bodyLarge)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("取消") }
+        },
+    )
+}
+
 // ---------------------------------------------------------------- 日志页
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -409,6 +456,7 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
     var autoJump by remember { mutableStateOf(prefs.getBoolean(PREFS_AUTO_JUMP, true)) }
     var knoxState by remember { mutableStateOf("检测中…") }
     var licenseDialog by remember { mutableStateOf<Pair<String, String>?>(null) }
+    var showThemeDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         knoxState = readProp("ro.boot.warranty_bit")?.let {
@@ -418,6 +466,17 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
 
     licenseDialog?.let { (title, text) ->
         LicenseDialog(title = title, text = text, onDismiss = { licenseDialog = null })
+    }
+
+    if (showThemeDialog) {
+        ThemeModeDialog(
+            current = cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.themeMode,
+            onSelect = { mode ->
+                setThemeMode(context, mode)
+                showThemeDialog = false
+            },
+            onDismiss = { showThemeDialog = false },
+        )
     }
 
     Column(
@@ -496,6 +555,23 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
         // ---- 设置 ----
         SectionTitle("设置")
         MiuixCard(modifier = Modifier.fillMaxWidth()) {
+            // 主题模式（KSU 风格）
+            ClickableRow(
+                icon = Icons.Filled.Settings,
+                title = "主题模式",
+                subtitle = themeModeName(cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.themeMode),
+                onClick = { showThemeDialog = true },
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            // 动态取色（Material You）
+            SettingSwitchRow(
+                icon = Icons.Filled.CheckCircle,
+                title = "动态取色",
+                subtitle = "Material You 动态配色",
+                checked = cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.dynamicColor,
+                onCheckedChange = { setDynamicColor(context, it) },
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
             SettingSwitchRow(
                 icon = Icons.Filled.Settings,
                 title = "日志默认模式",
