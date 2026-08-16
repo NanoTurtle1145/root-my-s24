@@ -76,7 +76,9 @@ import cn.nanoturtle.rootmys9280.ui.theme.RootMyS9280Theme
 import cn.nanoturtle.rootmys9280.ui.theme.initAppTheme
 import cn.nanoturtle.rootmys9280.ui.theme.setDynamicColor
 import cn.nanoturtle.rootmys9280.ui.theme.setThemeMode
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import top.yukonga.miuix.kmp.basic.Card as MiuixCard
 import top.yukonga.miuix.kmp.basic.NavigationBar as MiuixNavigationBar
 import top.yukonga.miuix.kmp.basic.NavigationBarItem as MiuixNavigationBarItem
@@ -152,78 +154,132 @@ private fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
     var knox by remember { mutableStateOf("…") }
-    LaunchedEffect(Unit) {
+    var ksuLoaded by remember { mutableStateOf(false) }
+    var ksuChecking by remember { mutableStateOf(true) }
+    val scope = rememberCoroutineScope()
+
+    suspend fun refresh() {
         knox = readProp("ro.boot.warranty_bit")?.let {
             if (it == "1") "已熔断" else "完好"
         } ?: "未知"
+        ksuChecking = true
+        ksuLoaded = detectKernelSu()
+        ksuChecking = false
     }
+
+    LaunchedEffect(Unit) { refresh() }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
     ) {
-        // ---- 状态大卡（KSU Manager 风格）----
-        MiuixCard(modifier = Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(20.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.size(52.dp),
-                    ) {
-                        Icon(
-                            Icons.Filled.Lock,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(13.dp),
-                        )
-                    }
-                    Spacer(Modifier.width(14.dp))
-                    Column {
-                        Text("RootMyS9280", style = MaterialTheme.typography.titleLarge)
-                        Text(
-                            "SM-S9280 国行 · 免解锁 root",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-                Spacer(Modifier.height(16.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    val (statusText, statusColor) = when {
-                        state.busy -> "运行中" to MaterialTheme.colorScheme.primary
-                        state.rooted -> "已完成" to Color(0xFF4CAF50)
-                        else -> "就绪" to MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                    Surface(
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(50),
-                        color = statusColor.copy(alpha = 0.12f),
-                    ) {
-                        Text(
-                            statusText,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = statusColor,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                        )
-                    }
-                    Spacer(Modifier.weight(1f))
-                    if (state.busy) {
-                        CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                    }
-                    if (state.rooted) {
-                        Text("✓", color = Color(0xFF4CAF50), style = MaterialTheme.typography.titleLarge)
-                    }
-                }
-                Spacer(Modifier.height(16.dp))
-                Button(
-                    onClick = onStart,
-                    enabled = !state.busy,
+        val rootedNow = ksuLoaded || state.rooted
+
+        if (rootedNow) {
+            // ---- 已 Root：KSU 风格对钩大卡片（不显示开始按钮）----
+            MiuixCard(modifier = Modifier.fillMaxWidth()) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp),
+                        .padding(vertical = 28.dp, horizontal = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text(if (state.busy) "运行中..." else "开始 Root", style = MaterialTheme.typography.titleMedium)
+                    Surface(
+                        shape = CircleShape,
+                        color = Color(0xFF4CAF50),
+                        modifier = Modifier.size(72.dp),
+                    ) {
+                        Icon(
+                            Icons.Filled.CheckCircle,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.padding(16.dp),
+                        )
+                    }
+                    Spacer(Modifier.height(16.dp))
+                    Text("工作中 <LKM> [越狱模式]", style = MaterialTheme.typography.titleLarge)
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "KernelSU 驱动已加载 · v3.2.5 (32525)",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "重启手机后需重新运行一次 Root",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    OutlinedButton(
+                        onClick = { scope.launch { refresh() } },
+                        enabled = !ksuChecking,
+                    ) {
+                        Text(if (ksuChecking) "检测中..." else "重新检测")
+                    }
+                }
+            }
+        } else {
+            // ---- 未 Root：状态大卡 + 开始按钮（KSU Manager 风格）----
+            MiuixCard(modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(20.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            modifier = Modifier.size(52.dp),
+                        ) {
+                            Icon(
+                                Icons.Filled.Lock,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(13.dp),
+                            )
+                        }
+                        Spacer(Modifier.width(14.dp))
+                        Column {
+                            Text("RootMyS9280", style = MaterialTheme.typography.titleLarge)
+                            Text(
+                                "SM-S9280 国行 · 免解锁 root",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(16.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        val (statusText, statusColor) = when {
+                            state.busy -> "运行中" to MaterialTheme.colorScheme.primary
+                            ksuChecking -> "检测中" to MaterialTheme.colorScheme.onSurfaceVariant
+                            else -> "就绪" to MaterialTheme.colorScheme.onSurfaceVariant
+                        }
+                        Surface(
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(50),
+                            color = statusColor.copy(alpha = 0.12f),
+                        ) {
+                            Text(
+                                statusText,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = statusColor,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                            )
+                        }
+                        Spacer(Modifier.weight(1f))
+                        if (state.busy) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp))
+                        }
+                    }
+                    Spacer(Modifier.height(16.dp))
+                    Button(
+                        onClick = onStart,
+                        enabled = !state.busy,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                    ) {
+                        Text(if (state.busy) "运行中..." else "开始 Root", style = MaterialTheme.typography.titleMedium)
+                    }
                 }
             }
         }
@@ -231,13 +287,27 @@ private fun HomeScreen(
 
         // ---- 指标 2×2 ----
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MetricCard("KernelSU", "v3.2.5", Modifier.weight(1f))
+            MetricCard("KernelSU", if (rootedNow) "已加载" else "未加载", Modifier.weight(1f))
             MetricCard("KNOX", knox, Modifier.weight(1f))
         }
         Spacer(Modifier.height(12.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             MetricCard("载荷", "修正版", Modifier.weight(1f))
             MetricCard("阶段", stageName(state.currentStage), Modifier.weight(1f))
+        }
+        Spacer(Modifier.height(16.dp))
+
+        // ---- 设备信息（从关于页移入）----
+        Text("设备信息", style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(4.dp))
+        MiuixCard(modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                InfoRow("型号", "${Build.MODEL} (${Build.DEVICE})")
+                Spacer(Modifier.height(6.dp))
+                InfoRow("Android", "${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
+                Spacer(Modifier.height(6.dp))
+                InfoRow("指纹", Build.FINGERPRINT.take(56))
+            }
         }
         Spacer(Modifier.height(16.dp))
 
@@ -266,6 +336,36 @@ private fun HomeScreen(
                 }
             }
         }
+    }
+}
+
+/** 检测 KernelSU 驱动是否已加载（无需 root）：/proc/modules 或 /sys/module */
+private suspend fun detectKernelSu(): Boolean = withContext(Dispatchers.IO) {
+    try {
+        val p = ProcessBuilder(
+            "/system/bin/sh", "-c",
+            "grep -q 'kernelsu' /proc/modules 2>/dev/null || ls /sys/module/kernelsu >/dev/null 2>&1",
+        ).redirectErrorStream(true).start()
+        p.waitFor() == 0
+    } catch (_: Exception) {
+        false
+    }
+}
+
+@Composable
+private fun InfoRow(key: String, value: String) {
+    Row(Modifier.fillMaxWidth()) {
+        Text(
+            key,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(0.28f),
+        )
+        Text(
+            value,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.weight(0.72f),
+        )
     }
 }
 
@@ -552,8 +652,8 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
         }
         Spacer(Modifier.height(16.dp))
 
-        // ---- 设置 ----
-        SectionTitle("设置")
+        // ---- 通用（KSU 设置分组）----
+        SectionTitle("通用")
         MiuixCard(modifier = Modifier.fillMaxWidth()) {
             // 主题模式（KSU 风格）
             ClickableRow(
@@ -596,8 +696,8 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
         }
         Spacer(Modifier.height(16.dp))
 
-        // ---- 版本信息 ----
-        SectionTitle("版本信息")
+        // ---- 关于 ----
+        SectionTitle("关于")
         InfoCard(
             rows = listOf(
                 "App 版本" to "v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
@@ -606,17 +706,6 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
                 "内核" to "6.1.145-android14-11-3254743",
                 "KernelSU" to "v3.2.5 (32525) · 越狱模式",
                 "KNOX 状态" to "$knoxState（bootloader 报告）",
-            ),
-        )
-        Spacer(Modifier.height(16.dp))
-
-        // ---- 设备信息 ----
-        SectionTitle("设备信息")
-        InfoCard(
-            rows = listOf(
-                "型号" to "${Build.MODEL} (${Build.DEVICE})",
-                "Android" to "${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",
-                "指纹" to Build.FINGERPRINT.take(60),
             ),
         )
         Spacer(Modifier.height(16.dp))
