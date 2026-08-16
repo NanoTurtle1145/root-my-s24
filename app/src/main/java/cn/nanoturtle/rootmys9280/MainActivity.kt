@@ -172,6 +172,7 @@ private fun HomeScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
     ) {
         val rootedNow = ksuLoaded || state.rooted
@@ -322,18 +323,14 @@ private fun HomeScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-            ) {
-                items(stageLines) { line ->
-                    Text(
-                        text = line.text,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontFamily = FontFamily.Monospace,
-                        color = logLineColor(line.text),
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
+            stageLines.forEach { line ->
+                Text(
+                    text = line.text,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = FontFamily.Monospace,
+                    color = logLineColor(line.text),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     }
@@ -698,6 +695,22 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
 
         // ---- 关于 ----
         SectionTitle("关于")
+        MiuixCard(modifier = Modifier.fillMaxWidth()) {
+            ClickableRow(
+                icon = Icons.Filled.Info,
+                title = "检查更新",
+                subtitle = "查看 GitHub Releases",
+                onClick = { openUrl(context, "$REPO_URL/releases") },
+            )
+            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+            ClickableRow(
+                icon = Icons.Filled.Home,
+                title = "项目主页",
+                subtitle = REPO_URL.removePrefix("https://"),
+                onClick = { openUrl(context, REPO_URL) },
+            )
+        }
+        Spacer(Modifier.height(8.dp))
         InfoCard(
             rows = listOf(
                 "App 版本" to "v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
