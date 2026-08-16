@@ -1,0 +1,24 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# 本机 SDK 路径（不要提交）
+local.properties
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+captures/
+.externalNativeBuild/
+.cxx/
+
+# 签名文件（不要提交）
+*.keystore
+*.jks
+*.idsig
+
+# 日志与临时文件
+*.log
+*.tmp
