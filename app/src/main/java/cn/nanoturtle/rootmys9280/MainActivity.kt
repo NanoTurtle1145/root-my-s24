@@ -248,15 +248,23 @@ private fun LogScreen(
             Text("运行日志", style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.weight(1f))
             SingleChoiceSegmentedButtonRow {
+                val segColors = SegmentedButtonDefaults.colors(
+                    activeContainerColor = MaterialTheme.colorScheme.primary,
+                    activeContentColor = MaterialTheme.colorScheme.onPrimary,
+                    inactiveContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    inactiveContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
                 SegmentedButton(
                     selected = !brief,
                     onClick = { brief = false },
                     shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                    colors = segColors,
                 ) { Text("详细") }
                 SegmentedButton(
                     selected = brief,
                     onClick = { brief = true },
                     shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                    colors = segColors,
                 ) { Text("粗略") }
             }
             OutlinedButton(
@@ -535,6 +543,15 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
         SectionTitle("常见问题")
         FaqCard(
             listOf(
+                "Q: 支持哪些机型/固件？" to
+                    "A: 当前验证：SM-S9280 (CHC/TGY/BRI) S9280ZCS6DZF2。同一 e3q 平台（S24 系列）" +
+                    "同代固件的符号基本一致，理论可适配，需真机验证；其他机型/固件需按仓库" +
+                    "适配文档重新验证内核常量。",
+                "Q: 内核版本必须完全一致才能成功吗？" to
+                    "A: 不是。成功取决于 exploit 依赖的符号与结构布局是否一致，而非版本字符串。" +
+                    "同构建（版本串一致）最稳；同平台不同构建号（如 DZE2/DZF2）GKI KMI 冻结保证" +
+                    "大部分稳定，但个别非导出符号（如 kmalloc_caches）可能漂移，需逐符号对比修正；" +
+                    "跨大版本（不同 KMI）需重新适配，且漏洞可能已被修复。",
                 "Q: 为什么会卡死/重启？是正常现象吗？" to
                     "A: 正常。exploit 通过破坏内核内存提权，命中关键结构就会 oops 重启。" +
                     "官方参考实现同样需要多次尝试（S928U1 验证时第 2 轮 attempt 4/24 才成功）。" +
