@@ -158,6 +158,7 @@ fun RootScreen(vm: RootViewModel = viewModel()) {
             )
             RootTab.Log -> LogScreen(state, vm, Modifier.padding(innerPadding))
             RootTab.About -> AboutScreen(
+                vm = vm,
                 onOpenTheme = { showThemeSettings = true },
                 modifier = Modifier.padding(innerPadding),
             )
@@ -543,6 +544,7 @@ private fun LogScreen(
 
 @Composable
 private fun AboutScreen(
+    vm: RootViewModel,
     onOpenTheme: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -669,6 +671,20 @@ private fun AboutScreen(
                     briefLog = it
                     prefs.edit().putBoolean(PREFS_BRIEF_LOG, it).apply()
                 },
+            )
+            top.yukonga.miuix.kmp.preference.SwitchPreference(
+                title = "运行期间自动熄屏",
+                summary = "显示驱动停止，大幅降低崩溃概率",
+                startAction = {
+                    Icon(
+                        Icons.Filled.Warning,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(end = 6.dp),
+                    )
+                },
+                checked = vm.autoScreenOff,
+                onCheckedChange = { vm.setAutoScreenOff(it) },
             )
             top.yukonga.miuix.kmp.preference.SwitchPreference(
                 title = "开始后自动跳转日志页",
@@ -1090,16 +1106,21 @@ private fun KsuFloatingBottomBar(
     androidx.compose.runtime.CompositionLocalProvider(
         top.yukonga.miuix.kmp.theme.LocalContentColor provides top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme.onSurface,
     ) {
-        FloatingBottomBar(
+        // 内容宽度胶囊，居中于底部（KSU 同款，非全宽）
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 12.dp),
-            selectedIndex = { tab.ordinal },
-            onSelected = { onSelect(tabEntries[it]) },
-            backdrop = backdrop,
-            tabsCount = tabEntries.size,
-            isBlurEnabled = false,
+            contentAlignment = Alignment.BottomCenter,
         ) {
+            FloatingBottomBar(
+                modifier = Modifier,
+                selectedIndex = { tab.ordinal },
+                onSelected = { onSelect(tabEntries[it]) },
+                backdrop = backdrop,
+                tabsCount = tabEntries.size,
+                isBlurEnabled = false,
+            ) {
             tabEntries.forEach { item ->
                 FloatingBottomBarItem(
                     onClick = { onSelect(item) },
@@ -1117,6 +1138,7 @@ private fun KsuFloatingBottomBar(
                         maxLines = 1,
                     )
                 }
+            }
             }
         }
     }

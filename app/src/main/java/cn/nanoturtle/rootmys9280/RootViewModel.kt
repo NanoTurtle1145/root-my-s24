@@ -54,6 +54,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val payloadName = "cve-2026-43499"
     private val rootHelperName = "cve-2026-43499-root"
     private val ksudName = "ksud-selected"
+    private val PREFS_SETTINGS = "settings"
 
     private val tmpPayload = "/data/local/tmp/$payloadName"
     private val tmpRootHelper = "/data/local/tmp/$rootHelperName"
@@ -72,10 +73,27 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             } catch (t: Throwable) {
                 appendLog("✗ 失败: ${t.message}")
             } finally {
+                // 唤醒屏幕（如果运行期间自动熄屏了）
+                if (autoScreenOff) {
+                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                        ShizukuController.shell("input keyevent 26")
+                    }
+                    appendLog("◆ 已唤醒屏幕")
+                }
                 _state.value = _state.value.copy(busy = false)
             }
         }
     }
+
+    /** 设置页的"运行期间自动熄屏"开关（Shizuku 运行，读 prefs 实时生效） */
+    fun setAutoScreenOff(enabled: Boolean) {
+        app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .edit().putBoolean("auto_screen_off", enabled).apply()
+    }
+
+    val autoScreenOff: Boolean
+        get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getBoolean("auto_screen_off", true)
 
     fun clearLog() {
         captured.clear()
@@ -139,6 +157,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
         // 3. 触发 exploit
         appendLog("[3/5] 触发 CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...")
+        // 运行期间自动熄屏：显示驱动停止 → 消除最大崩溃源（worklist 竞态）
+        if (autoScreenOff) {
+            ShizukuController.shell("input keyevent 26")
+            appendLog("◆ 已自动熄屏（运行完成后将唤醒；可手动按电源键随时查看）")
+        }
         val env = arrayOf(
             "EXPLOIT_ATTEMPTS=30",
             "P0_ATTEMPT_TIMEOUT_SEC=45",
