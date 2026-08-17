@@ -514,4 +514,8 @@
     <string name="log_knox_unknown">Không rõ (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Không rõ (cần Shizuku)</string>
     <string name="log_binder_unavailable">Binder Shizuku không khả dụng</string>
+<!-- RootMyS9280 log extra -->
+    <string name="log_export_entry_fail">Không thể tạo mục tải xuống</string>
+    <string name="log_export_write_fail">Không thể ghi vào mục tải xuống</string>
+    <string name="log_export_ok_path">Đã xuất ra %1$s</string>
 </resources>

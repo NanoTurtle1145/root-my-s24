@@ -568,4 +568,8 @@
     <string name="log_knox_unknown">Невідомо (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Невідомо (потрібен Shizuku)</string>
     <string name="log_binder_unavailable">Binder Shizuku недоступний</string>
+<!-- RootMyS9280 log extra -->
+    <string name="log_export_entry_fail">Не вдалося створити запис завантаження</string>
+    <string name="log_export_write_fail">Не вдалося записати в запис завантаження</string>
+    <string name="log_export_ok_path">Експортовано в %1$s</string>
 </resources>

@@ -518,4 +518,8 @@
     <string name="log_knox_unknown">Tidak diketahui (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Tidak diketahui (butuh Shizuku)</string>
     <string name="log_binder_unavailable">Binder Shizuku tidak tersedia</string>
+<!-- RootMyS9280 log extra -->
+    <string name="log_export_entry_fail">Tidak dapat membuat entri unduhan</string>
+    <string name="log_export_write_fail">Tidak dapat menulis ke entri unduhan</string>
+    <string name="log_export_ok_path">Diekspor ke %1$s</string>
 </resources>

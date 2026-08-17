@@ -526,4 +526,8 @@
     <string name="log_knox_unknown">Inconnu (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Inconnu (nécessite Shizuku)</string>
     <string name="log_binder_unavailable">Binder Shizuku indisponible</string>
+<!-- RootMyS9280 log extra -->
+    <string name="log_export_entry_fail">Impossible de créer l\'entrée de téléchargement</string>
+    <string name="log_export_write_fail">Impossible d\'écrire dans l\'entrée de téléchargement</string>
+    <string name="log_export_ok_path">Exporté vers %1$s</string>
 </resources>

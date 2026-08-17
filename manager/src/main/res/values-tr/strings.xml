@@ -525,4 +525,8 @@
     <string name="log_knox_unknown">Bilinmiyor (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Bilinmiyor (Shizuku gerekli)</string>
     <string name="log_binder_unavailable">Shizuku binder kullanılamıyor</string>
+<!-- RootMyS9280 log extra -->
+    <string name="log_export_entry_fail">İndirme öğesi oluşturulamadı</string>
+    <string name="log_export_write_fail">İndirme öğesine yazılamadı</string>
+    <string name="log_export_ok_path">%1$s konumuna dışa aktarıldı</string>
 </resources>

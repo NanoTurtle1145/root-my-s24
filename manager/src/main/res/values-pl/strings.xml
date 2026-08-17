@@ -587,4 +587,8 @@
     <string name="log_knox_unknown">Nieznany (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Nieznany (wymaga Shizuku)</string>
     <string name="log_binder_unavailable">Binder Shizuku niedostępny</string>
+<!-- RootMyS9280 log extra -->
+    <string name="log_export_entry_fail">Nie można utworzyć wpisu pobierania</string>
+    <string name="log_export_write_fail">Nie można zapisać do wpisu pobierania</string>
+    <string name="log_export_ok_path">Wyeksportowano do %1$s</string>
 </resources>

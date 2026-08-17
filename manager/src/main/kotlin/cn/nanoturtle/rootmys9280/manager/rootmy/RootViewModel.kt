@@ -405,9 +405,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 }
                 val uri = app.contentResolver
                     .insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
-                    ?: error("无法创建下载项")
+                    ?: error(app.getString(R.string.log_export_entry_fail))
                 app.contentResolver.openOutputStream(uri)?.use { it.write(content.toByteArray()) }
-                    ?: error("无法写入下载项")
+                    ?: error(app.getString(R.string.log_export_write_fail))
                 app.getString(R.string.log_export_ok, content.length)
             } else {
                 @Suppress("DEPRECATION")
@@ -415,7 +415,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 dir.mkdirs()
                 val f = File(dir, "rootmys9280-log.txt")
                 f.writeText(content)
-                "已导出到 ${f.absolutePath}"
+                app.getString(R.string.log_export_ok_path, f.absolutePath)
             }
         }.getOrElse { app.getString(R.string.log_export_fail, it.message) }
     }

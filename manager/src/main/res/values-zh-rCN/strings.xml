@@ -517,4 +517,8 @@
     <string name="log_knox_unknown">未知 (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">未知（需 Shizuku）</string>
     <string name="log_binder_unavailable">Shizuku binder 不可用</string>
+<!-- RootMyS9280 log extra -->
+    <string name="log_export_entry_fail">无法创建下载项</string>
+    <string name="log_export_write_fail">无法写入下载项</string>
+    <string name="log_export_ok_path">已导出到 %1$s</string>
 </resources>

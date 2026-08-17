@@ -505,4 +505,8 @@
     <string name="log_knox_unknown">不明 (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">不明 (Shizuku が必要)</string>
     <string name="log_binder_unavailable">Shizuku のバインダーを利用できません</string>
+<!-- RootMyS9280 log extra -->
+    <string name="log_export_entry_fail">ダウンロード項目を作成できませんでした</string>
+    <string name="log_export_write_fail">ダウンロード項目に書き込めませんでした</string>
+    <string name="log_export_ok_path">%1$s にエクスポートしました</string>
 </resources>

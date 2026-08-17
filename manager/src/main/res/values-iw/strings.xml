@@ -551,4 +551,8 @@
     <string name="log_knox_unknown">לא ידוע (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">לא ידוע (נדרש Shizuku)</string>
     <string name="log_binder_unavailable">ה-binder של Shizuku אינו זמין</string>
+<!-- RootMyS9280 log extra -->
+    <string name="log_export_entry_fail">לא ניתן ליצור רשומת הורדה</string>
+    <string name="log_export_write_fail">לא ניתן לכתוב לרשומת ההורדה</string>
+    <string name="log_export_ok_path">ייצא אל %1$s</string>
 </resources>

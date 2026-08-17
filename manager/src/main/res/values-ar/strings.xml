@@ -569,4 +569,8 @@
     <string name="log_knox_unknown">غير معروف (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">غير معروف (يتطلب Shizuku)</string>
     <string name="log_binder_unavailable">أداة binder الخاصة بـ Shizuku غير متاحة</string>
+<!-- RootMyS9280 log extra -->
+    <string name="log_export_entry_fail">تعذّر إنشاء عنصر التنزيل</string>
+    <string name="log_export_write_fail">تعذّر الكتابة إلى عنصر التنزيل</string>
+    <string name="log_export_ok_path">تم التصدير إلى %1$s</string>
 </resources>

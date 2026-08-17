@@ -525,4 +525,8 @@
     <string name="log_knox_unknown">نامشخص (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">نامشخص (نیاز به Shizuku)</string>
     <string name="log_binder_unavailable">binder Shizuku در دسترس نیست</string>
+<!-- RootMyS9280 log extra -->
+    <string name="log_export_entry_fail">ساخت ورودی دانلود ممکن نشد</string>
+    <string name="log_export_write_fail">نوشتن در ورودی دانلود ممکن نشد</string>
+    <string name="log_export_ok_path">به %1$s صادر شد</string>
 </resources>
