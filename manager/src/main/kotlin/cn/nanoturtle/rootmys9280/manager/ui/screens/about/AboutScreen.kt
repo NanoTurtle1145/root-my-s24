@@ -34,11 +34,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import cn.nanoturtle.rootmys9280.manager.BuildConfig
+import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.ui.theme.VectorMono
 
 /** 分组卡片里的行用透明容器色，避免 ListItem 在 Card 内再叠一层色块。 */
@@ -48,19 +50,21 @@ private val cardRowColors
 /** 一条常见问题。 */
 private data class Faq(val question: String, val answer: String)
 
-private val FAQS =
+/** 常见问题列表：文案来自字符串资源，随系统语言切换。 */
+@Composable
+private fun faqList(): List<Faq> =
     listOf(
         Faq(
-            question = "会熔断 KNOX 吗？",
-            answer = "不会。免解锁提权不刷 bootloader，KNOX 状态保持原样。",
+            question = stringResource(R.string.about_faq_knox_q),
+            answer = stringResource(R.string.about_faq_knox_a),
         ),
         Faq(
-            question = "为什么需要多试几次？",
-            answer = "exploit 通过内核内存破坏提权，概率性成功，失败后重启重试即可。",
+            question = stringResource(R.string.about_faq_retry_q),
+            answer = stringResource(R.string.about_faq_retry_a),
         ),
         Faq(
-            question = "重启后要重新 Root 吗？",
-            answer = "是。bootloader 锁定，每次重启后需要重新运行免解锁 Root。",
+            question = stringResource(R.string.about_faq_restart_q),
+            answer = stringResource(R.string.about_faq_restart_a),
         ),
     )
 
@@ -88,8 +92,8 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
     ) {
         item {
             cn.nanoturtle.rootmys9280.manager.ui.components.BannerHeader(
-                title = "关于",
-                subtitle = "RootMyS9280 · 免解锁 root",
+                title = stringResource(R.string.about_screen_title),
+                subtitle = stringResource(R.string.about_screen_subtitle),
                 modifier = Modifier.padding(top = 24.dp),
             )
         }
@@ -129,7 +133,7 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "SM-S9280 国行免解锁 root · 基于 CVE-2026-43499 安全研究",
+                    text = stringResource(R.string.about_tagline),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.fillMaxWidth(),
@@ -139,7 +143,7 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
         }
 
         item {
-            SectionLabel("设备信息")
+            SectionLabel(stringResource(R.string.about_section_device))
             Card(modifier = Modifier.fillMaxWidth()) {
                 ListItem(
                     leadingContent = {
@@ -147,7 +151,7 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
                     },
                     supportingContent = { Text(Build.MODEL, style = VectorMono) },
                     colors = cardRowColors,
-                ) { Text("设备型号") }
+                ) { Text(stringResource(R.string.about_device_model)) }
                 HorizontalDivider()
                 ListItem(
                     leadingContent = { Icon(Icons.Rounded.Android, contentDescription = null) },
@@ -155,18 +159,18 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
                         Text("Android ${Build.VERSION.RELEASE}", style = VectorMono)
                     },
                     colors = cardRowColors,
-                ) { Text("系统版本") }
+                ) { Text(stringResource(R.string.about_system_version)) }
                 HorizontalDivider()
                 ListItem(
                     leadingContent = { Icon(Icons.Rounded.Fingerprint, contentDescription = null) },
                     supportingContent = { Text(Build.FINGERPRINT, style = VectorMono) },
                     colors = cardRowColors,
-                ) { Text("构建指纹") }
+                ) { Text(stringResource(R.string.about_build_fingerprint)) }
             }
         }
 
         item {
-            SectionLabel("源代码与许可")
+            SectionLabel(stringResource(R.string.about_section_source))
             Card(modifier = Modifier.fillMaxWidth()) {
                 LicenseRow(
                     title = "RootMyS9280 (GPL-3.0)",
@@ -189,10 +193,10 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
         }
 
         item {
-            SectionLabel("常见问题")
+            SectionLabel(stringResource(R.string.about_section_faq))
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(16.dp)) {
-                    FAQS.forEachIndexed { index, faq ->
+                    faqList().forEachIndexed { index, faq ->
                         if (index > 0) {
                             HorizontalDivider(Modifier.padding(vertical = 12.dp))
                         }
@@ -214,8 +218,7 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
 
         item {
             Text(
-                text =
-                    "免责声明：本应用仅供安全研究与个人学习使用。内核内存破坏提权存在不确定性，使用后果请自行承担；请遵守当地法律法规，勿用于非法用途。",
+                text = stringResource(R.string.about_disclaimer),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),

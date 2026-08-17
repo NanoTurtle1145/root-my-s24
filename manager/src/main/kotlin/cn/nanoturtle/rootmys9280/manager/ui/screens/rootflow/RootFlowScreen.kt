@@ -121,7 +121,7 @@ private fun RootFlowContent(
                 ambienceSettings = VectorAmbienceSettings,
                 detail = { contentColor ->
                     Text(
-                        text = state.knoxState.ifBlank { "SM-S9280 国行免解锁 root · 不刷机、不熔断 KNOX" },
+                        text = state.knoxState.ifBlank { stringResource(R.string.rootflow_detail_fallback) },
                         style = MaterialTheme.typography.bodyMedium,
                         color = contentColor,
                     )
@@ -145,19 +145,25 @@ private fun RootFlowContent(
                             onClick = { vm.start() },
                             enabled = !state.busy,
                         ) {
-                            Text(if (state.busy) "运行中..." else "开始 Root")
+                            Text(
+                                if (state.busy) {
+                                    stringResource(R.string.rootflow_running)
+                                } else {
+                                    stringResource(R.string.rootflow_start)
+                                },
+                            )
                         }
                         Spacer(Modifier.padding(start = 12.dp))
                         if (state.busy) {
                             CircularProgressIndicator(modifier = Modifier.height(20.dp))
                         }
                         if (state.rooted) {
-                            Text("✓ root 完成", color = Color(0xFF4CAF50))
+                            Text("✓ ${stringResource(R.string.rootflow_done)}", color = Color(0xFF4CAF50))
                         }
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "免解锁提权：不刷 bootloader、不熔断 KNOX。运行期间建议熄屏。",
+                        text = stringResource(R.string.rootflow_screen_off_hint),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -185,12 +191,12 @@ private fun RootFlowContent(
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("运行日志", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.rootflow_log_title), style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.weight(1f))
                 TextButton(
                     onClick = { brief = !brief },
                 ) {
-                    Text(if (brief) "详细" else "粗略")
+                    Text(if (brief) stringResource(R.string.rootflow_detail) else stringResource(R.string.rootflow_brief))
                 }
             }
         }
@@ -242,9 +248,9 @@ private fun SettingsCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text("自动熄屏", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.rootflow_auto_screen_off), style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        "运行期间自动熄灭屏幕，降低内核竞态概率",
+                        stringResource(R.string.rootflow_auto_screen_off_summary),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -262,9 +268,9 @@ private fun SettingsCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text("KNOX 状态", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.rootflow_knox_status), style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        state.knoxState.ifBlank { "查询中...（需 Shizuku）" },
+                        state.knoxState.ifBlank { stringResource(R.string.rootflow_knox_loading) },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -278,9 +284,9 @@ private fun SettingsCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column(Modifier.weight(1f)) {
-                    Text("导出日志", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.rootflow_export_log), style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        exportResult ?: "保存完整运行日志到系统下载目录",
+                        exportResult ?: stringResource(R.string.rootflow_export_log_placeholder),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -288,7 +294,7 @@ private fun SettingsCard(
                 TextButton(
                     onClick = onExport,
                 ) {
-                    Text("导出")
+                    Text(stringResource(R.string.rootflow_export))
                 }
             }
         }

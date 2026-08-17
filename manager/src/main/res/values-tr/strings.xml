@@ -432,4 +432,97 @@
     <string name="launcher_prompt_title">Vector\'ün henüz bir simgesi yok</string>
     <string name="launcher_prompt_body">Vector kurulmak yerine başka bir sürecin içinde çalışır; bu yüzden başlatıcınızda hiçbir şey görünmez ve geri dönmenin bariz bir yolu yoktur. Ona ana ekranda bir kısayol verin ya da sıradan bir uygulama olarak kurun.</string>
     <string name="launcher_prompt_never">Bir daha sorma</string>
+    <!-- RootMyS9280 custom UI -->
+    <string name="settings_screen_title">Ayarlar</string>
+    <string name="settings_screen_subtitle">Çalıştırma tercihleri ve hakkında</string>
+    <string name="settings_section_run">Çalıştır</string>
+    <string name="settings_auto_screen_off">Otomatik ekran kapatma</string>
+    <string name="settings_auto_screen_off_summary">Çekirdek yarışı (race) olasılığını azaltmak için çalıştırma sırasında ekranı kapatır</string>
+    <string name="settings_brief_log">Kısa günlük modu</string>
+    <string name="settings_brief_log_summary">Dağınıklığı azaltmak için çalıştırma günlüğünde yalnızca özet satırlarını gösterir</string>
+    <string name="settings_section_about">Hakkında</string>
+    <string name="settings_check_update">Güncellemeleri kontrol et</string>
+    <string name="settings_check_update_summary">Yeni sürümler için GitHub Releases sayfasını açar</string>
+    <string name="settings_project_home">Proje ana sayfası</string>
+    <string name="settings_project_home_summary">Kaynak, sorunlar ve kullanım notları</string>
+    <string name="settings_version">Sürüm v%1$s (%2$d)</string>
+    <string name="rootflow_detail_fallback">SM-S9280 unlock root · flash yok, KNOX tetiklenmez</string>
+    <string name="rootflow_start">Root\'a Başla</string>
+    <string name="rootflow_running">Çalışıyor...</string>
+    <string name="rootflow_done">root tamamlandı</string>
+    <string name="rootflow_screen_off_hint">En iyi sonuç için çalıştırma sırasında ekranı kapalı tutun.</string>
+    <string name="rootflow_log_title">Çalıştırma günlüğü</string>
+    <string name="rootflow_brief">Özet</string>
+    <string name="rootflow_detail">Ayrıntı</string>
+    <string name="rootflow_auto_screen_off">Otomatik ekran kapatma</string>
+    <string name="rootflow_auto_screen_off_summary">Çekirdek yarışı (race) olasılığını azaltmak için çalıştırma sırasında ekranı kapatır</string>
+    <string name="rootflow_knox_status">KNOX durumu</string>
+    <string name="rootflow_knox_loading">Denetleniyor... (Shizuku gerekir)</string>
+    <string name="rootflow_export_log">Günlüğü dışa aktar</string>
+    <string name="rootflow_export_log_placeholder">Çalıştırma günlüğünün tamamını sistemin İndirilenler klasörüne kaydeder</string>
+    <string name="rootflow_export">Dışa aktar</string>
+    <string name="logs_title">Çalıştırma günlüğü</string>
+    <string name="logs_subtitle">Unlock Root akışı çıktısı</string>
+    <string name="logs_brief">Özet</string>
+    <string name="logs_detail">Ayrıntı</string>
+    <string name="logs_export">Dışa aktar</string>
+    <string name="logs_clear">Temizle</string>
+    <string name="logs_empty_brief">(Henüz özet satırı yok)</string>
+    <string name="logs_empty">(Günlükler burada görünecek. Başlamak için \"Root\'a Başla\"ya dokunun)</string>
+    <string name="about_screen_title">Hakkında</string>
+    <string name="about_screen_subtitle">RootMyS9280 · unlock root</string>
+    <string name="about_tagline">SM-S9280 unlock root · CVE-2026-43499 güvenlik araştırmasına dayalı</string>
+    <string name="about_section_device">Cihaz bilgisi</string>
+    <string name="about_device_model">Model</string>
+    <string name="about_system_version">Sistem sürümü</string>
+    <string name="about_build_fingerprint">Derleme parmak izi</string>
+    <string name="about_section_source">Kaynak ve lisans</string>
+    <string name="about_section_faq">SSS</string>
+    <string name="about_faq_knox_q">Bu KNOX\'u tetikler mi?</string>
+    <string name="about_faq_knox_a">Hayır. Bootloader\'ı flash etmeden ROM kilidini açma ayrıcalığı; KNOX\'a dokunulmaz.</string>
+    <string name="about_faq_retry_q">Neden birkaç deneme gerekebilir?</string>
+    <string name="about_faq_retry_a">Açık (exploit), çekirdek belleği bozarak ayrıcalık yükseltir ve olasılıksal olarak başarılı olur; başarısızlıkta yeniden başlatıp tekrar deneyin.</string>
+    <string name="about_faq_restart_q">Yeniden başlatmanın ardından root\'u tekrar almam gerekir mi?</string>
+    <string name="about_faq_restart_a">Evet. Bootloader kilitli, bu yüzden her yeniden başlatmadan sonra Unlock Root\'u tekrar çalıştırın.</string>
+    <string name="about_disclaimer">Sorumluluk reddi: Bu uygulama yalnızca güvenlik araştırması ve kişisel öğrenim içindir. Çekirdek belleğinin bozulmasıyla ayrıcalık yükseltme doğası gereği belirsizdir; riski size ait olmak üzere kullanın. Lütfen yerel yasalara uyun.</string>
+    <!-- RootMyS9280 log strings -->
+    <string name="log_starting">RootMyS9280 başlatılıyor</string>
+    <string name="log_payload">Payload: %1$s (sabit, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_check_shizuku">[1/5] Shizuku kontrol ediliyor...</string>
+    <string name="log_shizuku_not_running">Shizuku çalışmıyor. Lütfen önce Shizuku\'yu başlatın!</string>
+    <string name="log_shizuku_denied">Shizuku izni reddedildi</string>
+    <string name="log_shizuku_ready">Shizuku hazır</string>
+    <string name="log_push_payload">[2/5] Payload /data/local/tmp dizinine gönderiliyor ...</string>
+    <string name="log_push_done">Gönderim tamam (%1$s=%2$d B, %3$s=%4$d B)</string>
+    <string name="log_diag">Tanılama: pipe-max-size=%1$s pipe-user-pages=%2$s</string>
+    <string name="log_diag_version">Tanılama: /proc/version=%1$s</string>
+    <string name="log_pipe_warn">pipe-max-size (%1$d B) &lt; 128KB (exploit 32 slot=128KB gerektirir), F_SETPIPE_SZ EPERM döndürür</string>
+    <string name="log_cleanup">[2.6/5] Kalıntı exploit süreçleri ve geçici dosyalar temizleniyor ...</string>
+    <string name="log_cleanup_done">Ortam temizliği tamamlandı (exit=%1$d)</string>
+    <string name="log_trigger">[3/5] CVE-2026-43499 tetikleniyor (LD_PRELOAD /system/bin/true) ...</string>
+    <string name="log_screen_off">Ekran kapatıldı (bitince uyanacak; kontrol için istediğiniz zaman güç tuşuna basın)</string>
+    <string name="log_exploit_timeout">exploit zaman aşımına uğradı (15 dakika)</string>
+    <string name="log_exploit_incomplete">exploit tamamlanamadı (birkaç deneme / yeniden başlatma gerekebilir, olasılıksaldır)</string>
+    <string name="log_no_root">exploit bitti ancak root alınamadı (işaret bulunamadı)</string>
+    <string name="log_temp_root">Geçici root alındı!</string>
+    <string name="log_lateload">[4/5] KernelSU geç yükleme (root daemon üzerinden) ...</string>
+    <string name="log_screen_off_hint">İpucu: çalışma sırasında ekranı kapalı tutun (ekran işini azaltır, çekirdek yarışı olasılığını düşürür)</string>
+    <string name="log_stage_fail">ksud hazırlama başarısız (exit=%1$d): %2$s</string>
+    <string name="log_ksud_staged">ksud, ksud-s25u-kdp / .ksud-stage konumuna hazırlandı</string>
+    <string name="log_lateload_fail">KernelSU geç yükleme başarısız (exit=%1$d)</string>
+    <string name="log_driver_loaded">KernelSU sürücüsü yüklendi (geç yükleme exit=0)</string>
+    <string name="log_verify">[5/5] Doğrulanıyor...</string>
+    <string name="log_daemon_check">root daemon: %1$s</string>
+    <string name="log_install_manager">Root / modülleri yönetmek için lütfen KernelSU Manager\'ı kurun (me.weishu.kernelsu v3.2.5, versionCode 32525)</string>
+    <string name="log_flow_done">Root işlemi tamamlandı!</string>
+    <string name="log_failed">Başarısız: %1$s</string>
+    <string name="log_woken">Ekran uyandırıldı</string>
+    <string name="log_export_ok">Downloads/rootmys9280-log.txt konumuna dışa aktarıldı (%1$d karakter)</string>
+    <string name="log_export_fail">Dışa aktarma başarısız: %1$s</string>
+    <string name="log_knox_tripped">İhlal edildi (warranty_bit=1)</string>
+    <string name="log_knox_green">Sağlam (warranty_bit=0, verifiedbootstate=green)</string>
+    <string name="log_knox_ok">Sağlam (warranty_bit=0, verifiedbootstate=%1$s)</string>
+    <string name="log_knox_unknown">Bilinmiyor (verifiedbootstate=%1$s)</string>
+    <string name="log_knox_needs">Bilinmiyor (Shizuku gerekli)</string>
+    <string name="log_binder_unavailable">Shizuku binder kullanılamıyor</string>
 </resources>

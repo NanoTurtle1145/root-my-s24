@@ -23,11 +23,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
 import cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel
 import kotlinx.coroutines.launch
@@ -56,8 +58,8 @@ fun LogsScreen(
             .padding(horizontal = 16.dp),
     ) {
         cn.nanoturtle.rootmys9280.manager.ui.components.BannerHeader(
-            title = "运行日志",
-            subtitle = "免解锁 Root 流程输出",
+            title = stringResource(R.string.logs_title),
+            subtitle = stringResource(R.string.logs_subtitle),
             modifier = Modifier.padding(top = 24.dp),
         )
         Row(
@@ -65,7 +67,7 @@ fun LogsScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             TextButton(onClick = { brief = !brief }) {
-                Text(if (brief) "详细" else "粗略")
+                Text(if (brief) stringResource(R.string.logs_detail) else stringResource(R.string.logs_brief))
             }
             TextButton(
                 onClick = {
@@ -74,8 +76,8 @@ fun LogsScreen(
                         android.widget.Toast.makeText(context, result, android.widget.Toast.LENGTH_LONG).show()
                     }
                 },
-            ) { Text("导出") }
-            TextButton(onClick = { vm.clearLog() }) { Text("清空") }
+            ) { Text(stringResource(R.string.logs_export)) }
+            TextButton(onClick = { vm.clearLog() }) { Text(stringResource(R.string.logs_clear)) }
         }
 
         if (shown.isEmpty()) {
@@ -85,7 +87,11 @@ fun LogsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    if (brief) "（暂无总结性日志）" else "（日志将显示在这里，点\"开始 Root\"开始）",
+                    if (brief) {
+                        stringResource(R.string.logs_empty_brief)
+                    } else {
+                        stringResource(R.string.logs_empty)
+                    },
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

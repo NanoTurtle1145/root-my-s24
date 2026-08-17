@@ -458,4 +458,97 @@
     <string name="launcher_prompt_title">ל-Vector עדיין אין סמל</string>
     <string name="launcher_prompt_body">Vector פועל בתוך תהליך אחר במקום להיות מותקן, ולכן שום דבר לא מופיע במסך הבית ואין דרך ברורה לחזור אליו. תנו לו קיצור דרך במסך הבית, או התקינו אותו כאפליקציה רגילה.</string>
     <string name="launcher_prompt_never">לא לשאול שוב</string>
+    <!-- RootMyS9280 custom UI -->
+    <string name="settings_screen_title">הגדרות</string>
+    <string name="settings_screen_subtitle">העדפות הרצה ומידע על האפליקציה</string>
+    <string name="settings_section_run">הרצה</string>
+    <string name="settings_auto_screen_off">כיבוי מסך אוטומטי</string>
+    <string name="settings_auto_screen_off_summary">מכבה את המסך בזמן ההרצה כדי להקטין את הסיכוי למירוץ (race) בליבת המערכת</string>
+    <string name="settings_brief_log">מצב יומן תמציתי</string>
+    <string name="settings_brief_log_summary">הצגת רק שורות תקציר ביומן ההרצה כדי להפחית עומס</string>
+    <string name="settings_section_about">אודות</string>
+    <string name="settings_check_update">בדיקת עדכונים</string>
+    <string name="settings_check_update_summary">פתיחת GitHub Releases לגרסאות חדשות</string>
+    <string name="settings_project_home">דף הבית של הפרויקט</string>
+    <string name="settings_project_home_summary">קוד מקור, בעיות והערות שימוש</string>
+    <string name="settings_version">גרסה v%1$s (%2$d)</string>
+    <string name="rootflow_detail_fallback">פתיחת נעילת root ל-SM-S9280 · ללא הבזקה, ללא הפעלת KNOX</string>
+    <string name="rootflow_start">התחלת Root</string>
+    <string name="rootflow_running">רץ...</string>
+    <string name="rootflow_done">root הושלם</string>
+    <string name="rootflow_screen_off_hint">השאירו את המסך כבוי בזמן ההרצה לתוצאות הטובות ביותר.</string>
+    <string name="rootflow_log_title">יומן הרצה</string>
+    <string name="rootflow_brief">תקציר</string>
+    <string name="rootflow_detail">פירוט</string>
+    <string name="rootflow_auto_screen_off">כיבוי מסך אוטומטי</string>
+    <string name="rootflow_auto_screen_off_summary">מכבה את המסך בזמן ההרצה כדי להקטין את הסיכוי למירוץ (race) בליבת המערכת</string>
+    <string name="rootflow_knox_status">מצב KNOX</string>
+    <string name="rootflow_knox_loading">בודק... (נדרש Shizuku)</string>
+    <string name="rootflow_export_log">ייצוא יומן</string>
+    <string name="rootflow_export_log_placeholder">שמירת יומן ההרצה המלא בתיקיית Downloads של המערכת</string>
+    <string name="rootflow_export">ייצוא</string>
+    <string name="logs_title">יומן הרצה</string>
+    <string name="logs_subtitle">פלט זרימת פתיחת הנעילה Root</string>
+    <string name="logs_brief">תקציר</string>
+    <string name="logs_detail">פירוט</string>
+    <string name="logs_export">ייצוא</string>
+    <string name="logs_clear">ניקוי</string>
+    <string name="logs_empty_brief">(עדיין אין שורות תקציר)</string>
+    <string name="logs_empty">(היומן יופיע כאן. הקישו על “התחלת Root” כדי להתחיל)</string>
+    <string name="about_screen_title">אודות</string>
+    <string name="about_screen_subtitle">RootMyS9280 · פתיחת נעילת root</string>
+    <string name="about_tagline">פתיחת נעילת root ל-SM-S9280 · מבוסס על מחקר אבטחה של CVE-2026-43499</string>
+    <string name="about_section_device">פרטי המכשיר</string>
+    <string name="about_device_model">דגם</string>
+    <string name="about_system_version">גרסת מערכת</string>
+    <string name="about_build_fingerprint">טביעת אצבע של build</string>
+    <string name="about_section_source">מקור ורישיון</string>
+    <string name="about_section_faq">שאלות נפוצות</string>
+    <string name="about_faq_knox_q">האם זה מפעיל את KNOX?</string>
+    <string name="about_faq_knox_a">לא. הרשאת פתיחת נעילת ROM בלי הבזקת bootloader, ו-KNOX נשאר ללא שינוי.</string>
+    <string name="about_faq_retry_q">למה אולי צריך כמה ניסיונות?</string>
+    <string name="about_faq_retry_a">הניצול (exploit) מרים הרשאות דרך פגיעה בזיכרון הליבה ומצליח בסבירות מסוימת; במקרה של כישלון אתחלו מחדש ונסו שוב.</string>
+    <string name="about_faq_restart_q">האם אני צריך root מחדש אחרי אתחול?</string>
+    <string name="about_faq_restart_a">כן. ה-bootloader נעול, אז הריצו שוב פתיחת נעילת Root אחרי כל אתחול.</string>
+    <string name="about_disclaimer">כתב ויתור: האפליקציה מיועדת למחקר אבטחה וללמידה אישית בלבד. הרמת הרשאות דרך פגיעה בזיכרון הליבה אינה ודאית מטבעה; שימוש באחריותכם. נא לעמוד בחוקים המקומיים.</string>
+    <!-- RootMyS9280 log strings -->
+    <string name="log_starting">מפעיל את RootMyS9280</string>
+    <string name="log_payload">מטען: %1$s (קבוע, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_check_shizuku">[1/5] בודק את Shizuku...</string>
+    <string name="log_shizuku_not_running">Shizuku אינו פועל. נא להפעיל את Shizuku קודם!</string>
+    <string name="log_shizuku_denied">ההרשאה ל-Shizuku נדחתה</string>
+    <string name="log_shizuku_ready">Shizuku מוכן</string>
+    <string name="log_push_payload">[2/5] דוחף מטען אל /data/local/tmp ...</string>
+    <string name="log_push_done">הדחיפה הושלמה (%1$s=%2$d ב\', %3$s=%4$d ב\')</string>
+    <string name="log_diag">אבחון: pipe-max-size=%1$s pipe-user-pages=%2$s</string>
+    <string name="log_diag_version">אבחון: /proc/version=%1$s</string>
+    <string name="log_pipe_warn">pipe-max-size (%1$d ב\') &lt; 128KB (הניצול דורש 32 משבצות=128KB), F_SETPIPE_SZ יחזיר EPERM</string>
+    <string name="log_cleanup">[2.6/5] מנקה תהליכי ניצול שאריים וקבצים זמניים ...</string>
+    <string name="log_cleanup_done">ניקוי הסביבה הושלם (exit=%1$d)</string>
+    <string name="log_trigger">[3/5] מפעיל את CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
+    <string name="log_screen_off">המסך כובה (יתעורר בסיום; לחצו על מקש ההפעלה בכל עת לבדיקה)</string>
+    <string name="log_exploit_timeout">הניצול נכשל עקב פסק זמן (15 דקות)</string>
+    <string name="log_exploit_incomplete">הניצול לא הושלם (ייתכן שיידרשו מספר ניסיונות / אתחול, הסתברותי)</string>
+    <string name="log_no_root">הניצול הסתיים אך לא הושג root (הסמן חסר)</string>
+    <string name="log_temp_root">הושג root זמני!</string>
+    <string name="log_lateload">[4/5] טעינה מאוחרת של KernelSU (דרך דמון root) ...</string>
+    <string name="log_screen_off_hint">טיפ: השאירו את המסך כבוי בזמן ההרצה (מפחית את עבודת התצוגה ומוריד את הסתברות המירוץ בליבה)</string>
+    <string name="log_stage_fail">הכנת ksud נכשלה (exit=%1$d): %2$s</string>
+    <string name="log_ksud_staged">ksud הוכן אל ksud-s25u-kdp / .ksud-stage</string>
+    <string name="log_lateload_fail">הטעינה המאוחרת של KernelSU נכשלה (exit=%1$d)</string>
+    <string name="log_driver_loaded">מנהל ההתקן של KernelSU נטען (טעינה מאוחרת exit=0)</string>
+    <string name="log_verify">[5/5] מאמת...</string>
+    <string name="log_daemon_check">דמון root: %1$s</string>
+    <string name="log_install_manager">נא להתקין את KernelSU Manager (me.weishu.kernelsu v3.2.5, versionCode 32525) לניהול root / מודולים</string>
+    <string name="log_flow_done">תהליך ה-root הושלם!</string>
+    <string name="log_failed">נכשל: %1$s</string>
+    <string name="log_woken">המסך התעורר</string>
+    <string name="log_export_ok">יוצא אל Downloads/rootmys9280-log.txt (%1$d תווים)</string>
+    <string name="log_export_fail">הייצוא נכשל: %1$s</string>
+    <string name="log_knox_tripped">הופעל (warranty_bit=1)</string>
+    <string name="log_knox_green">שלם (warranty_bit=0, verifiedbootstate=green)</string>
+    <string name="log_knox_ok">שלם (warranty_bit=0, verifiedbootstate=%1$s)</string>
+    <string name="log_knox_unknown">לא ידוע (verifiedbootstate=%1$s)</string>
+    <string name="log_knox_needs">לא ידוע (נדרש Shizuku)</string>
+    <string name="log_binder_unavailable">ה-binder של Shizuku אינו זמין</string>
 </resources>

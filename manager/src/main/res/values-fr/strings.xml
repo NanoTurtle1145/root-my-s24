@@ -432,4 +432,98 @@
     <string name="launcher_prompt_title">Vector n\'a pas encore d\'icône</string>
     <string name="launcher_prompt_body">Vector s\'exécute dans un autre processus au lieu d\'être installé : rien n\'apparaît dans votre lanceur et il n\'y a pas de moyen évident d\'y revenir. Donnez-lui un raccourci sur l\'écran d\'accueil, ou installez-le comme une application ordinaire.</string>
     <string name="launcher_prompt_never">Ne plus demander</string>
+
+    <!-- RootMyS9280 custom UI -->
+    <string name="settings_screen_title">Paramètres</string>
+    <string name="settings_screen_subtitle">Préférences du run &amp; À propos</string>
+    <string name="settings_section_run">Run</string>
+    <string name="settings_auto_screen_off">Éteindre l\'écran automatiquement</string>
+    <string name="settings_auto_screen_off_summary">Éteint l\'écran pendant le run afin de réduire le risque de course du noyau</string>
+    <string name="settings_brief_log">Mode journal résumé</string>
+    <string name="settings_brief_log_summary">Afficher uniquement les lignes de résumé dans le journal du run, pour réduire le désordre</string>
+    <string name="settings_section_about">À propos</string>
+    <string name="settings_check_update">Vérifier les mises à jour</string>
+    <string name="settings_check_update_summary">Ouvre les releases GitHub pour les nouvelles versions</string>
+    <string name="settings_project_home">Page du projet</string>
+    <string name="settings_project_home_summary">Code source, problèmes et notes d\'utilisation</string>
+    <string name="settings_version">Version v%1$s (%2$d)</string>
+    <string name="rootflow_detail_fallback">SM-S9280 unlock root · sans flash, sans déclenchement de KNOX</string>
+    <string name="rootflow_start">Démarrer Root</string>
+    <string name="rootflow_running">En cours…</string>
+    <string name="rootflow_done">root terminé</string>
+    <string name="rootflow_screen_off_hint">Gardez l\'écran éteint pendant le run pour de meilleurs résultats.</string>
+    <string name="rootflow_log_title">Journal du run</string>
+    <string name="rootflow_brief">Résumé</string>
+    <string name="rootflow_detail">Détail</string>
+    <string name="rootflow_auto_screen_off">Éteindre l\'écran automatiquement</string>
+    <string name="rootflow_auto_screen_off_summary">Éteint l\'écran pendant le run afin de réduire le risque de course du noyau</string>
+    <string name="rootflow_knox_status">Statut KNOX</string>
+    <string name="rootflow_knox_loading">Vérification… (nécessite Shizuku)</string>
+    <string name="rootflow_export_log">Exporter le journal</string>
+    <string name="rootflow_export_log_placeholder">Enregistre le journal complet du run dans le dossier Téléchargements du système</string>
+    <string name="rootflow_export">Exporter</string>
+    <string name="logs_title">Journal du run</string>
+    <string name="logs_subtitle">Sortie du flux Unlock Root</string>
+    <string name="logs_brief">Résumé</string>
+    <string name="logs_detail">Détail</string>
+    <string name="logs_export">Exporter</string>
+    <string name="logs_clear">Effacer</string>
+    <string name="logs_empty_brief">(Aucune ligne de résumé pour l\'instant)</string>
+    <string name="logs_empty">(Les journaux apparaîtront ici. Appuyez sur \"Start Root\" pour commencer)</string>
+    <string name="about_screen_title">À propos</string>
+    <string name="about_screen_subtitle">RootMyS9280 · unlock root</string>
+    <string name="about_tagline">SM-S9280 unlock root · basé sur la recherche de sécurité CVE-2026-43499</string>
+    <string name="about_section_device">Informations sur l\'appareil</string>
+    <string name="about_device_model">Modèle</string>
+    <string name="about_system_version">Version du système</string>
+    <string name="about_build_fingerprint">Empreinte de build</string>
+    <string name="about_section_source">Code source &amp; licence</string>
+    <string name="about_section_faq">FAQ</string>
+    <string name="about_faq_knox_q">Cela déclenche-t-il KNOX ?</string>
+    <string name="about_faq_knox_a">Non. Un privilège unlock-rom sans flasher le bootloader : KNOX reste intact.</string>
+    <string name="about_faq_retry_q">Pourquoi faut-il parfois plusieurs essais ?</string>
+    <string name="about_faq_retry_a">L\'exploit élève les privilèges via une corruption de la mémoire du noyau et réussit de façon probabiliste ; en cas d\'échec, redémarrez et réessayez.</string>
+    <string name="about_faq_restart_q">Faut-il refaire le root après un redémarrage ?</string>
+    <string name="about_faq_restart_a">Oui. Le bootloader est verrouillé, donc relancez Unlock Root après chaque redémarrage.</string>
+    <string name="about_disclaimer">Avertissement : cette application est réservée à la recherche en sécurité et à l\'apprentissage personnel. L\'élévation de privilèges par corruption de la mémoire du noyau est par nature incertaine ; utilisez-la à vos propres risques. Veuillez respecter les lois locales.</string>
+<!-- RootMyS9280 log strings -->
+    <string name="log_starting">Démarrage de RootMyS9280</string>
+    <string name="log_payload">Payload : %1$s (fixe, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_check_shizuku">[1/5] Vérification de Shizuku...</string>
+    <string name="log_shizuku_not_running">Shizuku n\'est pas en cours d\'exécution. Veuillez d\'abord démarrer Shizuku !</string>
+    <string name="log_shizuku_denied">Autorisation Shizuku refusée</string>
+    <string name="log_shizuku_ready">Shizuku prêt</string>
+    <string name="log_push_payload">[2/5] Envoi du payload vers /data/local/tmp ...</string>
+    <string name="log_push_done">Envoi terminé (%1$s=%2$d B, %3$s=%4$d B)</string>
+    <string name="log_diag">Diagnostic : pipe-max-size=%1$s pipe-user-pages=%2$s</string>
+    <string name="log_diag_version">Diagnostic : /proc/version=%1$s</string>
+    <string name="log_pipe_warn">pipe-max-size (%1$d B) &lt; 128KB (l\'exploit nécessite 32 slots = 128KB), F_SETPIPE_SZ renverra EPERM</string>
+    <string name="log_cleanup">[2.6/5] Nettoyage des processus d\'exploit résiduels et des fichiers temporaires ...</string>
+    <string name="log_cleanup_done">Nettoyage de l\'environnement terminé (exit=%1$d)</string>
+    <string name="log_trigger">[3/5] Déclenchement de CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
+    <string name="log_screen_off">Écran éteint (il se rallumera à la fin ; appuyez à tout moment sur le bouton d\'alimentation pour vérifier)</string>
+    <string name="log_exploit_timeout">expiration du délai de l\'exploit (15 minutes)</string>
+    <string name="log_exploit_incomplete">l\'exploit n\'est pas terminé (plusieurs essais / redémarrage peuvent être nécessaires, probabiliste)</string>
+    <string name="log_no_root">l\'exploit est terminé mais aucun root n\'a été obtenu (marqueur manquant)</string>
+    <string name="log_temp_root">Root temporaire obtenu !</string>
+    <string name="log_lateload">[4/5] Late-load de KernelSU (via le daemon root) ...</string>
+    <string name="log_screen_off_hint">Astuce : gardez l\'écran éteint pendant l\'exécution (réduit le travail d\'affichage, diminue la probabilité de course dans le noyau)</string>
+    <string name="log_stage_fail">Échec du staging de ksud (exit=%1$d) : %2$s</string>
+    <string name="log_ksud_staged">ksud mis en staging vers ksud-s25u-kdp / .ksud-stage</string>
+    <string name="log_lateload_fail">Échec du late-load de KernelSU (exit=%1$d)</string>
+    <string name="log_driver_loaded">Pilote KernelSU chargé (late-load exit=0)</string>
+    <string name="log_verify">[5/5] Vérification...</string>
+    <string name="log_daemon_check">daemon root : %1$s</string>
+    <string name="log_install_manager">Veuillez installer KernelSU Manager (me.weishu.kernelsu v3.2.5, versionCode 32525) pour gérer le root / les modules</string>
+    <string name="log_flow_done">Flux de root terminé !</string>
+    <string name="log_failed">Échec : %1$s</string>
+    <string name="log_woken">Écran rallumé</string>
+    <string name="log_export_ok">Exporté vers Downloads/rootmys9280-log.txt (%1$d caractères)</string>
+    <string name="log_export_fail">Échec de l\'export : %1$s</string>
+    <string name="log_knox_tripped">Déclenché (warranty_bit=1)</string>
+    <string name="log_knox_green">Intact (warranty_bit=0, verifiedbootstate=green)</string>
+    <string name="log_knox_ok">Intact (warranty_bit=0, verifiedbootstate=%1$s)</string>
+    <string name="log_knox_unknown">Inconnu (verifiedbootstate=%1$s)</string>
+    <string name="log_knox_needs">Inconnu (nécessite Shizuku)</string>
+    <string name="log_binder_unavailable">Binder Shizuku indisponible</string>
 </resources>

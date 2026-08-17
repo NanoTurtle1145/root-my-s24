@@ -68,7 +68,7 @@ object ShizukuController {
     /** 以 shell 权限执行命令，返回进程。 */
     fun exec(cmd: Array<String>, env: Array<String>? = null, dir: String? = null): Process {
         val binder = Shizuku.getBinder()
-            ?: throw IllegalStateException("Shizuku binder 不可用")
+            ?: throw IllegalStateException("Shizuku binder unavailable")
         return RemoteProcess(IShizukuService.Stub.asInterface(binder).newProcess(cmd, env, dir))
     }
 

@@ -411,4 +411,98 @@
     <string name="launcher_prompt_title">Vector のアイコンはまだありません</string>
     <string name="launcher_prompt_body">Vector はインストールされるのではなく、別のプロセス内で実行されるため、ランチャーには何も表示されず、Vector に戻ってくる手段もありません。ホーム画面にショートカットを作成するか、通常のアプリとしてインストールしてください。</string>
     <string name="launcher_prompt_never">今後表示しない</string>
+
+    <!-- RootMyS9280 custom UI -->
+    <string name="settings_screen_title">設定</string>
+    <string name="settings_screen_subtitle">実行設定とアプリ情報</string>
+    <string name="settings_section_run">実行</string>
+    <string name="settings_auto_screen_off">自動画面オフ</string>
+    <string name="settings_auto_screen_off_summary">実行中に画面をオフにして、カーネルレースの発生確率を下げます</string>
+    <string name="settings_brief_log">簡潔ログモード</string>
+    <string name="settings_brief_log_summary">実行ログに要約行のみを表示して、ノイズを減らします</string>
+    <string name="settings_section_about">このアプリについて</string>
+    <string name="settings_check_update">アップデートを確認</string>
+    <string name="settings_check_update_summary">新しいバージョンについて GitHub Releases を開きます</string>
+    <string name="settings_project_home">プロジェクトホーム</string>
+    <string name="settings_project_home_summary">ソースコード、問題、使い方のメモ</string>
+    <string name="settings_version">バージョン v%1$s (%2$d)</string>
+    <string name="rootflow_detail_fallback">SM-S9280 unlock root · フラッシュ不要、KNOX はトリップしません</string>
+    <string name="rootflow_start">Root を開始</string>
+    <string name="rootflow_running">実行中...</string>
+    <string name="rootflow_done">root 完了</string>
+    <string name="rootflow_screen_off_hint">最良の結果を得るには、実行中は画面をオフにしておいてください。</string>
+    <string name="rootflow_log_title">実行ログ</string>
+    <string name="rootflow_brief">簡潔</string>
+    <string name="rootflow_detail">詳細</string>
+    <string name="rootflow_auto_screen_off">自動画面オフ</string>
+    <string name="rootflow_auto_screen_off_summary">実行中に画面をオフにして、カーネルレースの発生確率を下げます</string>
+    <string name="rootflow_knox_status">KNOX ステータス</string>
+    <string name="rootflow_knox_loading">確認中...（Shizuku が必要です）</string>
+    <string name="rootflow_export_log">ログをエクスポート</string>
+    <string name="rootflow_export_log_placeholder">実行ログ全体をシステムの Downloads フォルダーに保存します</string>
+    <string name="rootflow_export">エクスポート</string>
+    <string name="logs_title">実行ログ</string>
+    <string name="logs_subtitle">Unlock Root フローの出力</string>
+    <string name="logs_brief">簡潔</string>
+    <string name="logs_detail">詳細</string>
+    <string name="logs_export">エクスポート</string>
+    <string name="logs_clear">クリア</string>
+    <string name="logs_empty_brief">（要約行はまだありません）</string>
+    <string name="logs_empty">（ここにログが表示されます。「Start Root」をタップして開始してください）</string>
+    <string name="about_screen_title">このアプリについて</string>
+    <string name="about_screen_subtitle">RootMyS9280 · unlock root</string>
+    <string name="about_tagline">SM-S9280 unlock root · CVE-2026-43499 のセキュリティ研究に基づく</string>
+    <string name="about_section_device">端末情報</string>
+    <string name="about_device_model">モデル</string>
+    <string name="about_system_version">システムバージョン</string>
+    <string name="about_build_fingerprint">ビルドフィンガープリント</string>
+    <string name="about_section_source">ソースコードとライセンス</string>
+    <string name="about_section_faq">よくある質問</string>
+    <string name="about_faq_knox_q">KNOX はトリップしますか？</string>
+    <string name="about_faq_knox_a">いいえ。ブートローダーをフラッシュせずに unlock-rom 権限を取得するため、KNOX は影響を受けません。</string>
+    <string name="about_faq_retry_q">なぜ複数回の試行が必要なことがあるのですか？</string>
+    <string name="about_faq_retry_a">このエクスプロイトはカーネルメモリ破壊を利用して権限を昇格させるため、成功は確率的です。失敗したら再起動してやり直してください。</string>
+    <string name="about_faq_restart_q">再起動後に再 root は必要ですか？</string>
+    <string name="about_faq_restart_a">はい。ブートローダーはロックされているため、再起動のたびに Unlock Root を再実行してください。</string>
+    <string name="about_disclaimer">免責事項: このアプリはセキュリティ研究と個人学習のみを目的としています。カーネルメモリ破壊による権限昇格は本質的に不確実であり、利用は自己責任です。現地の法律を遵守してください。</string>
+<!-- RootMyS9280 log strings -->
+    <string name="log_starting">RootMyS9280 を開始中</string>
+    <string name="log_payload">Payload: %1$s (固定, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_check_shizuku">[1/5] Shizuku を確認中...</string>
+    <string name="log_shizuku_not_running">Shizuku が実行されていません。先に Shizuku を起動してください!</string>
+    <string name="log_shizuku_denied">Shizuku の権限が拒否されました</string>
+    <string name="log_shizuku_ready">Shizuku 準備完了</string>
+    <string name="log_push_payload">[2/5] Payload を /data/local/tmp に転送中 ...</string>
+    <string name="log_push_done">転送完了 (%1$s=%2$d B, %3$s=%4$d B)</string>
+    <string name="log_diag">診断: pipe-max-size=%1$s pipe-user-pages=%2$s</string>
+    <string name="log_diag_version">診断: /proc/version=%1$s</string>
+    <string name="log_pipe_warn">pipe-max-size (%1$d B) &lt; 128KB (エクスプロイトには 32 スロット = 128KB が必要), F_SETPIPE_SZ は EPERM を返します</string>
+    <string name="log_cleanup">[2.6/5] 残存するエクスプロイトプロセスと一時ファイルをクリーンアップ中 ...</string>
+    <string name="log_cleanup_done">環境のクリーンアップ完了 (exit=%1$d)</string>
+    <string name="log_trigger">[3/5] CVE-2026-43499 をトリガー中 (LD_PRELOAD /system/bin/true) ...</string>
+    <string name="log_screen_off">画面をオフにしました (完了時に復帰します。確認する場合はいつでも電源キーを押してください)</string>
+    <string name="log_exploit_timeout">エクスプロイトがタイムアウトしました (15 分)</string>
+    <string name="log_exploit_incomplete">エクスプロイトが完了しませんでした (複数回の試行 / 再起動が必要な場合があります。確率的)</string>
+    <string name="log_no_root">エクスプロイトは終了しましたが root は取得できませんでした (マーカーが見つかりません)</string>
+    <string name="log_temp_root">一時的な root を取得しました!</string>
+    <string name="log_lateload">[4/5] KernelSU の late-load (root デーモン経由) ...</string>
+    <string name="log_screen_off_hint">ヒント: 実行中は画面をオフのままにしてください (表示処理が減り、カーネルの競合確率が下がります)</string>
+    <string name="log_stage_fail">ksud のステージングに失敗しました (exit=%1$d): %2$s</string>
+    <string name="log_ksud_staged">ksud を ksud-s25u-kdp / .ksud-stage にステージングしました</string>
+    <string name="log_lateload_fail">KernelSU の late-load に失敗しました (exit=%1$d)</string>
+    <string name="log_driver_loaded">KernelSU ドライバーをロードしました (late-load exit=0)</string>
+    <string name="log_verify">[5/5] 検証中...</string>
+    <string name="log_daemon_check">root デーモン: %1$s</string>
+    <string name="log_install_manager">root / モジュールを管理するには KernelSU Manager (me.weishu.kernelsu v3.2.5, versionCode 32525) をインストールしてください</string>
+    <string name="log_flow_done">Root フローが完了しました!</string>
+    <string name="log_failed">失敗: %1$s</string>
+    <string name="log_woken">画面をオンにしました</string>
+    <string name="log_export_ok">Downloads/rootmys9280-log.txt にエクスポートしました (%1$d 文字)</string>
+    <string name="log_export_fail">エクスポートに失敗しました: %1$s</string>
+    <string name="log_knox_tripped">トリップ済み (warranty_bit=1)</string>
+    <string name="log_knox_green">無傷 (warranty_bit=0, verifiedbootstate=green)</string>
+    <string name="log_knox_ok">無傷 (warranty_bit=0, verifiedbootstate=%1$s)</string>
+    <string name="log_knox_unknown">不明 (verifiedbootstate=%1$s)</string>
+    <string name="log_knox_needs">不明 (Shizuku が必要)</string>
+    <string name="log_binder_unavailable">Shizuku のバインダーを利用できません</string>
 </resources>

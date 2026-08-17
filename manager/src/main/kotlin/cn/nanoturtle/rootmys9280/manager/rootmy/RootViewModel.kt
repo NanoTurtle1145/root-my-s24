@@ -8,6 +8,7 @@ import android.os.SystemClock
 import android.provider.MediaStore
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import cn.nanoturtle.rootmys9280.manager.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,7 +76,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 runRootFlow()
             } catch (t: Throwable) {
-                appendLog("✗ 失败: ${t.message}")
+                appendLog("✗ " + app.getString(R.string.log_failed, t.message))
             } finally {
                 // 唤醒屏幕（如果运行期间自动熄屏了）。Shizuku 可能中途断开，
                 // 这里必须兜底：finally 里的异常会覆盖上面的 catch，导致 app 崩溃。
@@ -85,7 +86,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                             ShizukuController.shell("input keyevent 26")
                         }
                     }
-                    appendLog("◆ 已唤醒屏幕")
+                    appendLog("◆ " + app.getString(R.string.log_woken))
                 }
                 _state.value = _state.value.copy(busy = false)
             }
@@ -130,11 +131,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             ).trim()
         }.getOrDefault("")
         val text = when {
-            bit == "1" -> "已触发 (warranty_bit=1)"
-            bit == "0" && vbs == "green" -> "完好 (warranty_bit=0, verifiedbootstate=green)"
-            bit == "0" -> "完好 (warranty_bit=0, verifiedbootstate=${vbs.ifBlank { "?" }})"
-            vbs.isNotBlank() -> "未知 (verifiedbootstate=$vbs)"
-            else -> "未知（需 Shizuku）"
+            bit == "1" -> app.getString(R.string.log_knox_tripped)
+            bit == "0" && vbs == "green" -> app.getString(R.string.log_knox_green)
+            bit == "0" -> app.getString(R.string.log_knox_ok, vbs.ifBlank { "?" })
+            vbs.isNotBlank() -> app.getString(R.string.log_knox_unknown, vbs)
+            else -> app.getString(R.string.log_knox_needs)
         }
         _state.value = _state.value.copy(knoxState = text)
     }
@@ -157,28 +158,28 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun runRootFlow() = withContext(Dispatchers.IO) {
-        appendLog("◆ RootMyS9280 启动中")
-        appendLog("◆ 载荷: $payloadName (修正版, kmalloc_caches 0x176cbb8)")
+        appendLog("◆ " + app.getString(R.string.log_starting))
+        appendLog("◆ " + app.getString(R.string.log_payload, payloadName))
 
         // 1. Shizuku
-        appendLog("[1/5] 检查 Shizuku...")
+        appendLog(app.getString(R.string.log_check_shizuku))
         if (!ShizukuController.pingUntilRunning()) {
-            throw IllegalStateException("Shizuku 未运行。请先启动 Shizuku！")
+            throw IllegalStateException(app.getString(R.string.log_shizuku_not_running))
         }
         if (!ShizukuController.requestPermission()) {
-            throw IllegalStateException("Shizuku 权限被拒绝")
+            throw IllegalStateException(app.getString(R.string.log_shizuku_denied))
         }
-        appendLog("✔ Shizuku 就绪")
+        appendLog("✔ " + app.getString(R.string.log_shizuku_ready))
 
         // 2. 推送载荷
-        appendLog("[2/5] 推送载荷到 /data/local/tmp ...")
+        appendLog(app.getString(R.string.log_push_payload))
         extractAsset(payloadName)
         extractAsset(rootHelperName)
         extractAsset(ksudName)
         val stagedPayload = copyToTmp(payloadName, tmpPayload, "755")
         val stagedHelper = copyToTmp(rootHelperName, tmpRootHelper, "755")
         copyToTmp(ksudName, tmpKsud, "755")
-        appendLog("✔ 推送完成 ($payloadName=${stagedPayload.length()}B, $rootHelperName=${stagedHelper.length()}B)")
+        appendLog("✔ " + app.getString(R.string.log_push_done, payloadName, stagedPayload.length(), rootHelperName, stagedHelper.length()))
 
         // 2.5 诊断：管道限制（F_SETPIPE_SZ EPERM 的根因排查）
         val pipeMax = ShizukuController.capture(
@@ -190,31 +191,31 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val uname = ShizukuController.capture(
             arrayOf("/system/bin/sh", "-c", "cat /proc/version 2>&1 | head -c 200")
         ).trim()
-        appendLog("◆ 诊断: pipe-max-size=${pipeMax.ifBlank { "?" }} pipe-user-pages=${pipeUser.ifBlank { "?" }}")
-        appendLog("◆ 诊断: /proc/version=${uname.ifBlank { "?" }}")
+        appendLog("◆ " + app.getString(R.string.log_diag, pipeMax.ifBlank { "?" }, pipeUser.ifBlank { "?" }))
+        appendLog("◆ " + app.getString(R.string.log_diag_version, uname.ifBlank { "?" }))
         if (pipeMax.isNotBlank()) {
             val maxKb = pipeMax.toLongOrNull() ?: 0
             if (maxKb > 0 && maxKb < 131072) {
-                appendLog("⚠ pipe-max-size (${maxKb}B) < 128KB (exploit 需要 32 槽=128KB)，F_SETPIPE_SZ 会 EPERM")
+                appendLog("⚠ " + app.getString(R.string.log_pipe_warn, maxKb))
             }
         }
 
         // 2.6 清理残留：上次失败的 exploit 子进程/守护进程会残留并污染 uid 2000 的
         //     pipe_bufs 配额，导致 F_SETPIPE_SZ EPERM（16/16 失败根因之一）
-        appendLog("[2.6/5] 清理残留 exploit 进程与临时文件 ...")
+        appendLog(app.getString(R.string.log_cleanup))
         val cleanup = ShizukuController.shell(
             "pkill -9 -f 'cve-2026-43499' 2>/dev/null; " +
                 "pkill -9 -f 'cve43499' 2>/dev/null; " +
                 "rm -f /data/local/tmp/temp_su.sock /data/local/tmp/ksud-s25u-kdp /data/local/tmp/.ksud-stage; echo ok"
         )
-        appendLog("✔ 环境清理完成 (exit=${cleanup.first})")
+        appendLog("✔ " + app.getString(R.string.log_cleanup_done, cleanup.first))
 
         // 3. 触发 exploit
-        appendLog("[3/5] 触发 CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...")
+        appendLog(app.getString(R.string.log_trigger))
         // 运行期间自动熄屏：显示驱动停止 → 消除最大崩溃源（worklist 竞态）
         if (autoScreenOff) {
             ShizukuController.shell("input keyevent 26")
-            appendLog("◆ 已自动熄屏（运行完成后将唤醒；可手动按电源键随时查看）")
+            appendLog("◆ " + app.getString(R.string.log_screen_off))
         }
         val env = arrayOf(
             "EXPLOIT_ATTEMPTS=30",
@@ -241,7 +242,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             }
             if (SystemClock.elapsedRealtime() - startedAt > 15 * 60_000L) {
                 process.destroy()
-                throw IllegalStateException("exploit 超时（15 分钟）")
+                throw IllegalStateException(app.getString(R.string.log_exploit_timeout))
             }
             delay(500)
         }
@@ -252,44 +253,44 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             rootObtained = true
         }
         if (!exploitCompleted) {
-            throw IllegalStateException("exploit 未完成（可能需要多试几次 / 重启后再试，概率性成功）")
+            throw IllegalStateException(app.getString(R.string.log_exploit_incomplete))
         }
         if (!rootObtained) {
-            throw IllegalStateException("exploit 完成但未拿到 root（标记缺失）")
+            throw IllegalStateException(app.getString(R.string.log_no_root))
         }
-        appendLog("✔ 临时 root 已获得！")
+        appendLog("✔ " + app.getString(R.string.log_temp_root))
 
         // 4. KernelSU late-load（经 root 守护进程 temp_su.sock 以 root 执行）
-        appendLog("[4/5] KernelSU late-load (经 root 守护进程) ...")
-        appendLog("◆ 提示: 运行期间建议熄屏（减少显示驱动 work，降低内核竞态概率）")
+        appendLog(app.getString(R.string.log_lateload))
+        appendLog("◆ " + app.getString(R.string.log_screen_off_hint))
         // ksud 必须放在守护进程硬编码的加载路径 (su_daemon 的 KSU_LOADER_PATH)
         val stageCmd = "cp $tmpKsud /data/local/tmp/ksud-s25u-kdp && " +
             "cp $tmpKsud /data/local/tmp/.ksud-stage && " +
             "chmod 755 /data/local/tmp/ksud-s25u-kdp /data/local/tmp/.ksud-stage"
         val stageResult = ShizukuController.shell(stageCmd)
         if (stageResult.first != 0) {
-            throw IllegalStateException("ksud 暂存失败 (exit=${stageResult.first}): ${stageResult.second.trim().takeLast(200)}")
+            throw IllegalStateException(app.getString(R.string.log_stage_fail, stageResult.first, stageResult.second.trim().takeLast(200)))
         }
-        appendLog("✔ ksud 已暂存到 ksud-s25u-kdp / .ksud-stage")
+        appendLog("✔ " + app.getString(R.string.log_ksud_staged))
         // 以 su 客户端模式连接 root 守护进程，守护进程 fork root 子进程执行:
         //   ksud late-load --ephemeral --package-name me.weishu.kernelsu
         val ksu = ShizukuController.shell("$tmpRootHelper --late-load 2>&1")
         appendLog("ksud late-load: exit=${ksu.first}\n${ksu.second.trim().takeLast(300)}")
         if (ksu.first != 0) {
-            throw IllegalStateException("KernelSU late-load 失败 (exit=${ksu.first})")
+            throw IllegalStateException(app.getString(R.string.log_lateload_fail, ksu.first))
         }
-        appendLog("✔ KernelSU 驱动已加载 (late-load exit=0)")
+        appendLog("✔ " + app.getString(R.string.log_driver_loaded))
 
         // 5. 验证（late-load 内部已做 KSU 驱动 ioctl 校验；root 由 KernelSU 管理器提供）
-        appendLog("[5/5] 验证...")
+        appendLog(app.getString(R.string.log_verify))
         val daemonCheck = ShizukuController.capture(
             arrayOf("/system/bin/sh", "-c", "ls -la /data/local/tmp/temp_su.sock 2>&1")
         )
-        appendLog("root 守护进程: ${daemonCheck.trim()}")
-        appendLog("✔ 请安装 KernelSU 管理器 (me.weishu.kernelsu v3.2.5, versionCode 32525) 后即可管理 root / 安装模块")
+        appendLog(app.getString(R.string.log_daemon_check, daemonCheck.trim()))
+        appendLog("✔ " + app.getString(R.string.log_install_manager))
 
         _state.value = _state.value.copy(rooted = true)
-        appendLog("🎉 Root 流程完成！")
+        appendLog("🎉 " + app.getString(R.string.log_flow_done))
     }
 
     private fun extractAsset(name: String): File {
@@ -407,7 +408,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                     ?: error("无法创建下载项")
                 app.contentResolver.openOutputStream(uri)?.use { it.write(content.toByteArray()) }
                     ?: error("无法写入下载项")
-                "已导出到 下载/rootmys9280-log.txt (${content.length} 字符)"
+                app.getString(R.string.log_export_ok, content.length)
             } else {
                 @Suppress("DEPRECATION")
                 val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -416,7 +417,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 f.writeText(content)
                 "已导出到 ${f.absolutePath}"
             }
-        }.getOrElse { "导出失败: ${it.message}" }
+        }.getOrElse { app.getString(R.string.log_export_fail, it.message) }
     }
 
     private fun stripAnsi(s: String): String =

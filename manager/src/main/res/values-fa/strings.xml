@@ -432,4 +432,97 @@
     <string name="launcher_prompt_title">Vector هنوز نمادی ندارد</string>
     <string name="launcher_prompt_body">Vector به‌جای آنکه نصب شده باشد درون فرایندی دیگر اجرا می‌شود، پس چیزی در لانچر پیدا نمی‌شود و راه روشنی برای بازگشت به آن نیست. به آن میان‌بری در صفحهٔ اصلی بدهید، یا آن را مانند برنامه‌ای معمولی نصب کنید.</string>
     <string name="launcher_prompt_never">دیگر پرسیده نشود</string>
+    <!-- RootMyS9280 custom UI -->
+    <string name="settings_screen_title">تنظیمات</string>
+    <string name="settings_screen_subtitle">اولویت‌های اجرا و درباره</string>
+    <string name="settings_section_run">اجرا</string>
+    <string name="settings_auto_screen_off">خاموش‌کردن خودکار صفحه</string>
+    <string name="settings_auto_screen_off_summary">در حین اجرا صفحه را خاموش می‌کند تا احتمال رقابت (race) در کرنل کاهش یابد</string>
+    <string name="settings_brief_log">حالت لاگ خلاصه</string>
+    <string name="settings_brief_log_summary">برای کاهش شلوغی، فقط خطوط خلاصه در لاگ اجرا نمایش داده شود</string>
+    <string name="settings_section_about">درباره</string>
+    <string name="settings_check_update">بررسی به‌روزرسانی</string>
+    <string name="settings_check_update_summary">باز کردن GitHub Releases برای نسخه‌های جدید</string>
+    <string name="settings_project_home">خانهٔ پروژه</string>
+    <string name="settings_project_home_summary">کد منبع، مشکلات و نکات استفاده</string>
+    <string name="settings_version">نسخه v%1$s (%2$d)</string>
+    <string name="rootflow_detail_fallback">آنلاک روت SM-S9280 · بدون فلش، بدون فعال‌شدن KNOX</string>
+    <string name="rootflow_start">شروع روت</string>
+    <string name="rootflow_running">در حال اجرا...</string>
+    <string name="rootflow_done">روت کامل شد</string>
+    <string name="rootflow_screen_off_hint">برای بهترین نتیجه، در حین اجرا صفحه را خاموش نگه دارید.</string>
+    <string name="rootflow_log_title">لاگ اجرا</string>
+    <string name="rootflow_brief">خلاصه</string>
+    <string name="rootflow_detail">جزئیات</string>
+    <string name="rootflow_auto_screen_off">خاموش‌کردن خودکار صفحه</string>
+    <string name="rootflow_auto_screen_off_summary">در حین اجرا صفحه را خاموش می‌کند تا احتمال رقابت (race) در کرنل کاهش یابد</string>
+    <string name="rootflow_knox_status">وضعیت KNOX</string>
+    <string name="rootflow_knox_loading">در حال بررسی... (نیازمند Shizuku)</string>
+    <string name="rootflow_export_log">خروجی گرفتن لاگ</string>
+    <string name="rootflow_export_log_placeholder">ذخیرهٔ لاگ کامل اجرا در پوشهٔ Downloads سیستم</string>
+    <string name="rootflow_export">خروجی</string>
+    <string name="logs_title">لاگ اجرا</string>
+    <string name="logs_subtitle">خروجی جریان فتح قفل Root</string>
+    <string name="logs_brief">خلاصه</string>
+    <string name="logs_detail">جزئیات</string>
+    <string name="logs_export">خروجی</string>
+    <string name="logs_clear">پاک‌کردن</string>
+    <string name="logs_empty_brief">(هنوز خط خلاصه‌ای نیست)</string>
+    <string name="logs_empty">(لاگ‌ها اینجا ظاهر می‌شوند. برای شروع «شروع روت» را بزنید)</string>
+    <string name="about_screen_title">درباره</string>
+    <string name="about_screen_subtitle">RootMyS9280 · آنلاک روت</string>
+    <string name="about_tagline">آنلاک روت SM-S9280 · بر پایهٔ پژوهش امنیتی CVE-2026-43499</string>
+    <string name="about_section_device">اطلاعات دستگاه</string>
+    <string name="about_device_model">مدل</string>
+    <string name="about_system_version">نسخهٔ سیستم</string>
+    <string name="about_build_fingerprint">اثر انگشت بیلد</string>
+    <string name="about_section_source">منبع و مجوز</string>
+    <string name="about_section_faq">پرسش‌های پرتکرار</string>
+    <string name="about_faq_knox_q">آیا این کار KNOX را فعال می‌کند؟</string>
+    <string name="about_faq_knox_a">خیر. امتیاز آنلاک رام بدون فلش بوت‌لودر؛ KNOX دست‌نخورده می‌ماند.</string>
+    <string name="about_faq_retry_q">چرا ممکن است چند بار تلاش لازم باشد؟</string>
+    <string name="about_faq_retry_a">اکسپلویت از طریق تخریب حافظهٔ کرنل امتیاز را بالا می‌برد و به‌صورت احتمالی موفق می‌شود؛ در صورت شکست، راه‌اندازی مجدد کنید و دوباره تلاش کنید.</string>
+    <string name="about_faq_restart_q">آیا بعد از راه‌اندازی مجدد باید دوباره روت بگیرم؟</string>
+    <string name="about_faq_restart_a">بله. بوت‌لودر قفل است، پس بعد از هر راه‌اندازی مجدد دوباره فتح قفل Root را اجرا کنید.</string>
+    <string name="about_disclaimer">سلب مسئولیت: این برنامه فقط برای پژوهش امنیتی و یادگیری شخصی است. بالابردن امتیاز از طریق تخریب حافظهٔ کرنل ذاتاً نامطمئن است؛ با مسئولیت خودتان استفاده کنید. لطفاً قوانین محلی را رعایت کنید.</string>
+<!-- RootMyS9280 log strings -->
+    <string name="log_starting">شروع RootMyS9280</string>
+    <string name="log_payload">بار: %1$s (اصلاح‌شده، kmalloc_caches 0x176cbb8)</string>
+    <string name="log_check_shizuku">[1/5] بررسی Shizuku...</string>
+    <string name="log_shizuku_not_running">Shizuku در حال اجرا نیست. لطفاً ابتدا Shizuku را راه‌اندازی کنید!</string>
+    <string name="log_shizuku_denied">اجازه Shizuku رد شد</string>
+    <string name="log_shizuku_ready">Shizuku آماده است</string>
+    <string name="log_push_payload">[2/5] ارسال بار به /data/local/tmp ...</string>
+    <string name="log_push_done">ارسال انجام شد (%1$s=%2$dB، %3$s=%4$dB)</string>
+    <string name="log_diag">تشخیص: pipe-max-size=%1$s pipe-user-pages=%2$s</string>
+    <string name="log_diag_version">تشخیص: /proc/version=%1$s</string>
+    <string name="log_pipe_warn">pipe-max-size (%1$dB) &lt; 128KB (اکسپلویت به 32 اسلات=128KB نیاز دارد)، F_SETPIPE_SZ خطای EPERM می‌دهد</string>
+    <string name="log_cleanup">[2.6/5] پاک‌سازی فرآیندها و فایل‌های موقت exploit باقی‌مانده ...</string>
+    <string name="log_cleanup_done">پاک‌سازی محیط انجام شد (خروجی=%1$d)</string>
+    <string name="log_trigger">[3/5] اجرای CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
+    <string name="log_screen_off">صفحه خاموش شد (پس از پایان بیدار می‌شود؛ هر زمان با کلید پاور می‌توانید بررسی کنید)</string>
+    <string name="log_exploit_timeout">exploit زمانش تمام شد (۱۵ دقیقه)</string>
+    <string name="log_exploit_incomplete">exploit کامل نشد (ممکن است چند بار تلاش / راه‌اندازی مجدد لازم باشد، احتمالی)</string>
+    <string name="log_no_root">exploit تمام شد اما root گرفته نشد (نشانگر موجود نیست)</string>
+    <string name="log_temp_root">root موقت به‌دست آمد!</string>
+    <string name="log_lateload">[4/5] KernelSU late-load (از طریق فرایند root) ...</string>
+    <string name="log_screen_off_hint">راهنما: در حین اجرا صفحه را خاموش نگه دارید (کار نمایش را کاهش می‌دهد، احتمال رقابت هسته را کم می‌کند)</string>
+    <string name="log_stage_fail">مرحله ksud ناموفق بود (خروجی=%1$d): %2$s</string>
+    <string name="log_ksud_staged">ksud در ksud-s25u-kdp / .ksud-stage مرحله‌بندی شد</string>
+    <string name="log_lateload_fail">KernelSU late-load ناموفق بود (خروجی=%1$d)</string>
+    <string name="log_driver_loaded">درایور KernelSU بارگذاری شد (خروجی late-load=0)</string>
+    <string name="log_verify">[5/5] در حال بررسی...</string>
+    <string name="log_daemon_check">فرایند root: %1$s</string>
+    <string name="log_install_manager">لطفاً KernelSU Manager (me.weishu.kernelsu v3.2.5، versionCode 32525) را نصب کنید تا بتوانید root / ماژول‌ها را مدیریت کنید</string>
+    <string name="log_flow_done">فرآیند Root کامل شد!</string>
+    <string name="log_failed">ناموفق: %1$s</string>
+    <string name="log_woken">صفحه بیدار شد</string>
+    <string name="log_export_ok">صادر شد به Downloads/rootmys9280-log.txt (%1$d کاراکتر)</string>
+    <string name="log_export_fail">صادرات ناموفق: %1$s</string>
+    <string name="log_knox_tripped">فعال شد (warranty_bit=1)</string>
+    <string name="log_knox_green">سالم (warranty_bit=0، verifiedbootstate=green)</string>
+    <string name="log_knox_ok">سالم (warranty_bit=0، verifiedbootstate=%1$s)</string>
+    <string name="log_knox_unknown">نامشخص (verifiedbootstate=%1$s)</string>
+    <string name="log_knox_needs">نامشخص (نیاز به Shizuku)</string>
+    <string name="log_binder_unavailable">binder Shizuku در دسترس نیست</string>
 </resources>

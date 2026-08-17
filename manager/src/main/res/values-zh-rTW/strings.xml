@@ -422,4 +422,98 @@
     <string name="launcher_prompt_title">Vector 還沒有圖示</string>
     <string name="launcher_prompt_body">Vector 執行在別的程序裡，而不是被安裝到系統中，所以啟動器上看不到它，也沒有明顯的途徑再開啟它。給它一個主畫面捷徑，或者把它安裝成一般的應用程式。</string>
     <string name="launcher_prompt_never">不再詢問</string>
+
+    <!-- RootMyS9280 custom UI -->
+    <string name="settings_screen_title">設定</string>
+    <string name="settings_screen_subtitle">執行偏好設定與關於</string>
+    <string name="settings_section_run">執行</string>
+    <string name="settings_auto_screen_off">自動關閉螢幕</string>
+    <string name="settings_auto_screen_off_summary">執行期間關閉螢幕，以降低核心競態（kernel race）發生的機率</string>
+    <string name="settings_brief_log">簡潔日誌模式</string>
+    <string name="settings_brief_log_summary">執行日誌僅顯示摘要列，減少雜訊</string>
+    <string name="settings_section_about">關於</string>
+    <string name="settings_check_update">檢查更新</string>
+    <string name="settings_check_update_summary">開啟 GitHub Releases 查看新版本</string>
+    <string name="settings_project_home">專案首頁</string>
+    <string name="settings_project_home_summary">原始碼、問題回報與使用說明</string>
+    <string name="settings_version">版本 v%1$s (%2$d)</string>
+    <string name="rootflow_detail_fallback">SM-S9280 免解鎖 root · 免刷機、不觸發 KNOX</string>
+    <string name="rootflow_start">開始 Root</string>
+    <string name="rootflow_running">執行中...</string>
+    <string name="rootflow_done">root 完成</string>
+    <string name="rootflow_screen_off_hint">為求最佳結果，執行期間請保持螢幕關閉。</string>
+    <string name="rootflow_log_title">執行日誌</string>
+    <string name="rootflow_brief">簡潔</string>
+    <string name="rootflow_detail">詳細</string>
+    <string name="rootflow_auto_screen_off">自動關閉螢幕</string>
+    <string name="rootflow_auto_screen_off_summary">執行期間關閉螢幕，以降低核心競態發生的機率</string>
+    <string name="rootflow_knox_status">KNOX 狀態</string>
+    <string name="rootflow_knox_loading">檢查中...（需要 Shizuku）</string>
+    <string name="rootflow_export_log">匯出日誌</string>
+    <string name="rootflow_export_log_placeholder">將完整執行日誌儲存到系統的 Downloads 資料夾</string>
+    <string name="rootflow_export">匯出</string>
+    <string name="logs_title">執行日誌</string>
+    <string name="logs_subtitle">Unlock Root 流程輸出</string>
+    <string name="logs_brief">簡潔</string>
+    <string name="logs_detail">詳細</string>
+    <string name="logs_export">匯出</string>
+    <string name="logs_clear">清除</string>
+    <string name="logs_empty_brief">（尚無摘要列）</string>
+    <string name="logs_empty">（日誌會顯示在這裡。點選「Start Root」開始）</string>
+    <string name="about_screen_title">關於</string>
+    <string name="about_screen_subtitle">RootMyS9280 · 免解鎖 root</string>
+    <string name="about_tagline">SM-S9280 免解鎖 root · 基於 CVE-2026-43499 安全研究</string>
+    <string name="about_section_device">裝置資訊</string>
+    <string name="about_device_model">型號</string>
+    <string name="about_system_version">系統版本</string>
+    <string name="about_build_fingerprint">建置指紋</string>
+    <string name="about_section_source">原始碼與授權</string>
+    <string name="about_section_faq">常見問題</string>
+    <string name="about_faq_knox_q">這樣會觸發 KNOX 嗎？</string>
+    <string name="about_faq_knox_a">不會。無需刷入 bootloader 即可取得 unlock-rom 權限，KNOX 不會受到影響。</string>
+    <string name="about_faq_retry_q">為什麼可能需要嘗試多次？</string>
+    <string name="about_faq_retry_a">此漏洞利用透過核心記憶體破壞來提升權限，成功具有機率性；失敗時請重新開機後再試。</string>
+    <string name="about_faq_restart_q">重新開機後需要重新 root 嗎？</string>
+    <string name="about_faq_restart_a">需要。因為 bootloader 已鎖定，每次重新開機後都要再次執行 Unlock Root。</string>
+    <string name="about_disclaimer">免責聲明：本應用程式僅供安全研究與個人學習之用。核心記憶體破壞的權限提升本質上具有不確定性，請自行承擔風險，並請遵守當地法律。</string>
+<!-- RootMyS9280 log strings -->
+    <string name="log_starting">正在啟動 RootMyS9280</string>
+    <string name="log_payload">Payload: %1$s (固定, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_check_shizuku">[1/5] 檢查 Shizuku...</string>
+    <string name="log_shizuku_not_running">Shizuku 未在執行。請先啟動 Shizuku!</string>
+    <string name="log_shizuku_denied">已拒絕 Shizuku 權限</string>
+    <string name="log_shizuku_ready">Shizuku 已就緒</string>
+    <string name="log_push_payload">[2/5] 正在將 Payload 推送到 /data/local/tmp ...</string>
+    <string name="log_push_done">推送完成 (%1$s=%2$d B, %3$s=%4$d B)</string>
+    <string name="log_diag">診斷: pipe-max-size=%1$s pipe-user-pages=%2$s</string>
+    <string name="log_diag_version">診斷: /proc/version=%1$s</string>
+    <string name="log_pipe_warn">pipe-max-size (%1$d B) &lt; 128KB (漏洞利用需要 32 個 slot=128KB), F_SETPIPE_SZ 將回傳 EPERM</string>
+    <string name="log_cleanup">[2.6/5] 清理殘留的漏洞利用程序與暫存檔 ...</string>
+    <string name="log_cleanup_done">環境清理完成 (exit=%1$d)</string>
+    <string name="log_trigger">[3/5] 觸發 CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
+    <string name="log_screen_off">螢幕已關閉 (完成時會喚醒; 可隨時按電源鍵查看)</string>
+    <string name="log_exploit_timeout">漏洞利用逾時 (15 分鐘)</string>
+    <string name="log_exploit_incomplete">漏洞利用未完成 (可能需要多次嘗試 / 重新開機, 具機率性)</string>
+    <string name="log_no_root">漏洞利用已結束但未取得 root (缺少標記)</string>
+    <string name="log_temp_root">已取得暫時 root!</string>
+    <string name="log_lateload">[4/5] KernelSU 延遲載入 (經由 root 守護程序) ...</string>
+    <string name="log_screen_off_hint">提示: 執行期間請讓螢幕保持關閉 (可減少顯示工作, 降低核心競態機率)</string>
+    <string name="log_stage_fail">ksud 暫存失敗 (exit=%1$d): %2$s</string>
+    <string name="log_ksud_staged">已將 ksud 暫存至 ksud-s25u-kdp / .ksud-stage</string>
+    <string name="log_lateload_fail">KernelSU 延遲載入失敗 (exit=%1$d)</string>
+    <string name="log_driver_loaded">KernelSU 驅動程式已載入 (late-load exit=0)</string>
+    <string name="log_verify">[5/5] 驗證中...</string>
+    <string name="log_daemon_check">root 守護程序: %1$s</string>
+    <string name="log_install_manager">請安裝 KernelSU Manager (me.weishu.kernelsu v3.2.5, versionCode 32525) 以管理 root / 模組</string>
+    <string name="log_flow_done">Root 流程完成!</string>
+    <string name="log_failed">失敗: %1$s</string>
+    <string name="log_woken">螢幕已喚醒</string>
+    <string name="log_export_ok">已匯出至 Downloads/rootmys9280-log.txt (%1$d 字元)</string>
+    <string name="log_export_fail">匯出失敗: %1$s</string>
+    <string name="log_knox_tripped">已觸發 (warranty_bit=1)</string>
+    <string name="log_knox_green">完好 (warranty_bit=0, verifiedbootstate=green)</string>
+    <string name="log_knox_ok">完好 (warranty_bit=0, verifiedbootstate=%1$s)</string>
+    <string name="log_knox_unknown">未知 (verifiedbootstate=%1$s)</string>
+    <string name="log_knox_needs">未知 (需要 Shizuku)</string>
+    <string name="log_binder_unavailable">Shizuku binder 無法使用</string>
 </resources>

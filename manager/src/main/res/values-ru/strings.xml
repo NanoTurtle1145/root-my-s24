@@ -437,4 +437,98 @@
     <string name="launcher_prompt_title">У Vector пока нет значка</string>
     <string name="launcher_prompt_body">Vector работает внутри чужого процесса, а не установлен, поэтому в лаунчере ничего не появляется и очевидного пути обратно нет. Добавьте ярлык на главный экран или установите Vector как обычное приложение.</string>
     <string name="launcher_prompt_never">Больше не спрашивать</string>
+
+    <!-- RootMyS9280 custom UI -->
+    <string name="settings_screen_title">Настройки</string>
+    <string name="settings_screen_subtitle">Настройки запуска и о приложении</string>
+    <string name="settings_section_run">Запуск</string>
+    <string name="settings_auto_screen_off">Автоотключение экрана</string>
+    <string name="settings_auto_screen_off_summary">Отключает экран во время запуска, чтобы снизить вероятность гонки в ядре</string>
+    <string name="settings_brief_log">Краткий режим журнала</string>
+    <string name="settings_brief_log_summary">Показывать только строки-сводки в журнале запуска, чтобы уменьшить шум</string>
+    <string name="settings_section_about">О приложении</string>
+    <string name="settings_check_update">Проверить обновления</string>
+    <string name="settings_check_update_summary">Открыть GitHub Releases для новых версий</string>
+    <string name="settings_project_home">Домашняя страница проекта</string>
+    <string name="settings_project_home_summary">Исходный код, проблемы и заметки по использованию</string>
+    <string name="settings_version">Версия v%1$s (%2$d)</string>
+    <string name="rootflow_detail_fallback">SM-S9280 unlock root · без прошивки, без срабатывания KNOX</string>
+    <string name="rootflow_start">Начать Root</string>
+    <string name="rootflow_running">Выполняется...</string>
+    <string name="rootflow_done">root завершён</string>
+    <string name="rootflow_screen_off_hint">Для лучшего результата держите экран выключенным во время запуска.</string>
+    <string name="rootflow_log_title">Журнал запуска</string>
+    <string name="rootflow_brief">Кратко</string>
+    <string name="rootflow_detail">Подробно</string>
+    <string name="rootflow_auto_screen_off">Автоотключение экрана</string>
+    <string name="rootflow_auto_screen_off_summary">Отключает экран во время запуска, чтобы снизить вероятность гонки в ядре</string>
+    <string name="rootflow_knox_status">Статус KNOX</string>
+    <string name="rootflow_knox_loading">Проверка... (требуется Shizuku)</string>
+    <string name="rootflow_export_log">Экспорт журнала</string>
+    <string name="rootflow_export_log_placeholder">Сохранить полный журнал запуска в папку Downloads системы</string>
+    <string name="rootflow_export">Экспорт</string>
+    <string name="logs_title">Журнал запуска</string>
+    <string name="logs_subtitle">Вывод процесса Unlock Root</string>
+    <string name="logs_brief">Кратко</string>
+    <string name="logs_detail">Подробно</string>
+    <string name="logs_export">Экспорт</string>
+    <string name="logs_clear">Очистить</string>
+    <string name="logs_empty_brief">(Строк-сводок пока нет)</string>
+    <string name="logs_empty">(Журнал появится здесь. Нажмите «Start Root», чтобы начать)</string>
+    <string name="about_screen_title">О приложении</string>
+    <string name="about_screen_subtitle">RootMyS9280 · unlock root</string>
+    <string name="about_tagline">SM-S9280 unlock root · на основе исследования безопасности CVE-2026-43499</string>
+    <string name="about_section_device">Информация об устройстве</string>
+    <string name="about_device_model">Модель</string>
+    <string name="about_system_version">Версия системы</string>
+    <string name="about_build_fingerprint">Отпечаток сборки (build fingerprint)</string>
+    <string name="about_section_source">Исходный код и лицензия</string>
+    <string name="about_section_faq">Частые вопросы</string>
+    <string name="about_faq_knox_q">Сработает ли KNOX?</string>
+    <string name="about_faq_knox_a">Нет. Права unlock-rom получаются без прошивки загрузчика, KNOX не затрагивается.</string>
+    <string name="about_faq_retry_q">Почему может потребоваться несколько попыток?</string>
+    <string name="about_faq_retry_a">Эксплойт повышает привилегии через повреждение памяти ядра и срабатывает с некоторой вероятностью; при неудаче перезагрузите устройство и попробуйте снова.</string>
+    <string name="about_faq_restart_q">Нужно ли повторно рутировать после перезагрузки?</string>
+    <string name="about_faq_restart_a">Да. Загрузчик заблокирован, поэтому после каждой перезагрузки нужно снова запускать Unlock Root.</string>
+    <string name="about_disclaimer">Отказ от ответственности: это приложение предназначено только для исследований в области безопасности и личного обучения. Повышение привилегий через повреждение памяти ядра по своей природе ненадёжно; используйте на свой страх и риск. Соблюдайте местные законы.</string>
+    <!-- RootMyS9280 log strings -->
+    <string name="log_starting">Запуск RootMyS9280</string>
+    <string name="log_payload">Полезная нагрузка: %1$s (фиксированная, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_check_shizuku">[1/5] Проверка Shizuku...</string>
+    <string name="log_shizuku_not_running">Shizuku не запущен. Сначала запустите Shizuku!</string>
+    <string name="log_shizuku_denied">Отказано в разрешении Shizuku</string>
+    <string name="log_shizuku_ready">Shizuku готов</string>
+    <string name="log_push_payload">[2/5] Отправка полезной нагрузки в /data/local/tmp ...</string>
+    <string name="log_push_done">Отправка завершена (%1$s=%2$d Б, %3$s=%4$d Б)</string>
+    <string name="log_diag">Диагностика: pipe-max-size=%1$s pipe-user-pages=%2$s</string>
+    <string name="log_diag_version">Диагностика: /proc/version=%1$s</string>
+    <string name="log_pipe_warn">pipe-max-size (%1$d Б) &lt; 128KB (эксплойту нужно 32 слота=128KB), F_SETPIPE_SZ вернёт EPERM</string>
+    <string name="log_cleanup">[2.6/5] Очистка остаточных процессов эксплойта и временных файлов ...</string>
+    <string name="log_cleanup_done">Очистка окружения завершена (exit=%1$d)</string>
+    <string name="log_trigger">[3/5] Запуск CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
+    <string name="log_screen_off">Экран выключен (проснётся по завершении; нажмите кнопку питания в любой момент для проверки)</string>
+    <string name="log_exploit_timeout">эксплойт превысил время ожидания (15 минут)</string>
+    <string name="log_exploit_incomplete">эксплойт не завершился (может потребоваться несколько попыток / перезагрузка, вероятностный)</string>
+    <string name="log_no_root">эксплойт завершился, но root не получен (маркер отсутствует)</string>
+    <string name="log_temp_root">Получен временный root!</string>
+    <string name="log_lateload">[4/5] Поздняя загрузка KernelSU (через root-демон) ...</string>
+    <string name="log_screen_off_hint">Подсказка: держите экран выключенным во время выполнения (снижает нагрузку на дисплей и вероятность гонки ядра)</string>
+    <string name="log_stage_fail">Подготовка ksud не удалась (exit=%1$d): %2$s</string>
+    <string name="log_ksud_staged">ksud подготовлен в ksud-s25u-kdp / .ksud-stage</string>
+    <string name="log_lateload_fail">Поздняя загрузка KernelSU не удалась (exit=%1$d)</string>
+    <string name="log_driver_loaded">Драйвер KernelSU загружен (поздняя загрузка exit=0)</string>
+    <string name="log_verify">[5/5] Проверка...</string>
+    <string name="log_daemon_check">root-демон: %1$s</string>
+    <string name="log_install_manager">Установите KernelSU Manager (me.weishu.kernelsu v3.2.5, versionCode 32525) для управления root / модулями</string>
+    <string name="log_flow_done">Процесс получения root завершён!</string>
+    <string name="log_failed">Не удалось: %1$s</string>
+    <string name="log_woken">Экран включён</string>
+    <string name="log_export_ok">Экспортировано в Downloads/rootmys9280-log.txt (%1$d симв.)</string>
+    <string name="log_export_fail">Ошибка экспорта: %1$s</string>
+    <string name="log_knox_tripped">Сработал (warranty_bit=1)</string>
+    <string name="log_knox_green">Не нарушен (warranty_bit=0, verifiedbootstate=green)</string>
+    <string name="log_knox_ok">Не нарушен (warranty_bit=0, verifiedbootstate=%1$s)</string>
+    <string name="log_knox_unknown">Неизвестно (verifiedbootstate=%1$s)</string>
+    <string name="log_knox_needs">Неизвестно (требуется Shizuku)</string>
+    <string name="log_binder_unavailable">Binder Shizuku недоступен</string>
 </resources>

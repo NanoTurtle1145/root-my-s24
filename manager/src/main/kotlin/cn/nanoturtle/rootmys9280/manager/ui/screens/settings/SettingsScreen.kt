@@ -29,9 +29,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import cn.nanoturtle.rootmys9280.manager.BuildConfig
+import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.ui.theme.VectorMono
 
 private const val PREFS_SETTINGS = "settings"
@@ -68,14 +70,14 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
     ) {
         item {
             cn.nanoturtle.rootmys9280.manager.ui.components.BannerHeader(
-                title = "设置",
-                subtitle = "运行偏好与关于",
+                title = stringResource(R.string.settings_screen_title),
+                subtitle = stringResource(R.string.settings_screen_subtitle),
                 modifier = Modifier.padding(top = 24.dp),
             )
         }
 
         item {
-            SectionLabel("运行")
+            SectionLabel(stringResource(R.string.settings_section_run))
             Card(modifier = Modifier.fillMaxWidth()) {
                 ListItem(
                     modifier =
@@ -89,11 +91,11 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                         ),
                     leadingContent = { Icon(Icons.Rounded.Bedtime, contentDescription = null) },
                     supportingContent = {
-                        Text("运行期间自动熄灭屏幕，降低内核竞态概率")
+                        Text(stringResource(R.string.settings_auto_screen_off_summary))
                     },
                     trailingContent = { Switch(checked = autoScreenOff, onCheckedChange = null) },
                     colors = cardRowColors,
-                ) { Text("自动熄屏") }
+                ) { Text(stringResource(R.string.settings_auto_screen_off)) }
                 HorizontalDivider()
                 ListItem(
                     modifier =
@@ -108,15 +110,15 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                     leadingContent = {
                         Icon(Icons.AutoMirrored.Rounded.Notes, contentDescription = null)
                     },
-                    supportingContent = { Text("运行日志只显示摘要行，减少刷屏") },
+                    supportingContent = { Text(stringResource(R.string.settings_brief_log_summary)) },
                     trailingContent = { Switch(checked = briefLog, onCheckedChange = null) },
                     colors = cardRowColors,
-                ) { Text("日志模式") }
+                ) { Text(stringResource(R.string.settings_brief_log)) }
             }
         }
 
         item {
-            SectionLabel("关于")
+            SectionLabel(stringResource(R.string.settings_section_about))
             Card(modifier = Modifier.fillMaxWidth()) {
                 ListItem(
                     modifier =
@@ -124,12 +126,12 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                             onOpenUrl("https://github.com/NanoTurtle1145/root-my-s9280/releases")
                         },
                     leadingContent = { Icon(Icons.Rounded.Update, contentDescription = null) },
-                    supportingContent = { Text("前往 GitHub Releases 查看新版本") },
+                    supportingContent = { Text(stringResource(R.string.settings_check_update_summary)) },
                     trailingContent = {
                         Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null)
                     },
                     colors = cardRowColors,
-                ) { Text("检查更新") }
+                ) { Text(stringResource(R.string.settings_check_update)) }
                 HorizontalDivider()
                 ListItem(
                     modifier =
@@ -137,18 +139,18 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                             onOpenUrl("https://github.com/NanoTurtle1145/root-my-s9280")
                         },
                     leadingContent = { Icon(Icons.Rounded.Code, contentDescription = null) },
-                    supportingContent = { Text("源码、Issues 与使用说明") },
+                    supportingContent = { Text(stringResource(R.string.settings_project_home_summary)) },
                     trailingContent = {
                         Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null)
                     },
                     colors = cardRowColors,
-                ) { Text("项目主页") }
+                ) { Text(stringResource(R.string.settings_project_home)) }
             }
         }
 
         item {
             Text(
-                text = "版本 v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                text = stringResource(R.string.settings_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
                 style = VectorMono,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),

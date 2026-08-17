@@ -421,4 +421,97 @@
     <string name="launcher_prompt_title">Vector vẫn chưa có biểu tượng</string>
     <string name="launcher_prompt_body">Vector chạy bên trong một tiến trình khác thay vì được cài đặt, nên không có gì hiện ra trong trình khởi chạy và cũng không có cách quay lại rõ ràng. Hãy tạo cho nó một lối tắt trên màn hình chính, hoặc cài nó như một ứng dụng bình thường.</string>
     <string name="launcher_prompt_never">Đừng hỏi lại</string>
+    <!-- RootMyS9280 custom UI -->
+    <string name="settings_screen_title">Cài đặt</string>
+    <string name="settings_screen_subtitle">Tùy chọn chạy và thông tin</string>
+    <string name="settings_section_run">Chạy</string>
+    <string name="settings_auto_screen_off">Tự tắt màn hình</string>
+    <string name="settings_auto_screen_off_summary">Tắt màn hình trong lúc chạy để giảm xác suất xảy ra race trong kernel</string>
+    <string name="settings_brief_log">Chế độ log tóm tắt</string>
+    <string name="settings_brief_log_summary">Chỉ hiện các dòng tóm tắt trong log chạy để bớt rối</string>
+    <string name="settings_section_about">Giới thiệu</string>
+    <string name="settings_check_update">Kiểm tra cập nhật</string>
+    <string name="settings_check_update_summary">Mở GitHub Releases để xem phiên bản mới</string>
+    <string name="settings_project_home">Trang chủ dự án</string>
+    <string name="settings_project_home_summary">Mã nguồn, vấn đề và ghi chú sử dụng</string>
+    <string name="settings_version">Phiên bản v%1$s (%2$d)</string>
+    <string name="rootflow_detail_fallback">Mở khóa root SM-S9280 · không flash, không kích hoạt KNOX</string>
+    <string name="rootflow_start">Bắt đầu Root</string>
+    <string name="rootflow_running">Đang chạy...</string>
+    <string name="rootflow_done">root hoàn tất</string>
+    <string name="rootflow_screen_off_hint">Giữ màn hình tắt trong lúc chạy để có kết quả tốt nhất.</string>
+    <string name="rootflow_log_title">Log chạy</string>
+    <string name="rootflow_brief">Tóm tắt</string>
+    <string name="rootflow_detail">Chi tiết</string>
+    <string name="rootflow_auto_screen_off">Tự tắt màn hình</string>
+    <string name="rootflow_auto_screen_off_summary">Tắt màn hình trong lúc chạy để giảm xác suất xảy ra race trong kernel</string>
+    <string name="rootflow_knox_status">Trạng thái KNOX</string>
+    <string name="rootflow_knox_loading">Đang kiểm tra... (cần Shizuku)</string>
+    <string name="rootflow_export_log">Xuất log</string>
+    <string name="rootflow_export_log_placeholder">Lưu toàn bộ log chạy vào thư mục Downloads của hệ thống</string>
+    <string name="rootflow_export">Xuất</string>
+    <string name="logs_title">Log chạy</string>
+    <string name="logs_subtitle">Đầu ra của luồng Mở khóa Root</string>
+    <string name="logs_brief">Tóm tắt</string>
+    <string name="logs_detail">Chi tiết</string>
+    <string name="logs_export">Xuất</string>
+    <string name="logs_clear">Xóa</string>
+    <string name="logs_empty_brief">(Chưa có dòng tóm tắt nào)</string>
+    <string name="logs_empty">(Log sẽ hiện ở đây. Chạm \"Bắt đầu Root\" để bắt đầu)</string>
+    <string name="about_screen_title">Giới thiệu</string>
+    <string name="about_screen_subtitle">RootMyS9280 · mở khóa root</string>
+    <string name="about_tagline">Mở khóa root SM-S9280 · dựa trên nghiên cứu bảo mật CVE-2026-43499</string>
+    <string name="about_section_device">Thông tin thiết bị</string>
+    <string name="about_device_model">Model</string>
+    <string name="about_system_version">Phiên bản hệ thống</string>
+    <string name="about_build_fingerprint">Dấu vân tay bản dựng</string>
+    <string name="about_section_source">Nguồn và giấy phép</string>
+    <string name="about_section_faq">Câu hỏi thường gặp</string>
+    <string name="about_faq_knox_q">Điều này có kích hoạt KNOX không?</string>
+    <string name="about_faq_knox_a">Không. Quyền mở khóa ROM mà không flash bootloader, KNOX vẫn nguyên vẹn.</string>
+    <string name="about_faq_retry_q">Tại sao có thể cần thử nhiều lần?</string>
+    <string name="about_faq_retry_a">Exploit nâng quyền bằng cách làm hỏng bộ nhớ kernel và thành công theo xác suất; nếu thất bại hãy khởi động lại và thử lại.</string>
+    <string name="about_faq_restart_q">Sau khi khởi động lại tôi có cần root lại không?</string>
+    <string name="about_faq_restart_a">Có. Bootloader bị khóa, nên hãy chạy Mở khóa Root lại sau mỗi lần khởi động lại.</string>
+    <string name="about_disclaimer">Tuyên bố miễn trừ: Ứng dụng này chỉ dành cho nghiên cứu bảo mật và học tập cá nhân. Việc leo thang đặc quyền thông qua làm hỏng bộ nhớ kernel vốn không chắc chắn; sử dụng tự chịu rủi ro. Vui lòng tuân thủ luật pháp địa phương.</string>
+    <!-- RootMyS9280 log strings -->
+    <string name="log_starting">Đang khởi động RootMyS9280</string>
+    <string name="log_payload">Payload: %1$s (cố định, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_check_shizuku">[1/5] Đang kiểm tra Shizuku...</string>
+    <string name="log_shizuku_not_running">Shizuku không chạy. Vui lòng khởi động Shizuku trước!</string>
+    <string name="log_shizuku_denied">Quyền Shizuku bị từ chối</string>
+    <string name="log_shizuku_ready">Shizuku sẵn sàng</string>
+    <string name="log_push_payload">[2/5] Đang đẩy payload tới /data/local/tmp ...</string>
+    <string name="log_push_done">Đẩy xong (%1$s=%2$d B, %3$s=%4$d B)</string>
+    <string name="log_diag">Chẩn đoán: pipe-max-size=%1$s pipe-user-pages=%2$s</string>
+    <string name="log_diag_version">Chẩn đoán: /proc/version=%1$s</string>
+    <string name="log_pipe_warn">pipe-max-size (%1$d B) &lt; 128KB (exploit cần 32 slot=128KB), F_SETPIPE_SZ sẽ trả về EPERM</string>
+    <string name="log_cleanup">[2.6/5] Đang dọn các tiến trình exploit còn sót và tệp tạm ...</string>
+    <string name="log_cleanup_done">Dọn môi trường xong (exit=%1$d)</string>
+    <string name="log_trigger">[3/5] Đang kích hoạt CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
+    <string name="log_screen_off">Màn hình đã tắt (sẽ bật lại khi xong; nhấn phím nguồn bất cứ lúc nào để kiểm tra)</string>
+    <string name="log_exploit_timeout">exploit hết thời gian chờ (15 phút)</string>
+    <string name="log_exploit_incomplete">exploit chưa hoàn tất (có thể cần thử nhiều lần / khởi động lại, mang tính xác suất)</string>
+    <string name="log_no_root">exploit kết thúc nhưng không có root (thiếu marker)</string>
+    <string name="log_temp_root">Đã có root tạm thời!</string>
+    <string name="log_lateload">[4/5] KernelSU nạp muộn (qua daemon root) ...</string>
+    <string name="log_screen_off_hint">Gợi ý: giữ màn hình tắt trong lúc chạy (giảm việc hiển thị, giảm xác suất đua kernel)</string>
+    <string name="log_stage_fail">Khâu chuẩn bị ksud thất bại (exit=%1$d): %2$s</string>
+    <string name="log_ksud_staged">ksud đã được chuẩn bị vào ksud-s25u-kdp / .ksud-stage</string>
+    <string name="log_lateload_fail">Nạp muộn KernelSU thất bại (exit=%1$d)</string>
+    <string name="log_driver_loaded">Đã nạp driver KernelSU (nạp muộn exit=0)</string>
+    <string name="log_verify">[5/5] Đang xác minh...</string>
+    <string name="log_daemon_check">daemon root: %1$s</string>
+    <string name="log_install_manager">Vui lòng cài KernelSU Manager (me.weishu.kernelsu v3.2.5, versionCode 32525) để quản lý root / module</string>
+    <string name="log_flow_done">Hoàn tất quy trình root!</string>
+    <string name="log_failed">Thất bại: %1$s</string>
+    <string name="log_woken">Màn hình đã bật</string>
+    <string name="log_export_ok">Đã xuất tới Downloads/rootmys9280-log.txt (%1$d ký tự)</string>
+    <string name="log_export_fail">Xuất thất bại: %1$s</string>
+    <string name="log_knox_tripped">Đã bị vi phạm (warranty_bit=1)</string>
+    <string name="log_knox_green">Nguyên vẹn (warranty_bit=0, verifiedbootstate=green)</string>
+    <string name="log_knox_ok">Nguyên vẹn (warranty_bit=0, verifiedbootstate=%1$s)</string>
+    <string name="log_knox_unknown">Không rõ (verifiedbootstate=%1$s)</string>
+    <string name="log_knox_needs">Không rõ (cần Shizuku)</string>
+    <string name="log_binder_unavailable">Binder Shizuku không khả dụng</string>
 </resources>
