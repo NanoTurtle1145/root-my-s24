@@ -27,13 +27,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
 import cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel
+import cn.nanoturtle.rootmys9280.manager.ui.components.VectorAmbienceSettings
+import cn.nanoturtle.rootmys9280.ui.StatusHeader
+import cn.nanoturtle.rootmys9280.ui.StatusTone
+import cn.nanoturtle.rootmys9280.ui.ambience.AmbienceKind
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -76,10 +82,34 @@ private fun RootFlowContent(
             .padding(horizontal = 16.dp),
     ) {
         item {
-            cn.nanoturtle.rootmys9280.manager.ui.components.BannerHeader(
-                title = "免解锁 Root",
-                subtitle = "SM-S9280 国行免解锁 root：不刷机、不熔断 KNOX",
+            // Vector 同款完整状态 banner：动态背景 + 品牌 + 状态徽章（呼吸动画）+ 详情行
+            val ambienceKey by ServiceLocator.settings.headerAmbience.collectAsStateWithLifecycle()
+            val tone: StatusTone =
+                when {
+                    state.busy -> StatusTone.Neutral
+                    state.rooted -> StatusTone.Active
+                    else -> StatusTone.Error
+                }
+            val statusWord =
+                when {
+                    state.busy -> stringResource(R.string.status_checking)
+                    state.rooted -> stringResource(R.string.status_active)
+                    else -> stringResource(R.string.status_inactive)
+                }
+            StatusHeader(
+                brand = "RootMyS9280",
+                statusWord = statusWord,
+                tone = tone,
+                ambience = AmbienceKind.from(ambienceKey),
+                ambienceSettings = VectorAmbienceSettings,
                 modifier = Modifier.padding(top = 24.dp),
+                detail = { contentColor ->
+                    Text(
+                        text = state.knoxState.ifBlank { "SM-S9280 国行免解锁 root · 不刷机、不熔断 KNOX" },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = contentColor,
+                    )
+                },
             )
         }
 
