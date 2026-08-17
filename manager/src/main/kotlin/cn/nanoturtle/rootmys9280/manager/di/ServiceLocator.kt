@@ -114,6 +114,14 @@ object ServiceLocator {
 
     val settings: SettingsRepository by lazy { SettingsRepository(context) }
 
+    /**
+     * 免解锁 Root 流程的共享 ViewModel：RootFlow 与 Logs 两个 tab 共用同一实例，
+     * 日志实时同步且不随 tab 切换销毁。
+     */
+    val rootViewModel: cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel by lazy {
+        cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel(context as android.app.Application)
+    }
+
     val modules: ModuleRepository by lazy { ModuleRepository(daemon, appScope) }
 
     val apps: AppRepository by lazy {
@@ -224,8 +232,7 @@ object ServiceLocator {
     }
 
     /** Called from the activity. Safe to call repeatedly; later calls are ignored. */
-    fun attach(context: Context) {
-        if (appContext != null) return
+    fun attach(context: Context) {        if (appContext != null) return
         appContext = context.applicationContext ?: context
         // Before anything else that could fail. Nothing below is load-bearing for it, and a crash
         // during startup is exactly the one that is hardest to catch on a cable.

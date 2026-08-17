@@ -9,9 +9,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Notes
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.Code
-import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
@@ -126,7 +126,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                     leadingContent = { Icon(Icons.Rounded.Update, contentDescription = null) },
                     supportingContent = { Text("前往 GitHub Releases 查看新版本") },
                     trailingContent = {
-                        Icon(Icons.Rounded.OpenInNew, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null)
                     },
                     colors = cardRowColors,
                 ) { Text("检查更新") }
@@ -139,7 +139,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                     leadingContent = { Icon(Icons.Rounded.Code, contentDescription = null) },
                     supportingContent = { Text("源码、Issues 与使用说明") },
                     trailingContent = {
-                        Icon(Icons.Rounded.OpenInNew, contentDescription = null)
+                        Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null)
                     },
                     colors = cardRowColors,
                 ) { Text("项目主页") }

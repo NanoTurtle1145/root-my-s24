@@ -13,11 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
@@ -230,7 +230,7 @@ private fun LicenseRow(title: String, url: String, onOpenUrl: (String) -> Unit) 
     ListItem(
         modifier = Modifier.clickable { onOpenUrl(url) },
         leadingContent = { Icon(Icons.Rounded.Code, contentDescription = null) },
-        trailingContent = { Icon(Icons.Rounded.OpenInNew, contentDescription = null) },
+        trailingContent = { Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null) },
         colors = cardRowColors,
     ) { Text(title) }
 }

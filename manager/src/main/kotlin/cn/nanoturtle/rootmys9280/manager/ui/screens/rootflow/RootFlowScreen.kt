@@ -32,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
 import cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun RootFlowScreen(
-    vm: RootViewModel = viewModel(),
+    vm: RootViewModel = ServiceLocator.rootViewModel,
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     RootFlowContent(vm = vm, state = state)
