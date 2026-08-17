@@ -11,6 +11,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -185,4 +186,13 @@ fun RootMyS9280Theme(
             content = content
         )
     }
+}
+
+/** 是否深色主题（供 KSU 悬浮导航栏等使用） */
+@Composable
+@ReadOnlyComposable
+fun isInDarkTheme(): Boolean = when (AppThemeState.themeMode) {
+    1 -> false
+    2 -> true
+    else -> isSystemInDarkTheme()
 }

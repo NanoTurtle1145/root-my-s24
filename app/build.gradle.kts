@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "cn.nanoturtle.rootmys9280"
-        minSdk = 24
+        minSdk = 33
         targetSdk = 36
         versionCode = 14
         versionName = "2.3"
@@ -46,6 +46,7 @@ dependencies {
     implementation("top.yukonga.miuix.kmp:miuix-ui:0.9.3")
     implementation("top.yukonga.miuix.kmp:miuix-preference:0.9.3")
     implementation("top.yukonga.miuix.kmp:miuix-icons:0.9.3")
+    implementation("top.yukonga.miuix.kmp:miuix-blur:0.9.3")
     implementation("com.materialkolor:material-kolor:5.0.0")
     implementation("androidx.compose.material:material-icons-extended")
     implementation(libs.androidx.compose.ui.graphics)

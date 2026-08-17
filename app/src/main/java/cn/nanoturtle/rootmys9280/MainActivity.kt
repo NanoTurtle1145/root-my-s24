@@ -14,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -73,6 +74,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.nanoturtle.rootmys9280.ui.theme.PREFS_NAME
 import cn.nanoturtle.rootmys9280.ui.theme.RootMyS9280Theme
@@ -128,7 +130,7 @@ fun RootScreen(vm: RootViewModel = viewModel()) {
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             if (cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.enableFloatingBottomBar) {
-                FloatingBottomBar(selected = tab, onSelect = { tab = it })
+                KsuFloatingBottomBar(tab = tab, onSelect = { tab = it })
             } else {
                 MiuixNavigationBar {
                     RootTab.entries.forEach { item ->
@@ -1075,55 +1077,45 @@ private fun logLineColor(line: String): Color {
     }
 }
 
-/** 悬浮底部导航栏（iOS/Android 16 胶囊风格） */
+
+
+/** KSU 版悬浮导航栏（无 blur 模式，保留拖拽/指示条动画） */
 @Composable
-private fun FloatingBottomBar(
-    selected: RootTab,
+private fun KsuFloatingBottomBar(
+    tab: RootTab,
     onSelect: (RootTab) -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 28.dp, vertical = 10.dp),
-        contentAlignment = Alignment.BottomCenter,
+    val backdrop = top.yukonga.miuix.kmp.blur.rememberLayerBackdrop()
+    val tabEntries = RootTab.entries
+    androidx.compose.runtime.CompositionLocalProvider(
+        top.yukonga.miuix.kmp.theme.LocalContentColor provides top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme.onSurface,
     ) {
-        Surface(
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
-            color = MaterialTheme.colorScheme.surfaceContainer,
-            shadowElevation = 10.dp,
+        FloatingBottomBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 12.dp),
+            selectedIndex = { tab.ordinal },
+            onSelected = { onSelect(tabEntries[it]) },
+            backdrop = backdrop,
+            tabsCount = tabEntries.size,
+            isBlurEnabled = false,
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(6.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-            ) {
-                RootTab.entries.forEach { item ->
-                    val selectedNow = selected == item
-                    Column(
-                        modifier = Modifier
-                            .clip(androidx.compose.foundation.shape.RoundedCornerShape(22.dp))
-                            .background(
-                                if (selectedNow) MaterialTheme.colorScheme.secondaryContainer
-                                else Color.Transparent
-                            )
-                            .clickable { onSelect(item) }
-                            .padding(horizontal = 24.dp, vertical = 8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Icon(
-                            item.icon,
-                            contentDescription = item.label,
-                            tint = if (selectedNow) MaterialTheme.colorScheme.onSecondaryContainer
-                            else MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Text(
-                            item.label,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = if (selectedNow) MaterialTheme.colorScheme.onSecondaryContainer
-                            else MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
+            tabEntries.forEach { item ->
+                FloatingBottomBarItem(
+                    onClick = { onSelect(item) },
+                    modifier = Modifier.defaultMinSize(minWidth = 76.dp),
+                ) {
+                    Icon(
+                        item.icon,
+                        contentDescription = item.label,
+                        tint = androidx.compose.ui.graphics.Color.Unspecified,
+                    )
+                    Text(
+                        item.label,
+                        fontSize = 11.sp,
+                        lineHeight = 14.sp,
+                        maxLines = 1,
+                    )
                 }
             }
         }
