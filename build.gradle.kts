@@ -27,7 +27,7 @@ abstract class GitCommitCountValueSource : ValueSource<String, ValueSourceParame
     override fun obtain(): String {
         val output = ByteArrayOutputStream()
         val result = execOperations.exec {
-            commandLine("git", "rev-list", "--count", "refs/remotes/origin/master")
+            commandLine("git", "rev-list", "--count", "refs/remotes/origin/main")
             standardOutput = output
             isIgnoreExitValue = true
         }
