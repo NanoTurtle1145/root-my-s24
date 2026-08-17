@@ -19,19 +19,19 @@ import cn.nanoturtle.rootmys9280.ui.store.StoreSettings
  * which parasitically happens far more often than a user would expect since the host is
  * `com.android.shell`.
  */
-class SettingsRepository(context: Context) : StoreSettings {
+class SettingsRepository(context: Context) : StoreSettings, cn.nanoturtle.rootmys9280.ui.appearance.AppearanceSettings {
     private val prefs: SharedPreferences =
         context.getSharedPreferences("vector_settings", Context.MODE_PRIVATE)
 
     // Theme Settings
     private val _themeMode = MutableStateFlow(prefs.getString("theme_mode", "system") ?: "system")
-    val themeMode: StateFlow<String> = _themeMode.asStateFlow()
+    override val themeMode: StateFlow<String> = _themeMode.asStateFlow()
 
     private val _dynamicColor = MutableStateFlow(prefs.getBoolean("dynamic_color", true))
-    val dynamicColor: StateFlow<Boolean> = _dynamicColor.asStateFlow()
+    override val dynamicColor: StateFlow<Boolean> = _dynamicColor.asStateFlow()
 
     private val _amoledBlack = MutableStateFlow(prefs.getBoolean("amoled_black", false))
-    val amoledBlack: StateFlow<Boolean> = _amoledBlack.asStateFlow()
+    override val amoledBlack: StateFlow<Boolean> = _amoledBlack.asStateFlow()
 
     /**
      * The colour every other colour is derived from, when dynamic colour is off.
@@ -40,9 +40,9 @@ class SettingsRepository(context: Context) : StoreSettings {
      * survives a reinstall and does not depend on the preset list staying the same order.
      */
     private val _seedColor = MutableStateFlow(prefs.getInt("seed_color", DEFAULT_SEED_COLOR))
-    val seedColor: StateFlow<Int> = _seedColor.asStateFlow()
+    override val seedColor: StateFlow<Int> = _seedColor.asStateFlow()
 
-    fun setSeedColor(argb: Int) {
+    override fun setSeedColor(argb: Int) {
         prefs.edit().putInt("seed_color", argb).apply()
         _seedColor.value = argb
     }
@@ -248,7 +248,7 @@ class SettingsRepository(context: Context) : StoreSettings {
     /** Which living surface the status header draws. See AmbienceKind. */
     private val _headerAmbience =
         MutableStateFlow(prefs.getString("header_ambience", DEFAULT_AMBIENCE) ?: DEFAULT_AMBIENCE)
-    val headerAmbience: StateFlow<String> = _headerAmbience.asStateFlow()
+    override val headerAmbience: StateFlow<String> = _headerAmbience.asStateFlow()
 
     private val _updateVariant =
         MutableStateFlow(prefs.getString("update_variant", "release") ?: "release")
@@ -293,7 +293,7 @@ class SettingsRepository(context: Context) : StoreSettings {
         prefs.edit().putFloat("ambience_speed_$kind", value).apply()
     }
 
-    fun setHeaderAmbience(key: String) {
+    override fun setHeaderAmbience(key: String) {
         prefs.edit().putString("header_ambience", key).apply()
         _headerAmbience.value = key
     }
@@ -493,17 +493,17 @@ class SettingsRepository(context: Context) : StoreSettings {
         prefs.edit().putFloat("floating_nav_y", fraction).apply()
     }
 
-    fun setThemeMode(mode: String) {
+    override fun setThemeMode(mode: String) {
         prefs.edit().putString("theme_mode", mode).apply()
         _themeMode.value = mode
     }
 
-    fun setDynamicColor(enabled: Boolean) {
+    override fun setDynamicColor(enabled: Boolean) {
         prefs.edit().putBoolean("dynamic_color", enabled).apply()
         _dynamicColor.value = enabled
     }
 
-    fun setAmoledBlack(enabled: Boolean) {
+    override fun setAmoledBlack(enabled: Boolean) {
         prefs.edit().putBoolean("amoled_black", enabled).apply()
         _amoledBlack.value = enabled
     }

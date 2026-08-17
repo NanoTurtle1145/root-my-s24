@@ -63,6 +63,8 @@ private fun RootFlowContent(
 ) {
     var brief by remember { mutableStateOf(false) }
     var exportResult by remember { mutableStateOf<String?>(null) }
+    var showAppearance by remember { mutableStateOf(false) }
+    var showLanguage by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
@@ -75,14 +77,26 @@ private fun RootFlowContent(
         if (shown.isNotEmpty()) listState.scrollToItem(shown.lastIndex)
     }
 
+    if (showAppearance) {
+        cn.nanoturtle.rootmys9280.manager.ui.components.HomeAppearanceSheet(
+            onDismiss = { showAppearance = false },
+        )
+    }
+    if (showLanguage) {
+        cn.nanoturtle.rootmys9280.ui.locale.LanguageSheet(
+            controller = cn.nanoturtle.rootmys9280.manager.di.VectorLocaleController,
+            onDismiss = { showLanguage = false },
+        )
+    }
+
     LazyColumn(
         state = listState,
         modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .fillMaxSize(),
     ) {
         item {
-            // Vector 同款完整状态 banner：动态背景 + 品牌 + 状态徽章（呼吸动画）+ 详情行
+            // Vector 同款完整状态 banner：动态背景 + 品牌 + 状态徽章（呼吸动画）+ 详情行。
+            // 全出血：延伸到屏幕两端，无水平内边距。
             val ambienceKey by ServiceLocator.settings.headerAmbience.collectAsStateWithLifecycle()
             val tone: StatusTone =
                 when {
@@ -102,7 +116,6 @@ private fun RootFlowContent(
                 tone = tone,
                 ambience = AmbienceKind.from(ambienceKey),
                 ambienceSettings = VectorAmbienceSettings,
-                modifier = Modifier.padding(top = 24.dp),
                 detail = { contentColor ->
                     Text(
                         text = state.knoxState.ifBlank { "SM-S9280 国行免解锁 root · 不刷机、不熔断 KNOX" },
@@ -110,13 +123,17 @@ private fun RootFlowContent(
                         color = contentColor,
                     )
                 },
+                appearanceLabel = stringResource(R.string.appearance_title),
+                onOpenAppearance = { showAppearance = true },
+                languageLabel = stringResource(R.string.language_title),
+                onOpenLanguage = { showLanguage = true },
             )
         }
 
         item {
             Card(
                 modifier = Modifier
-                    .padding(top = 16.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
                     .fillMaxWidth(),
             ) {
                 Column(Modifier.padding(16.dp)) {
@@ -154,6 +171,7 @@ private fun RootFlowContent(
                     scope.launch { exportResult = vm.dumpLog() }
                 },
                 onExportResultShown = { exportResult = null },
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
             )
         }
 
@@ -161,7 +179,7 @@ private fun RootFlowContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text("运行日志", style = MaterialTheme.typography.titleMedium)
@@ -183,6 +201,7 @@ private fun RootFlowContent(
                 color = if (line.summary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp)
                     .padding(vertical = 1.dp),
             )
         }
@@ -199,6 +218,7 @@ private fun SettingsCard(
     exportResult: String?,
     onExport: () -> Unit,
     onExportResultShown: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LaunchedEffect(exportResult) {
         if (exportResult != null) {
@@ -207,7 +227,7 @@ private fun SettingsCard(
         }
     }
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(top = 8.dp)
             .fillMaxWidth(),
     ) {

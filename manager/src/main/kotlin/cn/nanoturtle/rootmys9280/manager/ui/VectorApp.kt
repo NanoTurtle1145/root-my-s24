@@ -45,7 +45,14 @@ import cn.nanoturtle.rootmys9280.manager.ui.screens.about.AboutScreen
 fun VectorApp() {
     val navigator = rememberNavigator()
 
-    CompositionLocalProvider(LocalNavigator provides navigator) {
+    CompositionLocalProvider(
+        LocalNavigator provides navigator,
+        // Sheets and dialogs are their own windows, which reset the language override; this
+        // re-applies it inside them, exactly as VectorAlertDialog does.
+        cn.nanoturtle.rootmys9280.ui.LocalDialogLocalizer provides { content ->
+            cn.nanoturtle.rootmys9280.manager.ui.theme.LocalizedOverlay { content() }
+        },
+    ) {
         val settings = ServiceLocator.settings
         val floating by settings.floatingNav.collectAsStateWithLifecycle()
         val editing = navigator.editingPanels
