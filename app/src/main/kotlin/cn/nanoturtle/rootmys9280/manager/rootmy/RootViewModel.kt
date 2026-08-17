@@ -144,15 +144,27 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * 检测 KernelSU 驱动是否已加载（无需 root）：
      * /proc/modules 列出已加载模块，或 /sys/module/kernelsu 存在即驱动在内核中。
      * 重启后依然准确，不依赖本次会话是否跑过 root 流程。
+     *
+     * 注意：必须经 Shizuku（shell 权限）检测——app 进程直接读 /proc/modules 会被
+     * SELinux / KSU 隐藏机制拒绝（Permission denied），而 shell 视角能看到 kernelsu。
      */
     suspend fun refreshKsuStatus() = withContext(Dispatchers.IO) {
         val loaded = runCatching {
-            val p = ProcessBuilder(
-                "/system/bin/sh", "-c",
-                "grep -q 'kernelsu' /proc/modules 2>/dev/null || " +
-                    "ls /sys/module/kernelsu >/dev/null 2>&1"
-            ).start()
-            p.waitFor() == 0
+            if (ShizukuController.isRunning()) {
+                // shell 权限经 Shizuku 检测
+                ShizukuController.shell(
+                    "grep -q 'kernelsu' /proc/modules 2>/dev/null || " +
+                        "ls /sys/module/kernelsu >/dev/null 2>&1"
+                ).first == 0
+            } else {
+                // Shizuku 不可用时的兜底（部分环境 app 可直接读）
+                val p = ProcessBuilder(
+                    "/system/bin/sh", "-c",
+                    "grep -q 'kernelsu' /proc/modules 2>/dev/null || " +
+                        "ls /sys/module/kernelsu >/dev/null 2>&1"
+                ).start()
+                p.waitFor() == 0
+            }
         }.getOrDefault(false)
         _state.value = _state.value.copy(ksuLoaded = loaded, rooted = loaded)
     }
