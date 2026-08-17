@@ -447,7 +447,7 @@ fun FloatingBottomBar(
                             val progressOffset = dampedDragAnimation.value * tabWidthPx
                             translationX = if (isLtr) progressOffset + panelOffset else -progressOffset + panelOffset
                         }
-                        .then(dampedDragAnimation.modifier)
+                        // 不挂拖拽手势层：避免拦截 tab 点击（滑块处也可点）
                         .clip(pillShape)
                         .background(accentColor.copy(alpha = 0.15f), pillShape)
                         .height(56.dp)
