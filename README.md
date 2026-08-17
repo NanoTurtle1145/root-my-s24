@@ -61,11 +61,11 @@
 ## 构建
 
 ```sh
-./gradlew assembleDebug    # debug APK
-./gradlew assembleRelease  # release APK（需自行配置签名）
+./gradlew :manager:assembleDebug    # debug APK（模块名是 manager，不是 app）
+./gradlew :manager:assembleRelease  # release APK（需自行配置签名）
 ```
 
-载荷（exploit / root helper / ksud）已内置在 `app/src/main/assets/`。载荷构建链属开发者职责，不在本仓库范围。
+载荷（exploit / root helper / ksud）已内置在 `manager/src/main/assets/`。载荷构建链属开发者职责，不在本仓库范围。
 
 ## 依赖与致谢
 
