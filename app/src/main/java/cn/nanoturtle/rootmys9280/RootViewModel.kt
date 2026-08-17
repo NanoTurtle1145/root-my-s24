@@ -127,10 +127,20 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
 
+        // 2.6 清理残留：上次失败的 exploit 子进程/守护进程会残留并污染 uid 2000 的
+        //     pipe_bufs 配额，导致 F_SETPIPE_SZ EPERM（16/16 失败根因之一）
+        appendLog("[2.6/5] 清理残留 exploit 进程与临时文件 ...")
+        val cleanup = ShizukuController.shell(
+            "pkill -9 -f 'cve-2026-43499' 2>/dev/null; " +
+                "pkill -9 -f 'cve43499' 2>/dev/null; " +
+                "rm -f /data/local/tmp/temp_su.sock /data/local/tmp/ksud-s25u-kdp /data/local/tmp/.ksud-stage; echo ok"
+        )
+        appendLog("✔ 环境清理完成 (exit=${cleanup.first})")
+
         // 3. 触发 exploit
         appendLog("[3/5] 触发 CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...")
         val env = arrayOf(
-            "EXPLOIT_ATTEMPTS=24",
+            "EXPLOIT_ATTEMPTS=30",
             "P0_ATTEMPT_TIMEOUT_SEC=45",
             "EXPLOIT_ATTEMPT_TIMEOUT_SEC=120",
             "CVE43499_ROOT_HELPER=$tmpRootHelper",
