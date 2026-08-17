@@ -127,14 +127,18 @@ fun RootScreen(vm: RootViewModel = viewModel()) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
-            MiuixNavigationBar {
-                RootTab.entries.forEach { item ->
-                    MiuixNavigationBarItem(
-                        selected = tab == item,
-                        onClick = { tab = item },
-                        icon = item.icon,
-                        label = item.label,
-                    )
+            if (cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.enableFloatingBottomBar) {
+                FloatingBottomBar(selected = tab, onSelect = { tab = it })
+            } else {
+                MiuixNavigationBar {
+                    RootTab.entries.forEach { item ->
+                        MiuixNavigationBarItem(
+                            selected = tab == item,
+                            onClick = { tab = item },
+                            icon = item.icon,
+                            label = item.label,
+                        )
+                    }
                 }
             }
         },
@@ -1068,5 +1072,60 @@ private fun logLineColor(line: String): Color {
             MaterialTheme.colorScheme.primary
 
         else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+}
+
+/** 悬浮底部导航栏（iOS/Android 16 胶囊风格） */
+@Composable
+private fun FloatingBottomBar(
+    selected: RootTab,
+    onSelect: (RootTab) -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 28.dp, vertical = 10.dp),
+        contentAlignment = Alignment.BottomCenter,
+    ) {
+        Surface(
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.surfaceContainer,
+            shadowElevation = 10.dp,
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(6.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                RootTab.entries.forEach { item ->
+                    val selectedNow = selected == item
+                    Column(
+                        modifier = Modifier
+                            .clip(androidx.compose.foundation.shape.RoundedCornerShape(22.dp))
+                            .background(
+                                if (selectedNow) MaterialTheme.colorScheme.secondaryContainer
+                                else Color.Transparent
+                            )
+                            .clickable { onSelect(item) }
+                            .padding(horizontal = 24.dp, vertical = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Icon(
+                            item.icon,
+                            contentDescription = item.label,
+                            tint = if (selectedNow) MaterialTheme.colorScheme.onSecondaryContainer
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        Text(
+                            item.label,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (selectedNow) MaterialTheme.colorScheme.onSecondaryContainer
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+        }
     }
 }

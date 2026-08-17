@@ -29,6 +29,8 @@ const val KEY_DYNAMIC_COLOR = "dynamic_color"
 const val KEY_ACCENT = "accent_color"
 const val KEY_COLOR_STYLE = "color_style"
 const val KEY_COLOR_SPEC = "color_spec"
+const val KEY_FLOATING_BAR = "floating_bottom_bar"
+const val KEY_PREDICTIVE_BACK = "predictive_back"
 
 /** 主题强调色预设（seed） */
 val AccentPresets = listOf(
@@ -52,6 +54,12 @@ object AppThemeState {
     /** 调色风格（materialkolor PaletteStyle 名）与色域规范 */
     var colorStyle by mutableStateOf("TonalSpot")
     var colorSpec by mutableStateOf("SPEC_2021")
+
+    /** 悬浮底部导航栏 */
+    var enableFloatingBottomBar by mutableStateOf(false)
+
+    /** 预测性返回动画 */
+    var enablePredictiveBack by mutableStateOf(true)
 }
 
 /** App 启动时从持久化设置恢复主题 */
@@ -61,6 +69,8 @@ fun initAppTheme(context: Context) {
     AppThemeState.dynamicColor = prefs.getBoolean(KEY_DYNAMIC_COLOR, true)
     AppThemeState.colorStyle = prefs.getString(KEY_COLOR_STYLE, "TonalSpot") ?: "TonalSpot"
     AppThemeState.colorSpec = prefs.getString(KEY_COLOR_SPEC, "SPEC_2021") ?: "SPEC_2021"
+    AppThemeState.enableFloatingBottomBar = prefs.getBoolean(KEY_FLOATING_BAR, false)
+    AppThemeState.enablePredictiveBack = prefs.getBoolean(KEY_PREDICTIVE_BACK, true)
     if (prefs.contains(KEY_ACCENT)) {
         AppThemeState.accent = prefs.getLong(KEY_ACCENT, 0)
     }
@@ -96,6 +106,18 @@ fun setColorSpec(context: Context, spec: String) {
     AppThemeState.colorSpec = spec
     context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         .edit().putString(KEY_COLOR_SPEC, spec).apply()
+}
+
+fun setFloatingBottomBar(context: Context, enabled: Boolean) {
+    AppThemeState.enableFloatingBottomBar = enabled
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        .edit().putBoolean(KEY_FLOATING_BAR, enabled).apply()
+}
+
+fun setPredictiveBack(context: Context, enabled: Boolean) {
+    AppThemeState.enablePredictiveBack = enabled
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        .edit().putBoolean(KEY_PREDICTIVE_BACK, enabled).apply()
 }
 
 private val DarkColorScheme = darkColorScheme(

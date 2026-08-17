@@ -2,6 +2,7 @@ package cn.nanoturtle.rootmys9280
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,8 @@ import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material.icons.rounded.DesignServices
 import androidx.compose.material.icons.rounded.Style
 import androidx.compose.material.icons.rounded.Wallpaper
+import androidx.compose.material.icons.rounded.CallToAction
+import androidx.compose.material.icons.automirrored.rounded.MenuOpen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +47,8 @@ import cn.nanoturtle.rootmys9280.ui.theme.setAccent
 import cn.nanoturtle.rootmys9280.ui.theme.setColorSpec
 import cn.nanoturtle.rootmys9280.ui.theme.setColorStyle
 import cn.nanoturtle.rootmys9280.ui.theme.setDynamicColor
+import cn.nanoturtle.rootmys9280.ui.theme.setFloatingBottomBar
+import cn.nanoturtle.rootmys9280.ui.theme.setPredictiveBack
 import cn.nanoturtle.rootmys9280.ui.theme.setThemeMode
 import com.materialkolor.PaletteStyle
 import com.materialkolor.dynamiccolor.ColorSpec
@@ -57,7 +62,6 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.icon.MiuixIcons
 import top.yukonga.miuix.kmp.icon.extended.Back
-import top.yukonga.miuix.kmp.preference.OverlayDropdownPreference
 import top.yukonga.miuix.kmp.preference.SwitchPreference
 import top.yukonga.miuix.kmp.theme.MiuixTheme.colorScheme
 import top.yukonga.miuix.kmp.utils.overScrollVertical
@@ -78,6 +82,9 @@ fun ThemeSettingsScreen(onBack: () -> Unit) {
     }
     val keyColor = AppThemeState.accent
     val monet = AppThemeState.dynamicColor
+    var showKeyColorDialog by remember { mutableStateOf(false) }
+    var showStyleDialog by remember { mutableStateOf(false) }
+    var showSpecDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -141,11 +148,10 @@ fun ThemeSettingsScreen(onBack: () -> Unit) {
                         onCheckedChange = { setDynamicColor(context, it) },
                     )
                     if (monet) {
-                        // 关键色（KSU keyColorOptions 同款：0=默认）
-                        val colorItems = listOf("默认") + keyColorNames
-                        val colorValues = listOf<Long?>(null) + keyColorOptions
-                        OverlayDropdownPreference(
+                        // 关键色（KSU keyColorOptions 同款：默认 + 15 色，对话框选择）
+                        top.yukonga.miuix.kmp.preference.ArrowPreference(
                             title = "关键色",
+                            summary = accentName(keyColor),
                             startAction = {
                                 Icon(
                                     Icons.Rounded.Colorize,
@@ -154,16 +160,13 @@ fun ThemeSettingsScreen(onBack: () -> Unit) {
                                     tint = colorScheme.onBackground,
                                 )
                             },
-                            items = colorItems,
-                            selectedIndex = colorValues.indexOf(keyColor).takeIf { it >= 0 } ?: 0,
-                            onSelectedIndexChange = { index ->
-                                setAccent(context, colorValues[index])
-                            },
+                            onClick = { showKeyColorDialog = true },
                         )
                         if (keyColor != null) {
                             val styles = PaletteStyle.entries
-                            OverlayDropdownPreference(
+                            top.yukonga.miuix.kmp.preference.ArrowPreference(
                                 title = "调色风格",
+                                summary = AppThemeState.colorStyle,
                                 startAction = {
                                     Icon(
                                         Icons.Rounded.Style,
@@ -172,15 +175,12 @@ fun ThemeSettingsScreen(onBack: () -> Unit) {
                                         tint = colorScheme.onBackground,
                                     )
                                 },
-                                items = styles.map { it.name },
-                                selectedIndex = styles.indexOfFirst { it.name == AppThemeState.colorStyle }.coerceAtLeast(0),
-                                onSelectedIndexChange = { index ->
-                                    setColorStyle(context, styles[index].name)
-                                },
+                                onClick = { showStyleDialog = true },
                             )
                             val specs = ColorSpec.SpecVersion.entries
-                            OverlayDropdownPreference(
+                            top.yukonga.miuix.kmp.preference.ArrowPreference(
                                 title = "色域规范",
+                                summary = AppThemeState.colorSpec,
                                 startAction = {
                                     Icon(
                                         Icons.Rounded.DesignServices,
@@ -189,20 +189,124 @@ fun ThemeSettingsScreen(onBack: () -> Unit) {
                                         tint = colorScheme.onBackground,
                                     )
                                 },
-                                items = specs.map { it.name },
-                                selectedIndex = specs.indexOfFirst { it.name == AppThemeState.colorSpec }.coerceAtLeast(0),
-                                onSelectedIndexChange = { index ->
-                                    setColorSpec(context, specs[index].name)
-                                },
+                                onClick = { showSpecDialog = true },
                             )
                         }
                     }
                 }
             }
             item {
+                Card(
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .fillMaxWidth(),
+                ) {
+                    SwitchPreference(
+                        title = "悬浮导航栏",
+                        summary = "iOS 风格悬浮底部导航",
+                        startAction = {
+                            Icon(
+                                Icons.Rounded.CallToAction,
+                                modifier = Modifier.padding(end = 6.dp),
+                                contentDescription = null,
+                                tint = colorScheme.onBackground,
+                            )
+                        },
+                        checked = AppThemeState.enableFloatingBottomBar,
+                        onCheckedChange = { setFloatingBottomBar(context, it) },
+                    )
+                    SwitchPreference(
+                        title = "预测性返回",
+                        summary = "Android 14+ 返回手势动画",
+                        startAction = {
+                            Icon(
+                                Icons.AutoMirrored.Rounded.MenuOpen,
+                                modifier = Modifier.padding(end = 6.dp),
+                                contentDescription = null,
+                                tint = colorScheme.onBackground,
+                            )
+                        },
+                        checked = AppThemeState.enablePredictiveBack,
+                        onCheckedChange = { setPredictiveBack(context, it) },
+                    )
+                }
+            }
+            item {
                 Spacer(Modifier.height(24.dp))
             }
         }
+    }
+
+    // 关键色选择对话框（默认 + 15 预设色）
+    if (showKeyColorDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showKeyColorDialog = false },
+            title = { androidx.compose.material3.Text("关键色") },
+            text = {
+                Column {
+                    listOf(null to "默认").forEach { (v, n) ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .clickable { setAccent(context, v); showKeyColorDialog = false }
+                                .padding(vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            androidx.compose.material3.RadioButton(
+                                selected = keyColor == v,
+                                onClick = { setAccent(context, v); showKeyColorDialog = false },
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(n, style = androidx.compose.material3.MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                    keyColorOptions.forEachIndexed { i, color ->
+                        val v: Long? = color
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .clickable { setAccent(context, v); showKeyColorDialog = false }
+                                .padding(vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            androidx.compose.material3.RadioButton(
+                                selected = keyColor == v,
+                                onClick = { setAccent(context, v); showKeyColorDialog = false },
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Box(
+                                modifier = Modifier.size(22.dp)
+                                    .clip(androidx.compose.foundation.shape.CircleShape)
+                                    .background(Color(color)),
+                            )
+                            Spacer(Modifier.width(10.dp))
+                            Text(keyColorNames[i], style = androidx.compose.material3.MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = { showKeyColorDialog = false }) { androidx.compose.material3.Text("取消") }
+            },
+        )
+    }
+    // 调色风格对话框
+    if (showStyleDialog) {
+        StyleSpecDialog(
+            title = "调色风格",
+            items = PaletteStyle.entries.map { it.name },
+            current = AppThemeState.colorStyle,
+            onSelect = { setColorStyle(context, it); showStyleDialog = false },
+            onDismiss = { showStyleDialog = false },
+        )
+    }
+    // 色域规范对话框
+    if (showSpecDialog) {
+        StyleSpecDialog(
+            title = "色域规范",
+            items = ColorSpec.SpecVersion.entries.map { it.name },
+            current = AppThemeState.colorSpec,
+            onSelect = { setColorSpec(context, it); showSpecDialog = false },
+            onDismiss = { showSpecDialog = false },
+        )
     }
 }
 
@@ -354,3 +458,46 @@ private val keyColorNames = listOf(
     "蓝色", "青色", "蓝绿色", "绿色", "黄色",
     "琥珀色", "橙色", "棕色", "蓝灰色", "樱花色",
 )
+
+/** 单选列表对话框（调色风格/色域规范通用） */
+@Composable
+private fun StyleSpecDialog(
+    title: String,
+    items: List<String>,
+    current: String,
+    onSelect: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { androidx.compose.material3.Text(title) },
+        text = {
+            Column {
+                items.forEach { item ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onSelect(item) }
+                            .padding(vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        androidx.compose.material3.RadioButton(
+                            selected = current == item,
+                            onClick = { onSelect(item) },
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(item, style = androidx.compose.material3.MaterialTheme.typography.bodyLarge)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            androidx.compose.material3.TextButton(onClick = onDismiss) { androidx.compose.material3.Text("取消") }
+        },
+    )
+}
+
+private fun accentName(accent: Long?): String {
+    if (accent == null) return "默认"
+    return keyColorNames.getOrNull(keyColorOptions.indexOf(accent)) ?: "自定义"
+}
