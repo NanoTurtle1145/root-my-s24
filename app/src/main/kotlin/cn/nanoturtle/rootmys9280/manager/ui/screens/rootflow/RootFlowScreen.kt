@@ -68,9 +68,15 @@ private fun RootFlowContent(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
+    // 轮询检测 KSU 驱动状态：root 流程可能在页面打开后完成，
+    // 单次检测会漏掉。每 2 秒刷新一次，驱动一加载就显示"已激活"。
     LaunchedEffect(Unit) {
         vm.refreshKsuStatus()
         vm.refreshKnox()
+        while (true) {
+            delay(2_000)
+            vm.refreshKsuStatus()
+        }
     }
 
     val shown = if (brief) state.logLines.filter { it.summary } else state.logLines
