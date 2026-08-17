@@ -87,10 +87,10 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
                 .padding(horizontal = 16.dp),
     ) {
         item {
-            Text(
-                text = "关于",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(top = 24.dp, bottom = 4.dp),
+            cn.nanoturtle.rootmys9280.manager.ui.components.BannerHeader(
+                title = "关于",
+                subtitle = "RootMyS9280 · 免解锁 root",
+                modifier = Modifier.padding(top = 24.dp),
             )
         }
 

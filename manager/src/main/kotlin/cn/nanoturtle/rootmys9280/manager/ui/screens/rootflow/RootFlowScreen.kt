@@ -76,15 +76,10 @@ private fun RootFlowContent(
             .padding(horizontal = 16.dp),
     ) {
         item {
-            Text(
-                text = "免解锁 Root",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(top = 24.dp, bottom = 4.dp),
-            )
-            Text(
-                text = "SM-S9280 国行免解锁 root：不刷机、不熔断 KNOX",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            cn.nanoturtle.rootmys9280.manager.ui.components.BannerHeader(
+                title = "免解锁 Root",
+                subtitle = "SM-S9280 国行免解锁 root：不刷机、不熔断 KNOX",
+                modifier = Modifier.padding(top = 24.dp),
             )
         }
 

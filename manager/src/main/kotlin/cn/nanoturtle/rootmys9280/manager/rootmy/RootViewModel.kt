@@ -75,10 +75,13 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             } catch (t: Throwable) {
                 appendLog("✗ 失败: ${t.message}")
             } finally {
-                // 唤醒屏幕（如果运行期间自动熄屏了）
+                // 唤醒屏幕（如果运行期间自动熄屏了）。Shizuku 可能中途断开，
+                // 这里必须兜底：finally 里的异常会覆盖上面的 catch，导致 app 崩溃。
                 if (autoScreenOff) {
-                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                        ShizukuController.shell("input keyevent 26")
+                    runCatching {
+                        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                            ShizukuController.shell("input keyevent 26")
+                        }
                     }
                     appendLog("◆ 已唤醒屏幕")
                 }

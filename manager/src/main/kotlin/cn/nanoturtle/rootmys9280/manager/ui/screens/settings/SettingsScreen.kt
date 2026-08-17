@@ -67,10 +67,10 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                 .padding(horizontal = 16.dp),
     ) {
         item {
-            Text(
-                text = "设置",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(top = 24.dp, bottom = 4.dp),
+            cn.nanoturtle.rootmys9280.manager.ui.components.BannerHeader(
+                title = "设置",
+                subtitle = "运行偏好与关于",
+                modifier = Modifier.padding(top = 24.dp),
             )
         }
 

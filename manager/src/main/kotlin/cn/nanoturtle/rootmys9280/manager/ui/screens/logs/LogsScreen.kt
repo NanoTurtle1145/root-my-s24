@@ -55,21 +55,15 @@ fun LogsScreen(
             .fillMaxSize()
             .padding(horizontal = 16.dp),
     ) {
-        Text(
-            text = "运行日志",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(top = 24.dp, bottom = 4.dp),
+        cn.nanoturtle.rootmys9280.manager.ui.components.BannerHeader(
+            title = "运行日志",
+            subtitle = "免解锁 Root 流程输出",
+            modifier = Modifier.padding(top = 24.dp),
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = "免解锁 Root 流程输出",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f),
-            )
             TextButton(onClick = { brief = !brief }) {
                 Text(if (brief) "详细" else "粗略")
             }
