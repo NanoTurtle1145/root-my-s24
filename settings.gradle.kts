@@ -19,7 +19,7 @@ dependencyResolutionManagement {
 rootProject.name = "RootMyS9280"
 
 include(
-    ":manager",
+    ":app",
     ":manager-ui",
     ":services:manager-service",
 )

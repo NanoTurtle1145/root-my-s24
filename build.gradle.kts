@@ -373,7 +373,7 @@ tasks.register<KtfmtFormatTask>("format") {
         "*/build.gradle.kts",
         "services/*-service/build.gradle.kts",
     )
-    dependsOn(":manager:ktfmtFormat")
+    dependsOn(":app:ktfmtFormat")
 }
 
 ktfmt { kotlinLangStyle() }
