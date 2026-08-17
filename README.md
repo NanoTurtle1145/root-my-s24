@@ -5,7 +5,7 @@
 <h1 align="center">RootMyS9280</h1>
 
 <p align="center">
-  免解锁 root · Samsung Galaxy S24 Ultra (SM-S9280 国行/港版/台版)<br>
+  免解锁 root · Samsung Galaxy S24 Ultra (SM-S9280)<br>
   基于内核漏洞 <strong>CVE-2026-43499</strong> 的安全研究项目
 </p>
 
@@ -32,7 +32,7 @@
 | 项目 | 值 |
 |---|---|
 | 机型 | Samsung Galaxy S24 Ultra |
-| 型号 | SM-S9280（国行 CHC / 港版 TGY / 台版 BRI） |
+| 型号 | SM-S9280（CHC / TGY / BRI） |
 | 固件 | S9280ZCS6DZF2（One UI 8.5） |
 | 内核 | 6.1.145-android14-11-3254743-abS9280ZCS6DZF2 |
 

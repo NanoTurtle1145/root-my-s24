@@ -39,6 +39,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val currentStage: Int = 0,
         val busy: Boolean = false,
         val rooted: Boolean = false,
+        /** KSU 驱动是否已加载（由 refreshKsuStatus 检测，重启后仍准确） */
+        val ksuLoaded: Boolean = false,
         /** KNOX 状态展示文案（由 refreshKnox 填充） */
         val knoxState: String = "",
     )
@@ -137,14 +139,31 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         _state.value = _state.value.copy(knoxState = text)
     }
 
+    /**
+     * 检测 KernelSU 驱动是否已加载（无需 root）：
+     * /proc/modules 列出已加载模块，或 /sys/module/kernelsu 存在即驱动在内核中。
+     * 重启后依然准确，不依赖本次会话是否跑过 root 流程。
+     */
+    suspend fun refreshKsuStatus() = withContext(Dispatchers.IO) {
+        val loaded = runCatching {
+            val p = ProcessBuilder(
+                "/system/bin/sh", "-c",
+                "grep -q 'kernelsu' /proc/modules 2>/dev/null || " +
+                    "ls /sys/module/kernelsu >/dev/null 2>&1"
+            ).start()
+            p.waitFor() == 0
+        }.getOrDefault(false)
+        _state.value = _state.value.copy(ksuLoaded = loaded, rooted = loaded)
+    }
+
     private suspend fun runRootFlow() = withContext(Dispatchers.IO) {
-        appendLog("◆ RootMyS9280 · SM-S9280 DZF2 免解锁 root")
+        appendLog("◆ RootMyS9280 启动中")
         appendLog("◆ 载荷: $payloadName (修正版, kmalloc_caches 0x176cbb8)")
 
         // 1. Shizuku
         appendLog("[1/5] 检查 Shizuku...")
         if (!ShizukuController.pingUntilRunning()) {
-            throw IllegalStateException("Shizuku 未运行。请先启动 Shizuku（无线/有线 ADB 授权）")
+            throw IllegalStateException("Shizuku 未运行。请先启动 Shizuku！")
         }
         if (!ShizukuController.requestPermission()) {
             throw IllegalStateException("Shizuku 权限被拒绝")
