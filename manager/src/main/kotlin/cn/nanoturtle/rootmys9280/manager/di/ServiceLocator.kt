@@ -1,0 +1,317 @@
+package cn.nanoturtle.rootmys9280.manager.di
+
+import cn.nanoturtle.rootmys9280.manager.data.model.ModuleDetectionCache
+import java.io.File
+import cn.nanoturtle.rootmys9280.ui.store.latestOn
+import cn.nanoturtle.rootmys9280.ui.store.StoreChannel
+import cn.nanoturtle.rootmys9280.ui.store.StoreEntry
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.SharingStarted
+import android.annotation.SuppressLint
+import android.content.Context
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import cn.nanoturtle.rootmys9280.ipc.IManagerService
+import cn.nanoturtle.rootmys9280.manager.data.log.CrashRecorder
+import cn.nanoturtle.rootmys9280.manager.data.github.GitHubRepository
+import cn.nanoturtle.rootmys9280.manager.data.repository.AppRepository
+import cn.nanoturtle.rootmys9280.manager.data.repository.BackupRepository
+import cn.nanoturtle.rootmys9280.manager.data.repository.FrameworkInstaller
+import cn.nanoturtle.rootmys9280.manager.data.repository.FrameworkUpdateRepository
+import cn.nanoturtle.rootmys9280.manager.data.repository.ManagerInstaller
+import cn.nanoturtle.rootmys9280.manager.data.repository.ModuleInstaller
+import cn.nanoturtle.rootmys9280.manager.data.repository.ModuleUpdateQueue
+import cn.nanoturtle.rootmys9280.manager.data.repository.ModuleRepository
+import cn.nanoturtle.rootmys9280.manager.data.repository.RepoRepository
+import cn.nanoturtle.rootmys9280.manager.data.repository.SettingsRepository
+import cn.nanoturtle.rootmys9280.manager.ipc.DaemonClient
+import cn.nanoturtle.rootmys9280.manager.ipc.daemonPackageEventsFlow
+import cn.nanoturtle.rootmys9280.manager.ipc.packageEventsFlow
+import cn.nanoturtle.rootmys9280.manager.net.HttpClientFactory
+import cn.nanoturtle.rootmys9280.manager.net.VectorDns
+
+/**
+ * Hand-rolled service location, deliberately not a DI framework.
+ *
+ * The manager normally runs *parasitically*: `ParasiticManagerHooker` injects `manager.apk` into
+ * the `com.android.shell` process, so this app's `AndroidManifest.xml` is never installed. Nothing
+ * declared in it exists at runtime — no `ContentProvider`, therefore no `androidx.startup`, and no
+ * guaranteed custom `Application`. Anything that self-initialises through `InitializationProvider`
+ * silently never runs. Everything here is therefore initialised explicitly and lazily.
+ *
+ * Initialisation order is not fixed either. The daemon may call `Constants.setBinder()` before the
+ * activity exists, or the activity may start before any binder arrives. [attach] and [bind] are
+ * both idempotent and safe in either order; nothing here throws because the other half has not
+ * happened yet.
+ */
+@SuppressLint("StaticFieldLeak") // Application context; it outlives everything here by design.
+object ServiceLocator {
+
+    /** Survives configuration changes, unlike anything scoped to the activity. */
+    val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    @Volatile private var appContext: Context? = null
+
+    private val _service = MutableStateFlow<IManagerService?>(null)
+
+    /**
+     * The daemon binder, as observable state.
+     *
+     * Repositories collect this rather than being poked by a setter, so a binder that arrives after
+     * they were constructed — or arrives again after a reconnect — makes them re-read instead of
+     * leaving them with whatever they managed to fetch before there was a daemon at all.
+     */
+    val service: StateFlow<IManagerService?> = _service.asStateFlow()
+
+    private val _peerMismatch = MutableStateFlow<String?>(null)
+
+    /**
+     * What the daemon turned out to be, when it is not something this build can talk to.
+     *
+     * Null in the ordinary case, including "no daemon at all" — this is only ever set when a binder
+     * did arrive and was then refused. That is a distinct situation from having no daemon and has to
+     * be rendered as one: the binder is alive and the framework is plainly running, so every screen
+     * would otherwise draw it as one that answers nothing.
+     *
+     * Two things set it, and the string says which: a descriptor that is not this interface, or a
+     * protocol version this build does not speak. It is text for a log and a marker for the header
+     * rather than something to branch on — the answer to both is the same, and a reader cannot act
+     * on the difference.
+     */
+    val peerMismatch: StateFlow<String?> = _peerMismatch.asStateFlow()
+
+    val context: Context
+        get() =
+            appContext
+                ?: error("ServiceLocator.attach() must run before the UI touches the context")
+
+    val daemon: DaemonClient by lazy { DaemonClient(service) }
+
+    private val net: HttpClientFactory.NetStack by lazy {
+        HttpClientFactory.create(context, settings)
+    }
+
+    val http: OkHttpClient
+        get() = net.client
+
+    /** The resolver inside [http], so the settings sheet can report what DoH is actually doing. */
+    val dns: VectorDns
+        get() = net.dns
+
+    val settings: SettingsRepository by lazy { SettingsRepository(context) }
+
+    val modules: ModuleRepository by lazy { ModuleRepository(daemon, appScope) }
+
+    val apps: AppRepository by lazy {
+        AppRepository(daemon, context.packageManager, moduleDetection)
+    }
+
+    /**
+     * Which packages are modules, remembered across launches.
+     *
+     * Shared rather than per view model: the answer is a property of the installed APKs, and a
+     * second copy would mean a second pass of opening every APK and split on the device as a zip.
+     */
+    val moduleDetection: ModuleDetectionCache by lazy {
+        ModuleDetectionCache(File(context.cacheDir, "module-detection.tsv"))
+    }
+
+    val store: RepoRepository by lazy { RepoRepository(http, daemon, appScope) }
+
+    val installer: ModuleInstaller by lazy { ModuleInstaller(context, http) }
+
+    val frameworkUpdates: FrameworkUpdateRepository by lazy { FrameworkUpdateRepository(github) }
+
+    /**
+     * Every installed module the catalogue knows about, joined to what this device has.
+     *
+     * Here rather than in either view model because three screens need it and they must agree: the
+     * Modules list marks a version as out of date, the module's own sheet offers to update it, and
+     * the Store counts the same modules in its header. Three independent answers to "is this out of
+     * date" is precisely how those numbers end up contradicting each other on one device.
+     *
+     * Keyed by package and limited to what is installed, because every reader of this asks about a
+     * module in front of them. The Store's own list joins the other direction, catalogue first.
+     */
+    val storeEntries: StateFlow<Map<String, StoreEntry>> by lazy {
+        combine(
+                store.catalog,
+                store.installedVersions,
+                settings.updateChannel,
+                settings.mutedUpdates,
+                settings.storeInstalls,
+            ) { catalog, installed, channelPreference, muted, storeInstalls ->
+                val channel = StoreChannel.of(channelPreference)
+                catalog.modules
+                    .filter { it.name in installed }
+                    .associate { module ->
+                        module.name to
+                            StoreEntry(
+                                module = module,
+                                latest = module.latestOn(channel),
+                                installed = installed[module.name],
+                                updatesMuted = module.name in muted,
+                                storeInstall = storeInstalls[module.name],
+                            )
+                    }
+            }
+            .flowOn(Dispatchers.Default)
+            .stateIn(appScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+    }
+
+    /**
+     * Installed modules the catalogue has something newer for, muting already applied.
+     *
+     * Expressed through `StoreEntry.upgradable`, the same property the Store's own list and count
+     * use, so there is one definition of the word and not a second one that merely agrees today.
+     */
+    val upgradablePackages: StateFlow<Set<String>> by lazy {
+        storeEntries
+            .map { entries -> entries.values.filter { it.upgradable }.map { it.module.name }.toSet() }
+            .stateIn(appScope, SharingStarted.WhileSubscribed(5_000), emptySet())
+    }
+
+    /**
+     * Installed modules that *are* out of date but were asked to keep quiet.
+     *
+     * Counted separately rather than folded into [upgradablePackages], because the two answer
+     * different questions: one is "what should this device tell you about", the other is "what did
+     * you tell it to stop mentioning". Only the update sheet asks the second, and it asks so that
+     * an ignored module is visible when someone goes looking, rather than being unreachable from
+     * the panel that hid it.
+     */
+    val mutedUpgradablePackages: StateFlow<Set<String>> by lazy {
+        storeEntries
+            .map { entries ->
+                entries.values
+                    .filter { it.updatesMuted && it.copy(updatesMuted = false).upgradable }
+                    .map { it.module.name }
+                    .toSet()
+            }
+            .stateIn(appScope, SharingStarted.WhileSubscribed(5_000), emptySet())
+    }
+
+    /** Sequential module updates, outliving the sheet that started them. */
+    val moduleUpdates: ModuleUpdateQueue by lazy { ModuleUpdateQueue(installer, store, modules, settings, appScope) }
+
+    val frameworkInstaller: FrameworkInstaller by lazy { FrameworkInstaller(context, http, daemon) }
+
+    /** Installs the manager itself as an ordinary app, for anyone who would rather have an icon. */
+    val managerInstaller: ManagerInstaller by lazy { ManagerInstaller(context, daemon) }
+
+    val backup: BackupRepository by lazy { BackupRepository(context, daemon) }
+
+    val github: GitHubRepository by lazy {
+        GitHubRepository(
+            client = http,
+            cacheDir = context.cacheDir,
+            windowMonthsProvider = { settings.activityWindowMonths.value },
+        )
+    }
+
+    /** Called from the activity. Safe to call repeatedly; later calls are ignored. */
+    fun attach(context: Context) {
+        if (appContext != null) return
+        appContext = context.applicationContext ?: context
+        // Before anything else that could fail. Nothing below is load-bearing for it, and a crash
+        // during startup is exactly the one that is hardest to catch on a cable.
+        CrashRecorder.install(appContext!!)
+
+        // Coil is configured by hand rather than through its manifest hooks, for the same reason
+        // OkHttp is: parasitically this app's manifest is never installed, so nothing that
+        // self-registers there ever runs. Here rather than in the activity because every entry
+        // point comes through `attach` — including the debug demo host, which never opens
+        // MainActivity and so had no image loader at all while this lived there.
+        //
+        // The factory is not called until the first image, so this costs nothing at startup and
+        // does not build the OkHttp client before something asks for it.
+        SingletonImageLoader.setSafe { platformContext: PlatformContext ->
+            ImageLoader.Builder(platformContext)
+                .components { add(OkHttpNetworkFetcherFactory(callFactory = { http })) }
+                .build()
+        }
+
+        observePackageChanges()
+    }
+
+    /**
+     * Invalidates the caches when a package is installed, updated or removed.
+     *
+     * The only collector of either flow, and on [appScope] so it lasts as long as the process:
+     * without it a module installed while the manager is open would never appear.
+     *
+     * Two sources, because neither sees the whole device. The platform's own broadcasts arrive only
+     * for the user this process runs in, so an app installed into a work profile or a secondary
+     * user went unnoticed here and the scope editor for a module in that profile never listed it.
+     * The daemon watches every user and re-broadcasts what it saw, but only while it is alive, so
+     * it cannot replace the platform source either.
+     *
+     * A package event on the primary user therefore arrives twice and this body runs twice, which
+     * is left alone on purpose: it drops two cached fields, reads the enabled list once and bumps a
+     * revision, and the platform alone already delivers ADDED and REPLACED for a single update — a
+     * repeat is the case this collector was written for, not a new one.
+     */
+    private fun observePackageChanges() {
+        appScope.launch {
+            merge(context.packageEventsFlow(), context.daemonPackageEventsFlow()).collect {
+                apps.invalidate()
+                modules.refresh()
+                modules.notePackagesChanged()
+            }
+        }
+    }
+
+    /**
+     * Starts the expensive reads while the splash is still on screen.
+     *
+     * The three panels a user actually opens first each begin with work that has nothing to do
+     * with drawing: enumerating every installed package, reading the module catalogue, fetching
+     * the activity feed. Doing that on first visit means the panel appears and then fills in;
+     * doing it here means it is usually already there.
+     *
+     * Every one of these is idempotent and cached, so the view models that ask again on arrival get
+     * the finished answer rather than starting a second copy. Failures are ignored on purpose: this
+     * is a head start, not a load-bearing step, and a screen that could not be reached because its
+     * prefetch failed would be worse than one that is merely slow.
+     */
+    fun prefetch() {
+        appScope.launch { runCatching { apps.getInstalledApps() } }
+        appScope.launch { runCatching { store.refresh(false) } }
+        // From disk only. Opening the manager is not by itself a reason to talk to GitHub, and
+        // asking for a revalidation here would override Home's own gate — the one that decides how
+        // rarely a launch is allowed to go and check.
+        appScope.launch { runCatching { github.load(GitHubRepository.Freshness.Cached) } }
+    }
+
+    /** Called from `Constants.setBinder`, possibly before [attach]. */
+    fun bind(service: IManagerService?) {
+        _service.value = service
+        _peerMismatch.value = null
+    }
+
+    /**
+     * Called instead of [bind] when the binder that arrived is not one this build can use.
+     *
+     * Deliberately leaves [service] null. A refused peer is not a degraded daemon that answers some
+     * calls; it is one whose every answer would be thrown or wrong, so handing it out would only
+     * spread failures across every screen.
+     */
+    fun bindMismatch(what: String) {
+        _service.value = null
+        _peerMismatch.value = what
+    }
+}
