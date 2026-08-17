@@ -33,6 +33,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
@@ -122,6 +123,13 @@ fun RootScreen(vm: RootViewModel = viewModel()) {
     val context = LocalContext.current
     var tab by remember { mutableStateOf(RootTab.Home) }
     var showThemeSettings by remember { mutableStateOf(false) }
+    var showRootFlow by remember { mutableStateOf(false) }
+
+    if (showRootFlow) {
+        // 免解锁 Root 独立页（照搬 KSU rootflow）
+        RootFlowScreen(onBack = { showRootFlow = false })
+        return
+    }
 
     if (showThemeSettings) {
         // 主题设置页（照搬 KSU ColorPalette，全屏独立页面）
@@ -157,6 +165,7 @@ fun RootScreen(vm: RootViewModel = viewModel()) {
                         .getBoolean(PREFS_AUTO_JUMP, true)
                     if (autoJump) tab = RootTab.Log // 开始后自动跳到日志页
                 },
+                onRootFlowClick = { showRootFlow = true },
                 modifier = Modifier.padding(innerPadding),
             )
             RootTab.Log -> LogScreen(state, vm, Modifier.padding(innerPadding))
@@ -176,6 +185,7 @@ private fun HomeScreen(
     state: RootViewModel.UiState,
     onStart: () -> Unit,
     modifier: Modifier = Modifier,
+    onRootFlowClick: () -> Unit = {},
 ) {
     var knox by remember { mutableStateOf("…") }
     var ksuLoaded by remember { mutableStateOf(false) }
@@ -319,6 +329,36 @@ private fun HomeScreen(
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             MetricCard("载荷", "修正版", Modifier.weight(1f))
             MetricCard("阶段", stageName(state.currentStage), Modifier.weight(1f))
+        }
+        Spacer(Modifier.height(16.dp))
+
+        // ---- 免解锁 Root 独立运行页入口（照搬 KSU RootFlowScreen）----
+        MiuixCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onRootFlowClick() },
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(Modifier.weight(1f)) {
+                    Text("免解锁 Root 页面", style = MaterialTheme.typography.titleSmall)
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        "打开 KSU 同款独立页：开始按钮、自动熄屏、KNOX 状态、导出日志、详细/粗略运行日志",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Icon(
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
         Spacer(Modifier.height(16.dp))
 

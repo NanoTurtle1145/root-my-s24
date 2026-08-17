@@ -39,6 +39,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val currentStage: Int = 0,
         val busy: Boolean = false,
         val rooted: Boolean = false,
+        /** KNOX 状态展示文案（由 refreshKnox 填充） */
+        val knoxState: String = "",
     )
 
     private val _state = MutableStateFlow(UiState())
@@ -100,6 +102,36 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         pendingPartial = ""
         currentStage = 0
         _state.value = _state.value.copy(logLines = emptyList(), currentStage = 0)
+    }
+
+    /** 供 UI 追加提示行（如导出结果），不改变阶段 */
+    fun notify(msg: String) {
+        appendLog(msg)
+    }
+
+    /**
+     * 读取 KNOX 状态（经 Shizuku 读只读属性，不影响熔断判断）。
+     * 注意：本流程不熔断 KNOX；warranty_bit=0 为完好。
+     */
+    suspend fun refreshKnox() {
+        val bit = runCatching {
+            ShizukuController.capture(
+                arrayOf("/system/bin/sh", "-c", "getprop ro.boot.warranty_bit 2>&1")
+            ).trim()
+        }.getOrDefault("")
+        val vbs = runCatching {
+            ShizukuController.capture(
+                arrayOf("/system/bin/sh", "-c", "getprop ro.boot.verifiedbootstate 2>&1")
+            ).trim()
+        }.getOrDefault("")
+        val text = when {
+            bit == "1" -> "已触发 (warranty_bit=1)"
+            bit == "0" && vbs == "green" -> "完好 (warranty_bit=0, verifiedbootstate=green)"
+            bit == "0" -> "完好 (warranty_bit=0, verifiedbootstate=${vbs.ifBlank { "?" }})"
+            vbs.isNotBlank() -> "未知 (verifiedbootstate=$vbs)"
+            else -> "未知（需 Shizuku）"
+        }
+        _state.value = _state.value.copy(knoxState = text)
     }
 
     private suspend fun runRootFlow() = withContext(Dispatchers.IO) {
