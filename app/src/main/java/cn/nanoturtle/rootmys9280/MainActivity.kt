@@ -93,6 +93,7 @@ import top.yukonga.miuix.kmp.basic.Card as MiuixCard
 import top.yukonga.miuix.kmp.basic.NavigationBar as MiuixNavigationBar
 import top.yukonga.miuix.kmp.basic.NavigationBarItem as MiuixNavigationBarItem
 import top.yukonga.miuix.kmp.basic.Switch as MiuixSwitch
+import top.yukonga.miuix.kmp.basic.TopAppBar as MiuixTopAppBar
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,12 +111,13 @@ class MainActivity : ComponentActivity() {
 enum class RootTab(val label: String, val icon: ImageVector) {
     Home("首页", Icons.Filled.Home),
     Log("日志", Icons.AutoMirrored.Filled.List),
+    Settings("设置", Icons.Filled.Settings),
     About("关于", Icons.Filled.Info),
 }
 
-private const val PREFS_BRIEF_LOG = "brief_log"
-private const val PREFS_AUTO_JUMP = "auto_jump_log"
-private const val REPO_URL = "https://github.com/nanoturtle1145/root-my-s9280"
+internal const val PREFS_BRIEF_LOG = "brief_log"
+internal const val PREFS_AUTO_JUMP = "auto_jump_log"
+internal const val REPO_URL = "https://github.com/nanoturtle1145/root-my-s9280"
 
 @Composable
 fun RootScreen(vm: RootViewModel = viewModel()) {
@@ -139,6 +141,16 @@ fun RootScreen(vm: RootViewModel = viewModel()) {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        topBar = {
+            MiuixTopAppBar(
+                title = when (tab) {
+                    RootTab.Home -> "RootMyS9280"
+                    RootTab.Log -> "运行日志"
+                    RootTab.Settings -> "设置"
+                    RootTab.About -> "关于"
+                },
+            )
+        },
         bottomBar = {
             if (cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.enableFloatingBottomBar) {
                 KsuFloatingBottomBar(tab = tab, onSelect = { tab = it })
@@ -169,9 +181,12 @@ fun RootScreen(vm: RootViewModel = viewModel()) {
                 modifier = Modifier.padding(innerPadding),
             )
             RootTab.Log -> LogScreen(state, vm, Modifier.padding(innerPadding))
-            RootTab.About -> AboutScreen(
+            RootTab.Settings -> SettingsScreen(
                 vm = vm,
                 onOpenTheme = { showThemeSettings = true },
+                modifier = Modifier.padding(innerPadding),
+            )
+            RootTab.About -> AboutScreen(
                 modifier = Modifier.padding(innerPadding),
             )
         }
@@ -464,7 +479,7 @@ private fun themeModeName(mode: Int): String = when (mode) {
     else -> "跟随系统"
 }
 
-private fun accentName(accent: Long?): String {
+internal fun accentName(accent: Long?): String {
     if (accent == null) return "跟随系统"
     return cn.nanoturtle.rootmys9280.ui.theme.AccentPresets
         .firstOrNull { it.first == accent }?.second ?: "自定义"
@@ -587,14 +602,9 @@ private fun LogScreen(
 
 @Composable
 private fun AboutScreen(
-    vm: RootViewModel,
-    onOpenTheme: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    var briefLog by remember { mutableStateOf(prefs.getBoolean(PREFS_BRIEF_LOG, false)) }
-    var autoJump by remember { mutableStateOf(prefs.getBoolean(PREFS_AUTO_JUMP, true)) }
     var knoxState by remember { mutableStateOf("检测中…") }
     var licenseDialog by remember { mutableStateOf<Pair<String, String>?>(null) }
 
@@ -681,105 +691,6 @@ private fun AboutScreen(
         }
         Spacer(Modifier.height(16.dp))
 
-        // ---- 通用（照搬 KSU 设置：miuix preference 条目）----
-        SectionTitle("通用")
-        MiuixCard(modifier = Modifier.fillMaxWidth()) {
-            // 主题设置（打开 KSU 同款调色板页面）
-            top.yukonga.miuix.kmp.preference.ArrowPreference(
-                title = "主题设置",
-                summary = accentName(cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.accent),
-                startAction = {
-                    Icon(
-                        Icons.Filled.CheckCircle,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(end = 6.dp),
-                    )
-                },
-                onClick = onOpenTheme,
-            )
-            top.yukonga.miuix.kmp.preference.SwitchPreference(
-                title = "日志默认模式",
-                summary = "打开日志页时默认使用粗略模式",
-                startAction = {
-                    Icon(
-                        Icons.Filled.Info,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(end = 6.dp),
-                    )
-                },
-                checked = briefLog,
-                onCheckedChange = {
-                    briefLog = it
-                    prefs.edit().putBoolean(PREFS_BRIEF_LOG, it).apply()
-                },
-            )
-            top.yukonga.miuix.kmp.preference.SwitchPreference(
-                title = "运行期间自动熄屏",
-                summary = "显示驱动停止，大幅降低崩溃概率",
-                startAction = {
-                    Icon(
-                        Icons.Filled.Warning,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(end = 6.dp),
-                    )
-                },
-                checked = vm.autoScreenOff,
-                onCheckedChange = { vm.setAutoScreenOff(it) },
-            )
-            top.yukonga.miuix.kmp.preference.SwitchPreference(
-                title = "开始后自动跳转日志页",
-                summary = "点击“开始 Root”后自动切到日志页",
-                startAction = {
-                    Icon(
-                        Icons.AutoMirrored.Filled.List,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(end = 6.dp),
-                    )
-                },
-                checked = autoJump,
-                onCheckedChange = {
-                    autoJump = it
-                    prefs.edit().putBoolean(PREFS_AUTO_JUMP, it).apply()
-                },
-            )
-        }
-        Spacer(Modifier.height(16.dp))
-
-        // ---- 关于 ----
-        SectionTitle("关于")
-        MiuixCard(modifier = Modifier.fillMaxWidth()) {
-            top.yukonga.miuix.kmp.preference.ArrowPreference(
-                title = "检查更新",
-                summary = "查看 GitHub Releases",
-                startAction = {
-                    Icon(
-                        Icons.Filled.Info,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(end = 6.dp),
-                    )
-                },
-                onClick = { openUrl(context, "$REPO_URL/releases") },
-            )
-            top.yukonga.miuix.kmp.preference.ArrowPreference(
-                title = "项目主页",
-                summary = REPO_URL.removePrefix("https://"),
-                startAction = {
-                    Icon(
-                        Icons.Filled.Home,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(end = 6.dp),
-                    )
-                },
-                onClick = { openUrl(context, REPO_URL) },
-            )
-        }
-        Spacer(Modifier.height(8.dp))
         InfoCard(
             rows = listOf(
                 "App 版本" to "v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
@@ -936,7 +847,7 @@ private fun AboutScreen(
 }
 
 @Composable
-private fun SectionTitle(text: String) {
+internal fun SectionTitle(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleMedium,
@@ -1095,7 +1006,7 @@ private fun loadLicense(context: Context, name: String): String = try {
 }
 
 /** 打开外部链接（浏览器） */
-private fun openUrl(context: Context, url: String) {
+internal fun openUrl(context: Context, url: String) {
     try {
         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     } catch (e: Exception) {

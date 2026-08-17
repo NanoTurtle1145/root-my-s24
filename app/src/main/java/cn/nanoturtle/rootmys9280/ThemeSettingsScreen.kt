@@ -151,7 +151,7 @@ fun ThemeSettingsScreen(onBack: () -> Unit) {
                         // 关键色（KSU keyColorOptions 同款：默认 + 15 色，对话框选择）
                         top.yukonga.miuix.kmp.preference.ArrowPreference(
                             title = "关键色",
-                            summary = accentName(keyColor),
+                            summary = keyColorAccentName(keyColor),
                             startAction = {
                                 Icon(
                                     Icons.Rounded.Colorize,
@@ -497,7 +497,7 @@ private fun StyleSpecDialog(
     )
 }
 
-private fun accentName(accent: Long?): String {
+private fun keyColorAccentName(accent: Long?): String {
     if (accent == null) return "默认"
     return keyColorNames.getOrNull(keyColorOptions.indexOf(accent)) ?: "自定义"
 }
