@@ -1,8 +1,23 @@
-# RootMyS9280
+<p align="center">
+  <img src="docs/banner.png" alt="RootMyS9280 - 比那名居天子手持 S24 Ultra" width="100%">
+</p>
 
-**免解锁 root Samsung Galaxy S24 Ultra (SM-S9280 国行/港版/台版)** —— 基于内核漏洞 CVE-2026-43499 的安全研究项目。
+<h1 align="center">RootMyS9280</h1>
+
+<p align="center">
+  免解锁 root · Samsung Galaxy S24 Ultra (SM-S9280 国行/港版/台版)<br>
+  基于内核漏洞 <strong>CVE-2026-43499</strong> 的安全研究项目
+</p>
+
+<p align="center">
+  <a href="https://github.com/NanoTurtle1145/root-my-s9280/releases"><img src="https://img.shields.io/badge/version-2.0-1E88E5?style=flat-square" alt="Version 2.0"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s9280"><img src="https://img.shields.io/badge/platform-Android-1E88E5?style=flat-square" alt="Android"></a>
+</p>
 
 > 安全研究声明：本项目仅用于安全研究与自有设备维护。使用内核漏洞提权存在导致系统崩溃、数据丢失、设备变砖的风险，使用者需自行承担一切后果。请勿用于非法用途。
+
+---
 
 ## 特性
 
@@ -10,6 +25,7 @@
 - 不熔断 KNOX：e-fuse 状态保持原样（可搭配 KnoxPatch 恢复 Secure Folder 等 KNOX 功能）
 - 半持久化：每次重启后运行一次 App 即可重新加载 KernelSU 驱动
 - 支持 KernelSU 生态：Zygisk-Next / LSPosed / KnoxPatch 等模块
+- 现代 Material 3 界面：动态 ambience 头部、悬浮导航、多语言
 
 ## 支持设备
 
@@ -28,12 +44,20 @@
 ## 使用流程
 
 1. 安装并启动 Shizuku（无线/有线 ADB 授权）
-2. 打开 RootMyS9280 → 点击「开始 Root」（建议熄屏运行，降低内核竞态概率）
-3. 等待 exploit 完成 → 自动执行 KernelSU late-load
-4. 安装 KernelSU Manager（v3.2.5）→ 强制停止后重开，显示「工作中 <LKM> [越狱模式]」
+2. 打开 RootMyS9280，点击「开始 Root」（建议熄屏运行，降低内核竞态概率）
+3. 等待 exploit 完成，自动执行 KernelSU late-load
+4. 安装 KernelSU Manager（v3.2.5），强制停止后重开，显示「工作中 <LKM> [越狱模式]」
 5. 安装模块：Zygisk-Next → LSPosed → KnoxPatch，重启 Zygote 后配置
 
 > exploit 是概率性的，失败/重启后重试即可（成功率随尝试累加）。
+
+## 界面
+
+<p align="center">
+  <img src="docs/tenshi_holding_s24.png" alt="App 图标：比那名居天子手持 S24 Ultra" width="240">
+</p>
+
+App 图标取自 THBWiki 的比那名居天子（东方绯想天/凭依华）官方立绘，手持一台 S24 Ultra。
 
 ## 注意事项
 
@@ -59,6 +83,7 @@
 - [Zygisk-Next](https://github.com/Dr-TSNG/ZygiskNext)
 - [LSPosed](https://github.com/LSPosed/LSPosed)（GPL-3.0）
 - [KnoxPatch](https://github.com/salvogiangri/KnoxPatch)
+- [Vector](https://github.com/JingMatrix/Vector) 界面模板（Material 3 / ambience）
 
 ## License
 
