@@ -9,8 +9,10 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -64,6 +66,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -74,6 +77,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import cn.nanoturtle.rootmys9280.ui.theme.PREFS_NAME
 import cn.nanoturtle.rootmys9280.ui.theme.RootMyS9280Theme
 import cn.nanoturtle.rootmys9280.ui.theme.initAppTheme
+import cn.nanoturtle.rootmys9280.ui.theme.setAccent
 import cn.nanoturtle.rootmys9280.ui.theme.setDynamicColor
 import cn.nanoturtle.rootmys9280.ui.theme.setThemeMode
 import kotlinx.coroutines.Dispatchers
@@ -112,6 +116,13 @@ fun RootScreen(vm: RootViewModel = viewModel()) {
     val state by vm.state.collectAsState()
     val context = LocalContext.current
     var tab by remember { mutableStateOf(RootTab.Home) }
+    var showThemeSettings by remember { mutableStateOf(false) }
+
+    if (showThemeSettings) {
+        // 主题设置页（照搬 KSU ColorPalette，全屏独立页面）
+        ThemeSettingsScreen(onBack = { showThemeSettings = false })
+        return
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -140,7 +151,10 @@ fun RootScreen(vm: RootViewModel = viewModel()) {
                 modifier = Modifier.padding(innerPadding),
             )
             RootTab.Log -> LogScreen(state, vm, Modifier.padding(innerPadding))
-            RootTab.About -> AboutScreen(Modifier.padding(innerPadding))
+            RootTab.About -> AboutScreen(
+                onOpenTheme = { showThemeSettings = true },
+                modifier = Modifier.padding(innerPadding),
+            )
         }
     }
 }
@@ -400,41 +414,17 @@ private fun themeModeName(mode: Int): String = when (mode) {
     else -> "跟随系统"
 }
 
-/** 主题模式选择对话框（KSU 风格单选） */
-@Composable
-private fun ThemeModeDialog(
-    current: Int,
-    onSelect: (Int) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("主题模式") },
-        text = {
-            Column {
-                listOf(0 to "跟随系统", 1 to "浅色", 2 to "深色").forEach { (mode, name) ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { onSelect(mode) }
-                            .padding(vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        RadioButton(
-                            selected = current == mode,
-                            onClick = { onSelect(mode) },
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(name, style = MaterialTheme.typography.bodyLarge)
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
-        },
-    )
+private fun accentName(accent: Long?): String {
+    if (accent == null) return "跟随系统"
+    return cn.nanoturtle.rootmys9280.ui.theme.AccentPresets
+        .firstOrNull { it.first == accent }?.second ?: "自定义"
 }
+
+
+
+
+
+
 
 // ---------------------------------------------------------------- 日志页
 
@@ -546,14 +536,16 @@ private fun LogScreen(
 // ---------------------------------------------------------------- 关于页
 
 @Composable
-private fun AboutScreen(modifier: Modifier = Modifier) {
+private fun AboutScreen(
+    onOpenTheme: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val context = LocalContext.current
     val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     var briefLog by remember { mutableStateOf(prefs.getBoolean(PREFS_BRIEF_LOG, false)) }
     var autoJump by remember { mutableStateOf(prefs.getBoolean(PREFS_AUTO_JUMP, true)) }
     var knoxState by remember { mutableStateOf("检测中…") }
     var licenseDialog by remember { mutableStateOf<Pair<String, String>?>(null) }
-    var showThemeDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         knoxState = readProp("ro.boot.warranty_bit")?.let {
@@ -563,17 +555,6 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
 
     licenseDialog?.let { (title, text) ->
         LicenseDialog(title = title, text = text, onDismiss = { licenseDialog = null })
-    }
-
-    if (showThemeDialog) {
-        ThemeModeDialog(
-            current = cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.themeMode,
-            onSelect = { mode ->
-                setThemeMode(context, mode)
-                showThemeDialog = false
-            },
-            onDismiss = { showThemeDialog = false },
-        )
     }
 
     Column(
@@ -652,22 +633,10 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
         // ---- 通用（照搬 KSU 设置：miuix preference 条目）----
         SectionTitle("通用")
         MiuixCard(modifier = Modifier.fillMaxWidth()) {
+            // 主题设置（打开 KSU 同款调色板页面）
             top.yukonga.miuix.kmp.preference.ArrowPreference(
-                title = "主题模式",
-                summary = themeModeName(cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.themeMode),
-                startAction = {
-                    Icon(
-                        Icons.Filled.Settings,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(end = 6.dp),
-                    )
-                },
-                onClick = { showThemeDialog = true },
-            )
-            top.yukonga.miuix.kmp.preference.SwitchPreference(
-                title = "动态取色",
-                summary = "Material You 动态配色",
+                title = "主题设置",
+                summary = accentName(cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.accent),
                 startAction = {
                     Icon(
                         Icons.Filled.CheckCircle,
@@ -676,8 +645,7 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
                         modifier = Modifier.padding(end = 6.dp),
                     )
                 },
-                checked = cn.nanoturtle.rootmys9280.ui.theme.AppThemeState.dynamicColor,
-                onCheckedChange = { setDynamicColor(context, it) },
+                onClick = onOpenTheme,
             )
             top.yukonga.miuix.kmp.preference.SwitchPreference(
                 title = "日志默认模式",
