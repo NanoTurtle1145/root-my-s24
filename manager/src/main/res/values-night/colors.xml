@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Dark Mode background -->
-    <color name="ic_launcher_bg">#121212</color>
+    <!-- Dark Mode background：天子蓝 -->
+    <color name="ic_launcher_bg">#1565C0</color>
 </resources>

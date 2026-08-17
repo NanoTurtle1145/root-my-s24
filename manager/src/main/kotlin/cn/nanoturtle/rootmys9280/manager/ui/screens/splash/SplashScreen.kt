@@ -95,12 +95,12 @@ fun WingedVictory() {
         contentAlignment = Alignment.Center,
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_winged_victory),
+            painter = painterResource(id = R.drawable.ic_launcher_foreground),
             contentDescription = null,
             tint = Color.Unspecified,
-            // The drawable is a 108dp square whose figure runs nearly the full height of its
-            // viewport, so it is given 92% of both dimensions and fitted inside — which keeps its
-            // proportions in portrait and landscape without stretching or clipping.
+            // The drawable is a 512px square whose subject runs in the safe middle, so it is given
+            // 92% of both dimensions and fitted inside — which keeps its proportions in portrait
+            // and landscape without stretching or clipping.
             modifier = Modifier.fillMaxSize(0.92f).scale(scale).alpha(alpha),
         )
     }
