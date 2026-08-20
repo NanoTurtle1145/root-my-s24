@@ -581,6 +581,11 @@
     <string name="donation_go_about">Open About</string>
     <string name="donation_later">Later</string>
     <string name="about_section_support">Support</string>
-    <string name="about_support_body">If this tool has helped you, you can buy the developer a drink. Thank you for your support!</string>
+    <string name="about_support_title">Buy the developer a drink</string>
+    <string name="about_support_body">If this tool has helped you, a small donation keeps it going. Thank you!</string>
     <string name="about_support_qr_hint">Scan with Alipay or WeChat Pay</string>
+    <string name="donate_screen_title">Support the project</string>
+    <string name="donate_back">Back</string>
+    <string name="donate_body_long">Thank you for considering a donation! Scan the QR code below with Alipay or WeChat Pay. Every bit helps keep this project alive and maintained.</string>
+    <string name="donate_thanks">Thanks for your support 🐢</string>
 </resources>

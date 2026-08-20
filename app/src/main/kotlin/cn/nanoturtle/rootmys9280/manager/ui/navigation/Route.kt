@@ -48,6 +48,9 @@ sealed interface TopLevelRoute : Route {
 /** URL shown in the built-in viewer rather than handed to a browser. */
 @Serializable data class Web(val url: String) : Route
 
+/** 捐赠页：展示收款二维码。 */
+@Serializable data object Donate : Route
+
 /**
  * Label and icon for a bar item. Titles come from resources; no hard-coded English.
  *

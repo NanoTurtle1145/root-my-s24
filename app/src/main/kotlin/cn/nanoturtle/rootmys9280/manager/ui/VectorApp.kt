@@ -131,6 +131,12 @@ private fun EntryProviderScope<NavKey>.registerRoutes(navigator: Navigator) {
     entry<TopLevelRoute.About> {
         AboutScreen(
             onOpenUrl = { url -> navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Web(url)) },
+            onOpenDonate = { navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Donate) },
+        )
+    }
+    entry<cn.nanoturtle.rootmys9280.manager.ui.navigation.Donate> {
+        cn.nanoturtle.rootmys9280.manager.ui.screens.donate.DonateScreen(
+            onNavigateBack = { navigator.back() },
         )
     }
     entry<cn.nanoturtle.rootmys9280.manager.ui.navigation.Web> { route ->

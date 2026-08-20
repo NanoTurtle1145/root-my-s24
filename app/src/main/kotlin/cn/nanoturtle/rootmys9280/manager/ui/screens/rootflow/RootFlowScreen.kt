@@ -81,6 +81,8 @@ private fun RootFlowContent(
     // 轮询检测 KSU 驱动状态：root 流程可能在页面打开后完成，
     // 单次检测会漏掉。每 2 秒刷新一次，驱动一加载就显示"已激活"。
     LaunchedEffect(Unit) {
+        // 自动申请 Shizuku 权限（未授权时弹系统授权框，幂等）
+        vm.ensureShizukuPermission()
         vm.refreshKsuStatus()
         vm.refreshKnox()
         while (true) {

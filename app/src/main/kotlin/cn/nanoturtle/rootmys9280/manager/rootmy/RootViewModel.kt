@@ -124,6 +124,17 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
+     * 自动申请 Shizuku 权限：已授权则直接返回 true；
+     * 未授权但 Shizuku 在运行则弹出系统授权框请求；Shizuku 未运行返回 false。
+     * 幂等，可安全地在页面加载时调用。
+     */
+    suspend fun ensureShizukuPermission(): Boolean {
+        if (ShizukuController.isGranted()) return true
+        if (!ShizukuController.pingUntilRunning(timeoutMillis = 2_000)) return false
+        return ShizukuController.requestPermission()
+    }
+
+    /**
      * 读取 KNOX 状态（经 Shizuku 读只读属性，不影响熔断判断）。
      * 注意：本流程不熔断 KNOX；warranty_bit=0 为完好。
      */

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Smartphone
+import androidx.compose.material.icons.rounded.VolunteerActivism
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -74,7 +75,10 @@ private fun faqList(): List<Faq> =
  * 纯静态 UI，无需 ViewModel。
  */
 @Composable
-fun AboutScreen(onOpenUrl: (String) -> Unit) {
+fun AboutScreen(
+    onOpenUrl: (String) -> Unit,
+    onOpenDonate: () -> Unit = {},
+) {
     val context = LocalContext.current
     // 运行时读取已安装的应用图标，避免依赖具体 mipmap 资源名。
     val appIcon =
@@ -219,52 +223,27 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
 
         item {
             SectionLabel(stringResource(R.string.about_section_support))
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier
+            Card(
+                modifier =
+                    Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text = stringResource(R.string.about_support_body),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                    )
-                    Spacer(Modifier.height(12.dp))
-                    // 收款二维码：把收款码图片命名为 donate_qr.png 放入 drawable-nodpi
-                    val qrId =
-                        remember {
-                            context.resources.getIdentifier(
-                                "donate_qr",
-                                "drawable",
-                                context.packageName,
-                            )
-                        }
-                    if (qrId != 0) {
-                        Image(
-                            painter = androidx.compose.ui.res.painterResource(qrId),
-                            contentDescription = stringResource(R.string.about_support_qr_hint),
-                            modifier = Modifier
-                                .fillMaxWidth(0.7f)
-                                .aspectRatio(600f / 1737f)
-                                .clip(RoundedCornerShape(12.dp)),
+                        .clickable { onOpenDonate() },
+            ) {
+                ListItem(
+                    leadingContent = {
+                        Icon(
+                            Icons.Rounded.VolunteerActivism,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
                         )
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            text = stringResource(R.string.about_support_qr_hint),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    } else {
-                        Text(
-                            text = stringResource(R.string.about_support_qr_hint),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.outline,
-                        )
-                    }
-                }
+                    },
+                    headlineContent = { Text(stringResource(R.string.about_support_title)) },
+                    supportingContent = { Text(stringResource(R.string.about_support_body)) },
+                    trailingContent = {
+                        Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null)
+                    },
+                    colors = cardRowColors,
+                )
             }
         }
 

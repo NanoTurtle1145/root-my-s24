@@ -527,6 +527,11 @@
     <string name="donation_go_about">去关于页</string>
     <string name="donation_later">以后再说</string>
     <string name="about_section_support">支持我们</string>
-    <string name="about_support_body">如果这个工具帮到了你，可以请开发者喝杯饮料。感谢支持！</string>
+    <string name="about_support_title">请开发者喝杯饮料</string>
+    <string name="about_support_body">如果这个工具帮到了你，小小的支持会让它走得更远。感谢！</string>
     <string name="about_support_qr_hint">使用支付宝或微信扫码</string>
+    <string name="donate_screen_title">支持这个项目</string>
+    <string name="donate_back">返回</string>
+    <string name="donate_body_long">感谢你考虑捐赠！请使用支付宝或微信扫描下方二维码。每一份支持都能让这个项目继续维护下去。</string>
+    <string name="donate_thanks">感谢支持 🐢</string>
 </resources>
