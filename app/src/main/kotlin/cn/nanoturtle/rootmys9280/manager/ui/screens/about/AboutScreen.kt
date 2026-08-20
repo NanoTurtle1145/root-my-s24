@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -246,7 +247,8 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
                             painter = androidx.compose.ui.res.painterResource(qrId),
                             contentDescription = stringResource(R.string.about_support_qr_hint),
                             modifier = Modifier
-                                .size(200.dp)
+                                .fillMaxWidth(0.7f)
+                                .aspectRatio(600f / 1737f)
                                 .clip(RoundedCornerShape(12.dp)),
                         )
                         Spacer(Modifier.height(8.dp))
