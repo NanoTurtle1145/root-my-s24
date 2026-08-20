@@ -521,4 +521,12 @@
     <string name="log_export_entry_fail">无法创建下载项</string>
     <string name="log_export_write_fail">无法写入下载项</string>
     <string name="log_export_ok_path">已导出到 %1$s</string>
+<!-- RootMyS9280 donation strings -->
+    <string name="donation_title">支持一下这个项目</string>
+    <string name="donation_body">你已经成功 root %1$d 次，感谢使用！如果 RootMyS9280 帮到了你，可以的话请支持一下，在「关于」页扫码即可。你的支持会让这个项目走得更远。</string>
+    <string name="donation_go_about">去关于页</string>
+    <string name="donation_later">以后再说</string>
+    <string name="about_section_support">支持我们</string>
+    <string name="about_support_body">如果这个工具帮到了你，可以请开发者喝杯饮料。感谢支持！</string>
+    <string name="about_support_qr_hint">使用支付宝或微信扫码</string>
 </resources>

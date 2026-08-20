@@ -116,7 +116,9 @@ fun VectorApp() {
  */
 private fun EntryProviderScope<NavKey>.registerRoutes(navigator: Navigator) {
     entry<TopLevelRoute.RootFlow> {
-        RootFlowScreen()
+        RootFlowScreen(
+            onGoAbout = { navigator.switchTo(TopLevelRoute.About) },
+        )
     }
     entry<TopLevelRoute.Logs> {
         LogsScreen()

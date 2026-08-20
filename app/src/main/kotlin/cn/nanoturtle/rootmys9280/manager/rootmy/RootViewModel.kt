@@ -11,7 +11,9 @@ import androidx.lifecycle.viewModelScope
 import cn.nanoturtle.rootmys9280.manager.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -48,6 +50,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _state = MutableStateFlow(UiState())
     val state: StateFlow<UiState> = _state
+
+    /** 一次性事件：达到捐赠里程碑时发射（携带当前成功次数）。 */
+    private val _donationEvent = MutableSharedFlow<Int>(extraBufferCapacity = 1)
+    val donationEvent: SharedFlow<Int> = _donationEvent
+
+    private val donationManager = DonationManager(app)
 
     /** exploit 进程的原始输出累积缓冲（跨轮询保留，用于计算增量） */
     private val captured = StringBuilder()
@@ -303,6 +311,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
         _state.value = _state.value.copy(rooted = true)
         appendLog("🎉 " + app.getString(R.string.log_flow_done))
+
+        // 捐赠里程碑：root 成功累计到 10/25/50/75/100… 时提示一次
+        if (donationManager.recordSuccess()) {
+            _donationEvent.tryEmit(donationManager.successCount)
+        }
     }
 
     private fun extractAsset(name: String): File {

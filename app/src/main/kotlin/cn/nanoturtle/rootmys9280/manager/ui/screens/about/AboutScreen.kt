@@ -217,6 +217,56 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
         }
 
         item {
+            SectionLabel(stringResource(R.string.about_section_support))
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = stringResource(R.string.about_support_body),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    // 收款二维码：把收款码图片命名为 donate_qr.png 放入 drawable-nodpi
+                    val qrId =
+                        remember {
+                            context.resources.getIdentifier(
+                                "donate_qr",
+                                "drawable",
+                                context.packageName,
+                            )
+                        }
+                    if (qrId != 0) {
+                        Image(
+                            painter = androidx.compose.ui.res.painterResource(qrId),
+                            contentDescription = stringResource(R.string.about_support_qr_hint),
+                            modifier = Modifier
+                                .size(200.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(R.string.about_support_qr_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.about_support_qr_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline,
+                        )
+                    }
+                }
+            }
+        }
+
+        item {
             Text(
                 text = stringResource(R.string.about_disclaimer),
                 style = MaterialTheme.typography.bodySmall,

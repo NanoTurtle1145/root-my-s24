@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -20,6 +21,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,9 +52,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun RootFlowScreen(
     vm: RootViewModel = ServiceLocator.rootViewModel,
+    onGoAbout: (() -> Unit)? = null,
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
-    RootFlowContent(vm = vm, state = state)
+    RootFlowContent(vm = vm, state = state, onGoAbout = onGoAbout)
 }
 
 @Composable
@@ -60,13 +63,20 @@ private fun RootFlowContent(
     vm: RootViewModel,
     state: RootViewModel.UiState,
     modifier: Modifier = Modifier,
+    onGoAbout: (() -> Unit)? = null,
 ) {
     var brief by remember { mutableStateOf(false) }
     var exportResult by remember { mutableStateOf<String?>(null) }
     var showAppearance by remember { mutableStateOf(false) }
     var showLanguage by remember { mutableStateOf(false) }
+    var donationMilestone by remember { mutableIntStateOf(0) }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
+
+    // 捐赠里程碑事件：达到 10/25/50/75/100… 次 root 成功时弹出一次
+    LaunchedEffect(Unit) {
+        vm.donationEvent.collect { count -> donationMilestone = count }
+    }
 
     // 轮询检测 KSU 驱动状态：root 流程可能在页面打开后完成，
     // 单次检测会漏掉。每 2 秒刷新一次，驱动一加载就显示"已激活"。
@@ -93,6 +103,38 @@ private fun RootFlowContent(
         cn.nanoturtle.rootmys9280.ui.locale.LanguageSheet(
             controller = cn.nanoturtle.rootmys9280.manager.di.VectorLocaleController,
             onDismiss = { showLanguage = false },
+        )
+    }
+
+    if (donationMilestone > 0) {
+        AlertDialog(
+            onDismissRequest = { donationMilestone = 0 },
+            title = {
+                Text(stringResource(R.string.donation_title))
+            },
+            text = {
+                Text(
+                    stringResource(
+                        R.string.donation_body,
+                        donationMilestone,
+                    ),
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        donationMilestone = 0
+                        onGoAbout?.invoke()
+                    },
+                ) {
+                    Text(stringResource(R.string.donation_go_about))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { donationMilestone = 0 }) {
+                    Text(stringResource(R.string.donation_later))
+                }
+            },
         )
     }
 
