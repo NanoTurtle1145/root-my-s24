@@ -412,7 +412,7 @@
     <string name="launcher_prompt_body">Vector はインストールされるのではなく、別のプロセス内で実行されるため、ランチャーには何も表示されず、Vector に戻ってくる手段もありません。ホーム画面にショートカットを作成するか、通常のアプリとしてインストールしてください。</string>
     <string name="launcher_prompt_never">今後表示しない</string>
 
-    <!-- RootMyS9280 custom UI -->
+    <!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">設定</string>
     <string name="settings_screen_subtitle">実行設定とアプリ情報</string>
     <string name="settings_section_run">実行</string>
@@ -426,7 +426,7 @@
     <string name="settings_project_home">プロジェクトホーム</string>
     <string name="settings_project_home_summary">ソースコード、問題、使い方のメモ</string>
     <string name="settings_version">バージョン v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">SM-S9280 unlock root · フラッシュ不要、KNOX はトリップしません</string>
+    <string name="rootflow_detail_fallback">S24 series unlock root · フラッシュ不要、KNOX はトリップしません</string>
     <string name="rootflow_start">Root を開始</string>
     <string name="rootflow_running">実行中...</string>
     <string name="rootflow_done">root 完了</string>
@@ -450,8 +450,8 @@
     <string name="logs_empty_brief">（要約行はまだありません）</string>
     <string name="logs_empty">（ここにログが表示されます。「Start Root」をタップして開始してください）</string>
     <string name="about_screen_title">このアプリについて</string>
-    <string name="about_screen_subtitle">RootMyS9280 · unlock root</string>
-    <string name="about_tagline">SM-S9280 unlock root · CVE-2026-43499 のセキュリティ研究に基づく</string>
+    <string name="about_screen_subtitle">RootMyS24 · unlock root</string>
+    <string name="about_tagline">S24 series unlock root · CVE-2026-43499 のセキュリティ研究に基づく</string>
     <string name="about_section_device">端末情報</string>
     <string name="about_device_model">モデル</string>
     <string name="about_system_version">システムバージョン</string>
@@ -465,8 +465,8 @@
     <string name="about_faq_restart_q">再起動後に再 root は必要ですか？</string>
     <string name="about_faq_restart_a">はい。ブートローダーはロックされているため、再起動のたびに Unlock Root を再実行してください。</string>
     <string name="about_disclaimer">免責事項: このアプリはセキュリティ研究と個人学習のみを目的としています。カーネルメモリ破壊による権限昇格は本質的に不確実であり、利用は自己責任です。現地の法律を遵守してください。</string>
-<!-- RootMyS9280 log strings -->
-    <string name="log_starting">RootMyS9280 を開始中</string>
+<!-- RootMyS24 log strings -->
+    <string name="log_starting">RootMyS24 を開始中</string>
     <string name="log_payload">Payload: %1$s (固定, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] Shizuku を確認中...</string>
     <string name="log_shizuku_not_running">Shizuku が実行されていません。先に Shizuku を起動してください!</string>
@@ -505,7 +505,7 @@
     <string name="log_knox_unknown">不明 (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">不明 (Shizuku が必要)</string>
     <string name="log_binder_unavailable">Shizuku のバインダーを利用できません</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">ダウンロード項目を作成できませんでした</string>
     <string name="log_export_write_fail">ダウンロード項目に書き込めませんでした</string>
     <string name="log_export_ok_path">%1$s にエクスポートしました</string>

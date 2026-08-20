@@ -123,7 +123,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                 ListItem(
                     modifier =
                         Modifier.clickable {
-                            onOpenUrl("https://github.com/NanoTurtle1145/root-my-s9280/releases")
+                            onOpenUrl("https://github.com/NanoTurtle1145/root-my-s24/releases")
                         },
                     leadingContent = { Icon(Icons.Rounded.Update, contentDescription = null) },
                     supportingContent = { Text(stringResource(R.string.settings_check_update_summary)) },
@@ -136,7 +136,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                 ListItem(
                     modifier =
                         Modifier.clickable {
-                            onOpenUrl("https://github.com/NanoTurtle1145/root-my-s9280")
+                            onOpenUrl("https://github.com/NanoTurtle1145/root-my-s24")
                         },
                     leadingContent = { Icon(Icons.Rounded.Code, contentDescription = null) },
                     supportingContent = { Text(stringResource(R.string.settings_project_home_summary)) },

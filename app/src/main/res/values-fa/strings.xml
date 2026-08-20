@@ -432,7 +432,7 @@
     <string name="launcher_prompt_title">Vector هنوز نمادی ندارد</string>
     <string name="launcher_prompt_body">Vector به‌جای آنکه نصب شده باشد درون فرایندی دیگر اجرا می‌شود، پس چیزی در لانچر پیدا نمی‌شود و راه روشنی برای بازگشت به آن نیست. به آن میان‌بری در صفحهٔ اصلی بدهید، یا آن را مانند برنامه‌ای معمولی نصب کنید.</string>
     <string name="launcher_prompt_never">دیگر پرسیده نشود</string>
-    <!-- RootMyS9280 custom UI -->
+    <!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">تنظیمات</string>
     <string name="settings_screen_subtitle">اولویت‌های اجرا و درباره</string>
     <string name="settings_section_run">اجرا</string>
@@ -446,7 +446,7 @@
     <string name="settings_project_home">خانهٔ پروژه</string>
     <string name="settings_project_home_summary">کد منبع، مشکلات و نکات استفاده</string>
     <string name="settings_version">نسخه v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">آنلاک روت SM-S9280 · بدون فلش، بدون فعال‌شدن KNOX</string>
+    <string name="rootflow_detail_fallback">آنلاک روت S24 series · بدون فلش، بدون فعال‌شدن KNOX</string>
     <string name="rootflow_start">شروع روت</string>
     <string name="rootflow_running">در حال اجرا...</string>
     <string name="rootflow_done">روت کامل شد</string>
@@ -470,8 +470,8 @@
     <string name="logs_empty_brief">(هنوز خط خلاصه‌ای نیست)</string>
     <string name="logs_empty">(لاگ‌ها اینجا ظاهر می‌شوند. برای شروع «شروع روت» را بزنید)</string>
     <string name="about_screen_title">درباره</string>
-    <string name="about_screen_subtitle">RootMyS9280 · آنلاک روت</string>
-    <string name="about_tagline">آنلاک روت SM-S9280 · بر پایهٔ پژوهش امنیتی CVE-2026-43499</string>
+    <string name="about_screen_subtitle">RootMyS24 · آنلاک روت</string>
+    <string name="about_tagline">آنلاک روت S24 series · بر پایهٔ پژوهش امنیتی CVE-2026-43499</string>
     <string name="about_section_device">اطلاعات دستگاه</string>
     <string name="about_device_model">مدل</string>
     <string name="about_system_version">نسخهٔ سیستم</string>
@@ -485,8 +485,8 @@
     <string name="about_faq_restart_q">آیا بعد از راه‌اندازی مجدد باید دوباره روت بگیرم؟</string>
     <string name="about_faq_restart_a">بله. بوت‌لودر قفل است، پس بعد از هر راه‌اندازی مجدد دوباره فتح قفل Root را اجرا کنید.</string>
     <string name="about_disclaimer">سلب مسئولیت: این برنامه فقط برای پژوهش امنیتی و یادگیری شخصی است. بالابردن امتیاز از طریق تخریب حافظهٔ کرنل ذاتاً نامطمئن است؛ با مسئولیت خودتان استفاده کنید. لطفاً قوانین محلی را رعایت کنید.</string>
-<!-- RootMyS9280 log strings -->
-    <string name="log_starting">شروع RootMyS9280</string>
+<!-- RootMyS24 log strings -->
+    <string name="log_starting">شروع RootMyS24</string>
     <string name="log_payload">بار: %1$s (اصلاح‌شده، kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] بررسی Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku در حال اجرا نیست. لطفاً ابتدا Shizuku را راه‌اندازی کنید!</string>
@@ -525,7 +525,7 @@
     <string name="log_knox_unknown">نامشخص (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">نامشخص (نیاز به Shizuku)</string>
     <string name="log_binder_unavailable">binder Shizuku در دسترس نیست</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">ساخت ورودی دانلود ممکن نشد</string>
     <string name="log_export_write_fail">نوشتن در ورودی دانلود ممکن نشد</string>
     <string name="log_export_ok_path">به %1$s صادر شد</string>

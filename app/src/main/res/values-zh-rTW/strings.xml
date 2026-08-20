@@ -423,7 +423,7 @@
     <string name="launcher_prompt_body">Vector 執行在別的程序裡，而不是被安裝到系統中，所以啟動器上看不到它，也沒有明顯的途徑再開啟它。給它一個主畫面捷徑，或者把它安裝成一般的應用程式。</string>
     <string name="launcher_prompt_never">不再詢問</string>
 
-    <!-- RootMyS9280 custom UI -->
+    <!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">設定</string>
     <string name="settings_screen_subtitle">執行偏好設定與關於</string>
     <string name="settings_section_run">執行</string>
@@ -437,7 +437,7 @@
     <string name="settings_project_home">專案首頁</string>
     <string name="settings_project_home_summary">原始碼、問題回報與使用說明</string>
     <string name="settings_version">版本 v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">SM-S9280 免解鎖 root · 免刷機、不觸發 KNOX</string>
+    <string name="rootflow_detail_fallback">S24 系列 免解鎖 root · 免刷機、不觸發 KNOX</string>
     <string name="rootflow_start">開始 Root</string>
     <string name="rootflow_running">執行中...</string>
     <string name="rootflow_done">root 完成</string>
@@ -461,8 +461,8 @@
     <string name="logs_empty_brief">（尚無摘要列）</string>
     <string name="logs_empty">（日誌會顯示在這裡。點選「Start Root」開始）</string>
     <string name="about_screen_title">關於</string>
-    <string name="about_screen_subtitle">RootMyS9280 · 免解鎖 root</string>
-    <string name="about_tagline">SM-S9280 免解鎖 root · 基於 CVE-2026-43499 安全研究</string>
+    <string name="about_screen_subtitle">RootMyS24 · 免解鎖 root</string>
+    <string name="about_tagline">S24 系列 免解鎖 root · 基於 CVE-2026-43499 安全研究</string>
     <string name="about_section_device">裝置資訊</string>
     <string name="about_device_model">型號</string>
     <string name="about_system_version">系統版本</string>
@@ -476,8 +476,8 @@
     <string name="about_faq_restart_q">重新開機後需要重新 root 嗎？</string>
     <string name="about_faq_restart_a">需要。因為 bootloader 已鎖定，每次重新開機後都要再次執行 Unlock Root。</string>
     <string name="about_disclaimer">免責聲明：本應用程式僅供安全研究與個人學習之用。核心記憶體破壞的權限提升本質上具有不確定性，請自行承擔風險，並請遵守當地法律。</string>
-<!-- RootMyS9280 log strings -->
-    <string name="log_starting">正在啟動 RootMyS9280</string>
+<!-- RootMyS24 log strings -->
+    <string name="log_starting">正在啟動 RootMyS24</string>
     <string name="log_payload">Payload: %1$s (固定, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] 檢查 Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku 未在執行。請先啟動 Shizuku!</string>
@@ -516,7 +516,7 @@
     <string name="log_knox_unknown">未知 (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">未知 (需要 Shizuku)</string>
     <string name="log_binder_unavailable">Shizuku binder 無法使用</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">無法建立下載項目</string>
     <string name="log_export_write_fail">無法寫入下載項目</string>
     <string name="log_export_ok_path">已匯出到 %1$s</string>

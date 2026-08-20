@@ -476,7 +476,7 @@
     <string name="launcher_prompt_title">ليس لـ Vector أيقونة بعد</string>
     <string name="launcher_prompt_body">يعمل Vector داخل عملية أخرى بدل أن يكون مثبَّتًا، فلا يظهر شيء في المشغّل ولا توجد طريقة واضحة للعودة إليه. امنحه اختصارًا على الشاشة الرئيسية، أو ثبِّته كتطبيق عادي.</string>
     <string name="launcher_prompt_never">عدم السؤال مجددًا</string>
-    <!-- RootMyS9280 custom UI -->
+    <!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">الإعدادات</string>
     <string name="settings_screen_subtitle">تفضيلات التشغيل ومعلومات عن التطبيق</string>
     <string name="settings_section_run">التشغيل</string>
@@ -490,7 +490,7 @@
     <string name="settings_project_home">الصفحة الرئيسية للمشروع</string>
     <string name="settings_project_home_summary">الكود المصدري والمشكلات وملاحظات الاستخدام</string>
     <string name="settings_version">الإصدار v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">فتح قفل SM-S9280 root · بدون وميض وبدون تفعيل KNOX</string>
+    <string name="rootflow_detail_fallback">فتح قفل S24 series root · بدون وميض وبدون تفعيل KNOX</string>
     <string name="rootflow_start">بدء الروت</string>
     <string name="rootflow_running">جارٍ التشغيل...</string>
     <string name="rootflow_done">اكتمل الروت</string>
@@ -514,8 +514,8 @@
     <string name="logs_empty_brief">(لا توجد أسطر ملخص بعد)</string>
     <string name="logs_empty">(ستظهر السجلات هنا. اضغط “بدء الروت” للبدء)</string>
     <string name="about_screen_title">عن التطبيق</string>
-    <string name="about_screen_subtitle">RootMyS9280 · فتح قفل root</string>
-    <string name="about_tagline">فتح قفل SM-S9280 root · استنادًا إلى بحث أمني حول CVE-2026-43499</string>
+    <string name="about_screen_subtitle">RootMyS24 · فتح قفل root</string>
+    <string name="about_tagline">فتح قفل S24 series root · استنادًا إلى بحث أمني حول CVE-2026-43499</string>
     <string name="about_section_device">معلومات الجهاز</string>
     <string name="about_device_model">الطراز</string>
     <string name="about_system_version">إصدار النظام</string>
@@ -529,8 +529,8 @@
     <string name="about_faq_restart_q">هل أحتاج إلى إعادة الروت بعد إعادة التشغيل؟</string>
     <string name="about_faq_restart_a">نعم. مُحمِّل الإقلاع مقفل، لذا شغّل فتح قفل Root مجددًا بعد كل إعادة تشغيل.</string>
     <string name="about_disclaimer">إخلاء مسؤولية: هذا التطبيق لأغراض البحث الأمني والتعلم الشخصي فقط. تصعيد الامتيازات عبر إتلاف ذاكرة النواة غير مؤكد بطبيعته؛ استخدمه على مسؤوليتك الخاصة. يرجى الالتزام بالقوانين المحلية.</string>
-    <!-- RootMyS9280 log strings -->
-    <string name="log_starting">جارٍ تشغيل RootMyS9280</string>
+    <!-- RootMyS24 log strings -->
+    <string name="log_starting">جارٍ تشغيل RootMyS24</string>
     <string name="log_payload">الحمولة: %1$s (ثابتة، kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] جارٍ التحقق من Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku غير قيد التشغيل. يرجى تشغيل Shizuku أولاً!</string>
@@ -569,7 +569,7 @@
     <string name="log_knox_unknown">غير معروف (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">غير معروف (يتطلب Shizuku)</string>
     <string name="log_binder_unavailable">أداة binder الخاصة بـ Shizuku غير متاحة</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">تعذّر إنشاء عنصر التنزيل</string>
     <string name="log_export_write_fail">تعذّر الكتابة إلى عنصر التنزيل</string>
     <string name="log_export_ok_path">تم التصدير إلى %1$s</string>

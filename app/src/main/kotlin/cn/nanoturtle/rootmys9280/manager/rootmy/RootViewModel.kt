@@ -27,7 +27,7 @@ import java.io.File
  * 4. 等待 root 标记
  * 5. KernelSU late-load
  *
- * 目标：SM-S9280 (国行) / S9280ZCS6DZF2 / kernel 6.1.145（修正版载荷）
+ * 目标：SM-S24 系列（S9210/S9260/S9280，e3q 平台）/ S9280ZCS6DZF2 / kernel 6.1.145（修正版载荷）
  */
 class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val app: Application = app

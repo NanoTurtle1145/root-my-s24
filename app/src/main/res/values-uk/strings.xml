@@ -475,7 +475,7 @@
     <string name="launcher_prompt_body">Vector працює всередині чужого процесу, а не встановлений, тому в лаунчері нічого не з\'являється і очевидного шляху назад немає. Додайте ярлик на головний екран або встановіть Vector як звичайний застосунок.</string>
     <string name="launcher_prompt_never">Більше не питати</string>
 
-    <!-- RootMyS9280 custom UI -->
+    <!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">Налаштування</string>
     <string name="settings_screen_subtitle">Параметри запуску та про застосунок</string>
     <string name="settings_section_run">Запуск</string>
@@ -489,7 +489,7 @@
     <string name="settings_project_home">Домашня сторінка проєкту</string>
     <string name="settings_project_home_summary">Вихідний код, проблеми та нотатки щодо використання</string>
     <string name="settings_version">Версія v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">SM-S9280 unlock root · без прошивки, без спрацювання KNOX</string>
+    <string name="rootflow_detail_fallback">S24 series unlock root · без прошивки, без спрацювання KNOX</string>
     <string name="rootflow_start">Почати Root</string>
     <string name="rootflow_running">Виконується...</string>
     <string name="rootflow_done">root завершено</string>
@@ -513,8 +513,8 @@
     <string name="logs_empty_brief">(Підсумкових рядків ще немає)</string>
     <string name="logs_empty">(Журнал з\'явиться тут. Натисніть «Start Root», щоб почати)</string>
     <string name="about_screen_title">Про застосунок</string>
-    <string name="about_screen_subtitle">RootMyS9280 · unlock root</string>
-    <string name="about_tagline">SM-S9280 unlock root · на основі дослідження безпеки CVE-2026-43499</string>
+    <string name="about_screen_subtitle">RootMyS24 · unlock root</string>
+    <string name="about_tagline">S24 series unlock root · на основі дослідження безпеки CVE-2026-43499</string>
     <string name="about_section_device">Інформація про пристрій</string>
     <string name="about_device_model">Модель</string>
     <string name="about_system_version">Версія системи</string>
@@ -528,8 +528,8 @@
     <string name="about_faq_restart_q">Чи потрібно повторно рутувати після перезавантаження?</string>
     <string name="about_faq_restart_a">Так. Завантажувач заблоковано, тому після кожного перезавантаження потрібно знову запускати Unlock Root.</string>
     <string name="about_disclaimer">Відмова від відповідальності: цей застосунок призначено лише для досліджень безпеки та особистого навчання. Підвищення привілеїв через пошкодження пам\'яті ядра за своєю природою невизначене; використовуйте на власний ризик. Дотримуйтеся місцевих законів.</string>
-    <!-- RootMyS9280 log strings -->
-    <string name="log_starting">Запуск RootMyS9280</string>
+    <!-- RootMyS24 log strings -->
+    <string name="log_starting">Запуск RootMyS24</string>
     <string name="log_payload">Корисне навантаження: %1$s (фіксоване, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] Перевірка Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku не запущено. Спочатку запустіть Shizuku!</string>
@@ -568,7 +568,7 @@
     <string name="log_knox_unknown">Невідомо (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Невідомо (потрібен Shizuku)</string>
     <string name="log_binder_unavailable">Binder Shizuku недоступний</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">Не вдалося створити запис завантаження</string>
     <string name="log_export_write_fail">Не вдалося записати в запис завантаження</string>
     <string name="log_export_ok_path">Експортовано в %1$s</string>

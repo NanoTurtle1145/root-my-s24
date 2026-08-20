@@ -422,7 +422,7 @@
     <string name="launcher_prompt_body">Vector는 설치되는 대신 다른 프로세스 안에서 실행되므로 런처에 아무것도 나타나지 않고 다시 들어올 뚜렷한 방법도 없습니다. 홈 화면 바로가기를 만들거나, 일반 앱으로 설치하세요.</string>
     <string name="launcher_prompt_never">다시 묻지 않기</string>
 
-    <!-- RootMyS9280 custom UI -->
+    <!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">설정</string>
     <string name="settings_screen_subtitle">실행 환경설정 및 정보</string>
     <string name="settings_section_run">실행</string>
@@ -436,7 +436,7 @@
     <string name="settings_project_home">프로젝트 홈</string>
     <string name="settings_project_home_summary">소스, 이슈 및 사용 방법</string>
     <string name="settings_version">버전 v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">SM-S9280 unlock root · 플래싱 없음, KNOX 트립 없음</string>
+    <string name="rootflow_detail_fallback">S24 series unlock root · 플래싱 없음, KNOX 트립 없음</string>
     <string name="rootflow_start">Root 시작</string>
     <string name="rootflow_running">실행 중...</string>
     <string name="rootflow_done">root 완료</string>
@@ -460,8 +460,8 @@
     <string name="logs_empty_brief">(아직 요약 줄이 없습니다)</string>
     <string name="logs_empty">(여기에 로그가 표시됩니다. “Start Root”를 눌러 시작하세요)</string>
     <string name="about_screen_title">정보</string>
-    <string name="about_screen_subtitle">RootMyS9280 · unlock root</string>
-    <string name="about_tagline">SM-S9280 unlock root · CVE-2026-43499 보안 연구 기반</string>
+    <string name="about_screen_subtitle">RootMyS24 · unlock root</string>
+    <string name="about_tagline">S24 series unlock root · CVE-2026-43499 보안 연구 기반</string>
     <string name="about_section_device">기기 정보</string>
     <string name="about_device_model">모델</string>
     <string name="about_system_version">시스템 버전</string>
@@ -475,8 +475,8 @@
     <string name="about_faq_restart_q">재부팅 후 다시 루팅해야 하나요?</string>
     <string name="about_faq_restart_a">예. 부트로더가 잠겨 있으므로 재부팅할 때마다 Unlock Root를 다시 실행하세요.</string>
     <string name="about_disclaimer">면책 조항: 이 앱은 보안 연구 및 개인 학습 목적으로만 제공됩니다. 커널 메모리 손상 권한 상승은 본질적으로 불확실하며, 사용에 따른 책임은 사용자에게 있습니다. 현지 법률을 준수하십시오.</string>
-<!-- RootMyS9280 log strings -->
-    <string name="log_starting">RootMyS9280 시작 중</string>
+<!-- RootMyS24 log strings -->
+    <string name="log_starting">RootMyS24 시작 중</string>
     <string name="log_payload">Payload: %1$s (고정, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] Shizuku 확인 중...</string>
     <string name="log_shizuku_not_running">Shizuku가 실행 중이 아닙니다. 먼저 Shizuku를 시작하세요!</string>
@@ -515,7 +515,7 @@
     <string name="log_knox_unknown">알 수 없음 (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">알 수 없음 (Shizuku 필요)</string>
     <string name="log_binder_unavailable">Shizuku 바인더를 사용할 수 없습니다</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">다운로드 항목을 만들 수 없습니다</string>
     <string name="log_export_write_fail">다운로드 항목에 쓸 수 없습니다</string>
     <string name="log_export_ok_path">%1$s(으)로 내보냄</string>

@@ -458,7 +458,7 @@
     <string name="launcher_prompt_title">ל-Vector עדיין אין סמל</string>
     <string name="launcher_prompt_body">Vector פועל בתוך תהליך אחר במקום להיות מותקן, ולכן שום דבר לא מופיע במסך הבית ואין דרך ברורה לחזור אליו. תנו לו קיצור דרך במסך הבית, או התקינו אותו כאפליקציה רגילה.</string>
     <string name="launcher_prompt_never">לא לשאול שוב</string>
-    <!-- RootMyS9280 custom UI -->
+    <!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">הגדרות</string>
     <string name="settings_screen_subtitle">העדפות הרצה ומידע על האפליקציה</string>
     <string name="settings_section_run">הרצה</string>
@@ -472,7 +472,7 @@
     <string name="settings_project_home">דף הבית של הפרויקט</string>
     <string name="settings_project_home_summary">קוד מקור, בעיות והערות שימוש</string>
     <string name="settings_version">גרסה v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">פתיחת נעילת root ל-SM-S9280 · ללא הבזקה, ללא הפעלת KNOX</string>
+    <string name="rootflow_detail_fallback">פתיחת נעילת root ל-S24 series · ללא הבזקה, ללא הפעלת KNOX</string>
     <string name="rootflow_start">התחלת Root</string>
     <string name="rootflow_running">רץ...</string>
     <string name="rootflow_done">root הושלם</string>
@@ -496,8 +496,8 @@
     <string name="logs_empty_brief">(עדיין אין שורות תקציר)</string>
     <string name="logs_empty">(היומן יופיע כאן. הקישו על “התחלת Root” כדי להתחיל)</string>
     <string name="about_screen_title">אודות</string>
-    <string name="about_screen_subtitle">RootMyS9280 · פתיחת נעילת root</string>
-    <string name="about_tagline">פתיחת נעילת root ל-SM-S9280 · מבוסס על מחקר אבטחה של CVE-2026-43499</string>
+    <string name="about_screen_subtitle">RootMyS24 · פתיחת נעילת root</string>
+    <string name="about_tagline">פתיחת נעילת root ל-S24 series · מבוסס על מחקר אבטחה של CVE-2026-43499</string>
     <string name="about_section_device">פרטי המכשיר</string>
     <string name="about_device_model">דגם</string>
     <string name="about_system_version">גרסת מערכת</string>
@@ -511,8 +511,8 @@
     <string name="about_faq_restart_q">האם אני צריך root מחדש אחרי אתחול?</string>
     <string name="about_faq_restart_a">כן. ה-bootloader נעול, אז הריצו שוב פתיחת נעילת Root אחרי כל אתחול.</string>
     <string name="about_disclaimer">כתב ויתור: האפליקציה מיועדת למחקר אבטחה וללמידה אישית בלבד. הרמת הרשאות דרך פגיעה בזיכרון הליבה אינה ודאית מטבעה; שימוש באחריותכם. נא לעמוד בחוקים המקומיים.</string>
-    <!-- RootMyS9280 log strings -->
-    <string name="log_starting">מפעיל את RootMyS9280</string>
+    <!-- RootMyS24 log strings -->
+    <string name="log_starting">מפעיל את RootMyS24</string>
     <string name="log_payload">מטען: %1$s (קבוע, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] בודק את Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku אינו פועל. נא להפעיל את Shizuku קודם!</string>
@@ -551,7 +551,7 @@
     <string name="log_knox_unknown">לא ידוע (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">לא ידוע (נדרש Shizuku)</string>
     <string name="log_binder_unavailable">ה-binder של Shizuku אינו זמין</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">לא ניתן ליצור רשומת הורדה</string>
     <string name="log_export_write_fail">לא ניתן לכתוב לרשומת ההורדה</string>
     <string name="log_export_ok_path">ייצא אל %1$s</string>

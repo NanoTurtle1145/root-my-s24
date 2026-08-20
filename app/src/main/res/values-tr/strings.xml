@@ -432,7 +432,7 @@
     <string name="launcher_prompt_title">Vector\'ün henüz bir simgesi yok</string>
     <string name="launcher_prompt_body">Vector kurulmak yerine başka bir sürecin içinde çalışır; bu yüzden başlatıcınızda hiçbir şey görünmez ve geri dönmenin bariz bir yolu yoktur. Ona ana ekranda bir kısayol verin ya da sıradan bir uygulama olarak kurun.</string>
     <string name="launcher_prompt_never">Bir daha sorma</string>
-    <!-- RootMyS9280 custom UI -->
+    <!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">Ayarlar</string>
     <string name="settings_screen_subtitle">Çalıştırma tercihleri ve hakkında</string>
     <string name="settings_section_run">Çalıştır</string>
@@ -446,7 +446,7 @@
     <string name="settings_project_home">Proje ana sayfası</string>
     <string name="settings_project_home_summary">Kaynak, sorunlar ve kullanım notları</string>
     <string name="settings_version">Sürüm v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">SM-S9280 unlock root · flash yok, KNOX tetiklenmez</string>
+    <string name="rootflow_detail_fallback">S24 series unlock root · flash yok, KNOX tetiklenmez</string>
     <string name="rootflow_start">Root\'a Başla</string>
     <string name="rootflow_running">Çalışıyor...</string>
     <string name="rootflow_done">root tamamlandı</string>
@@ -470,8 +470,8 @@
     <string name="logs_empty_brief">(Henüz özet satırı yok)</string>
     <string name="logs_empty">(Günlükler burada görünecek. Başlamak için \"Root\'a Başla\"ya dokunun)</string>
     <string name="about_screen_title">Hakkında</string>
-    <string name="about_screen_subtitle">RootMyS9280 · unlock root</string>
-    <string name="about_tagline">SM-S9280 unlock root · CVE-2026-43499 güvenlik araştırmasına dayalı</string>
+    <string name="about_screen_subtitle">RootMyS24 · unlock root</string>
+    <string name="about_tagline">S24 series unlock root · CVE-2026-43499 güvenlik araştırmasına dayalı</string>
     <string name="about_section_device">Cihaz bilgisi</string>
     <string name="about_device_model">Model</string>
     <string name="about_system_version">Sistem sürümü</string>
@@ -485,8 +485,8 @@
     <string name="about_faq_restart_q">Yeniden başlatmanın ardından root\'u tekrar almam gerekir mi?</string>
     <string name="about_faq_restart_a">Evet. Bootloader kilitli, bu yüzden her yeniden başlatmadan sonra Unlock Root\'u tekrar çalıştırın.</string>
     <string name="about_disclaimer">Sorumluluk reddi: Bu uygulama yalnızca güvenlik araştırması ve kişisel öğrenim içindir. Çekirdek belleğinin bozulmasıyla ayrıcalık yükseltme doğası gereği belirsizdir; riski size ait olmak üzere kullanın. Lütfen yerel yasalara uyun.</string>
-    <!-- RootMyS9280 log strings -->
-    <string name="log_starting">RootMyS9280 başlatılıyor</string>
+    <!-- RootMyS24 log strings -->
+    <string name="log_starting">RootMyS24 başlatılıyor</string>
     <string name="log_payload">Payload: %1$s (sabit, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] Shizuku kontrol ediliyor...</string>
     <string name="log_shizuku_not_running">Shizuku çalışmıyor. Lütfen önce Shizuku\'yu başlatın!</string>
@@ -525,7 +525,7 @@
     <string name="log_knox_unknown">Bilinmiyor (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Bilinmiyor (Shizuku gerekli)</string>
     <string name="log_binder_unavailable">Shizuku binder kullanılamıyor</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">İndirme öğesi oluşturulamadı</string>
     <string name="log_export_write_fail">İndirme öğesine yazılamadı</string>
     <string name="log_export_ok_path">%1$s konumuna dışa aktarıldı</string>

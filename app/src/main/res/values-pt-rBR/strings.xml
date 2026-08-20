@@ -432,7 +432,7 @@
     <string name="launcher_prompt_title">O Vector ainda não tem ícone</string>
     <string name="launcher_prompt_body">O Vector roda dentro de outro processo em vez de estar instalado, então nada aparece no seu launcher e não há um caminho óbvio de volta. Dê a ele um atalho na tela inicial, ou instale-o como um app comum.</string>
     <string name="launcher_prompt_never">Não perguntar de novo</string>
-    <!-- RootMyS9280 custom UI -->
+    <!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">Configurações</string>
     <string name="settings_screen_subtitle">Preferências de execução e sobre</string>
     <string name="settings_section_run">Executar</string>
@@ -446,7 +446,7 @@
     <string name="settings_project_home">Página do projeto</string>
     <string name="settings_project_home_summary">Código-fonte, problemas e notas de uso</string>
     <string name="settings_version">Versão v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">Desbloqueio root do SM-S9280 · sem flash, sem ativar o KNOX</string>
+    <string name="rootflow_detail_fallback">Desbloqueio root do S24 series · sem flash, sem ativar o KNOX</string>
     <string name="rootflow_start">Iniciar Root</string>
     <string name="rootflow_running">Executando...</string>
     <string name="rootflow_done">root concluído</string>
@@ -470,8 +470,8 @@
     <string name="logs_empty_brief">(Ainda não há linhas de resumo)</string>
     <string name="logs_empty">(Os logs aparecerão aqui. Toque em \"Iniciar Root\" para começar)</string>
     <string name="about_screen_title">Sobre</string>
-    <string name="about_screen_subtitle">RootMyS9280 · desbloqueio root</string>
-    <string name="about_tagline">Desbloqueio root do SM-S9280 · baseado em pesquisa de segurança da CVE-2026-43499</string>
+    <string name="about_screen_subtitle">RootMyS24 · desbloqueio root</string>
+    <string name="about_tagline">Desbloqueio root do S24 series · baseado em pesquisa de segurança da CVE-2026-43499</string>
     <string name="about_section_device">Informações do dispositivo</string>
     <string name="about_device_model">Modelo</string>
     <string name="about_system_version">Versão do sistema</string>
@@ -485,8 +485,8 @@
     <string name="about_faq_restart_q">Preciso fazer root novamente após reiniciar?</string>
     <string name="about_faq_restart_a">Sim. O bootloader está bloqueado, então execute o Desbloqueio Root novamente após cada reinício.</string>
     <string name="about_disclaimer">Aviso: este aplicativo é apenas para pesquisa de segurança e aprendizado pessoal. A elevação de privilégios por corrupção de memória do kernel é inerentemente incerta; use por sua conta e risco. Respeite as leis locais.</string>
-    <!-- RootMyS9280 log strings -->
-    <string name="log_starting">Iniciando RootMyS9280</string>
+    <!-- RootMyS24 log strings -->
+    <string name="log_starting">Iniciando RootMyS24</string>
     <string name="log_payload">Payload: %1$s (fixo, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] Verificando Shizuku...</string>
     <string name="log_shizuku_not_running">O Shizuku não está em execução. Inicie o Shizuku primeiro!</string>
@@ -525,7 +525,7 @@
     <string name="log_knox_unknown">Desconhecido (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Desconhecido (precisa do Shizuku)</string>
     <string name="log_binder_unavailable">Binder do Shizuku indisponível</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">Não foi possível criar a entrada de download</string>
     <string name="log_export_write_fail">Não foi possível gravar na entrada de download</string>
     <string name="log_export_ok_path">Exportado para %1$s</string>

@@ -162,7 +162,7 @@ private fun RootFlowContent(
                     else -> stringResource(R.string.status_inactive)
                 }
             StatusHeader(
-                brand = "RootMyS9280",
+                brand = "RootMyS24",
                 statusWord = statusWord,
                 tone = tone,
                 ambience = AmbienceKind.from(ambienceKey),

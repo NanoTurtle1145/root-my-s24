@@ -433,7 +433,7 @@
     <string name="launcher_prompt_body">Vector s\'exécute dans un autre processus au lieu d\'être installé : rien n\'apparaît dans votre lanceur et il n\'y a pas de moyen évident d\'y revenir. Donnez-lui un raccourci sur l\'écran d\'accueil, ou installez-le comme une application ordinaire.</string>
     <string name="launcher_prompt_never">Ne plus demander</string>
 
-    <!-- RootMyS9280 custom UI -->
+    <!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">Paramètres</string>
     <string name="settings_screen_subtitle">Préférences du run &amp; À propos</string>
     <string name="settings_section_run">Run</string>
@@ -447,7 +447,7 @@
     <string name="settings_project_home">Page du projet</string>
     <string name="settings_project_home_summary">Code source, problèmes et notes d\'utilisation</string>
     <string name="settings_version">Version v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">SM-S9280 unlock root · sans flash, sans déclenchement de KNOX</string>
+    <string name="rootflow_detail_fallback">S24 series unlock root · sans flash, sans déclenchement de KNOX</string>
     <string name="rootflow_start">Démarrer Root</string>
     <string name="rootflow_running">En cours…</string>
     <string name="rootflow_done">root terminé</string>
@@ -471,8 +471,8 @@
     <string name="logs_empty_brief">(Aucune ligne de résumé pour l\'instant)</string>
     <string name="logs_empty">(Les journaux apparaîtront ici. Appuyez sur \"Start Root\" pour commencer)</string>
     <string name="about_screen_title">À propos</string>
-    <string name="about_screen_subtitle">RootMyS9280 · unlock root</string>
-    <string name="about_tagline">SM-S9280 unlock root · basé sur la recherche de sécurité CVE-2026-43499</string>
+    <string name="about_screen_subtitle">RootMyS24 · unlock root</string>
+    <string name="about_tagline">S24 series unlock root · basé sur la recherche de sécurité CVE-2026-43499</string>
     <string name="about_section_device">Informations sur l\'appareil</string>
     <string name="about_device_model">Modèle</string>
     <string name="about_system_version">Version du système</string>
@@ -486,8 +486,8 @@
     <string name="about_faq_restart_q">Faut-il refaire le root après un redémarrage ?</string>
     <string name="about_faq_restart_a">Oui. Le bootloader est verrouillé, donc relancez Unlock Root après chaque redémarrage.</string>
     <string name="about_disclaimer">Avertissement : cette application est réservée à la recherche en sécurité et à l\'apprentissage personnel. L\'élévation de privilèges par corruption de la mémoire du noyau est par nature incertaine ; utilisez-la à vos propres risques. Veuillez respecter les lois locales.</string>
-<!-- RootMyS9280 log strings -->
-    <string name="log_starting">Démarrage de RootMyS9280</string>
+<!-- RootMyS24 log strings -->
+    <string name="log_starting">Démarrage de RootMyS24</string>
     <string name="log_payload">Payload : %1$s (fixe, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] Vérification de Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku n\'est pas en cours d\'exécution. Veuillez d\'abord démarrer Shizuku !</string>
@@ -526,7 +526,7 @@
     <string name="log_knox_unknown">Inconnu (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Inconnu (nécessite Shizuku)</string>
     <string name="log_binder_unavailable">Binder Shizuku indisponible</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">Impossible de créer l\'entrée de téléchargement</string>
     <string name="log_export_write_fail">Impossible d\'écrire dans l\'entrée de téléchargement</string>
     <string name="log_export_ok_path">Exporté vers %1$s</string>

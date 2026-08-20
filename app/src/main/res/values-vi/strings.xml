@@ -421,7 +421,7 @@
     <string name="launcher_prompt_title">Vector vẫn chưa có biểu tượng</string>
     <string name="launcher_prompt_body">Vector chạy bên trong một tiến trình khác thay vì được cài đặt, nên không có gì hiện ra trong trình khởi chạy và cũng không có cách quay lại rõ ràng. Hãy tạo cho nó một lối tắt trên màn hình chính, hoặc cài nó như một ứng dụng bình thường.</string>
     <string name="launcher_prompt_never">Đừng hỏi lại</string>
-    <!-- RootMyS9280 custom UI -->
+    <!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">Cài đặt</string>
     <string name="settings_screen_subtitle">Tùy chọn chạy và thông tin</string>
     <string name="settings_section_run">Chạy</string>
@@ -435,7 +435,7 @@
     <string name="settings_project_home">Trang chủ dự án</string>
     <string name="settings_project_home_summary">Mã nguồn, vấn đề và ghi chú sử dụng</string>
     <string name="settings_version">Phiên bản v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">Mở khóa root SM-S9280 · không flash, không kích hoạt KNOX</string>
+    <string name="rootflow_detail_fallback">Mở khóa root S24 series · không flash, không kích hoạt KNOX</string>
     <string name="rootflow_start">Bắt đầu Root</string>
     <string name="rootflow_running">Đang chạy...</string>
     <string name="rootflow_done">root hoàn tất</string>
@@ -459,8 +459,8 @@
     <string name="logs_empty_brief">(Chưa có dòng tóm tắt nào)</string>
     <string name="logs_empty">(Log sẽ hiện ở đây. Chạm \"Bắt đầu Root\" để bắt đầu)</string>
     <string name="about_screen_title">Giới thiệu</string>
-    <string name="about_screen_subtitle">RootMyS9280 · mở khóa root</string>
-    <string name="about_tagline">Mở khóa root SM-S9280 · dựa trên nghiên cứu bảo mật CVE-2026-43499</string>
+    <string name="about_screen_subtitle">RootMyS24 · mở khóa root</string>
+    <string name="about_tagline">Mở khóa root S24 series · dựa trên nghiên cứu bảo mật CVE-2026-43499</string>
     <string name="about_section_device">Thông tin thiết bị</string>
     <string name="about_device_model">Model</string>
     <string name="about_system_version">Phiên bản hệ thống</string>
@@ -474,8 +474,8 @@
     <string name="about_faq_restart_q">Sau khi khởi động lại tôi có cần root lại không?</string>
     <string name="about_faq_restart_a">Có. Bootloader bị khóa, nên hãy chạy Mở khóa Root lại sau mỗi lần khởi động lại.</string>
     <string name="about_disclaimer">Tuyên bố miễn trừ: Ứng dụng này chỉ dành cho nghiên cứu bảo mật và học tập cá nhân. Việc leo thang đặc quyền thông qua làm hỏng bộ nhớ kernel vốn không chắc chắn; sử dụng tự chịu rủi ro. Vui lòng tuân thủ luật pháp địa phương.</string>
-    <!-- RootMyS9280 log strings -->
-    <string name="log_starting">Đang khởi động RootMyS9280</string>
+    <!-- RootMyS24 log strings -->
+    <string name="log_starting">Đang khởi động RootMyS24</string>
     <string name="log_payload">Payload: %1$s (cố định, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] Đang kiểm tra Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku không chạy. Vui lòng khởi động Shizuku trước!</string>
@@ -514,7 +514,7 @@
     <string name="log_knox_unknown">Không rõ (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Không rõ (cần Shizuku)</string>
     <string name="log_binder_unavailable">Binder Shizuku không khả dụng</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">Không thể tạo mục tải xuống</string>
     <string name="log_export_write_fail">Không thể ghi vào mục tải xuống</string>
     <string name="log_export_ok_path">Đã xuất ra %1$s</string>

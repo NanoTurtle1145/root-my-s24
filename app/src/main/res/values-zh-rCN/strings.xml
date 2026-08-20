@@ -424,7 +424,7 @@
     <string name="launcher_prompt_title">Vector 还没有图标</string>
     <string name="launcher_prompt_body">Vector 运行在别的进程里，而不是被安装到系统中，所以桌面上看不到它，也没有明显的途径再打开它。给它一个桌面快捷方式，或者把它安装成一个普通应用。</string>
     <string name="launcher_prompt_never">不再询问</string>
-<!-- RootMyS9280 custom UI -->
+<!-- RootMyS24 custom UI -->
     <string name="settings_screen_title">设置</string>
     <string name="settings_screen_subtitle">运行偏好与关于</string>
     <string name="settings_section_run">运行</string>
@@ -438,7 +438,7 @@
     <string name="settings_project_home">项目主页</string>
     <string name="settings_project_home_summary">源码、Issues 与使用说明</string>
     <string name="settings_version">版本 v%1$s (%2$d)</string>
-    <string name="rootflow_detail_fallback">SM-S9280 免解锁 root · 不刷机、不熔断 KNOX</string>
+    <string name="rootflow_detail_fallback">S24 系列免解锁 root · 不刷机、不熔断 KNOX</string>
     <string name="rootflow_start">开始 Root</string>
     <string name="rootflow_running">运行中...</string>
     <string name="rootflow_done">root 完成</string>
@@ -462,8 +462,8 @@
     <string name="logs_empty_brief">（暂无总结性日志）</string>
     <string name="logs_empty">（日志将显示在这里，点"开始 Root"开始）</string>
     <string name="about_screen_title">关于</string>
-    <string name="about_screen_subtitle">RootMyS9280 · 免解锁 root</string>
-    <string name="about_tagline">SM-S9280 免解锁 root · 基于 CVE-2026-43499 安全研究</string>
+    <string name="about_screen_subtitle">RootMyS24 · 免解锁 root</string>
+    <string name="about_tagline">S24 系列免解锁 root · 基于 CVE-2026-43499 安全研究</string>
     <string name="about_section_device">设备信息</string>
     <string name="about_device_model">设备型号</string>
     <string name="about_system_version">系统版本</string>
@@ -477,8 +477,8 @@
     <string name="about_faq_restart_q">重启后要重新 Root 吗？</string>
     <string name="about_faq_restart_a">是。每次重启后需要重新运行免解锁 Root。</string>
     <string name="about_disclaimer">免责声明：本应用仅供安全研究与个人学习使用。内核内存破坏提权存在不确定性，使用后果请自行承担；请遵守当地法律法规，勿用于非法用途。</string>
-<!-- RootMyS9280 log strings -->
-    <string name="log_starting">RootMyS9280 启动中</string>
+<!-- RootMyS24 log strings -->
+    <string name="log_starting">RootMyS24 启动中</string>
     <string name="log_payload">载荷: %1$s (修正版, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] 检查 Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku 未运行。请先启动 Shizuku！</string>
@@ -517,13 +517,13 @@
     <string name="log_knox_unknown">未知 (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">未知（需 Shizuku）</string>
     <string name="log_binder_unavailable">Shizuku binder 不可用</string>
-<!-- RootMyS9280 log extra -->
+<!-- RootMyS24 log extra -->
     <string name="log_export_entry_fail">无法创建下载项</string>
     <string name="log_export_write_fail">无法写入下载项</string>
     <string name="log_export_ok_path">已导出到 %1$s</string>
-<!-- RootMyS9280 donation strings -->
+<!-- RootMyS24 donation strings -->
     <string name="donation_title">支持一下这个项目</string>
-    <string name="donation_body">你已经成功 root %1$d 次，感谢使用！如果 RootMyS9280 帮到了你，可以的话请支持一下，在「关于」页扫码即可。你的支持会让这个项目走得更远。</string>
+    <string name="donation_body">你已经成功 root %1$d 次，感谢使用！如果 RootMyS24 帮到了你，可以的话请支持一下，在「关于」页扫码即可。你的支持会让这个项目走得更远。</string>
     <string name="donation_go_about">去关于页</string>
     <string name="donation_later">以后再说</string>
     <string name="about_section_support">支持我们</string>

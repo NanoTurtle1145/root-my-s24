@@ -124,7 +124,7 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
                     )
                 }
                 Spacer(Modifier.height(12.dp))
-                Text("RootMyS9280", style = MaterialTheme.typography.titleLarge)
+                Text("RootMyS24", style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = "v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
@@ -173,8 +173,8 @@ fun AboutScreen(onOpenUrl: (String) -> Unit) {
             SectionLabel(stringResource(R.string.about_section_source))
             Card(modifier = Modifier.fillMaxWidth()) {
                 LicenseRow(
-                    title = "RootMyS9280 (GPL-3.0)",
-                    url = "https://github.com/NanoTurtle1145/root-my-s9280",
+                    title = "RootMyS24 (GPL-3.0)",
+                    url = "https://github.com/NanoTurtle1145/root-my-s24",
                     onOpenUrl = onOpenUrl,
                 )
                 HorizontalDivider()

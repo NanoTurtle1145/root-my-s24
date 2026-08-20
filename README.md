@@ -1,18 +1,18 @@
 <p align="center">
-  <img src="docs/banner.png" alt="RootMyS9280 - 比那名居天子手持 S24 Ultra" width="100%">
+  <img src="docs/banner.png" alt="RootMyS24 - 比那名居天子手持 S24 Ultra" width="100%">
 </p>
 
-<h1 align="center">RootMyS9280</h1>
+<h1 align="center">RootMyS24</h1>
 
 <p align="center">
-  免解锁 root · Samsung Galaxy S24 Ultra (SM-S9280)<br>
+  免解锁 root · Samsung Galaxy S24 系列（S9210 / S9260 / S9280）<br>
   基于内核漏洞 <strong>CVE-2026-43499</strong> 的安全研究项目
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s9280/releases"><img src="https://img.shields.io/badge/version-2.0-1E88E5?style=flat-square" alt="Version 2.0"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-2.0-1E88E5?style=flat-square" alt="Version 2.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
-  <a href="https://github.com/NanoTurtle1145/root-my-s9280"><img src="https://img.shields.io/badge/platform-Android-1E88E5?style=flat-square" alt="Android"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24"><img src="https://img.shields.io/badge/platform-Android-1E88E5?style=flat-square" alt="Android"></a>
 </p>
 
 > 安全研究声明：本项目仅用于安全研究与自有设备维护。使用内核漏洞提权存在导致系统崩溃、数据丢失、设备变砖的风险，使用者需自行承担一切后果。请勿用于非法用途。
@@ -31,12 +31,12 @@
 
 | 项目 | 值 |
 |---|---|
-| 机型 | Samsung Galaxy S24 Ultra |
-| 型号 | SM-S9280（CHC / TGY / BRI） |
-| 固件 | S9280ZCS6DZF2（One UI 8.5） |
+| 机型 | Samsung Galaxy S24 系列（e3q 平台） |
+| 型号 | SM-S9210 / SM-S9260 / SM-S9280（已实测 S9280、S9260） |
+| 固件 | 同代 DZF2（One UI 8.5，如 S9280ZCS6DZF2 / S9260ZCS6DZF2） |
 | 内核 | 6.1.145-android14-11-3254743-abS9280ZCS6DZF2 |
 
-> **其他机型/固件适配**：同一 e3q 平台（S24 系列）同代固件符号基本一致，理论可适配；
+> **机型支持**：S24 系列（e3q 平台）同代固件内核符号一致，同一 DZF2 版本可直接使用（S9280 / S9260 已实测）；
 > 不同构建号需逐符号对比修正（本项目 S9280 vs S928U1 仅 `kmalloc_caches` 一个符号不同）；
 > 跨平台/跨大版本需完整重新定标，且漏洞可能已被修复。适配方法见仓库文档与
 > 适配流程：提取固件内核 → vmlinux-to-elf 恢复符号 → 与参考 target.h 逐项对比 → 生成目标配置 → 真机验证。
@@ -44,7 +44,7 @@
 ## 使用流程
 
 1. 安装并启动 Shizuku（无线/有线 ADB 授权）
-2. 打开 RootMyS9280，点击「开始 Root」（建议熄屏运行，降低内核竞态概率）
+2. 打开 RootMyS24，点击「开始 Root」（建议熄屏运行，降低内核竞态概率）
 3. 等待 exploit 完成，自动执行 KernelSU late-load
 4. 安装 KernelSU Manager（v3.2.5），强制停止后重开，显示「工作中 <LKM> [越狱模式]」
 
