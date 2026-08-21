@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,11 +39,8 @@ import cn.nanoturtle.rootmys9280.manager.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DonateScreen(onNavigateBack: () -> Unit) {
-    val context = LocalContext.current
-    val qrId =
-        androidx.compose.runtime.remember {
-            context.resources.getIdentifier("donate_qr", "drawable", context.packageName)
-        }
+    // 静态引用：R8 资源收缩能正确保留（动态 getIdentifier 会被 release 混淆移除）
+    val qrId = cn.nanoturtle.rootmys9280.manager.R.drawable.donate_qr
 
     Scaffold(
         topBar = {
