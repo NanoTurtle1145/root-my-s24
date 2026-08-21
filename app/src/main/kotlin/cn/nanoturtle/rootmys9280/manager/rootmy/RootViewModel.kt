@@ -27,8 +27,9 @@ import java.io.File
  * 4. 等待 root 标记
  * 5. KernelSU late-load
  *
- * 目标：SM-S24 系列（S9210/S9260/S9280，e3q 平台）
- *  - One UI 8.5 / DZF2 载荷 / kernel 6.1.145（默认，适配 DZE2–DZG1 全系固件，载荷 cve-2026-43499）
+ * 目标：SM-S24 系列（S9210/S9260/S9280）
+ *  - One UI 8.5 / DZF2 载荷 / kernel 6.1.145（默认，适配 DZE2–DZG0，载荷 cve-2026-43499）
+ *  - One UI 8.5 / DZG1 载荷 / kernel 6.1.145（DZG1 专用，修正 nfulnl_logger 偏移，载荷 cve-2026-43499-dzg1）
  *  - One UI 7 / BYH7 / kernel 6.1.99（载荷 cve-2026-43499-byh7，e1q S9210）
  */
 class RootViewModel(app: Application) : AndroidViewModel(app) {
@@ -36,7 +37,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     /** 目标系统版本（决定使用哪份 exploit 载荷） */
     enum class FirmwareVersion(val assetName: String, val label: String, val range: String) {
-        DZF2("cve-2026-43499", "One UI 8.5", "DZE2 – DZG1"),
+        DZF2("cve-2026-43499", "One UI 8.5", "DZE2 – DZG0"),
+        DZG1("cve-2026-43499-dzg1", "One UI 8.5", "DZG1"),
         BYH7("cve-2026-43499-byh7", "One UI 7", "BYH7"),
     }
 
