@@ -27,10 +27,18 @@ import java.io.File
  * 4. 等待 root 标记
  * 5. KernelSU late-load
  *
- * 目标：SM-S24 系列（S9210/S9260/S9280，e3q 平台）/ S9280ZCS6DZF2 / kernel 6.1.145（修正版载荷）
+ * 目标：SM-S24 系列（S9210/S9260/S9280，e3q 平台）
+ *  - One UI 8.5 / DZF2 载荷 / kernel 6.1.145（默认，适配 DZE2–DZG1 全系固件，载荷 cve-2026-43499）
+ *  - One UI 7 / BYH7 / kernel 6.1.99（载荷 cve-2026-43499-byh7，e1q S9210）
  */
 class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val app: Application = app
+
+    /** 目标系统版本（决定使用哪份 exploit 载荷） */
+    enum class FirmwareVersion(val assetName: String, val label: String, val range: String) {
+        DZF2("cve-2026-43499", "One UI 8.5", "DZE2 – DZG1"),
+        BYH7("cve-2026-43499-byh7", "One UI 7", "BYH7"),
+    }
 
     /** 一条日志（stage=所属阶段 0=阶段外, summary=是否为总结性标题行） */
     data class LogLine(val stage: Int, val text: String, val summary: Boolean = false)
@@ -64,12 +72,25 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     /** 当前阶段（由 [n/5] 标题行驱动） */
     private var currentStage = 0
 
-    private val payloadName = "cve-2026-43499"
+    private val payloadName: String get() = firmwareVersion.assetName
     private val rootHelperName = "cve-2026-43499-root"
     private val ksudName = "ksud-selected"
     private val PREFS_SETTINGS = "settings"
+    private val PREFS_FIRMWARE = "firmware_version"
 
-    private val tmpPayload = "/data/local/tmp/$payloadName"
+    /** 目标固件版本（持久化；切换后下一次运行生效） */
+    var firmwareVersion: FirmwareVersion
+        get() {
+            val name = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+                .getString(PREFS_FIRMWARE, FirmwareVersion.DZF2.name)
+            return FirmwareVersion.entries.firstOrNull { it.name == name } ?: FirmwareVersion.DZF2
+        }
+        set(value) {
+            app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+                .edit().putString(PREFS_FIRMWARE, value.name).apply()
+        }
+
+    private val tmpPayload: String get() = "/data/local/tmp/$payloadName"
     private val tmpRootHelper = "/data/local/tmp/$rootHelperName"
     private val tmpKsud = "/data/local/tmp/$ksudName"
 

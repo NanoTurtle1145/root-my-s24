@@ -1,7 +1,7 @@
 # One UI 7 (BYH7) 适配定标完成报告
 
 > 定标日期：2026-08-21
-> 目标：`src/targets/e3q-S9210ZCU4BYH7/`（国行 S24, One UI 7 / Android 15, kernel 6.1.99-android14-11-2370239）
+> 目标：`src/targets/e1q-S9210ZCU4BYH7/`（国行 S24 e1q / S9210, One UI 7 / Android 15, kernel 6.1.99-android14-11-2370239）
 > 前置报告：[`oneui7-adaptation-report.md`](oneui7-adaptation-report.md)（可行性分析，18 个符号偏移对比）
 > **注：本报告中的符号定位、偏移推导与验证，部分由 AI 辅助分析后生成，仅供技术研究与参考。**
 
@@ -20,17 +20,17 @@
 产出物（`/home/nt/root_research/02_exploit工程/fusion-s24u/`）：
 
 ```text
-src/targets/e3q-S9210ZCU4BYH7/
+src/targets/e1q-S9210ZCU4BYH7/
 ├── target.h            # 全部 25 个 *_OFF 宏 + 配置宏（242 行）
 └── p0_fingerprint.h    # 32 行 × 8 qword 指纹表（148 行）
-build/e3q-S9210ZCU4BYH7/cve-2026-43499-app.stable.so  # 104128 B，ELF64 有效
+build/e1q-S9210ZCU4BYH7/cve-2026-43499-app.stable.so  # 104128 B，ELF64 有效
 ```
 
 构建命令：
 
 ```bash
 ANDROID_NDK_HOME=/home/nt/root_research/06_工具链/android-ndk-r29 \
-  TARGET=e3q-S9210ZCU4BYH7 make stable
+  TARGET=e1q-S9210ZCU4BYH7 make stable
 ```
 
 ---
@@ -162,7 +162,7 @@ DZF2:  __event_sched_blocked_reason @ 0x1ff560, 段起始 0x1ff2b0 → 同样 10
 
 | 项 | 说明 |
 |---|---|
-| BUILD_FINGERPRINT | 使用推断值 `samsung/e3qsqw/e3q:15/AP2A.250805.001/S9210ZCU4BYH7:user/release-keys`（Android 15 / 构建日期 2025-08-20）。该宏未在 C 源码中引用（仅标识），如需精确值需真机 `getprop ro.build.fingerprint` 或固件 build.prop |
+| BUILD_FINGERPRINT | 使用推断值 `samsung/e1qzcx/e1q:15/AP3A.240905.015.A2/S9210ZCU4BYH7:user/release-keys`（来自真机 `getprop ro.build.fingerprint`，平台 e1q / S9210 国行标准版）。该宏仅作标识，未在 C 源码中引用 |
 | 真机验证 | 阶段 E 需 One UI 7 设备。设备当前是 DZF2 (rev 6)，无法降级刷 One UI 7 |
 | 概率性 | exploit 本身概率性，成功率随尝试累加，失败可能 panic/重启（正常现象） |
 | 结构体差异 | 6.1.99 vs 6.1.145 若导致某阶段失败，按 ADAPTATION_GUIDE 阶段日志定位并核对 BTF |

@@ -1,5 +1,6 @@
 package cn.nanoturtle.rootmys9280.manager.ui.screens.rootflow
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -190,6 +192,57 @@ private fun RootFlowContent(
                     .fillMaxWidth(),
             ) {
                 Column(Modifier.padding(16.dp)) {
+                    // 目标系统版本选择（决定使用哪份 exploit 载荷）
+                    Text(
+                        text = stringResource(R.string.rootflow_firmware_label),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    // 列表式选择：每个固件范围一行（radio + 版本 + 适配范围 + 载荷）
+                    RootViewModel.FirmwareVersion.entries.forEach { version ->
+                        val selected = vm.firmwareVersion == version
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(enabled = !state.busy) { vm.firmwareVersion = version }
+                                .padding(vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            androidx.compose.material3.RadioButton(
+                                selected = selected,
+                                onClick = { vm.firmwareVersion = version },
+                                enabled = !state.busy,
+                            )
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    text = version.label,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                                Text(
+                                    text = stringResource(
+                                        R.string.rootflow_firmware_range,
+                                        version.range,
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = version.assetName,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.rootflow_firmware_hint, vm.firmwareVersion.assetName),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(8.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         androidx.compose.material3.Button(
                             onClick = { vm.start() },
