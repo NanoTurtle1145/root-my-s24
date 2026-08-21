@@ -116,8 +116,18 @@ fun VectorApp() {
  */
 private fun EntryProviderScope<NavKey>.registerRoutes(navigator: Navigator) {
     entry<TopLevelRoute.RootFlow> {
+        val ctx = androidx.compose.ui.platform.LocalContext.current
         RootFlowScreen(
             onGoAbout = { navigator.switchTo(TopLevelRoute.About) },
+            onOpenFirmwareSelect = {
+                // 启动独立版本选择 Activity
+                ctx.startActivity(
+                    android.content.Intent(
+                        ctx,
+                        cn.nanoturtle.rootmys9280.manager.ui.firmware.FirmwareSelectActivity::class.java,
+                    ),
+                )
+            },
         )
     }
     entry<TopLevelRoute.Logs> {

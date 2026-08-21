@@ -442,6 +442,7 @@
     <string name="rootflow_firmware_label">目标系统版本</string>
     <string name="rootflow_firmware_range">固件范围: %1$s</string>
     <string name="rootflow_firmware_hint">载荷: %1$s</string>
+    <string name="rootflow_firmware_change">更换</string>
     <string name="rootflow_start">开始 Root</string>
     <string name="rootflow_running">运行中...</string>
     <string name="rootflow_done">root 完成</string>

@@ -48,6 +48,12 @@
             </intent-filter>
         </activity>
 
+        <!-- 系统版本选择页：RootFlow 版本卡片跳转，独立全屏选择载荷。 -->
+        <activity
+            android:name=".ui.firmware.FirmwareSelectActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Vector" />
+
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"

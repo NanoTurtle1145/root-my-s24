@@ -28,7 +28,7 @@ import java.io.File
  * 5. KernelSU late-load
  *
  * 目标：SM-S24 系列（S9210/S9260/S9280）
- *  - One UI 8.5 / DZF2 载荷 / kernel 6.1.145（默认，适配 DZE2–DZG0，载荷 cve-2026-43499）
+ *  - One UI 8.5 / DZF2 载荷 / kernel 6.1.145（默认，适配 DZE2–DZF2，载荷 cve-2026-43499）
  *  - One UI 8.5 / DZG1 载荷 / kernel 6.1.145（DZG1 专用，修正 nfulnl_logger 偏移，载荷 cve-2026-43499-dzg1）
  *  - One UI 7 / BYH7 / kernel 6.1.99（载荷 cve-2026-43499-byh7，e1q S9210）
  */
@@ -37,7 +37,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     /** 目标系统版本（决定使用哪份 exploit 载荷） */
     enum class FirmwareVersion(val assetName: String, val label: String, val range: String) {
-        DZF2("cve-2026-43499", "One UI 8.5", "DZE2 – DZG0"),
+        DZF2("cve-2026-43499", "One UI 8.5", "DZE2 – DZF2"),
         DZG1("cve-2026-43499-dzg1", "One UI 8.5", "DZG1"),
         BYH7("cve-2026-43499-byh7", "One UI 7", "BYH7"),
     }
@@ -80,17 +80,27 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val PREFS_SETTINGS = "settings"
     private val PREFS_FIRMWARE = "firmware_version"
 
-    /** 目标固件版本（持久化；切换后下一次运行生效） */
+    /** 目标固件版本（持久化；切换后立即生效并触发 Compose 重组） */
     var firmwareVersion: FirmwareVersion
-        get() {
-            val name = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
-                .getString(PREFS_FIRMWARE, FirmwareVersion.DZF2.name)
-            return FirmwareVersion.entries.firstOrNull { it.name == name } ?: FirmwareVersion.DZF2
-        }
+        get() = _firmwareVersion.value
         set(value) {
+            if (_firmwareVersion.value == value) return
+            _firmwareVersion.value = value
             app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
                 .edit().putString(PREFS_FIRMWARE, value.name).apply()
         }
+
+    /** Compose 可观察的固件版本状态（普通属性读写 SharedPreferences 不会触发重组） */
+    private val _firmwareVersion: MutableStateFlow<FirmwareVersion> = MutableStateFlow(
+        run {
+            val name = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+                .getString(PREFS_FIRMWARE, FirmwareVersion.DZF2.name)
+            FirmwareVersion.entries.firstOrNull { it.name == name } ?: FirmwareVersion.DZF2
+        },
+    )
+
+    /** 供独立选择页收集的版本状态流（进程级单例 VM，跨 Activity 同步） */
+    val firmwareVersionState: StateFlow<FirmwareVersion> = _firmwareVersion
 
     private val tmpPayload: String get() = "/data/local/tmp/$payloadName"
     private val tmpRootHelper = "/data/local/tmp/$rootHelperName"

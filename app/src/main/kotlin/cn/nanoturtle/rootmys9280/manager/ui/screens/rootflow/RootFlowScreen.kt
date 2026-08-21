@@ -55,17 +55,26 @@ import kotlinx.coroutines.launch
 fun RootFlowScreen(
     vm: RootViewModel = ServiceLocator.rootViewModel,
     onGoAbout: (() -> Unit)? = null,
+    onOpenFirmwareSelect: (() -> Unit)? = null,
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
-    RootFlowContent(vm = vm, state = state, onGoAbout = onGoAbout)
+    RootFlowContent(
+        vm = vm,
+        state = state,
+        firmwareVersion = vm.firmwareVersionState.collectAsStateWithLifecycle().value,
+        onGoAbout = onGoAbout,
+        onOpenFirmwareSelect = onOpenFirmwareSelect,
+    )
 }
 
 @Composable
 private fun RootFlowContent(
     vm: RootViewModel,
     state: RootViewModel.UiState,
+    firmwareVersion: RootViewModel.FirmwareVersion,
     modifier: Modifier = Modifier,
     onGoAbout: (() -> Unit)? = null,
+    onOpenFirmwareSelect: (() -> Unit)? = null,
 ) {
     var brief by remember { mutableStateOf(false) }
     var exportResult by remember { mutableStateOf<String?>(null) }
@@ -192,53 +201,51 @@ private fun RootFlowContent(
                     .fillMaxWidth(),
             ) {
                 Column(Modifier.padding(16.dp)) {
-                    // 目标系统版本选择（决定使用哪份 exploit 载荷）
+                    // 目标系统版本选择（入口卡片 → 独立选择 Activity）
                     Text(
                         text = stringResource(R.string.rootflow_firmware_label),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.height(4.dp))
-                    // 列表式选择：每个固件范围一行（radio + 版本 + 适配范围 + 载荷）
-                    RootViewModel.FirmwareVersion.entries.forEach { version ->
-                        val selected = vm.firmwareVersion == version
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable(enabled = !state.busy) { vm.firmwareVersion = version }
-                                .padding(vertical = 6.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            androidx.compose.material3.RadioButton(
-                                selected = selected,
-                                onClick = { vm.firmwareVersion = version },
-                                enabled = !state.busy,
-                            )
-                            Column(Modifier.weight(1f)) {
-                                Text(
-                                    text = version.label,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                )
-                                Text(
-                                    text = stringResource(
-                                        R.string.rootflow_firmware_range,
-                                        version.range,
-                                    ),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            }
-                            Spacer(Modifier.width(8.dp))
+                    // 当前选择的版本摘要，点击进入独立选择页
+                    val selectedVersion = firmwareVersion
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(enabled = !state.busy) { onOpenFirmwareSelect?.invoke() }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        androidx.compose.material3.RadioButton(
+                            selected = true,
+                            onClick = { onOpenFirmwareSelect?.invoke() },
+                            enabled = !state.busy,
+                        )
+                        Column(Modifier.weight(1f)) {
                             Text(
-                                text = version.assetName,
-                                style = MaterialTheme.typography.labelSmall,
+                                text = selectedVersion.label,
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                            Text(
+                                text = stringResource(
+                                    R.string.rootflow_firmware_range,
+                                    selectedVersion.range,
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.rootflow_firmware_change),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = stringResource(R.string.rootflow_firmware_hint, vm.firmwareVersion.assetName),
+                        text = stringResource(R.string.rootflow_firmware_hint, selectedVersion.assetName),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

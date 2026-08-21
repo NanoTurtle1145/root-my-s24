@@ -496,6 +496,7 @@
     <string name="rootflow_firmware_label">Target system version</string>
     <string name="rootflow_firmware_range">Firmware: %1$s</string>
     <string name="rootflow_firmware_hint">Payload: %1$s</string>
+    <string name="rootflow_firmware_change">Change</string>
     <string name="rootflow_start">Start Root</string>
     <string name="rootflow_running">Running...</string>
     <string name="rootflow_done">root complete</string>
