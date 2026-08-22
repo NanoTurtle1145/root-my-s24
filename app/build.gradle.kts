@@ -165,6 +165,9 @@ dependencies {
     implementation(libs.bouncycastle.bcpkix)
     implementation(libs.bouncycastle.bcprov)
 
+    // 解除 hidden API 限制（Conscrypt.exportKeyingMaterial），与 Shizuku 相同做法
+    implementation(libs.hiddenapibypass)
+
     // Tooling dependencies, debug builds only, for UI previews.
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

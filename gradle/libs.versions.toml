@@ -63,6 +63,8 @@ rikkax-parcelablelist = { module = "dev.rikka.rikkax.parcelablelist:parcelableli
 
 shizuku-api = { module = "dev.rikka.shizuku:api", version = "13.1.5" }
 shizuku-provider = { module = "dev.rikka.shizuku:provider", version = "13.1.5" }
+# 与 Shizuku 相同：解除 hidden API 限制（Conscrypt.exportKeyingMaterial 属 blocked 级）。
+hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version = "6.1" }
 
 androidx-annotation = { module = "androidx.annotation:annotation", version = "1.10.0" }
 

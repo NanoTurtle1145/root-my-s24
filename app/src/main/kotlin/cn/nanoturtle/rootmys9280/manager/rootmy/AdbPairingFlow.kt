@@ -35,6 +35,19 @@ import kotlinx.coroutines.launch
  */
 object AdbPairingFlow {
 
+    init {
+        // 与 Shizuku 相同：解除 hidden API 限制。
+        // Conscrypt.exportKeyingMaterial 属 blocked 级 hidden API，不豁免则反射调用
+        // 被拒（NoSuchMethodException），SPAKE2 配对无法完成。
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            try {
+                org.lsposed.hiddenapibypass.HiddenApiBypass.setHiddenApiExemptions("")
+            } catch (e: Throwable) {
+                Log.w(TAG, "setHiddenApiExemptions failed", e)
+            }
+        }
+    }
+
     private const val TAG = "AdbPairingFlow"
     private const val NOTIFICATION_ID = 2
     private const val CHANNEL_ID = "adb_pairing"
