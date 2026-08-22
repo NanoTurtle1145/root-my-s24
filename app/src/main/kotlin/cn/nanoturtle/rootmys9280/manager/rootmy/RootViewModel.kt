@@ -53,10 +53,6 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 .edit().putString(KEY_DEVICE_BUILD_TAG, value).apply()
         }
 
-    init {
-        restorePersistedLog()
-    }
-
     /** 目标系统版本（决定使用哪份 exploit 载荷） */
     enum class FirmwareVersion(val assetName: String, val label: String, val range: String) {
         DZE2("cve-2026-43499-dze2", "One UI 8.5", "港版 DZE2"),
@@ -64,6 +60,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         DZG1("cve-2026-43499-dzg1", "One UI 8.5", "国行 DZG1"),
         BYH7("cve-2026-43499-byh7", "One UI 7", "国行 BYH7"),
     }
+
+    /** 授权方式：Shizuku（需装 Shizuku App）或无线调试（Android 11+ 直连） */
+    enum class AuthMethod { SHIZUKU, ADB_WIRELESS }
 
     /** 一条日志（stage=所属阶段 0=阶段外, summary=是否为总结性标题行） */
     data class LogLine(val stage: Int, val text: String, val summary: Boolean = false)
@@ -102,6 +101,37 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val ksudName = "ksud-selected"
     private val PREFS_SETTINGS = "settings"
     private val PREFS_FIRMWARE = "firmware_version"
+    private val KEY_AUTH_METHOD = "auth_method"
+
+    /** 当前 shell 执行器（Shizuku 或无线调试 adb），全部命令经由此执行。 */
+    var shellExecutor: ShellExecutor = ShizukuController
+        private set
+
+    init {
+        // 无线调试授权：注入 RSA 密钥存储目录（App 私有目录），恢复上次连接状态
+        AdbWirelessController.init(File(app.filesDir, "adb"))
+        // 恢复上次选择的授权方式（Shizuku 或无线调试）
+        val saved = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getString(KEY_AUTH_METHOD, AuthMethod.SHIZUKU.name)
+        if (saved == AuthMethod.ADB_WIRELESS.name) shellExecutor = AdbWirelessController
+        restorePersistedLog()
+    }
+
+    /** 当前授权方式（持久化；Compose 可观察） */
+    val authMethod: AuthMethod
+        get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getString(KEY_AUTH_METHOD, AuthMethod.SHIZUKU.name)
+            .let { runCatching { AuthMethod.valueOf(it ?: AuthMethod.SHIZUKU.name) }.getOrDefault(AuthMethod.SHIZUKU) }
+
+    /** 切换授权方式（立即生效，下次运行使用）。 */
+    fun setAuthMethod(method: AuthMethod) {
+        app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .edit().putString(KEY_AUTH_METHOD, method.name).apply()
+        shellExecutor = when (method) {
+            AuthMethod.SHIZUKU -> ShizukuController
+            AuthMethod.ADB_WIRELESS -> AdbWirelessController
+        }
+    }
 
     /** 调试选项：自动保存日志到磁盘 */
     private val KEY_AUTO_SAVE_LOG = "auto_save_log"
@@ -148,12 +178,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             } catch (t: Throwable) {
                 appendLog("✗ " + app.getString(R.string.log_failed, t.message))
             } finally {
-                // 唤醒屏幕（如果运行期间自动熄屏了）。Shizuku 可能中途断开，
+                // 唤醒屏幕（如果运行期间自动熄屏了）。shell 通道可能中途断开，
                 // 这里必须兜底：finally 里的异常会覆盖上面的 catch，导致 app 崩溃。
                 if (autoScreenOff) {
                     runCatching {
                         kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                            ShizukuController.shell("input keyevent 26")
+                            shellExecutor.shell("input keyevent 26")
                         }
                     }
                     appendLog("◆ " + app.getString(R.string.log_woken))
@@ -197,14 +227,44 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * 自动申请 Shizuku 权限：已授权则直接返回 true；
-     * 未授权但 Shizuku 在运行则弹出系统授权框请求；Shizuku 未运行返回 false。
+     * 自动申请 shell 权限（按当前授权方式）：
+     * - Shizuku：已授权返回 true；Shizuku 在运行则弹系统授权框；未运行返回 false
+     * - 无线调试：已连接返回 true；未连接返回 false（需先走 connectAdbWireless）
      * 幂等，可安全地在页面加载时调用。
      */
-    suspend fun ensureShizukuPermission(): Boolean {
-        if (ShizukuController.isGranted()) return true
-        if (!ShizukuController.pingUntilRunning(timeoutMillis = 2_000)) return false
-        return ShizukuController.requestPermission()
+    suspend fun ensureShizukuPermission(): Boolean = when (authMethod) {
+        AuthMethod.SHIZUKU -> {
+            if (ShizukuController.isGranted()) true
+            else if (ShizukuController.pingUntilRunning(timeoutMillis = 2_000)) ShizukuController.requestPermission()
+            else false
+        }
+        AuthMethod.ADB_WIRELESS -> AdbWirelessController.isConnected()
+    }
+
+    /**
+     * 无线调试直连：连接「开发者选项 → 无线调试」显示的 IP:端口（连接端口 39xxx）。
+     * 首次连接设备会弹 RSA 指纹确认框，用户点「允许」后完成认证。
+     * @return null=成功；非 null=失败原因（含需用户点允许等提示）
+     */
+    suspend fun connectAdbWireless(host: String, portText: String): String? {
+        val port = portText.trim().toIntOrNull()
+            ?: return app.getString(R.string.adb_wireless_bad_port)
+        val hostTrimmed = host.trim()
+        if (hostTrimmed.isEmpty()) return app.getString(R.string.adb_wireless_bad_host)
+        val (ok, message) = withContext(Dispatchers.IO) {
+            AdbWirelessController.connect(hostTrimmed, port)
+        }
+        if (!ok) {
+            // 常见失败：连接拒绝（端口不对）、认证超时（忘了点允许）
+            return message
+        }
+        appendLog("✔ " + app.getString(R.string.adb_wireless_connected, hostTrimmed, port))
+        return null
+    }
+
+    /** 断开无线调试连接。 */
+    fun disconnectAdbWireless() {
+        AdbWirelessController.disconnect()
     }
 
     /**
@@ -213,12 +273,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      */
     suspend fun refreshKnox() {
         val bit = runCatching {
-            ShizukuController.capture(
+            shellExecutor.capture(
                 arrayOf("/system/bin/sh", "-c", "getprop ro.boot.warranty_bit 2>&1")
             ).trim()
         }.getOrDefault("")
         val vbs = runCatching {
-            ShizukuController.capture(
+            shellExecutor.capture(
                 arrayOf("/system/bin/sh", "-c", "getprop ro.boot.verifiedbootstate 2>&1")
             ).trim()
         }.getOrDefault("")
@@ -242,14 +302,14 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      */
     suspend fun refreshKsuStatus() = withContext(Dispatchers.IO) {
         val loaded = runCatching {
-            if (ShizukuController.isRunning()) {
-                // shell 权限经 Shizuku 检测
-                ShizukuController.shell(
+            if (shellExecutor.isReady()) {
+                // shell 权限经执行器检测
+                shellExecutor.shell(
                     "grep -q 'kernelsu' /proc/modules 2>/dev/null || " +
                         "ls /sys/module/kernelsu >/dev/null 2>&1"
                 ).first == 0
             } else {
-                // Shizuku 不可用时的兜底（部分环境 app 可直接读）
+                // 执行器不可用时的兜底（部分环境 app 可直接读）
                 val p = ProcessBuilder(
                     "/system/bin/sh", "-c",
                     "grep -q 'kernelsu' /proc/modules 2>/dev/null || " +
@@ -265,15 +325,25 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         appendLog("◆ " + app.getString(R.string.log_starting))
         appendLog("◆ " + app.getString(R.string.log_payload, payloadName))
 
-        // 1. Shizuku
+        // 1. 授权检查（按当前授权方式：Shizuku 或无线调试）
         appendLog(app.getString(R.string.log_check_shizuku))
-        if (!ShizukuController.pingUntilRunning()) {
-            throw IllegalStateException(app.getString(R.string.log_shizuku_not_running))
+        when (authMethod) {
+            AuthMethod.SHIZUKU -> {
+                if (!ShizukuController.pingUntilRunning()) {
+                    throw IllegalStateException(app.getString(R.string.log_shizuku_not_running))
+                }
+                if (!ShizukuController.requestPermission()) {
+                    throw IllegalStateException(app.getString(R.string.log_shizuku_denied))
+                }
+                appendLog("✔ " + app.getString(R.string.log_shizuku_ready))
+            }
+            AuthMethod.ADB_WIRELESS -> {
+                if (!AdbWirelessController.isConnected()) {
+                    throw IllegalStateException(app.getString(R.string.log_adb_not_connected))
+                }
+                appendLog("✔ " + app.getString(R.string.log_adb_ready))
+            }
         }
-        if (!ShizukuController.requestPermission()) {
-            throw IllegalStateException(app.getString(R.string.log_shizuku_denied))
-        }
-        appendLog("✔ " + app.getString(R.string.log_shizuku_ready))
 
         // 1.5 机型报告：完整设备/固件/内核信息，写入日志头部（便于崩溃后从日志识别设备）
         collectDeviceInfo()
@@ -289,13 +359,13 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         appendLog("✔ " + app.getString(R.string.log_push_done, payloadName, stagedPayload.length(), rootHelperName, stagedHelper.length()))
 
         // 2.5 诊断：管道限制（F_SETPIPE_SZ EPERM 的根因排查）
-        val pipeMax = ShizukuController.capture(
+        val pipeMax = shellExecutor.capture(
             arrayOf("/system/bin/sh", "-c", "cat /proc/sys/fs/pipe-max-size 2>&1")
         ).trim()
-        val pipeUser = ShizukuController.capture(
+        val pipeUser = shellExecutor.capture(
             arrayOf("/system/bin/sh", "-c", "cat /proc/sys/fs/pipe-user-pages-soft 2>&1 || cat /proc/sys/fs/pipe-user-pages-hard 2>&1 || echo n/a")
         ).trim()
-        val uname = ShizukuController.capture(
+        val uname = shellExecutor.capture(
             arrayOf("/system/bin/sh", "-c", "cat /proc/version 2>&1 | head -c 200")
         ).trim()
         appendLog("◆ " + app.getString(R.string.log_diag, pipeMax.ifBlank { "?" }, pipeUser.ifBlank { "?" }))
@@ -310,7 +380,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 2.6 清理残留：上次失败的 exploit 子进程/守护进程会残留并污染 uid 2000 的
         //     pipe_bufs 配额，导致 F_SETPIPE_SZ EPERM（16/16 失败根因之一）
         appendLog(app.getString(R.string.log_cleanup))
-        val cleanup = ShizukuController.shell(
+        val cleanup = shellExecutor.shell(
             "pkill -9 -f 'cve-2026-43499' 2>/dev/null; " +
                 "pkill -9 -f 'cve43499' 2>/dev/null; " +
                 "rm -f /data/local/tmp/temp_su.sock /data/local/tmp/ksud-s25u-kdp /data/local/tmp/.ksud-stage; echo ok"
@@ -321,7 +391,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         appendLog(app.getString(R.string.log_trigger))
         // 运行期间自动熄屏：显示驱动停止 → 消除最大崩溃源（worklist 竞态）
         if (autoScreenOff) {
-            ShizukuController.shell("input keyevent 26")
+            shellExecutor.shell("input keyevent 26")
             appendLog("◆ " + app.getString(R.string.log_screen_off))
         }
         val env = arrayOf(
@@ -331,7 +401,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             "CVE43499_ROOT_HELPER=$tmpRootHelper",
             "LD_PRELOAD=$tmpPayload",
         )
-        val process = ShizukuController.exec(
+        val process = shellExecutor.exec(
             arrayOf("/system/bin/sh", "-c", "true"),
             env,
         )
@@ -374,14 +444,14 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val stageCmd = "cp $tmpKsud /data/local/tmp/ksud-s25u-kdp && " +
             "cp $tmpKsud /data/local/tmp/.ksud-stage && " +
             "chmod 755 /data/local/tmp/ksud-s25u-kdp /data/local/tmp/.ksud-stage"
-        val stageResult = ShizukuController.shell(stageCmd)
+        val stageResult = shellExecutor.shell(stageCmd)
         if (stageResult.first != 0) {
             throw IllegalStateException(app.getString(R.string.log_stage_fail, stageResult.first, stageResult.second.trim().takeLast(200)))
         }
         appendLog("✔ " + app.getString(R.string.log_ksud_staged))
         // 以 su 客户端模式连接 root 守护进程，守护进程 fork root 子进程执行:
         //   ksud late-load --ephemeral --package-name me.weishu.kernelsu
-        val ksu = ShizukuController.shell("$tmpRootHelper --late-load 2>&1")
+        val ksu = shellExecutor.shell("$tmpRootHelper --late-load 2>&1")
         appendLog("ksud late-load: exit=${ksu.first}\n${ksu.second.trim().takeLast(300)}")
         if (ksu.first != 0) {
             throw IllegalStateException(app.getString(R.string.log_lateload_fail, ksu.first))
@@ -390,7 +460,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
         // 5. 验证（late-load 内部已做 KSU 驱动 ioctl 校验；root 由 KernelSU 管理器提供）
         appendLog(app.getString(R.string.log_verify))
-        val daemonCheck = ShizukuController.capture(
+        val daemonCheck = shellExecutor.capture(
             arrayOf("/system/bin/sh", "-c", "ls -la /data/local/tmp/temp_su.sock 2>&1")
         )
         appendLog(app.getString(R.string.log_daemon_check, daemonCheck.trim()))
@@ -432,7 +502,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         )
         val values = mutableMapOf<String, String>()
         props.forEach { name ->
-            values[name] = ShizukuController.capture(
+            values[name] = shellExecutor.capture(
                 arrayOf("/system/bin/sh", "-c", "getprop $name 2>&1")
             ).trim()
         }
@@ -472,7 +542,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun copyToTmp(sourceName: String, target: String, mode: String): File {
         val src = File(app.filesDir, sourceName)
-        ShizukuController.writeFile(target, mode, src.inputStream())
+        shellExecutor.writeFile(target, mode, src.inputStream())
         return src
     }
 

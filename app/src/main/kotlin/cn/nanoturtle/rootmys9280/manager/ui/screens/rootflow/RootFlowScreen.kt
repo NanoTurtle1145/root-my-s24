@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
+import cn.nanoturtle.rootmys9280.manager.rootmy.AdbWirelessController
 import cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel
 import cn.nanoturtle.rootmys9280.manager.ui.components.VectorAmbienceSettings
 import cn.nanoturtle.rootmys9280.ui.StatusHeader
@@ -282,6 +283,14 @@ private fun RootFlowContent(
         }
 
         item {
+            AuthCard(
+                vm = vm,
+                state = state,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+            )
+        }
+
+        item {
             SettingsCard(
                 vm = vm,
                 state = state,
@@ -326,6 +335,155 @@ private fun RootFlowContent(
         }
         item {
             Spacer(Modifier.height(24.dp))
+        }
+    }
+}
+
+@Composable
+private fun AuthCard(
+    vm: RootViewModel,
+    state: RootViewModel.UiState,
+    modifier: Modifier = Modifier,
+) {
+    val scope = rememberCoroutineScope()
+    val method = vm.authMethod
+    var host by remember { mutableStateOf("") }
+    var port by remember { mutableStateOf("") }
+    var connecting by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    Card(modifier = modifier.padding(top = 8.dp).fillMaxWidth()) {
+        Column(Modifier.padding(horizontal = 16.dp)) {
+            Text(
+                text = stringResource(R.string.rootflow_auth_label),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 10.dp),
+            )
+
+            // 授权方式选择：Shizuku / 无线调试
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.rootflow_auth_shizuku),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(enabled = !state.busy) {
+                            vm.setAuthMethod(RootViewModel.AuthMethod.SHIZUKU)
+                            error = null
+                        },
+                )
+                androidx.compose.material3.RadioButton(
+                    selected = method == RootViewModel.AuthMethod.SHIZUKU,
+                    onClick = {
+                        vm.setAuthMethod(RootViewModel.AuthMethod.SHIZUKU)
+                        error = null
+                    },
+                    enabled = !state.busy,
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.rootflow_auth_adb),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(enabled = !state.busy) {
+                            vm.setAuthMethod(RootViewModel.AuthMethod.ADB_WIRELESS)
+                            error = null
+                        },
+                )
+                androidx.compose.material3.RadioButton(
+                    selected = method == RootViewModel.AuthMethod.ADB_WIRELESS,
+                    onClick = {
+                        vm.setAuthMethod(RootViewModel.AuthMethod.ADB_WIRELESS)
+                        error = null
+                    },
+                    enabled = !state.busy,
+                )
+            }
+
+            // 无线调试模式下：连接状态 + IP:端口输入
+            if (method == RootViewModel.AuthMethod.ADB_WIRELESS) {
+                HorizontalDivider(Modifier.padding(vertical = 6.dp))
+                val connected = AdbWirelessController.isConnected()
+                Text(
+                    text = if (connected) {
+                        stringResource(R.string.rootflow_auth_adb_connected)
+                    } else {
+                        stringResource(R.string.rootflow_auth_adb_hint)
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (connected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                if (!connected) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        androidx.compose.material3.OutlinedTextField(
+                            value = host,
+                            onValueChange = { host = it },
+                            label = { Text(stringResource(R.string.rootflow_auth_adb_host)) },
+                            singleLine = true,
+                            enabled = !connecting,
+                            modifier = Modifier.weight(1.4f),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        androidx.compose.material3.OutlinedTextField(
+                            value = port,
+                            onValueChange = { port = it },
+                            label = { Text(stringResource(R.string.rootflow_auth_adb_port)) },
+                            singleLine = true,
+                            enabled = !connecting,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        androidx.compose.material3.Button(
+                            onClick = {
+                                scope.launch {
+                                    connecting = true
+                                    error = null
+                                    error = vm.connectAdbWireless(host, port)
+                                    connecting = false
+                                }
+                            },
+                            enabled = !connecting,
+                        ) {
+                            if (connecting) {
+                                CircularProgressIndicator(modifier = Modifier.height(16.dp).width(16.dp))
+                            } else {
+                                Text(stringResource(R.string.rootflow_auth_adb_connect))
+                            }
+                        }
+                    }
+                } else {
+                    TextButton(
+                        onClick = {
+                            vm.disconnectAdbWireless()
+                            error = null
+                        },
+                        enabled = !state.busy,
+                    ) {
+                        Text(stringResource(R.string.rootflow_auth_adb_disconnect))
+                    }
+                }
+                if (error != null) {
+                    Text(
+                        text = error.orEmpty(),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
         }
     }
 }

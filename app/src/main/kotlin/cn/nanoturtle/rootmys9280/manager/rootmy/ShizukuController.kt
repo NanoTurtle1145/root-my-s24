@@ -17,7 +17,7 @@ import kotlin.coroutines.resumeWithException
  * Shizuku 控制器：通过 Shizuku 以 shell 权限执行命令。
  * 使用前提：手机已安装并启动 Shizuku（无线/有线 ADB 授权）。
  */
-object ShizukuController {
+object ShizukuController : ShellExecutor {
     private const val PERMISSION_REQUEST_CODE = 0x5352
 
     fun isRunning(): Boolean = try {
@@ -65,15 +65,19 @@ object ShizukuController {
         }
     }
 
+    // ---- ShellExecutor ----
+
+    override fun isReady(): Boolean = isGranted()
+
     /** 以 shell 权限执行命令，返回进程。 */
-    fun exec(cmd: Array<String>, env: Array<String>? = null, dir: String? = null): Process {
+    override fun exec(cmd: Array<String>, env: Array<String>?, dir: String?): Process {
         val binder = Shizuku.getBinder()
             ?: throw IllegalStateException("Shizuku binder unavailable")
         return RemoteProcess(IShizukuService.Stub.asInterface(binder).newProcess(cmd, env, dir))
     }
 
     /** 执行单条命令，返回合并输出（失败时返回空串）。 */
-    fun capture(cmd: Array<String>): String {
+    override fun capture(cmd: Array<String>): String {
         val process = exec(cmd)
         return try {
             val stdout = process.inputStream.bufferedReader().use { it.readText() }
@@ -85,7 +89,7 @@ object ShizukuController {
     }
 
     /** 执行 shell 脚本，返回 (退出码, 输出)。 */
-    fun shell(cmd: String): Pair<Int, String> {
+    override fun shell(cmd: String): Pair<Int, String> {
         val process = exec(arrayOf("/system/bin/sh", "-c", cmd))
         return try {
             val out = process.inputStream.bufferedReader().use { it.readText() } +
@@ -96,12 +100,7 @@ object ShizukuController {
         }
     }
 
-    /**
-     * 通过 Shizuku 直接把流写入远程路径。
-     * 先 rm -f 清掉旧文件（exploit 可能把上次的文件改成 root 属主，shell 无法覆盖，
-     * 但目录属主是 shell，可以 unlink）。
-     */
-    fun writeFile(remotePath: String, mode: String, source: InputStream) {
+    override fun writeFile(remotePath: String, mode: String, source: InputStream) {
         val process = exec(
             arrayOf(
                 "sh", "-c",
