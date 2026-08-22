@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
 
     <string name="nav_home">Inicio</string>
@@ -432,7 +432,7 @@
     <string name="launcher_prompt_title">Vector todavía no tiene icono</string>
     <string name="launcher_prompt_body">Vector se ejecuta dentro de otro proceso en lugar de estar instalado, así que no aparece nada en tu launcher y no hay una forma evidente de volver. Dale un acceso directo en la pantalla de inicio, o instálalo como una app normal.</string>
     <string name="launcher_prompt_never">No volver a preguntar</string>
-    <!-- RootMyS24 custom UI -->
+    
     <string name="settings_screen_title">Ajustes</string>
     <string name="settings_screen_subtitle">Preferencias de ejecución y acerca de</string>
     <string name="settings_section_run">Ejecución</string>
@@ -456,7 +456,7 @@
         <string name="rootflow_auth_label">Authorization method</string>
     <string name="rootflow_auth_shizuku">Shizuku (install Shizuku app)</string>
     <string name="rootflow_auth_adb">Wireless debugging (no extra app)</string>
-    <string name="rootflow_auth_adb_hint">Enable Wireless debugging in Developer options, then enter the IP:port shown (39xxx connect port). First connection asks to allow RSA fingerprint on the device.</string>
+    <string name="rootflow_auth_adb_hint">Enable Wireless debugging in Developer options, then pair with the code shown, or connect using the IP:port shown (39xxx connect port).</string>
     <string name="rootflow_auth_adb_host">IP</string>
     <string name="rootflow_auth_adb_port">Port</string>
     <string name="rootflow_auth_adb_connect">Connect</string>
@@ -501,7 +501,7 @@
     <string name="about_faq_restart_q">¿Tengo que volver a rootear tras un reinicio?</string>
     <string name="about_faq_restart_a">Sí. El bootloader está bloqueado, así que ejecuta Unlock Root de nuevo tras cada reinicio.</string>
     <string name="about_disclaimer">Aviso: esta aplicación es solo para investigación de seguridad y aprendizaje personal. La elevación de privilegios mediante corrupción de la memoria del kernel es inherentemente incierta; úsala bajo tu propio riesgo. Cumple las leyes locales.</string>
-<!-- RootMyS24 log strings -->
+
     <string name="log_starting">Iniciando RootMyS24</string>
     <string name="log_payload">Payload: %1$s (fijo, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] Comprobando Shizuku...</string>
@@ -542,10 +542,10 @@
     <string name="log_knox_unknown">Desconocido (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Desconocido (requiere Shizuku)</string>
     <string name="log_binder_unavailable">Binder de Shizuku no disponible</string>
-<!-- RootMyS24 log extra -->
+
     <string name="log_export_entry_fail">No se pudo crear la entrada de descarga</string>
     <string name="log_export_write_fail">No se pudo escribir en la entrada de descarga</string>
     <string name="log_export_ok_path">Exportado a %1$s</string>
     <string name="log_restored">Restored %1$d lines from last session</string>
     <string name="log_persist_failed">Auto-save log failed: %1$s</string>
-</resources>
+<string name="rootflow_auth_adb_pair">Pair with code</string><string name="rootflow_auth_adb_pair_port">Pair port</string><string name="rootflow_auth_adb_pair_code">6-digit pair code</string><string name="rootflow_auth_adb_pair_hint">In Wireless debugging, tap Pair device with pairing code, enter the IP, the 37xxx pairing port and the 6-digit code. Pairing pre-authorizes this device, so Connect will not ask for RSA approval again.</string><string name="rootflow_auth_adb_pairing">Pairing…</string><string name="rootflow_auth_adb_paired">Paired ✓ - now tap Connect</string><string name="adb_wireless_bad_pair_code">Enter the 6-digit pairing code</string><string name="adb_wireless_paired">Paired: %1$s:%2$d - device now trusts this app</string><string name="log_adb_pair_code_wrong">Pairing failed: wrong pairing code or code expired</string><string name="log_adb_pair_failed">Pairing failed: %1$s</string></resources>

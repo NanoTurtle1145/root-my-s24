@@ -268,6 +268,30 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
+     * 无线调试配对（adb pair）：输入系统「使用配对码配对设备」显示的
+     * IP:配对端口（37xxx）+ 6 位配对码，预授权本机 RSA 公钥。
+     * 配对成功后 connect 39xxx 连接端口免 RSA 指纹弹窗。
+     * @return null=成功；非 null=失败原因
+     */
+    suspend fun pairAdbWireless(host: String, pairPortText: String, pairCode: String): String? {
+        val port = pairPortText.trim().toIntOrNull()
+            ?: return app.getString(R.string.adb_wireless_bad_port)
+        val hostTrimmed = host.trim()
+        if (hostTrimmed.isEmpty()) return app.getString(R.string.adb_wireless_bad_host)
+        val code = pairCode.trim()
+        if (code.isEmpty()) return app.getString(R.string.adb_wireless_bad_pair_code)
+        return withContext(Dispatchers.IO) {
+            AdbWirelessController.pair(hostTrimmed, port, code)
+        }?.also { err ->
+            if (err.contains("pairing code", ignoreCase = true)) {
+                appendLog("✘ " + app.getString(R.string.log_adb_pair_code_wrong))
+            } else {
+                appendLog("✘ " + app.getString(R.string.log_adb_pair_failed, err))
+            }
+        }
+    }
+
+    /**
      * 读取 KNOX 状态（经 Shizuku 读只读属性，不影响熔断判断）。
      * 注意：本流程不熔断 KNOX；warranty_bit=0 为完好。
      */

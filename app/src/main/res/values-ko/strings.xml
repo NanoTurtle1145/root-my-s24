@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
 
     <string name="nav_home">홈</string>
@@ -422,7 +422,7 @@
     <string name="launcher_prompt_body">Vector는 설치되는 대신 다른 프로세스 안에서 실행되므로 런처에 아무것도 나타나지 않고 다시 들어올 뚜렷한 방법도 없습니다. 홈 화면 바로가기를 만들거나, 일반 앱으로 설치하세요.</string>
     <string name="launcher_prompt_never">다시 묻지 않기</string>
 
-    <!-- RootMyS24 custom UI -->
+    
     <string name="settings_screen_title">설정</string>
     <string name="settings_screen_subtitle">실행 환경설정 및 정보</string>
     <string name="settings_section_run">실행</string>
@@ -446,7 +446,7 @@
         <string name="rootflow_auth_label">Authorization method</string>
     <string name="rootflow_auth_shizuku">Shizuku (install Shizuku app)</string>
     <string name="rootflow_auth_adb">Wireless debugging (no extra app)</string>
-    <string name="rootflow_auth_adb_hint">Enable Wireless debugging in Developer options, then enter the IP:port shown (39xxx connect port). First connection asks to allow RSA fingerprint on the device.</string>
+    <string name="rootflow_auth_adb_hint">Enable Wireless debugging in Developer options, then pair with the code shown, or connect using the IP:port shown (39xxx connect port).</string>
     <string name="rootflow_auth_adb_host">IP</string>
     <string name="rootflow_auth_adb_port">Port</string>
     <string name="rootflow_auth_adb_connect">Connect</string>
@@ -491,7 +491,7 @@
     <string name="about_faq_restart_q">재부팅 후 다시 루팅해야 하나요?</string>
     <string name="about_faq_restart_a">예. 부트로더가 잠겨 있으므로 재부팅할 때마다 Unlock Root를 다시 실행하세요.</string>
     <string name="about_disclaimer">면책 조항: 이 앱은 보안 연구 및 개인 학습 목적으로만 제공됩니다. 커널 메모리 손상 권한 상승은 본질적으로 불확실하며, 사용에 따른 책임은 사용자에게 있습니다. 현지 법률을 준수하십시오.</string>
-<!-- RootMyS24 log strings -->
+
     <string name="log_starting">RootMyS24 시작 중</string>
     <string name="log_payload">Payload: %1$s (고정, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] Shizuku 확인 중...</string>
@@ -532,10 +532,10 @@
     <string name="log_knox_unknown">알 수 없음 (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">알 수 없음 (Shizuku 필요)</string>
     <string name="log_binder_unavailable">Shizuku 바인더를 사용할 수 없습니다</string>
-<!-- RootMyS24 log extra -->
+
     <string name="log_export_entry_fail">다운로드 항목을 만들 수 없습니다</string>
     <string name="log_export_write_fail">다운로드 항목에 쓸 수 없습니다</string>
     <string name="log_export_ok_path">%1$s(으)로 내보냄</string>
     <string name="log_restored">지난 세션에서 %1$d줄을 복원했습니다</string>
     <string name="log_persist_failed">로그 자동 저장 실패: %1$s</string>
-</resources>
+<string name="rootflow_auth_adb_pair">Pair with code</string><string name="rootflow_auth_adb_pair_port">Pair port</string><string name="rootflow_auth_adb_pair_code">6-digit pair code</string><string name="rootflow_auth_adb_pair_hint">In Wireless debugging, tap Pair device with pairing code, enter the IP, the 37xxx pairing port and the 6-digit code. Pairing pre-authorizes this device, so Connect will not ask for RSA approval again.</string><string name="rootflow_auth_adb_pairing">Pairing…</string><string name="rootflow_auth_adb_paired">Paired ✓ - now tap Connect</string><string name="adb_wireless_bad_pair_code">Enter the 6-digit pairing code</string><string name="adb_wireless_paired">Paired: %1$s:%2$d - device now trusts this app</string><string name="log_adb_pair_code_wrong">Pairing failed: wrong pairing code or code expired</string><string name="log_adb_pair_failed">Pairing failed: %1$s</string></resources>

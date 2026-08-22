@@ -161,6 +161,10 @@ dependencies {
     implementation(libs.shizuku.api)
     implementation(libs.shizuku.provider)
 
+    // 无线调试 TLS 配对（自签名证书、SPAKE2 native 库）
+    implementation(libs.bouncycastle.bcpkix)
+    implementation(libs.bouncycastle.bcprov)
+
     // Tooling dependencies, debug builds only, for UI previews.
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

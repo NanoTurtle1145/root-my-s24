@@ -349,7 +349,11 @@ private fun AuthCard(
     val method = vm.authMethod
     var host by remember { mutableStateOf("") }
     var port by remember { mutableStateOf("") }
+    var pairPort by remember { mutableStateOf("") }
+    var pairCode by remember { mutableStateOf("") }
     var connecting by remember { mutableStateOf(false) }
+    var pairing by remember { mutableStateOf(false) }
+    var paired by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
 
     Card(modifier = modifier.padding(top = 8.dp).fillMaxWidth()) {
@@ -409,20 +413,25 @@ private fun AuthCard(
                 )
             }
 
-            // 无线调试模式下：连接状态 + IP:端口输入
+            // 无线调试模式下：配对 + 连接
             if (method == RootViewModel.AuthMethod.ADB_WIRELESS) {
                 HorizontalDivider(Modifier.padding(vertical = 6.dp))
                 val connected = AdbWirelessController.isConnected()
                 Text(
                     text = if (connected) {
                         stringResource(R.string.rootflow_auth_adb_connected)
+                    } else if (paired) {
+                        stringResource(R.string.rootflow_auth_adb_paired)
                     } else {
                         stringResource(R.string.rootflow_auth_adb_hint)
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (connected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+
+                // ---- 配对区（未连接时显示）----
                 if (!connected) {
+                    // 配对码输入
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -432,8 +441,61 @@ private fun AuthCard(
                             onValueChange = { host = it },
                             label = { Text(stringResource(R.string.rootflow_auth_adb_host)) },
                             singleLine = true,
-                            enabled = !connecting,
+                            enabled = !connecting && !pairing,
                             modifier = Modifier.weight(1.4f),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        androidx.compose.material3.OutlinedTextField(
+                            value = pairPort,
+                            onValueChange = { pairPort = it },
+                            label = { Text(stringResource(R.string.rootflow_auth_adb_pair_port)) },
+                            singleLine = true,
+                            enabled = !connecting && !pairing,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        androidx.compose.material3.OutlinedTextField(
+                            value = pairCode,
+                            onValueChange = { pairCode = it },
+                            label = { Text(stringResource(R.string.rootflow_auth_adb_pair_code)) },
+                            singleLine = true,
+                            enabled = !connecting && !pairing,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        androidx.compose.material3.Button(
+                            onClick = {
+                                scope.launch {
+                                    pairing = true
+                                    error = null
+                                    val result = vm.pairAdbWireless(host, pairPort, pairCode)
+                                    if (result == null) {
+                                        paired = true
+                                    } else {
+                                        error = result
+                                    }
+                                    pairing = false
+                                }
+                            },
+                            enabled = !connecting && !pairing,
+                        ) {
+                            if (pairing) {
+                                CircularProgressIndicator(modifier = Modifier.height(16.dp).width(16.dp))
+                            } else {
+                                Text(stringResource(R.string.rootflow_auth_adb_pair))
+                            }
+                        }
+                    }
+
+                    // 连接区（IP 已在上方 + 连接端口 + 连接按钮）
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.rootflow_auth_adb_host),
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.weight(0.6f),
                         )
                         Spacer(Modifier.width(8.dp))
                         androidx.compose.material3.OutlinedTextField(
@@ -441,7 +503,7 @@ private fun AuthCard(
                             onValueChange = { port = it },
                             label = { Text(stringResource(R.string.rootflow_auth_adb_port)) },
                             singleLine = true,
-                            enabled = !connecting,
+                            enabled = !connecting && !pairing,
                             modifier = Modifier.weight(1f),
                         )
                         Spacer(Modifier.width(8.dp))
@@ -454,7 +516,7 @@ private fun AuthCard(
                                     connecting = false
                                 }
                             },
-                            enabled = !connecting,
+                            enabled = !connecting && !pairing,
                         ) {
                             if (connecting) {
                                 CircularProgressIndicator(modifier = Modifier.height(16.dp).width(16.dp))

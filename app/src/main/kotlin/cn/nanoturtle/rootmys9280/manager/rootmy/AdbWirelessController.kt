@@ -9,12 +9,9 @@ import java.net.Socket
 import java.security.KeyFactory
 import java.security.KeyPair
 import java.security.KeyPairGenerator
-import java.security.PrivateKey
-import java.security.PublicKey
-import java.security.Signature
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
-import java.util.Base64
+import javax.net.ssl.SSLSocket
 import kotlin.concurrent.thread
 
 /**
@@ -25,7 +22,12 @@ import kotlin.concurrent.thread
  * 2. 本类用 RSA 密钥对走 ADB 协议认证（首次设备会弹 RSA 指纹确认，点允许）
  * 3. 认证通过后以 shell (uid 2000) 权限执行命令 —— 与 Shizuku 同权限等级
  *
- * 协议参考：Android 平台 tools adb 的 host 协议（CNXN/AUTH/OPEN/WRTE/CLSE）。
+ * 参考 Shizuku（Apache-2.0）的实现：
+ * - [pair]：adb pair（TLS + SPAKE2 + 6 位配对码）预授权公钥，之后 connect 免弹窗
+ * - [authenticate]：支持 STLS（CNXN → A_STLS → TLS 升级）与经典 AUTH token 两条路径
+ * - 公钥格式为 Android 二进制 RSAPublicKey（与 authorized_keys 一致）
+ *
+ * 协议参考：Android 平台 tools adb 的 host 协议（CNXN/AUTH/STLS/OPEN/WRTE/CLSE）。
  * 不做 mDNS 自动发现（保持轻量），端口由用户从系统设置读取输入。
  */
 object AdbWirelessController : ShellExecutor {
@@ -38,6 +40,7 @@ object AdbWirelessController : ShellExecutor {
     private const val CMD_CLSE = 0x45534c43 // "CLSE"
     private const val CMD_WRTE = 0x45545257 // "WRTE"
     private const val CMD_READ = 0x44414552 // "READ"
+    private const val CMD_STLS = 0x534c5453 // "STLS"
 
     private const val AUTH_TOKEN = 1
     private const val AUTH_SIGNATURE = 2
@@ -45,6 +48,7 @@ object AdbWirelessController : ShellExecutor {
 
     private const val VERSION = 0x01000000
     private const val MAX_PAYLOAD = 4096
+    private const val STLS_VERSION = 0x01000000
 
     /** 与 Shizuku shell 相同的最大等待时长。 */
     private const val CONNECT_TIMEOUT_MS = 8_000
@@ -55,7 +59,7 @@ object AdbWirelessController : ShellExecutor {
     @Volatile private var socket: Socket? = null
     @Volatile private var input: DataInputStream? = null
     @Volatile private var output: OutputStream? = null
-    private var keyPair: KeyPair? = null
+    private var adbKey: AdbKey? = null
     private var nextLocalId = 1
 
     /** 全局 reader 线程：连接建立后启动，统一读取所有消息并按 remoteId 分发。 */
@@ -72,7 +76,7 @@ object AdbWirelessController : ShellExecutor {
     /** 由 RootViewModel 在启动时注入密钥存储目录（App 私有目录）。 */
     fun init(keyDir: File) {
         keyFileDir = keyDir
-        keyPair = loadOrCreateKeyPair(keyDir)
+        adbKey = AdbKey(loadOrCreateKeyPair(keyDir))
     }
 
     fun isConnected(): Boolean {
@@ -168,6 +172,7 @@ object AdbWirelessController : ShellExecutor {
     /**
      * 连接并认证。首次连接时设备端会弹出 RSA 指纹确认框，
      * 用户点「允许」后完成认证（与电脑 adb connect 首次弹窗相同）。
+     * 若此前已通过 [pair] 配对，设备已信任公钥，连接免弹窗。
      * @return 成功/失败；失败时 message 说明原因（如需要用户点允许）。
      */
     fun connect(host: String, port: Int): Pair<Boolean, String> {
@@ -179,8 +184,8 @@ object AdbWirelessController : ShellExecutor {
             socket = s
             input = DataInputStream(s.getInputStream())
             output = s.getOutputStream()
-            val kp = keyPair ?: throw IllegalStateException("key not initialized")
-            authenticate(kp)
+            val key = adbKey ?: throw IllegalStateException("key not initialized")
+            authenticate(key, host, port)
             // 认证完成，启动全局 reader 接收后续消息（OKAY/WRTE/CLSE）
             startGlobalReader()
             Pair(true, "connected")
@@ -190,63 +195,93 @@ object AdbWirelessController : ShellExecutor {
         }
     }
 
-    private fun authenticate(kp: KeyPair) {
+    /**
+     * adb pair 配对：TLS + SPAKE2 + 6 位配对码，把本机 RSA 公钥预授权给设备。
+     *
+     * 与 `adb pair IP:配对端口 配对码` 等价：
+     * 配对成功后设备把公钥加入 authorized_keys，之后 [connect] 39xxx 端口免 RSA 弹窗。
+     *
+     * @param host 设备 IP
+     * @param pairPort 无线调试设置里「使用配对码配对设备」显示的端口（37xxx）
+     * @param pairCode 设备屏幕上的 6 位配对码
+     * @return null=成功；否则错误消息
+     */
+    fun pair(host: String, pairPort: Int, pairCode: String): String? {
+        val key = adbKey ?: return "key not initialized"
+        return try {
+            AdbPairingClient(host, pairPort, pairCode.trim(), key).use { client ->
+                if (!client.start()) {
+                    "pair failed"
+                } else {
+                    null
+                }
+            }
+        } catch (t: Throwable) {
+            t.message ?: t.javaClass.simpleName
+        }
+    }
+
+    /**
+     * 认证：支持两条路径（与 adb 客户端一致）——
+     * 1. STLS：CNXN 后收到 A_STLS → 升级 TLS（客户端证书）→ 认证完成
+     * 2. 经典 AUTH：CNXN → AUTH(token) → 签名 →（必要时发公钥）→ CNXN
+     */
+    private fun authenticate(key: AdbKey, host: String, port: Int) {
         // 1. 发送 CNXN 握手
         sendMessage(CMD_CNXN, VERSION, MAX_PAYLOAD, "host::\u0000".toByteArray(Charsets.UTF_8))
 
-        // 2. 处理 AUTH 挑战循环（设备可能多次要求签名/公钥）
+        // 2. 读取首个响应：STLS 或 AUTH
+        val first = readMessage()
+        if (first.command == CMD_STLS) {
+            // 3. STLS 升级：回复版本 → TLS 握手（客户端证书 = 我们的自签名 X509）
+            sendMessage(CMD_STLS, STLS_VERSION, 0)
+            val keySslContext = key.sslContext
+            val raw = socket ?: throw IllegalStateException("socket closed")
+            val tls = keySslContext.socketFactory.createSocket(raw, host, port, true) as SSLSocket
+            tls.startHandshake()
+            input = DataInputStream(tls.getInputStream())
+            output = tls.getOutputStream()
+            // TLS 升级后，设备校验客户端证书公钥是否已授权：
+            // 已配对 → 直接 CNXN；未配对 → 仍走 AUTH（发送公钥等弹窗）
+            val afterTls = readMessage()
+            if (afterTls.command == CMD_CNXN) return
+            if (afterTls.command != CMD_AUTH) {
+                throw IllegalStateException("unexpected post-STLS reply 0x${afterTls.command.toString(16)}")
+            }
+            handleAuthChallenge(afterTls, key)
+            return
+        }
+        if (first.command == CMD_CNXN) return
+        if (first.command != CMD_AUTH) {
+            throw IllegalStateException("unexpected auth reply 0x${first.command.toString(16)}")
+        }
+        handleAuthChallenge(first, key)
+    }
+
+    /** 处理 AUTH 挑战循环（设备可能多次要求签名/公钥）。 */
+    private fun handleAuthChallenge(first: AdbMessage, key: AdbKey) {
+        var msg = first
         val deadline = System.currentTimeMillis() + AUTH_TIMEOUT_MS
         while (System.currentTimeMillis() < deadline) {
-            val msg = readMessage()
             when (msg.command) {
                 CMD_AUTH -> when (msg.arg0) {
                     AUTH_TOKEN -> {
                         // 用私钥签名 token
-                        val signed = signToken(kp.private, msg.payload)
+                        val signed = key.sign(msg.payload)
                         sendMessage(CMD_AUTH, AUTH_SIGNATURE, 0, signed)
                     }
                     AUTH_RSAPUBLICKEY -> {
                         // 设备请求公钥（首次连接，弹 RSA 指纹确认框）
-                        sendMessage(CMD_AUTH, AUTH_RSAPUBLICKEY, 0, sshRsaPublicKey(kp.public))
+                        sendMessage(CMD_AUTH, AUTH_RSAPUBLICKEY, 0, key.adbPublicKey)
                     }
                     else -> throw IllegalStateException("unknown auth type ${msg.arg0}")
                 }
                 CMD_CNXN -> return // 认证完成
                 else -> throw IllegalStateException("unexpected auth reply 0x${msg.command.toString(16)}")
             }
+            msg = readMessage()
         }
         throw IllegalStateException("auth timeout")
-    }
-
-    private fun signToken(privateKey: PrivateKey, token: ByteArray): ByteArray {
-        // adb 认证签名算法是 RSA-SHA1（system/core/adb/auth.cpp: EVP_sha1）
-        val sig = Signature.getInstance("SHA1withRSA")
-        sig.initSign(privateKey)
-        sig.update(token)
-        return sig.sign()
-    }
-
-    /** 生成 OpenSSH 格式公钥（adb 使用 ssh-rsa 格式 + comment）。 */
-    private fun sshRsaPublicKey(public: PublicKey): ByteArray {
-        val pub = (public as java.security.interfaces.RSAPublicKey)
-        // OpenSSH mpint 编码：大端序、无前导零（toByteArray 可能带 0x00 前缀）
-        val n = stripLeadingZero(pub.modulus.toByteArray())
-        val e = stripLeadingZero(pub.publicExponent.toByteArray())
-        val blob = java.io.ByteArrayOutputStream()
-        val dos = java.io.DataOutputStream(blob)
-        val sshRsa = "ssh-rsa".toByteArray(Charsets.UTF_8)
-        dos.writeInt(sshRsa.size); dos.write(sshRsa)
-        dos.writeInt(e.size); dos.write(e)
-        dos.writeInt(n.size); dos.write(n)
-        dos.flush()
-        val b64 = Base64.getEncoder().encodeToString(blob.toByteArray())
-        return ("ssh-rsa $b64 rootmys24@device\n\u0000").toByteArray(Charsets.UTF_8)
-    }
-
-    private fun stripLeadingZero(bytes: ByteArray): ByteArray {
-        var i = 0
-        while (i < bytes.size - 1 && bytes[i] == 0.toByte()) i++
-        return if (i == 0) bytes else bytes.copyOfRange(i, bytes.size)
     }
 
     // ================= Shell 通道 =================

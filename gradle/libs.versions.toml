@@ -69,6 +69,10 @@ androidx-annotation = { module = "androidx.annotation:annotation", version = "1.
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-dnsoverhttps = { group = "com.squareup.okhttp3", name = "okhttp-dnsoverhttps", version.ref = "okhttp" }
 
+# AdbKey 生成自签名 X509 证书（无线调试 TLS 客户端认证），与 Shizuku 相同用法。
+bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version = "1.78.1" }
+bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version = "1.78.1" }
+
 agp-apksig = { group = "com.android.tools.build", name = "apksig", version.ref = "agp" }
 gson = { module = "com.google.code.gson:gson", version = "2.14.0" }
 # The libxposed API sources vendored under xposed/libxposed and services/libxposed carry

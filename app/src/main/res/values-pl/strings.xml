@@ -1,36 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  Strings for the Compose manager.
-
-  These are new keys, kept separate from the legacy :app string set while both modules
-  exist. When :app is retired, app/src/main/res/values*/strings.xml moves here and
-  crowdin.yml is repointed so the ~40 existing translations carry over rather than
-  being rewritten. Nothing user-visible may be hard-coded in a composable.
--->
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <!-- Navigation -->
+    
     <string name="nav_home">Start</string>
     <string name="nav_modules">Moduły</string>
     <string name="nav_logs">Dzienniki</string>
-    <!-- Rearranging the panels, and the ball that can stand in for the bar -->
+    
     <string name="panels_done">Gotowe</string>
-    <!-- Example: "Hide Store". The name is one of the four panels above. -->
+    
     <string name="panels_hide">Ukryj %1$s</string>
     <string name="panels_show">Pokaż %1$s</string>
-    <!-- Spoken actions while rearranging: a drag cannot be made with touch exploration on -->
+    
     <string name="panels_move_earlier">Przesuń wcześniej</string>
     <string name="panels_move_later">Przesuń dalej</string>
     <string name="panels_ball_open">Otwórz nawigację</string>
     <string name="panels_ball_close">Zamknij nawigację</string>
-    <!-- Framework status -->
+    
     <string name="status_active">Aktywny</string>
     <string name="status_degraded">Problemy</string>
     <string name="status_inactive">Nieaktywowany</string>
-    <!-- The framework is running but speaks a different generation of the manager interface. -->
+    
     <string name="status_mismatched">Niezgodność wersji</string>
     <string name="status_checking">Sprawdzanie…</string>
     <string name="status_open_details">Otwórz stan systemu</string>
-    <!-- Degraded causes, in the priority order the daemon reports them -->
+    
     <string name="issue_sepolicy_title">Zasady SELinux nie zostały załadowane</string>
     <string name="issue_sepolicy_summary">Niektóre funkcje nie będą działać. Zwykle oznacza to, że implementacja roota nie zastosowała reguł Vectora</string>
     <string name="issue_system_server_title">Nie udało się wstrzyknąć frameworka systemu</string>
@@ -44,14 +36,14 @@
     <string name="crash_message">Wiadomość</string>
     <string name="crash_where">Gdzie</string>
     <string name="crash_when">Kiedy</string>
-    <!-- Shown for "Where" when no frame in the trace belongs to Vector's own code. -->
+    
     <string name="crash_where_unknown">Nigdzie we własnym kodzie Vectora</string>
-    <!-- %1$s is a timestamp, %2$s a thread name, e.g. "2026-07-29 11:42:03 +0200 on main". -->
+    
     <string name="crash_when_value">%1$s w %2$s</string>
     <string name="crash_open_trace">Zobacz ślad stosu</string>
     <string name="crash_trace">Awaria</string>
     <string name="crash_caused_by">Spowodowana przez</string>
-    <!-- The frames printStackTrace replaced with "... N more" because it had printed them already. -->
+    
     <plurals name="crash_frames_elided">
         <item quantity="one">%1$d ramka więcej, taka sama jak powyżej</item>
         <item quantity="few">%1$d ramki więcej, takie same jak powyżej</item>
@@ -59,7 +51,7 @@
         <item quantity="other">%1$d ramek więcej, takich samych jak powyżej</item>
     </plurals>
     <string name="crash_unreadable">Nie udało się odczytać tej awarii. Skopiuj ją i dołącz do raportu w obecnej formie.</string>
-    <!-- System status detail -->
+    
     <string name="system_status">Stan systemu</string>
     <string name="info_manager_version">Menedżer</string>
     <string name="info_api_version">API Xposed</string>
@@ -88,9 +80,9 @@
     <string name="status_notification_summary">Stałe powiadomienie pokazujące, że Vector jest uruchomiony.</string>
     <string name="force_launcher_icons">Nie pozwalaj aplikacjom ukrywać ikon w launcherze</string>
     <string name="force_launcher_icons_summary">Od Androida 10 aplikacja, która ukrywa własną ikonę launchera, otrzymuje z powrotem jedną ikonę, która otwiera stronę informacji o aplikacji. Wyłącz to, aby pozostała ukryta — launcher może się nie zaktualizować do czasu restartu. Nie dotyczy to aplikacji, które nigdy nie miały ikony launchera, w tym większość modułów.</string>
-    <!-- Home: the community feed -->
+    
     <string name="home_quarter_title">Ostatnia aktywność</string>
-    <!-- Example: "7 commits by 4 people" -->
+    
     <plurals name="home_commit_count">
         <item quantity="one">%1$d zatwierdzenie</item>
         <item quantity="few">%1$d zatwierdzenia</item>
@@ -122,7 +114,7 @@
     <string name="home_open_issue">Zgłoś problem</string>
     <string name="home_discussions">Dyskusje</string>
     <string name="home_review_prs">Przejrzyj zmianę</string>
-    <!-- Joins a commit's author with its co-authors, e.g. "Leaf-lsgtky &amp; Qing" -->
+    
     <string name="home_with_coauthor">%1$s i %2$s</string>
     <string name="home_with_coauthors">%1$s i %2$d innych</string>
     <string name="home_month_stats">%1$s · %2$s</string>
@@ -132,7 +124,7 @@
         <item quantity="many">%1$d osób</item>
         <item quantity="other">%1$d osób</item>
     </plurals>
-    <!-- The rail's "you are here" marker -->
+    
     <plurals name="home_commits_ahead">
         <item quantity="one">%1$d zatwierdzenie nowsze niż twoje</item>
         <item quantity="few">%1$d zatwierdzenia nowsze niż twoje</item>
@@ -146,7 +138,7 @@
         <item quantity="many">%1$d dni ciszy</item>
         <item quantity="other">%1$d dni ciszy</item>
     </plurals>
-    <!-- Home appearance sheet. Settings live beside what they change, not in one heap. -->
+    
     <string name="appearance_title">Wygląd</string>
     <string name="appearance_theme">Motyw</string>
     <string name="appearance_theme_system">Zgodny z systemem</string>
@@ -157,7 +149,7 @@
     <string name="appearance_amoled_summary">Oszczędza energię na ekranach OLED.</string>
     <string name="egg_two_more">Jeszcze dwa razy…</string>
     <string name="egg_one_more">Jeszcze raz…</string>
-    <!-- Modules -->
+    
     <string name="modules_empty">Nie zainstalowano żadnych modułów.</string>
     <plurals name="modules_updates">
         <item quantity="one">%1$d moduł można zaktualizować</item>
@@ -211,22 +203,22 @@
     <string name="modules_incompatible_legacy">Wymaga API Xposed %1$d, którego ten framework nie zapewnia.</string>
     <string name="modules_api_behind">Zbudowany dla libxposed API %1$d. API %2$d zmieniło interfejs, więc ten moduł może w pełni nie działać.</string>
     <string name="modules_no_daemon">Vector nie jest uruchomiony, więc lista modułów jest niedostępna. Otwórz stan systemu z poziomu strony głównej, aby sprawdzić przyczynę.</string>
-    <!-- Built-in web viewer -->
+    
     <string name="web_open_external">Otwórz w przeglądarce</string>
-    <!-- The status header's living surface -->
+    
     <string name="settings_ambience">Powierzchnia nagłówka</string>
     <string name="ambience_snow">Śnieg</string>
     <string name="ambience_maze">Labirynt</string>
     <string name="ambience_circuit">Obwód</string>
     <string name="ambience_matrix">Deszcz kodu</string>
     <string name="ambience_none">Nieruchoma</string>
-    <!-- Settings: where the panels live. Nothing on Android teaches a long press on a bar. -->
+    
     <string name="settings_navigation">Nawigacja</string>
     <string name="settings_floating_nav">Pływająca nawigacja</string>
     <string name="settings_floating_nav_summary">Zastępuje pasek małą kulką, którą można przeciągnąć w dowolne miejsce. Przytrzymaj ją, aby rozłożyć panele, lub naciśnij, aby pozostały otwarte.</string>
     <string name="settings_rearrange_panels">Zmień kolejność paneli</string>
     <string name="settings_rearrange_panels_summary">Zmień ich kolejność albo ukryj te, których nigdy nie otwierasz.</string>
-    <!-- Settings: activity feed -->
+    
     <string name="settings_activity">Strumień aktywności</string>
     <plurals name="settings_window_months">
         <item quantity="one">Ostatni %1$d miesiąc</item>
@@ -236,7 +228,7 @@
     </plurals>
     <string name="settings_open_externally">Otwieraj linki w przeglądarce</string>
     <string name="settings_open_externally_summary">Wyłączone: strony GitHuba otwierają się wewnątrz Vectora.</string>
-    <!-- Scope editor -->
+    
     <string name="scope_use_recommended">Użyj tego, czego wymaga moduł</string>
     <string name="scope_select_visible">Zaznacz wszystko, co jest pokazane</string>
     <string name="scope_clear_visible">Wyczyść wszystko, co jest pokazane</string>
@@ -261,7 +253,7 @@
     <string name="scope_games">Gry</string>
     <string name="scope_recommended">Wymagana przez ten moduł</string>
     <string name="scope_static">Ten moduł deklaruje stały zakres i nie może być skierowany na inne aplikacje.</string>
-    <!-- e.g. "3 to add, 1 to remove" -->
+    
     <string name="scope_pending">%1$d do dodania, %2$d do usunięcia</string>
     <string name="scope_apply_effect">Każda aplikacja zastosuje to przy następnym uruchomieniu.</string>
     <string name="scope_apply">Zastosuj</string>
@@ -273,7 +265,7 @@
     <string name="scope_empty_message">Ten moduł jest włączony, ale nie ma zaznaczonych żadnych aplikacji, więc nic nie zrobi. Wyłącz go lub wybierz jakieś aplikacje.</string>
     <string name="scope_empty_disable">Wyłącz moduł</string>
     <string name="scope_empty_keep">Zostaw włączony</string>
-    <!-- Long-press actions on a package -->
+    
     <string name="action_not_in_store">Nie ma go w katalogu</string>
     <string name="action_not_in_store_summary">Nie można sprawdzić aktualizacji tego modułu</string>
     <string name="action_update_to">Zaktualizuj do %1$s</string>
@@ -304,7 +296,7 @@
     <string name="action_optimize_failed">Nie udało się ponownie zoptymalizować %1$s.</string>
     <string name="action_uninstalled">Odinstalowano %1$s.</string>
     <string name="action_uninstall_failed">Nie udało się odinstalować %1$s.</string>
-    <!-- Generic -->
+    
     <string name="back">Wstecz</string>
     <string name="retry">Spróbuj ponownie</string>
     <string name="appearance_color">Kolor</string>
@@ -375,12 +367,12 @@
         <item quantity="many">Wszystkie %1$d modułów i wszystko, co zostało w nich skonfigurowane, zostanie usunięte. Tego nie można cofnąć.</item>
         <item quantity="other">Wszystkie %1$d moduły i wszystko, co zostało w nich skonfigurowane, zostanie usunięte. Tego nie można cofnąć.</item>
     </plurals>
-    <!-- Canary builds: choosing which nightly to test, and why it is worth an evening -->
+    
     <string name="canary_open_actions">Otwórz na GitHubie</string>
     <string name="canary_none">Nie opublikowano jeszcze żadnej kompilacji Canary.</string>
     <string name="canary_what_title">Czym jest Canary?</string>
     <string name="canary_what_body">Bieżący stan gałęzi master, zbudowany i sprawdzony wyłącznie przez CI, nic więcej. Poprawki trafiają tutaj dni lub tygodnie przed tym, jak trafią do wydania.</string>
-    <!-- %1$d is how many canaries CI keeps -->
+    
     <string name="canary_keep_body">Najnowsze %1$d są zachowywane, a każda strona kompilacji umożliwia przenoszenie się między nimi lub powrót do ostatniej wersji. Nic tu nie jest drzwiami w jedną stronę.</string>
     <plurals name="canary_since_commits">
         <item quantity="one">%1$d zatwierdzenie od czasu twojej kompilacji.</item>
@@ -388,7 +380,7 @@
         <item quantity="many">%1$d zatwierdzeń od czasu twojej kompilacji.</item>
         <item quantity="other">%1$d zatwierdzeń od czasu twojej kompilacji.</item>
     </plurals>
-    <!-- Heads the list of issues closed since the reader's build -->
+    
     <plurals name="canary_fixed_since">
         <item quantity="one">Naprawione od czasu twojej kompilacji</item>
         <item quantity="few">Naprawione od czasu twojej kompilacji — %1$d zgłoszenia</item>
@@ -397,11 +389,11 @@
     </plurals>
     <string name="canary_current">Używasz najnowszej wersji Canary. Nie ma nic do testowania, dopóki CI nie opublikuje ponownie.</string>
     <string name="canary_ahead">Twoja kompilacja jest nowsza niż wszystkie opublikowane wersje Canary, więc nie została skompilowana na podstawie żadnej z nich.</string>
-    <!-- Same version number as the newest canary, but built from a different commit -->
+    
     <string name="canary_diverged">Twoja kompilacja ma najnowszy numer Canary, ale nie została zbudowana na jego podstawie. Zainstaluj go, aby mieć pewność, co testujesz.</string>
-    <!-- On a release published after the last canary — normal for a day or two after a release -->
+    
     <string name="canary_after_release">Jesteś na wersji nowszej niż wszystkie Canary tutaj. Kolejne Canary zostanie zbudowane na jej podstawie.</string>
-    <!-- The build number, shown in monospace: "canary 3049" -->
+    
     <string name="canary_build">Canary %1$d</string>
     <string name="canary_report_title">Znalazłeś coś?</string>
     <string name="canary_report_body">Canary, która zawodzi, to właśnie powód, by ją uruchamiać — dopiero zgłoszenie zmienia to w poprawkę. Jeśli tropisz błąd, weź archiwum Debug: zapisuje znacznie więcej, a tego właśnie wymaga zgłoszenie.</string>
@@ -471,7 +463,7 @@
     <string name="settings_doh_working">Działa — %1$s zostało rozwiązane za pośrednictwem Cloudflare.</string>
     <string name="settings_doh_fell_back">Nie można było połączyć się z Cloudflare (%1$s), więc przez resztę tej sesji używany jest moduł rozpoznawania nazw sieci.</string>
     <string name="settings_doh_retry">Spróbuj ponownie</string>
-    <!-- Getting back into Vector, which parasitically has no launcher icon of its own -->
+    
     <string name="launcher_title">Jak otworzyć Vectora?</string>
     <string name="launcher_body">Vector nie jest zainstalowany jako aplikacja, więc w launcherze nie ma nic do pokazania. Oto sposoby jego otwarcia.</string>
     <string name="launcher_shortcut">Skrót na ekranie głównym</string>
@@ -494,7 +486,7 @@
     <string name="launcher_prompt_body">Vector działa w ramach innego procesu i nie jest instalowany, więc nic nie pojawia się w launcherze, więc nie ma oczywistej drogi powrotu. Dodaj skrót na ekranie głównym lub zainstaluj go jako zwykłą aplikację.</string>
     <string name="launcher_prompt_never">Nie pytaj ponownie</string>
 
-    <!-- RootMyS24 custom UI -->
+    
     <string name="settings_screen_title">Ustawienia</string>
     <string name="settings_screen_subtitle">Preferencje uruchamiania i informacje</string>
     <string name="settings_section_run">Uruchamianie</string>
@@ -518,7 +510,7 @@
         <string name="rootflow_auth_label">Authorization method</string>
     <string name="rootflow_auth_shizuku">Shizuku (install Shizuku app)</string>
     <string name="rootflow_auth_adb">Wireless debugging (no extra app)</string>
-    <string name="rootflow_auth_adb_hint">Enable Wireless debugging in Developer options, then enter the IP:port shown (39xxx connect port). First connection asks to allow RSA fingerprint on the device.</string>
+    <string name="rootflow_auth_adb_hint">Enable Wireless debugging in Developer options, then pair with the code shown, or connect using the IP:port shown (39xxx connect port).</string>
     <string name="rootflow_auth_adb_host">IP</string>
     <string name="rootflow_auth_adb_port">Port</string>
     <string name="rootflow_auth_adb_connect">Connect</string>
@@ -563,7 +555,7 @@
     <string name="about_faq_restart_q">Czy po ponownym uruchomieniu trzeba ponownie zrootować?</string>
     <string name="about_faq_restart_a">Tak. Bootloader jest zablokowany, więc po każdym ponownym uruchomieniu trzeba uruchomić Unlock Root ponownie.</string>
     <string name="about_disclaimer">Zastrzeżenie: ta aplikacja służy wyłącznie do badań bezpieczeństwa i osobistej nauki. Podnoszenie uprawnień przez uszkodzenie pamięci jądra jest z natury niepewne; korzystasz na własne ryzyko. Przestrzegaj lokalnych przepisów.</string>
-    <!-- RootMyS24 log strings -->
+    
     <string name="log_starting">Uruchamianie RootMyS24</string>
     <string name="log_payload">Payload: %1$s (stały, kmalloc_caches 0x176cbb8)</string>
     <string name="log_check_shizuku">[1/5] Sprawdzanie Shizuku...</string>
@@ -604,10 +596,10 @@
     <string name="log_knox_unknown">Nieznany (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Nieznany (wymaga Shizuku)</string>
     <string name="log_binder_unavailable">Binder Shizuku niedostępny</string>
-<!-- RootMyS24 log extra -->
+
     <string name="log_export_entry_fail">Nie można utworzyć wpisu pobierania</string>
     <string name="log_export_write_fail">Nie można zapisać do wpisu pobierania</string>
     <string name="log_export_ok_path">Wyeksportowano do %1$s</string>
     <string name="log_restored">Restored %1$d lines from last session</string>
     <string name="log_persist_failed">Auto-save log failed: %1$s</string>
-</resources>
+<string name="rootflow_auth_adb_pair">Pair with code</string><string name="rootflow_auth_adb_pair_port">Pair port</string><string name="rootflow_auth_adb_pair_code">6-digit pair code</string><string name="rootflow_auth_adb_pair_hint">In Wireless debugging, tap Pair device with pairing code, enter the IP, the 37xxx pairing port and the 6-digit code. Pairing pre-authorizes this device, so Connect will not ask for RSA approval again.</string><string name="rootflow_auth_adb_pairing">Pairing…</string><string name="rootflow_auth_adb_paired">Paired ✓ - now tap Connect</string><string name="adb_wireless_bad_pair_code">Enter the 6-digit pairing code</string><string name="adb_wireless_paired">Paired: %1$s:%2$d - device now trusts this app</string><string name="log_adb_pair_code_wrong">Pairing failed: wrong pairing code or code expired</string><string name="log_adb_pair_failed">Pairing failed: %1$s</string></resources>
