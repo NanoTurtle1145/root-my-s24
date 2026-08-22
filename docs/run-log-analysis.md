@@ -121,9 +121,41 @@ SM-S9380 经验（`03_参考研究/SM-S9380_RMG_root_experience.md` §六）给�
 ```
 STRUCT_PAGE_SIZE              = 0x40
 STRUCT_PAGE_COMPOUND_HEAD_OFF = 0x08
-STRUCT_SLAB_CACHE_OFF         = 0x08
+STRUCT_SLAB_CACHE_OFF         = 0x18
 STRUCT_PAGE_TYPE_OFF          = 0x30
 ```
+
+> **注意（2026-08-22 反汇编验证）**：上述偏移中 `STRUCT_SLAB_CACHE_OFF` 已通过反汇编确认 **BYH7 与 DZF2 一致（均为 0x18，非 SM-S9380 ZG1 的 0x08）**——两个内核的 `new_slab` 中写 `page->slab_cache` 的指令完全相同（`str x19, [x20, #0x18]`），且 `new_slab`/`__slab_free` 访问 struct page 的偏移集合几乎一致。SM-S9380 是不同平台（pa3q）不同内核版本，其偏移不能直接套用 BYH7。
+
+### 2.4 根因再修正（2026-08-22 反汇编验证后）
+
+**BYH7 失败不是 struct page 偏移错误，而是 pipe 页回收状态问题：pipe 页不在 SLUB slab 缓存中。**
+
+反汇编证据：DZF2 与 BYH7 的 `new_slab` 写 `page->slab_cache` 指令一致（`str x19, [x20, #0x18]`），struct page 布局相同。
+
+日志证据（关键）：
+- **BYH7 失败**：`cache08=fffffffe208aac08 cache10=fffffffe2919de08 cache18=0 type=ffffff7f match=0`
+  - `cache08/cache10` 以 `fffffffe` 开头 = **vmemmap 区域地址**（struct page 数组在 vmemmap）→ 这是 **buddy 空闲链表指针**（free_list 上相邻页的 struct page 地址）的特征
+  - `cache18=0` = 该页 **slab_cache 字段为空** → 页已释放回 buddy 系统，**不在任何 kmalloc 缓存中**
+- **S9280 成功**：`cache08=0 cache10=dead000000000122 cache18=ffffff8001cf6800 type=ffffffff match=1`
+  - `cache10=dead000000000122` = SLUB poison 值（CONFIG_SLUB_DEBUG 填充）
+  - `cache18=normal2k cache 地址` = 页是 SLUB slab 页 ✓
+
+**结论**：BYH7 的 pipe 页被释放后回到了 buddy 空闲链表（或未进入目标 kmalloc-2k 缓存），exploit 在 pipe 页内找不到 slab_cache 匹配 → cache gate 失败。这不是偏移常量错误，而是 **pipe 页回收/分配路径与 DZF2 不同**（可能原因：pipe 容量不同→pipe_buffer 数组落入不同 kmalloc 桶；或回收时序/分配器行为差异；或 cgroup 缓存归属差异）。
+
+**附加观察**：BYH7 attempt2 第一次 `mm leaked object_index=28` 超界（max=27）被拒后重试 `object_index=5` 成功——6.1.99 的 mm 分配布局与 6.1.145 有细微差异（slab 桶位不同），但非致命（重试可绕过）。
+
+**下一步验证方向**（按优先级）：
+1. 核对 BYH7 的 `pipe_buffer` 数组实际落桶：`pipe-buffer-max` 等配置或 pipe 默认容量（`PIPE_DEF_BUFFERS`）是否不同 → pipe_buffer 数组大小（32×64B=2KB）是否仍落 kmalloc-2k
+2. 检查 BYH7 是否启用 `CONFIG_SLUB_DEBUG`/poison（日志显示 S9280 有 poison 值，BYH7 的页无）→ 回收/分配路径差异
+3. 对比两内核 `alloc_pipe_info`（pipe 初始化）中 `kcalloc(pipe_bufs, sizeof(struct pipe_buffer))` 的实际分配尺寸
+
+> **已反汇编验证过的结论**（2026-08-22）：
+> - `STRUCT_SLAB_CACHE_OFF=0x18` 在两个内核中一致（`new_slab` 写 `page->slab_cache` 的指令 `str x19, [x20, #0x18]` 相同）
+> - `new_slab`/`__slab_free` 访问 struct page 的偏移集合一致，struct page 布局相同
+> - `alloc_pipe_info` 中 pipe_buffer 数组分配的指令序列一致（pipe_buffer 大小相同）
+> - 两个内核的 kmalloc_caches 地址（normal1k/2k, cgroup1k/2k）完全相同
+> - **排除 struct page 偏移和 pipe 分配路径差异**，定位为 pipe 页回收状态问题（页回 buddy 而非 SLUB slab）
 
 **附加因素**：SM-S9380 经验还提示 **Shell 域 vs App 域差异**（cgroup 归属影响 kmalloc 落 cgroup 还是 normal 缓存，与 FOPS 的 kmalloc_cgroup_2k_cache 匹配相关）。BYH7 测试走 App（Shizuku），除偏移外还需考虑运行环境对缓存归属的影响。
 
@@ -131,12 +163,11 @@ STRUCT_PAGE_TYPE_OFF          = 0x30
 
 ## 3. 下一步建议
 
-1. **核对 `struct page` 四项偏移**（BYH7 失败的直接根因，§2.3）：用 BTF（`vmlinux_byh7.elf`）反查 6.1.99 内核的 `STRUCT_PAGE_SIZE=0x40`、`STRUCT_PAGE_COMPOUND_HEAD_OFF=0x08`、`STRUCT_SLAB_CACHE_OFF=0x08`、`STRUCT_PAGE_TYPE_OFF=0x30` 是否与 DZF2 一致；若不一致，按 SM-S9380 移植流程（解包 boot.img → BTF 反推 → 对照旧 profile 修正）更新 BYH7 target.h。
-2. **核对 `pipe_buffer` 布局**：`pipe/page/offset/len/ops/flags` 字段偏移与数组步长（16/24/32 字节），对照 exploit 源码 `pipe.c` 页内扫描逻辑（在 struct page 偏移修正后如仍不匹配再查）。
-3. **核对 `COMPACT_RT_MUTEX_WAITER` 相关偏移**（byh7-target-complete.md 已标注）——若前两步修正后 root 阶段仍失败，优先查此项。
-4. **App 域验证**：SM-S9380 经验提示 Shell 域 ≠ App 域（cgroup 归属影响 kmalloc 缓存匹配），BYH7 修正偏移后必须走 App（Shizuku）完整验证，不能只在 adb shell 里测。
-5. **重试覆盖**：BYH7 的 `object_index=28 超界` 与 `fops slide` 竞态均可靠多次 attempt 覆盖（attempt 2 里 CFI 已通过，说明链路主体可行，差的只是偏移常量）。
-6. **时序**：保持 `APP_MIN_BOOT_UPTIME_SEC=120`（当前已是），不要改小（SM-S9380 实测 60 秒必失败）。
+1. **BYH7 排查方向已收敛**（2026-08-22）：通过反汇编验证排除了 struct page 偏移（`0x18` 一致）、pipe 分配路径（`alloc_pipe_info` 一致）、kmalloc_caches（地址一致）三个疑点。**剩余主嫌疑：pipe 页回收状态**——BYH7 的 pipe 页回到了 buddy 空闲链表（cache08/10=vmemmap 链表指针、cache18=0），而 S9280 的 pipe 页是 SLUB slab 页（cache18=normal2k）。
+2. **优先实测验证 pipe 回收**：在 BYH7 真机上（或对比 S9280 成功时）观察 `pipe page` 扫描前的 drain/reclaim 是否真正把 pipe_buffer 数组页留在 SLUB。可临时加大 `PIPE_DRAIN/PIPE_RECLAIM` 或调整 `sk_buff reclaim sends` 观察是否改变页状态。
+3. **备用方向**：若 pipe 回收状态在 6.1.99 上确实不同（如 CONFIG_SLUB_DEBUG 差异导致 poison 语义不同），考虑在 BYH7 target.h 中调整 `PIPE_DRAIN_SLABS/PIPE_RECLAIM_SLABS` 或 pipe 页扫描逻辑（`pipe_reclaim_cache_gate` 的候选匹配放宽）。
+4. **App 域验证**：SM-S9380 经验提示 Shell 域 ≠ App 域（cgroup 归属影响 kmalloc 缓存匹配），BYH7 修正后必须走 App（Shizuku）完整验证。
+5. **时序**：保持 `APP_MIN_BOOT_UPTIME_SEC=120`（当前已是），不要改小（SM-S9380 实测 60 秒必失败）。
 
 ---
 
