@@ -480,13 +480,15 @@
     <string name="log_adb_pair_notify_started">配对通知已发送 — 请查看通知并输入 6 位配对码</string>
     <string name="notification_channel_adb_pairing">无线调试配对</string>
     <string name="notification_adb_pairing_searching_title">正在查找无线调试服务</string>
-    <string name="notification_adb_pairing_searching_text">请在开发者选项中开启「无线调试」…</string>
+    <string name="notification_adb_pairing_searching_text">1. 打开开发者选项→无线调试 2. 点「使用配对码配对设备」3. 保持该页面打开——配对码仅在页面打开时有效</string>
     <string name="notification_adb_pairing_not_found_title">未找到无线调试服务</string>
     <string name="notification_adb_pairing_not_found_text">请确认已开启「无线调试」且手机与电脑在同一网络，然后重试</string>
     <string name="notification_adb_pairing_search_error_title">无线调试搜索失败</string>
+    <string name="notification_adb_pairing_expired_title">配对会话已过期</string>
+    <string name="notification_adb_pairing_expired_text">配对页面已关闭或配对码已变化。正在重新搜索——请重新打开配对码页面并保持打开。</string>
     <string name="notification_adb_pairing_stop">停止</string>
     <string name="notification_adb_pairing_service_found_title">已找到无线调试</string>
-    <string name="notification_adb_pairing_service_found_text">请输入设备上显示的 6 位配对码（配对端口 %1$d）</string>
+    <string name="notification_adb_pairing_service_found_text">保持配对码页面打开，下拉此通知，输入设备上显示的 6 位配对码</string>
     <string name="notification_adb_pairing_input_action">输入配对码</string>
     <string name="notification_adb_pairing_input_hint">6 位配对码</string>
     <string name="notification_adb_pairing_working_title">配对中…</string>

@@ -64,8 +64,6 @@ object AdbPairingFlow {
     private var mdnsPair: AdbMdns? = null
     private var mdnsConnect: AdbMdns? = null
     private var pairPort = -1
-    private var connectHost = ""
-    private var connectPort = -1
     private var searching = false
     private var paired = false
 
@@ -85,18 +83,22 @@ object AdbPairingFlow {
         if (Build.VERSION.SDK_INT >= 33 && !NotificationManagerCompat.from(context).areNotificationsEnabled()) {
             return context.getString(R.string.notification_adb_pairing_no_permission)
         }
+        beginSearch(context)
+        return null
+    }
+
+    /** 启动 mDNS 搜索（权限已校验）。配对失败端口失效时也用它重启。 */
+    private fun beginSearch(context: Context) {
         searching = true
         paired = false
         pairPort = -1
-        connectPort = -1
 
         createChannel(context)
         notifySearching(context)
 
-        mdnsPair = AdbMdns(context, AdbMdns.TLS_PAIRING) { host, port ->
+        mdnsPair = AdbMdns(context, AdbMdns.TLS_PAIRING) { _, port ->
             if (port <= 0) return@AdbMdns
             pairPort = port
-            connectHost = host
             notifyInputCode(context, port)
         }.also { it.setOnError { msg -> notifySearchError(context, msg) } }
         mdnsPair?.start()
@@ -108,7 +110,6 @@ object AdbPairingFlow {
                 notifySearchTimeout(context)
             }
         }
-        return null
     }
 
     /** 通知配对是否可用（Android 11+）。 */
@@ -147,9 +148,19 @@ object AdbPairingFlow {
                 return@launch
             }
             val success = try {
-                AdbPairingClient(connectHost.ifBlank { "127.0.0.1" }, actualPort, code.trim(), key).use { client ->
+                // 配对固定连回环地址：adbd 的配对服务绑定 127.0.0.1（本机场景），
+                // mDNS 广播的局域网 IP 上并没有监听（会 ECONNREFUSED）。
+                // 与 Shizuku AdbPairingService.onInput 的 `host = "127.0.0.1"` 一致。
+                AdbPairingClient("127.0.0.1", actualPort, code.trim(), key).use { client ->
                     client.start()
                 }
+            } catch (t: java.net.ConnectException) {
+                // 端口失效：配对窗口已过期，或用户重新点了「使用配对码配对设备」端口已变。
+                // 自动重启搜索，适配新端口，而不是让用户卡在「配对码错误」。
+                Log.w(TAG, "pair port expired (ECONNREFUSED), restarting search", t)
+                notifyPairingExpired(context)
+                beginSearch(context)
+                return@launch
             } catch (t: Throwable) {
                 Log.w(TAG, "pair failed", t)
                 false
@@ -167,12 +178,13 @@ object AdbPairingFlow {
 
     /** 配对成功后自动发现连接端口 */
     private fun findAndConnect(context: Context) {
-        mdnsConnect = AdbMdns(context, AdbMdns.TLS_CONNECT) { host, port ->
+        mdnsConnect = AdbMdns(context, AdbMdns.TLS_CONNECT) { _, port ->
             if (port <= 0) return@AdbMdns
             mdnsConnect?.stop()
             mdnsConnect = null
             scope.launch {
-                AdbWirelessController.connect(host, port)
+                // 连接同样走回环地址（adbd 在本机监听 39xxx 连接端口）
+                AdbWirelessController.connect("127.0.0.1", port)
                 notifyResult(context, AdbWirelessController.isConnected(), null)
             }
         }
@@ -217,6 +229,21 @@ object AdbPairingFlow {
         }
     }
 
+    /** 配对端口失效（窗口过期/重新点配对码）时提示，随后自动重启搜索。 */
+    private fun notifyPairingExpired(context: Context) {
+        try {
+            val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_menu_edit)
+                .setContentTitle(context.getString(R.string.notification_adb_pairing_expired_title))
+                .setContentText(context.getString(R.string.notification_adb_pairing_expired_text))
+                .setOngoing(true)
+                .build()
+            NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+        } catch (e: Throwable) {
+            Log.w(TAG, "notifyPairingExpired failed", e)
+        }
+    }
+
     private fun notifySearchError(context: Context, msg: String) {
         try {
             val notification = NotificationCompat.Builder(context, CHANNEL_ID)
@@ -250,10 +277,12 @@ object AdbPairingFlow {
             val remoteInput = RemoteInput.Builder(KEY_REMOTE_INPUT)
                 .setLabel(context.getString(R.string.notification_adb_pairing_input_hint))
                 .build()
-            val replyIntent = Intent(context, MainActivity::class.java)
+            // 用 Service 接收（而不是 Activity）：确认输入后不打断系统设置的配对码页面，
+            // 否则三星上该页面失焦关闭、配对服务停止。与 Shizuku 的 getForegroundService 同理。
+            val replyIntent = Intent(context, PairingReplyService::class.java)
                 .setAction(ACTION_PAIR_REPLY)
                 .putExtra(EXTRA_PORT, port)
-            val replyPi = PendingIntent.getActivity(
+            val replyPi = PendingIntent.getService(
                 context, REPLY_REQUEST, replyIntent,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                     PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
@@ -268,7 +297,7 @@ object AdbPairingFlow {
             val notification = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.ic_menu_edit)
                 .setContentTitle(context.getString(R.string.notification_adb_pairing_service_found_title))
-                .setContentText(context.getString(R.string.notification_adb_pairing_service_found_text, port))
+                .setContentText(context.getString(R.string.notification_adb_pairing_service_found_text))
                 .addAction(replyAction)
                 .setOngoing(true)
                 .build()

@@ -1,5 +1,6 @@
 package cn.nanoturtle.rootmys9280.manager.rootmy
 
+import android.util.Log
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -69,7 +70,9 @@ class AdbPairingClient(
 
     private fun setupTlsConnection() {
         if (!loadAdbLibrary()) throw IllegalStateException("libadb.so unavailable")
-        val raw = Socket(host, port)
+        // Samsung 的 adbd 配对服务可能只监听 IPv6 通配 [::]（netstat 显示 [::]:port），
+        // 连接 127.0.0.1（IPv4 回环）会被拒。依次尝试多个回环地址。
+        val raw = openPairingSocket()
         raw.tcpNoDelay = true
         socket = raw
 
@@ -89,6 +92,24 @@ class AdbPairingClient(
         val ctx = PairingContext.create(passwordBytes)
         checkNotNull(ctx) { "Unable to create PairingContext." }
         pairingContext = ctx
+    }
+
+    /** 依次尝试 127.0.0.1 / ::1 / mDNS host，第一个能连上的回环地址。 */
+    private fun openPairingSocket(): Socket {
+        val candidates = linkedSetOf<String>()
+        candidates += "127.0.0.1"
+        candidates += "::1"
+        if (host.isNotBlank() && host != "127.0.0.1" && host != "::1") candidates += host
+        var lastError: Throwable? = null
+        for (candidate in candidates) {
+            try {
+                return Socket(candidate, port)
+            } catch (t: Throwable) {
+                lastError = t
+                Log.w(TAG, "connect $candidate:$port failed: $t")
+            }
+        }
+        throw lastError ?: java.net.ConnectException("no address candidates")
     }
 
     /**
@@ -176,6 +197,7 @@ class AdbPairingClient(
     }
 
     companion object {
+        private const val TAG = "AdbPairingClient"
         private const val kCurrentKeyHeaderVersion = 1.toByte()
         private const val kMinSupportedKeyHeaderVersion = 1.toByte()
         private const val kMaxSupportedKeyHeaderVersion = 1.toByte()

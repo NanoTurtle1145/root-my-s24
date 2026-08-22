@@ -165,8 +165,10 @@ class AdbMdns(
                 } ?: false
         }.getOrDefault(false)
 
-        // 端口占用检查同样只作参考：adbd 可能监听在具体 IP 而非 0.0.0.0，
-        // 127.0.0.1 绑定测试不可靠。
+        // 端口有效性检查（关键）：adbd 的配对服务在 127.0.0.1 上真实监听。
+        // bind 127.0.0.1:port 失败 = 端口被占用 = adbd 在监听 = 有效；
+        // bind 成功 = 端口空闲 = mDNS 解析到的是过期缓存/已关闭的服务 → 必须跳过，
+        // 否则会给用户弹输入框、输入后 ECONNREFUSED。
         val isPortBusy = try {
             ServerSocket().use { sock ->
                 sock.bind(InetSocketAddress("127.0.0.1", resolved.port), 1)
@@ -174,6 +176,11 @@ class AdbMdns(
             }
         } catch (_: IOException) {
             true
+        }
+        if (!isPortBusy) {
+            Log.w(TAG, "resolved port ${resolved.port} not listening, skip stale service: ${resolved.serviceName}")
+            resolvingService = null
+            return
         }
 
         Log.i(TAG, "resolved $serviceType: ${resolved.serviceName} host=$host port=${resolved.port} local=$isLocal portBusy=$isPortBusy")

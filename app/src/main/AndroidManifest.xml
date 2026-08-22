@@ -54,6 +54,15 @@
             android:exported="false"
             android:theme="@style/Theme.Vector" />
 
+        <!--
+          无线调试通知配对：通知上 RemoteInput 的 PendingIntent 指向此 Service，
+          在后台接收配对码并执行配对，不打断系统设置里的配对码页面
+          （Activity 接收会把用户带回 App，导致配对码页面关闭、服务停止）。
+        -->
+        <service
+            android:name=".rootmy.PairingReplyService"
+            android:exported="false" />
+
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
