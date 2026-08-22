@@ -55,6 +55,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     /** 目标系统版本（决定使用哪份 exploit 载荷） */
     enum class FirmwareVersion(val assetName: String, val label: String, val range: String) {
+        CZA1("cve-2026-43499-cza1", "One UI 8.0", "港版 CZA1"),
         DZE2("cve-2026-43499-dze2", "One UI 8.5", "港版 DZE2"),
         DZF2("cve-2026-43499", "One UI 8.5", "国行 DZF2"),
         DZG1("cve-2026-43499-dzg1", "One UI 8.5", "国行 DZG1"),
