@@ -4,7 +4,7 @@
 
 ## 下载
 
-- **APK**: `RootMyS24-v2.5.4-release.apk`（v2.5.4, versionCode 65, 签名 CN=S9280Root）
+- **APK**: `RootMyS24-v2.5.4-release.apk`（v2.5.4, versionCode 66, 签名 CN=S9280Root）
 - **包名**: `cn.nanoturtle.rootmys9280`
 - **适用**: SM-S24 系列（S9210 / S9260 / S9280）
 
@@ -14,14 +14,20 @@
 
 ## v2.5.4 更新亮点
 
-### 1. 修复通知发不出（Android 13+ 通知权限）
+### 1. 修复第二条通知（输入配对码）不出现
 
-- 点击「通知配对」先请求 `POST_NOTIFICATIONS` 权限（`rememberLauncherForActivityResult`）
-- 未授予时 `AdbPairingFlow.startSearch` 返回明确错误而非静默失败
-- 用户拒绝后显示引导文案（去系统设置开启）
-- 所有通知异常从静默吞掉改为 `Log.w` 输出，便于排查
+根本原因：`AdbMdns.onServiceResolved` 的 `isLocal` + `isPortBusy` 硬性过滤在寄生式架构下失效——宿主无 INTERNET 权限时 `getNetworkInterfaces()` 只返回回环地址，设备局域网 IP 不匹配被过滤，`notifyInputCode` 永远不回调。
 
-### 2. 无线调试通知配对（v2.5.2 引入，保留）
+修复：
+- 去掉 `isLocal` / `isPortBusy` 硬性过滤，改为日志输出（`_adb-tls-pairing` 服务类型足够唯一，误连风险极低）
+- resolve 失败自动重试（最多 5 次，每次间隔 800ms）
+- 日志级别从 V 提升到 I，方便 logcat 排查
+
+### 2. 通知权限修复（v2.5.3 引入，保留）
+
+点击「通知配对」先请求 `POST_NOTIFICATIONS` 权限（Android 13+），拒绝后引导去系统设置开启。
+
+### 3. 无线调试通知配对（v2.5.2 引入，保留）
 
 参考 Shizuku 交互，省去手动输入 IP/端口：
 
@@ -87,6 +93,10 @@ Android 11+ 无线调试直连：App 输入系统显示的 IP:端口，RSA 密�
 
 ```
 v2.5.4 (2026-08-22)
+  + 修复 mDNS 过滤条件过严导致第二条通知（输入配对码）不出现
+  + 去掉 isLocal / isPortBusy 硬性过滤（服务类型 _adb-tls-pairing 足够唯一）
+  + resolve 失败自动重试（最多 5 次，间隔 800ms），日志级别 V→I
+v2.5.3 (2026-08-22)
   + 修复通知发不出（Android 13+ 通知权限检查与请求，引导拒绝用户去系统设置开启）
   + 所有通知异常从静默吞掉改为 Log.w 输出
 v2.5.2 (2026-08-22)
