@@ -431,6 +431,8 @@
     <string name="settings_brief_log_summary">Hanya menampilkan baris ringkasan di log proses untuk mengurangi kekacauan</string>
     <string name="settings_auto_save_log">Auto-save log</string>
     <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
+    <string name="settings_adb_wireless">Wireless debugging auth</string>
+    <string name="settings_adb_wireless_summary">Experimental. When enabled, the home screen shows wireless debugging controls (pairing / connect)</string>
     <string name="settings_section_about">Tentang</string>
     <string name="settings_check_update">Periksa pembaruan</string>
     <string name="settings_check_update_summary">Buka GitHub Releases untuk versi baru</string>

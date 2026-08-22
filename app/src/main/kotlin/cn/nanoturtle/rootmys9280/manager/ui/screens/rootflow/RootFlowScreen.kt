@@ -354,6 +354,9 @@ private fun AuthCard(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val method = vm.authMethod
+    // 无线调试授权是否启用（设置页开关，默认关闭）：关闭时主页不显示任何无线调试控件
+    val adbEnabled by vm.adbWirelessEnabled.collectAsStateWithLifecycle()
+    val effectiveMethod = if (adbEnabled) method else RootViewModel.AuthMethod.SHIZUKU
     var host by remember { mutableStateOf("") }
     var port by remember { mutableStateOf("") }
     var pairPort by remember { mutableStateOf("") }
@@ -383,7 +386,7 @@ private fun AuthCard(
                 modifier = Modifier.padding(top = 10.dp),
             )
 
-            // 授权方式选择：Shizuku / 无线调试
+            // 授权方式选择：Shizuku / 无线调试（无线调试仅在设置页开启后显示）
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -399,7 +402,7 @@ private fun AuthCard(
                         },
                 )
                 androidx.compose.material3.RadioButton(
-                    selected = method == RootViewModel.AuthMethod.SHIZUKU,
+                    selected = effectiveMethod == RootViewModel.AuthMethod.SHIZUKU,
                     onClick = {
                         vm.setAuthMethod(RootViewModel.AuthMethod.SHIZUKU)
                         pairError = null
@@ -407,32 +410,34 @@ private fun AuthCard(
                     enabled = !state.busy,
                 )
             }
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(R.string.rootflow_auth_adb),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable(enabled = !state.busy) {
+            if (adbEnabled) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.rootflow_auth_adb),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable(enabled = !state.busy) {
+                                vm.setAuthMethod(RootViewModel.AuthMethod.ADB_WIRELESS)
+                                pairError = null
+                            },
+                    )
+                    androidx.compose.material3.RadioButton(
+                        selected = effectiveMethod == RootViewModel.AuthMethod.ADB_WIRELESS,
+                        onClick = {
                             vm.setAuthMethod(RootViewModel.AuthMethod.ADB_WIRELESS)
                             pairError = null
                         },
-                )
-                androidx.compose.material3.RadioButton(
-                    selected = method == RootViewModel.AuthMethod.ADB_WIRELESS,
-                    onClick = {
-                        vm.setAuthMethod(RootViewModel.AuthMethod.ADB_WIRELESS)
-                        pairError = null
-                    },
-                    enabled = !state.busy,
-                )
+                        enabled = !state.busy,
+                    )
+                }
             }
 
-            // 无线调试模式下：配对 + 连接
-            if (method == RootViewModel.AuthMethod.ADB_WIRELESS) {
+            // 无线调试模式下：配对 + 连接（仅在设置页开启后显示）
+            if (adbEnabled && effectiveMethod == RootViewModel.AuthMethod.ADB_WIRELESS) {
                 HorizontalDivider(Modifier.padding(vertical = 6.dp))
                 val connected = AdbWirelessController.isConnected()
                 Text(

@@ -433,6 +433,8 @@
     <string name="settings_brief_log_summary">執行日誌僅顯示摘要列，減少雜訊</string>
     <string name="settings_auto_save_log">自動儲存日誌</string>
     <string name="settings_auto_save_log_summary">日誌即時寫入磁碟，崩潰/重啟後自動復原（除錯選項）</string>
+    <string name="settings_adb_wireless">無線偵錯授權</string>
+    <string name="settings_adb_wireless_summary">實驗性功能。開啟後首頁才顯示無線偵錯控制項（配對/連線）</string>
     <string name="settings_section_about">關於</string>
     <string name="settings_check_update">檢查更新</string>
     <string name="settings_check_update_summary">開啟 GitHub Releases 查看新版本</string>

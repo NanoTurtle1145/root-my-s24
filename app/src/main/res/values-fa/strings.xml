@@ -442,6 +442,8 @@
     <string name="settings_brief_log_summary">برای کاهش شلوغی، فقط خطوط خلاصه در لاگ اجرا نمایش داده شود</string>
     <string name="settings_auto_save_log">Auto-save log</string>
     <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
+    <string name="settings_adb_wireless">Wireless debugging auth</string>
+    <string name="settings_adb_wireless_summary">Experimental. When enabled, the home screen shows wireless debugging controls (pairing / connect)</string>
     <string name="settings_section_about">درباره</string>
     <string name="settings_check_update">بررسی به‌روزرسانی</string>
     <string name="settings_check_update_summary">باز کردن GitHub Releases برای نسخه‌های جدید</string>

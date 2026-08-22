@@ -442,6 +442,8 @@
     <string name="settings_brief_log_summary">Dağınıklığı azaltmak için çalıştırma günlüğünde yalnızca özet satırlarını gösterir</string>
     <string name="settings_auto_save_log">Auto-save log</string>
     <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
+    <string name="settings_adb_wireless">Wireless debugging auth</string>
+    <string name="settings_adb_wireless_summary">Experimental. When enabled, the home screen shows wireless debugging controls (pairing / connect)</string>
     <string name="settings_section_about">Hakkında</string>
     <string name="settings_check_update">Güncellemeleri kontrol et</string>
     <string name="settings_check_update_summary">Yeni sürümler için GitHub Releases sayfasını açar</string>

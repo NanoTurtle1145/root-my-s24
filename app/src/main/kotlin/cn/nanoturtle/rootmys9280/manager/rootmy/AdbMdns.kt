@@ -125,7 +125,7 @@ class AdbMdns(
             }
 
             override fun onServiceResolved(info: NsdServiceInfo) {
-                onServiceResolved(info)
+                this@AdbMdns.onServiceResolved(info)
             }
         })
     }

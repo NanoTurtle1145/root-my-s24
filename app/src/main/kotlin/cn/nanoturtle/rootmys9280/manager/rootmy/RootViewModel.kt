@@ -104,18 +104,43 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val PREFS_FIRMWARE = "firmware_version"
     private val KEY_AUTH_METHOD = "auth_method"
 
+    /** 实验性功能：无线调试授权（默认关闭；设置页开启后主页才显示相关控件） */
+    private val KEY_ADB_WIRELESS_ENABLED = "adb_wireless_enabled"
+
     /** 当前 shell 执行器（Shizuku 或无线调试 adb），全部命令经由此执行。 */
     var shellExecutor: ShellExecutor = ShizukuController
         private set
+
+    private val _adbWirelessEnabled = MutableStateFlow(false)
+    /** 无线调试授权是否启用（设置页开关；主页订阅此状态决定是否显示无线调试控件） */
+    val adbWirelessEnabled: StateFlow<Boolean> = _adbWirelessEnabled
 
     init {
         // 无线调试授权：注入 RSA 密钥存储目录（App 私有目录），恢复上次连接状态
         AdbWirelessController.init(File(app.filesDir, "adb"))
         // 恢复上次选择的授权方式（Shizuku 或无线调试）
-        val saved = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
-            .getString(KEY_AUTH_METHOD, AuthMethod.SHIZUKU.name)
-        if (saved == AuthMethod.ADB_WIRELESS.name) shellExecutor = AdbWirelessController
+        val prefs = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+        val saved = prefs.getString(KEY_AUTH_METHOD, AuthMethod.SHIZUKU.name)
+        val adbEnabled = prefs.getBoolean(KEY_ADB_WIRELESS_ENABLED, false)
+        _adbWirelessEnabled.value = adbEnabled
+        if (adbEnabled && saved == AuthMethod.ADB_WIRELESS.name) {
+            shellExecutor = AdbWirelessController
+        } else if (!adbEnabled && saved == AuthMethod.ADB_WIRELESS.name) {
+            // 无线调试被禁用但上次选了它：强制回退 Shizuku，避免流程引用未启用的后端
+            prefs.edit().putString(KEY_AUTH_METHOD, AuthMethod.SHIZUKU.name).apply()
+        }
         restorePersistedLog()
+    }
+
+    /** 设置页开关：启用/禁用无线调试授权。禁用时若当前是无线调试则回退 Shizuku 并断开。 */
+    fun setAdbWirelessEnabled(enabled: Boolean) {
+        val prefs = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(KEY_ADB_WIRELESS_ENABLED, enabled).apply()
+        _adbWirelessEnabled.value = enabled
+        if (!enabled && authMethod == AuthMethod.ADB_WIRELESS) {
+            setAuthMethod(AuthMethod.SHIZUKU)
+            AdbWirelessController.disconnect()
+        }
     }
 
     /** 当前授权方式（持久化；Compose 可观察） */

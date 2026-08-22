@@ -13,6 +13,7 @@ import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Save
+import androidx.compose.material.icons.rounded.SettingsRemote
 import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
@@ -35,12 +36,14 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import cn.nanoturtle.rootmys9280.manager.BuildConfig
 import cn.nanoturtle.rootmys9280.manager.R
+import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
 import cn.nanoturtle.rootmys9280.manager.ui.theme.VectorMono
 
 private const val PREFS_SETTINGS = "settings"
 private const val KEY_AUTO_SCREEN_OFF = "auto_screen_off"
 private const val KEY_BRIEF_LOG = "brief_log"
 private const val KEY_AUTO_SAVE_LOG = "auto_save_log"
+private const val KEY_ADB_WIRELESS_ENABLED = "adb_wireless_enabled"
 
 /** 分组卡片里的行用透明容器色，避免 ListItem 在 Card 内再叠一层色块。 */
 private val cardRowColors
@@ -65,6 +68,9 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
     }
     var autoSaveLog by remember {
         mutableStateOf(prefs.getBoolean(KEY_AUTO_SAVE_LOG, true))
+    }
+    var adbWirelessEnabled by remember {
+        mutableStateOf(prefs.getBoolean(KEY_ADB_WIRELESS_ENABLED, false))
     }
 
     LazyColumn(
@@ -137,6 +143,28 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                     trailingContent = { Switch(checked = autoSaveLog, onCheckedChange = null) },
                     colors = cardRowColors,
                 ) { Text(stringResource(R.string.settings_auto_save_log)) }
+                HorizontalDivider()
+                ListItem(
+                    modifier =
+                        Modifier.toggleable(
+                            value = adbWirelessEnabled,
+                            role = Role.Switch,
+                            onValueChange = { enabled ->
+                                adbWirelessEnabled = enabled
+                                prefs.edit().putBoolean(KEY_ADB_WIRELESS_ENABLED, enabled).apply()
+                                // 同步进程级单例 VM 的 StateFlow，主页据此显示/隐藏无线调试控件
+                                runCatching {
+                                    ServiceLocator.rootViewModel.setAdbWirelessEnabled(enabled)
+                                }
+                            },
+                        ),
+                    leadingContent = {
+                        Icon(Icons.Rounded.SettingsRemote, contentDescription = null)
+                    },
+                    supportingContent = { Text(stringResource(R.string.settings_adb_wireless_summary)) },
+                    trailingContent = { Switch(checked = adbWirelessEnabled, onCheckedChange = null) },
+                    colors = cardRowColors,
+                ) { Text(stringResource(R.string.settings_adb_wireless)) }
             }
         }
 
