@@ -572,4 +572,6 @@
     <string name="log_export_entry_fail">לא ניתן ליצור רשומת הורדה</string>
     <string name="log_export_write_fail">לא ניתן לכתוב לרשומת ההורדה</string>
     <string name="log_export_ok_path">ייצא אל %1$s</string>
+    <string name="log_restored">Restored %1$d lines from last session</string>
+    <string name="log_persist_failed">Auto-save log failed: %1$s</string>
 </resources>

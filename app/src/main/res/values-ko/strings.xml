@@ -536,4 +536,6 @@
     <string name="log_export_entry_fail">다운로드 항목을 만들 수 없습니다</string>
     <string name="log_export_write_fail">다운로드 항목에 쓸 수 없습니다</string>
     <string name="log_export_ok_path">%1$s(으)로 내보냄</string>
+    <string name="log_restored">지난 세션에서 %1$d줄을 복원했습니다</string>
+    <string name="log_persist_failed">로그 자동 저장 실패: %1$s</string>
 </resources>

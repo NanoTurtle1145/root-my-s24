@@ -546,4 +546,6 @@
     <string name="log_export_entry_fail">No se pudo crear la entrada de descarga</string>
     <string name="log_export_write_fail">No se pudo escribir en la entrada de descarga</string>
     <string name="log_export_ok_path">Exportado a %1$s</string>
+    <string name="log_restored">Restored %1$d lines from last session</string>
+    <string name="log_persist_failed">Auto-save log failed: %1$s</string>
 </resources>

@@ -590,4 +590,6 @@
     <string name="log_export_entry_fail">تعذّر إنشاء عنصر التنزيل</string>
     <string name="log_export_write_fail">تعذّر الكتابة إلى عنصر التنزيل</string>
     <string name="log_export_ok_path">تم التصدير إلى %1$s</string>
+    <string name="log_restored">Restored %1$d lines from last session</string>
+    <string name="log_persist_failed">Auto-save log failed: %1$s</string>
 </resources>

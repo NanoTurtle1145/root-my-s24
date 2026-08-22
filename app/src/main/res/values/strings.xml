@@ -596,6 +596,8 @@
     <string name="log_export_entry_fail">Could not create download entry</string>
     <string name="log_export_write_fail">Could not write to download entry</string>
     <string name="log_export_ok_path">Exported to %1$s</string>
+    <string name="log_restored">Restored %1$d lines from last session</string>
+    <string name="log_persist_failed">Auto-save log failed: %1$s</string>
 <!-- RootMyS24 donation strings -->
     <string name="donation_title">Support the project</string>
     <string name="donation_body">You have successfully rooted %1$d times — thank you! If RootMyS24 has been useful, a small donation would help keep it going. You can scan the QR code on the About page.</string>

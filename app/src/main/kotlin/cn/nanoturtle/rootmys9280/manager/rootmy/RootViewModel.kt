@@ -628,16 +628,21 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         return SUMMARY_KEYWORDS.any { t.contains(it) }
     }
 
+    /** 最近一次持久化写入失败原因（null=正常；供恢复/导出时诊断展示） */
+    @Volatile
+    private var persistFailure: String? = null
+
     /**
      * 追加日志到持久化文件（App 私有目录，逐条追加 + fsync 落盘）。
      * 崩溃/重启后由 [restorePersistedLog] 恢复，确保 exploit 触发内核 panic
      * 时日志不丢（OneUI7 测试曾出现 root 成功后立即重启导致日志丢失）。
      * 文件超限时保留尾部 [MAX_LOG_LINES] 行（与内存上限一致）。
+     * 写入失败不再静默吞掉：记录 [persistFailure]，恢复/导出时展示诊断。
      */
     private fun persistLines(lines: List<LogLine>) {
         if (lines.isEmpty()) return
         if (!autoSaveLog) return // 调试选项关闭时不落盘
-        runCatching {
+        try {
             persistFile.parentFile?.mkdirs()
             FileOutputStream(persistFile, true).use { fos ->
                 val writer = OutputStreamWriter(fos, Charsets.UTF_8)
@@ -645,6 +650,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 writer.flush()
                 fos.fd.sync() // 落盘，防断电/panic 丢数据
             }
+            persistFailure = null
+        } catch (t: Throwable) {
+            persistFailure = t.message ?: t.javaClass.simpleName
         }
         runCatching { trimPersistFile() }
     }
@@ -669,8 +677,17 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 if (s > 0) stage = s
                 LogLine(stage, text, summary = isSummary(text))
             }
+            // 恢复可见提示：让测试者明确看到"上次日志已自动恢复"（含行数），
+            // 避免误以为 App 重启后日志丢失而只能手动导出。
+            val notes = buildList {
+                val failure = persistFailure
+                if (failure != null) {
+                    add(LogLine(0, "⚠ " + app.getString(R.string.log_persist_failed, failure), summary = true))
+                }
+                add(LogLine(0, "↻ " + app.getString(R.string.log_restored, lines.size), summary = true))
+            }
             _state.value = _state.value.copy(
-                logLines = restored.takeLast(MAX_LOG_LINES),
+                logLines = (notes + restored).takeLast(MAX_LOG_LINES),
                 currentStage = stage,
             )
         }
@@ -684,8 +701,20 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      */
     suspend fun dumpLog(): String = withContext(Dispatchers.IO) {
         runCatching {
+            // 优先导出内存日志；若内存为空（重启后恢复失败等），兜底从持久化文件读取，
+            // 确保"疯狂按保存"也能拿到完整内容。
             val content = buildString {
-                _state.value.logLines.forEach { appendLine(it.text) }
+                val memLines = _state.value.logLines
+                if (memLines.isNotEmpty()) {
+                    memLines.forEach { appendLine(it.text) }
+                } else if (persistFile.exists()) {
+                    persistFile.readLines().forEach { appendLine(it) }
+                } else {
+                    val failure = persistFailure
+                    if (failure != null) {
+                        appendLine("⚠ " + app.getString(R.string.log_persist_failed, failure))
+                    }
+                }
             }
             val displayName = "rootmys9280-$deviceBuildTag.txt"
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

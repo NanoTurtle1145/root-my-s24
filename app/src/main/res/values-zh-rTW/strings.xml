@@ -537,4 +537,6 @@
     <string name="log_export_entry_fail">無法建立下載項目</string>
     <string name="log_export_write_fail">無法寫入下載項目</string>
     <string name="log_export_ok_path">已匯出到 %1$s</string>
+    <string name="log_restored">已從上次工作階段還原 %1$d 行日誌</string>
+    <string name="log_persist_failed">自動儲存日誌失敗: %1$s</string>
 </resources>

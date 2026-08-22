@@ -552,4 +552,6 @@
     <string name="log_export_entry_fail">Не удалось создать запись загрузки</string>
     <string name="log_export_write_fail">Не удалось записать в запись загрузки</string>
     <string name="log_export_ok_path">Экспортировано в %1$s</string>
+    <string name="log_restored">Restored %1$d lines from last session</string>
+    <string name="log_persist_failed">Auto-save log failed: %1$s</string>
 </resources>

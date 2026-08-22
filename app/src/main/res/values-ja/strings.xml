@@ -526,4 +526,6 @@
     <string name="log_export_entry_fail">ダウンロード項目を作成できませんでした</string>
     <string name="log_export_write_fail">ダウンロード項目に書き込めませんでした</string>
     <string name="log_export_ok_path">%1$s にエクスポートしました</string>
+    <string name="log_restored">前回のセッションから %1$d 行を復元しました</string>
+    <string name="log_persist_failed">ログの自動保存に失敗: %1$s</string>
 </resources>

@@ -546,4 +546,6 @@
     <string name="log_export_entry_fail">ساخت ورودی دانلود ممکن نشد</string>
     <string name="log_export_write_fail">نوشتن در ورودی دانلود ممکن نشد</string>
     <string name="log_export_ok_path">به %1$s صادر شد</string>
+    <string name="log_restored">Restored %1$d lines from last session</string>
+    <string name="log_persist_failed">Auto-save log failed: %1$s</string>
 </resources>

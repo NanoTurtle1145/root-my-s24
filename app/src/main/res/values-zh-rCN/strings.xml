@@ -542,6 +542,8 @@
     <string name="log_export_entry_fail">无法创建下载项</string>
     <string name="log_export_write_fail">无法写入下载项</string>
     <string name="log_export_ok_path">已导出到 %1$s</string>
+    <string name="log_restored">已从上次会话恢复 %1$d 行日志</string>
+    <string name="log_persist_failed">自动保存日志失败: %1$s</string>
 <!-- RootMyS24 donation strings -->
     <string name="donation_title">支持一下这个项目</string>
     <string name="donation_body">你已经成功 root %1$d 次，感谢使用！如果 RootMyS24 帮到了你，可以的话请支持一下，在「关于」页扫码即可。你的支持会让这个项目走得更远。</string>

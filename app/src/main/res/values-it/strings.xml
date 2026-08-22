@@ -546,4 +546,6 @@
     <string name="log_export_entry_fail">Impossibile creare la voce di download</string>
     <string name="log_export_write_fail">Impossibile scrivere nella voce di download</string>
     <string name="log_export_ok_path">Esportato in %1$s</string>
+    <string name="log_restored">Restored %1$d lines from last session</string>
+    <string name="log_persist_failed">Auto-save log failed: %1$s</string>
 </resources>
