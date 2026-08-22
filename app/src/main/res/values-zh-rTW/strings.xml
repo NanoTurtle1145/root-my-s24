@@ -476,6 +476,7 @@
     <string name="notification_adb_pairing_searching_text">請在開發者選項中開啟「無線除錯」…</string>
     <string name="notification_adb_pairing_not_found_title">未找到無線除錯服務</string>
     <string name="notification_adb_pairing_not_found_text">請確認已開啟「無線除錯」且手機與電腦在同一網路，然後重試</string>
+    <string name="notification_adb_pairing_search_error_title">無線除錯搜尋失敗</string>
     <string name="notification_adb_pairing_stop">停止</string>
     <string name="notification_adb_pairing_service_found_title">已找到無線除錯</string>
     <string name="notification_adb_pairing_service_found_text">請輸入裝置上顯示的 6 位配對碼（配對連接埠 %1$d）</string>

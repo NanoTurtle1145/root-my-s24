@@ -85,7 +85,7 @@ object AdbPairingFlow {
             pairPort = port
             connectHost = host
             notifyInputCode(context, port)
-        }
+        }.also { it.setOnError { msg -> notifySearchError(context, msg) } }
         mdnsPair?.start()
 
         // 兜底：长时间没发现服务时更新通知提示（可能是无线调试没开/不在同一网络）
@@ -201,6 +201,20 @@ object AdbPairingFlow {
             NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
         } catch (e: Throwable) {
             Log.w(TAG, "notifySearching failed", e)
+        }
+    }
+
+    private fun notifySearchError(context: Context, msg: String) {
+        try {
+            val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_menu_edit)
+                .setContentTitle(context.getString(R.string.notification_adb_pairing_search_error_title))
+                .setContentText("$msg")
+                .setAutoCancel(true)
+                .build()
+            NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+        } catch (e: Throwable) {
+            Log.w(TAG, "notifySearchError failed", e)
         }
     }
 

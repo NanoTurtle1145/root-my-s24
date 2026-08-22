@@ -535,6 +535,7 @@
     <string name="notification_adb_pairing_searching_text">Enable Wireless debugging in Developer options while this notification is open…</string>
     <string name="notification_adb_pairing_not_found_title">Wireless debugging not found</string>
     <string name="notification_adb_pairing_not_found_text">Make sure Wireless debugging is enabled and the phone is on the same network, then try again</string>
+    <string name="notification_adb_pairing_search_error_title">Wireless debugging search failed</string>
     <string name="notification_adb_pairing_stop">Stop</string>
     <string name="notification_adb_pairing_service_found_title">Wireless debugging found</string>
     <string name="notification_adb_pairing_service_found_text">Enter the 6-digit pairing code shown on this device (pairing port %1$d)</string>

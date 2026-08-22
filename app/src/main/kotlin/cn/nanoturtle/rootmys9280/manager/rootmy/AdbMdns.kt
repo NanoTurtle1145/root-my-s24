@@ -44,7 +44,19 @@ class AdbMdns(
             registered = true
         } catch (e: Exception) {
             Log.w(TAG, "discoverServices failed: $e")
+            onDiscoveryError("discoverServices: ${e.message}")
         }
+    }
+
+    /** 供 AdbPairingFlow 展示发现错误（如 NsdManager 不可用）。 */
+    private var onError: ((String) -> Unit)? = null
+
+    fun setOnError(callback: (String) -> Unit) {
+        onError = callback
+    }
+
+    private fun onDiscoveryError(message: String) {
+        onError?.invoke(message)
     }
 
     fun stop() {
@@ -92,7 +104,14 @@ class AdbMdns(
 
     private fun onServiceResolved(resolved: NsdServiceInfo) {
         if (!registered) return
-        val host = resolved.host?.hostAddress ?: return
+        val host = resolved.host?.hostAddress
+        if (host == null) {
+            // 某些 Samsung 设备上 resolved.host 可能为 null，fallback 到 127.0.0.1
+            Log.w(TAG, "resolved.host is null, falling back to 127.0.0.1")
+            discoveredPort = resolved.port
+            onServiceFound("127.0.0.1", resolved.port)
+            return
+        }
 
         // 本机检查仅用于日志/参考，不做硬性过滤：
         // 寄生式架构下宿主可能没有 INTERNET 权限，getNetworkInterfaces() 只返回回环，
@@ -130,6 +149,7 @@ class AdbMdns(
 
         override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
             Log.w(TAG, "start discovery failed: $serviceType, code=$errorCode")
+            onDiscoveryError("discovery failed: $errorCode")
         }
 
         override fun onDiscoveryStopped(serviceType: String) {
