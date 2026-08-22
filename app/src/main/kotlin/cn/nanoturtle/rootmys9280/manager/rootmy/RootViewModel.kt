@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
 
 /**
  * 根流程 ViewModel：
@@ -34,6 +36,17 @@ import java.io.File
  */
 class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val app: Application = app
+
+    /**
+     * 崩溃恢复日志：exploit 可能在内核层面触发 panic/重启（OneUI7 测试曾出现
+     * "获得 root 后手机马上自动重启"），内存日志随之丢失。每条日志实时追加到
+     * 本文件（fsync 落盘），App 重启后从文件恢复，导出/排查不再丢日志。
+     */
+    private val persistFile: File by lazy { File(app.filesDir, "rootflow.log") }
+
+    init {
+        restorePersistedLog()
+    }
 
     /** 目标系统版本（决定使用哪份 exploit 载荷） */
     enum class FirmwareVersion(val assetName: String, val label: String, val range: String) {
@@ -149,6 +162,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         pendingPartial = ""
         currentStage = 0
         _state.value = _state.value.copy(logLines = emptyList(), currentStage = 0)
+        runCatching { persistFile.delete() }
     }
 
     /** 供 UI 追加提示行（如导出结果），不改变阶段 */
@@ -435,6 +449,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         if (lines.isEmpty()) return
         val newLines = (_state.value.logLines + lines).takeLast(MAX_LOG_LINES)
         _state.value = _state.value.copy(logLines = newLines)
+        persistLines(lines)
     }
 
     /** 解析 "[n/5] 标题" 中的阶段号，非阶段行返回 0 */
@@ -458,6 +473,53 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
+     * 追加日志到持久化文件（App 私有目录，逐条追加 + fsync 落盘）。
+     * 崩溃/重启后由 [restorePersistedLog] 恢复，确保 exploit 触发内核 panic
+     * 时日志不丢（OneUI7 测试曾出现 root 成功后立即重启导致日志丢失）。
+     * 文件超限时保留尾部 [MAX_LOG_LINES] 行（与内存上限一致）。
+     */
+    private fun persistLines(lines: List<LogLine>) {
+        if (lines.isEmpty()) return
+        runCatching {
+            persistFile.parentFile?.mkdirs()
+            FileOutputStream(persistFile, true).use { fos ->
+                val writer = OutputStreamWriter(fos, Charsets.UTF_8)
+                lines.forEach { line -> writer.write(line.text); writer.write('\n'.code) }
+                writer.flush()
+                fos.fd.sync() // 落盘，防断电/panic 丢数据
+            }
+        }
+        runCatching { trimPersistFile() }
+    }
+
+    /** 持久化文件只保留尾部 [MAX_LOG_LINES] 行（避免无限增长）。 */
+    private fun trimPersistFile() {
+        if (!persistFile.exists() || persistFile.length() < MAX_PERSIST_BYTES) return
+        val all = persistFile.readLines()
+        if (all.size <= MAX_LOG_LINES) return
+        persistFile.writeText(all.takeLast(MAX_LOG_LINES).joinToString("\n") + "\n")
+    }
+
+    /** App 重启后从持久化文件恢复上次运行的日志（stage 按 [n/5] 重新推导）。 */
+    private fun restorePersistedLog() {
+        runCatching {
+            if (!persistFile.exists()) return
+            val lines = persistFile.readLines().filter { it.isNotBlank() }
+            if (lines.isEmpty()) return
+            var stage = 0
+            val restored = lines.map { text ->
+                val s = stageOf(text)
+                if (s > 0) stage = s
+                LogLine(stage, text, summary = isSummary(text))
+            }
+            _state.value = _state.value.copy(
+                logLines = restored.takeLast(MAX_LOG_LINES),
+                currentStage = stage,
+            )
+        }
+    }
+
+    /**
      * 导出完整日志到系统下载目录（MediaStore，无需权限）。
      * @return 结果提示文案
      */
@@ -475,8 +537,15 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 val uri = app.contentResolver
                     .insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
                     ?: error(app.getString(R.string.log_export_entry_fail))
-                app.contentResolver.openOutputStream(uri)?.use { it.write(content.toByteArray()) }
-                    ?: error(app.getString(R.string.log_export_write_fail))
+                app.contentResolver.openOutputStream(uri)?.use { out ->
+                    out.write(content.toByteArray())
+                    out.flush()
+                    // MediaStore 流底层是 ParcelFileDescriptor，尽量 fsync，
+                    // 避免导出后立刻发生内核 panic/重启时留下空/零填充文件。
+                    runCatching {
+                        (out as? java.io.FileOutputStream)?.fd?.sync()
+                    }
+                } ?: error(app.getString(R.string.log_export_write_fail))
                 app.getString(R.string.log_export_ok, content.length)
             } else {
                 @Suppress("DEPRECATION")
@@ -494,6 +563,10 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     companion object {
         const val MAX_LOG_LINES = 4000
+
+        /** 持久化文件大小阈值（超过后裁剪到尾部 MAX_LOG_LINES 行） */
+        private const val MAX_PERSIST_BYTES = 1L shl 20 // 1 MiB
+
         private val ANSI_ESCAPE = Regex("\u001B\\[[0-9;]*[a-zA-Z]")
         private val STAGE_PATTERN = Regex("^\\[([1-5])/5]")
 
