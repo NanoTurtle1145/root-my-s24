@@ -23,19 +23,28 @@ import java.net.ServerSocket
  * 适合寄生式架构（只有 MainActivity 真实存在）。
  *
  * @param serviceType 如 AdbMdns.TLS_PAIRING 或 AdbMdns.TLS_CONNECT
- * @param onServiceFound 解析到本机服务时回调（host, port）；port<=0 表示服务丢失
+ * @param onServiceDiscovered 解析到本机服务时回调（host, port）；port<=0 表示服务丢失
  */
 @RequiresApi(Build.VERSION_CODES.R)
 class AdbMdns(
     private val context: Context,
     private val serviceType: String,
-    private val onServiceFound: (host: String, port: Int) -> Unit,
+    private val onServiceDiscovered: (host: String, port: Int) -> Unit,
 ) {
 
     private val nsdManager: NsdManager = context.getSystemService(NsdManager::class.java)
     private val discoveryListener = AdbDiscoveryListener()
     private var registered = false
     private var discoveredPort = -1
+
+    /** 正在 resolve 的服务名（去重：found 风暴时忽略重复，避免并发 resolve 互斥无回调）。 */
+    private var resolvingService: String? = null
+
+    /** resolve 代数：每次发起 resolve 递增，旧代的超时任务据此作废，防止级联重试。 */
+    private var resolveGeneration = 0
+
+    /** resolve 超时重试的 Handler（resolve 回调可能静默丢失，超时后主动重试）。 */
+    private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
 
     fun start() {
         if (registered) return
@@ -63,6 +72,9 @@ class AdbMdns(
         if (!registered) return
         registered = false
         discoveredPort = -1
+        resolvingService = null
+        resolveGeneration++
+        mainHandler.removeCallbacksAndMessages(null)
         try {
             nsdManager.stopServiceDiscovery(discoveryListener)
         } catch (e: Exception) {
@@ -71,6 +83,16 @@ class AdbMdns(
     }
 
     private fun onServiceFound(info: NsdServiceInfo) {
+        // 去重：同一服务只 resolve 一次。adbd 会重复广播配对服务，
+        // NsdManager 也会对同一服务重复回调 onServiceFound（实测一毫秒内几十次），
+        // 每次 resolveService 都会占用系统 resolve 通道，并发互斥导致回调全部丢失。
+        val name = info.serviceName
+        if (resolvingService == name) {
+            Log.v(TAG, "skip duplicate: $name")
+            return
+        }
+        resolvingService = name
+        Log.i(TAG, "resolving: $name")
         resolveWithRetry(info, retries = 0)
     }
 
@@ -79,13 +101,25 @@ class AdbMdns(
         if (!registered) return
         if (retries > MAX_RESOLVE_RETRIES) {
             Log.w(TAG, "resolve gave up: ${info.serviceName}")
+            resolvingService = null
             return
         }
+        val generation = ++resolveGeneration
+        // 超时兜底：resolve 回调可能静默丢失（无 onResolveFailed 也无 onServiceResolved），
+        // 超时后主动重新 resolve。仅当代数未变（没有更新的 resolve 发起）时执行。
+        mainHandler.postDelayed({
+            if (registered && resolvingService == info.serviceName && discoveredPort <= 0
+                && generation == resolveGeneration) {
+                Log.w(TAG, "resolve timeout, retry: ${info.serviceName} ($retries)")
+                resolveWithRetry(info, retries + 1)
+            }
+        }, RESOLVE_TIMEOUT_MS)
+
         nsdManager.resolveService(info, object : NsdManager.ResolveListener {
             override fun onResolveFailed(info: NsdServiceInfo, errorCode: Int) {
                 Log.w(TAG, "resolve failed: ${info.serviceName}, code=$errorCode (retry $retries)")
                 // 延后重试，避免在回调线程里立刻重入
-                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                mainHandler.postDelayed({
                     resolveWithRetry(info, retries + 1)
                 }, RESOLVE_RETRY_DELAY_MS)
             }
@@ -99,7 +133,11 @@ class AdbMdns(
     private fun onServiceLost(info: NsdServiceInfo) {
         Log.v(TAG, "service lost: ${info.serviceName}")
         discoveredPort = -1
-        onServiceFound("", -1)
+        if (resolvingService == info.serviceName) {
+            resolvingService = null
+            resolveGeneration++
+        }
+        onServiceDiscovered("", -1)
     }
 
     private fun onServiceResolved(resolved: NsdServiceInfo) {
@@ -109,7 +147,8 @@ class AdbMdns(
             // 某些 Samsung 设备上 resolved.host 可能为 null，fallback 到 127.0.0.1
             Log.w(TAG, "resolved.host is null, falling back to 127.0.0.1")
             discoveredPort = resolved.port
-            onServiceFound("127.0.0.1", resolved.port)
+            resolvingService = null
+            onServiceDiscovered("127.0.0.1", resolved.port)
             return
         }
 
@@ -139,7 +178,8 @@ class AdbMdns(
 
         Log.i(TAG, "resolved $serviceType: ${resolved.serviceName} host=$host port=${resolved.port} local=$isLocal portBusy=$isPortBusy")
         discoveredPort = resolved.port
-        onServiceFound(host, resolved.port)
+        resolvingService = null
+        onServiceDiscovered(host, resolved.port)
     }
 
     private inner class AdbDiscoveryListener : NsdManager.DiscoveryListener {
@@ -162,11 +202,11 @@ class AdbMdns(
 
         override fun onServiceFound(info: NsdServiceInfo) {
             Log.i(TAG, "service found: ${info.serviceName} type=${info.serviceType}")
-            onServiceFound(info)
+            this@AdbMdns.onServiceFound(info)
         }
 
         override fun onServiceLost(info: NsdServiceInfo) {
-            onServiceLost(info)
+            this@AdbMdns.onServiceLost(info)
         }
     }
 
@@ -176,5 +216,6 @@ class AdbMdns(
         private const val TAG = "AdbMdns"
         private const val MAX_RESOLVE_RETRIES = 5
         private const val RESOLVE_RETRY_DELAY_MS = 800L
+        private const val RESOLVE_TIMEOUT_MS = 1500L
     }
 }
