@@ -4,7 +4,7 @@
 
 ## 下载
 
-- **APK**: `RootMyS24-v2.5.5-release.apk`（v2.5.5, versionCode 71, 签名 CN=S9280Root）
+- **APK**: `RootMyS24-v2.5.5-release.apk`（v2.5.5, versionCode 78, 签名 CN=S9280Root）
 - **SHA256**: `f7db73d0c377c377bf490fae49a052cef5237c48861d50c8ccb5891d64e3d429`
 - **包名**: `cn.nanoturtle.rootmys9280`
 - **系统要求**: Android 11+（无线调试授权）/ Android 8+（Shizuku 授权）
@@ -32,31 +32,42 @@
 - 开启后主页才显示无线调试单选与配对控件
 - 关闭开关时若当前授权方式为无线调试，自动回退 Shizuku 并断开连接
 
-### 2. 修复 AdbMdns 内部递归导致 StackOverflow 闪退
+### 2. 通知配对改后台 Service 处理（不再打断系统设置页面）
+
+- 新增 `PairingReplyService`：通知 RemoteInput 的 PendingIntent 指向 Service 而非 Activity——避免确认配对码时被跳回 App，导致系统设置里的配对码页面失焦关闭、配对服务停止（与 Shizuku `AdbPairingService` 等效）
+- `AdbPairingFlow` 配对固定连回环地址；端口失效（`ConnectException`）时自动重启 mDNS 搜索
+- `AdbMdns` 恢复端口有效性检查：bind 127.0.0.1 失败 = adbd 在监听；成功 = 过期 mDNS 缓存，跳过不再弹输入框
+- `AdbPairingClient` 依次尝试 `127.0.0.1` / `::1` / mDNS host（三星 adbd 可能只监听 IPv6 通配 `[::]`）
+
+### 3. 修复 AdbMdns 内部递归导致 StackOverflow 闪退
 
 `onServiceFound/onServiceLost` 在内部类 `AdbDiscoveryListener` 里与构造参数同名，内部调用被 Kotlin 解析到自身方法 → 无限递归。修复：构造参数重命名为 `onServiceDiscovered` 等，消除重名。
 
-### 3. 修复 mDNS 解析失败链
+### 4. 修复 mDNS 解析失败链
 
 - `resolved.host` 为 null 时 fallback `127.0.0.1`
 - 发现失败产生**可见通知**（不再静默）
 - 通知配对时第一条通知（搜索中）与第二条通知（输入配对码）均能正常出现
 
-### 4. 港版 CZA1 适配（One UI 8.0, kernel 6.1.128）
+### 5. BYH7 pipe gate v4 载荷
+
+`cache_match` 放宽为接受任何非零 slab_cache，提高 One UI 7 目标缓存命中率。
+
+### 6. 港版 CZA1 适配（One UI 8.0, kernel 6.1.128）
 
 新增港版 CZA1 目标（构建 33419968 系列），独立载荷支持。
 
-### 5. 无线调试通知配对（v2.5.2 引入，保留）
+### 7. 无线调试通知配对（v2.5.2 引入，保留）
 
 - `AdbMdns`：NsdManager 自动发现 `_adb-tls-pairing` / `_adb-tls-connect`
 - `AdbPairingFlow`：通知栏 RemoteInput 直接输入 6 位配对码 → 配对 → 自动连接
 - Android 13+ 通知权限主动请求（v2.5.3）
 
-### 6. 无线调试配对码授权（v2.5.1 引入，保留）
+### 8. 无线调试配对码授权（v2.5.1 引入，保留）
 
 TLS + SPAKE2 + PeerInfo 公钥交换，内置 `libadb.so`（Shizuku 13.6.0，Apache-2.0）。
 
-### 7. BYH7 pipe gate v2 载荷（v2.5.1 引入，保留）
+### 9. BYH7 pipe gate v2 载荷（v2.5.1 引入，保留）
 
 `kmalloc_caches` 逐槽位读取 + 64 页 × 16 slabs 扫描，修正 `log_payload` 偏移描述 `0x176cbb8 → 0x16bad78`。
 
@@ -98,10 +109,13 @@ TLS + SPAKE2 + PeerInfo 公钥交换，内置 `libadb.so`（Shizuku 13.6.0，Apa
 ## 更新日志
 
 ```
-v2.5.5 (2026-08-22)
+v2.5.5 (2026-08-22, versionCode 78)
   + 无线调试改为设置页实验性开关（默认关闭，开启后主页才显示控件）
+  + 通知配对改 PairingReplyService 后台处理（不打断系统设置配对码页面）
+  + AdbMdns 端口有效性检查（跳过过期 mDNS 缓存）+ IPv6 回环连接尝试
   + 修复 AdbMdns 内部类方法自我递归导致 StackOverflow 闪退
   + mDNS resolved.host null fallback + 发现失败可见通知
+  + BYH7 pipe gate v4（cache_match 放宽接受任何非零 slab_cache）
   + 港版 CZA1 适配（One UI 8.0, kernel 6.1.128）
 v2.5.4 (2026-08-22)
   + 修复 mDNS 过滤条件过严导致第二条通知（输入配对码）不出现
