@@ -32,6 +32,8 @@ import kotlin.concurrent.thread
  */
 object AdbWirelessController : ShellExecutor {
 
+    private const val TAG = "AdbWirelessController"
+
     // ---- ADB 协议常量 ----
     private const val CMD_CNXN = 0x4e584e43 // "CNXN"
     private const val CMD_AUTH = 0x48545541 // "AUTH"
@@ -305,23 +307,26 @@ object AdbWirelessController : ShellExecutor {
         }
         // shell: 服务 —— adbd 用 `/system/bin/sh -c <整条命令>` 执行，
         // 支持 cd/env/&& 等 shell 语法（exec: 服务是直接 execve 分词，不支持）
-        val remoteId = openShell("shell:$shellCmd")
-        return AdbProcess(this, remoteId).also { registerProcess(remoteId, it) }
+        val (localId, remoteId) = openShell("shell:$shellCmd")
+        return AdbProcess(this, remoteId, localId).also { registerProcess(remoteId, it) }
     }
 
     /** 单引号 shell 转义：'  ->  '\''  */
     private fun escape(s: String): String = "'" + s.replace("'", "'\\''") + "'"
 
-    private fun openShell(service: String): Int {
+    private fun openShell(service: String): Pair<Int, Int> {
         val localId = nextLocalId++
         val future = java.util.concurrent.CompletableFuture<Int>()
         synchronized(pendingOpens) { pendingOpens[localId] = future }
+        android.util.Log.i(TAG, "CMD_OPEN localId=$localId service=$service")
         sendMessage(CMD_OPEN, localId, 0, "$service\u0000".toByteArray(Charsets.UTF_8))
         // 全局 reader 收到 OKAY 后完成 future
         return try {
-            future.get(15, java.util.concurrent.TimeUnit.SECONDS)
+            val remoteId = future.get(15, java.util.concurrent.TimeUnit.SECONDS)
+            Pair(localId, remoteId)
         } catch (t: Throwable) {
             synchronized(pendingOpens) { pendingOpens.remove(localId) }
+            android.util.Log.w(TAG, "open shell timeout: $service, socket=${socket?.isClosed}", t)
             throw IllegalStateException("open shell timeout: $service", t)
         }
     }
@@ -336,6 +341,7 @@ object AdbWirelessController : ShellExecutor {
             try {
                 while (true) {
                     val msg = readMessage()
+                    android.util.Log.v(TAG, "reader got 0x${msg.command.toString(16)} arg0=${msg.arg0} arg1=${msg.arg1} len=${msg.payload.size}")
                     when (msg.command) {
                         CMD_OKAY -> {
                             // arg0 = remote id, arg1 = local id
@@ -353,20 +359,26 @@ object AdbWirelessController : ShellExecutor {
                             }
                         }
                         CMD_CLSE -> {
+                            // 服务端关闭通道：arg0 = remoteId, arg1 = localId。
+                            // ADB 协议要求双向关闭：必须回 CLSE(localId, remoteId) 确认，
+                            // 否则 adbd 认为通道未关闭，可能拒绝后续 OPEN。
                             val remoteId = msg.arg0
+                            val localId = msg.arg1
                             synchronized(activeProcesses) {
                                 activeProcesses.remove(remoteId)?.markClosed()
                             }
+                            runCatching { sendMessage(CMD_CLSE, localId, remoteId) }
                         }
                         CMD_CNXN -> { /* 忽略 */ }
                         else -> { /* 未知消息忽略 */ }
                     }
                 }
-            } catch (_: Throwable) {
+            } catch (t: Throwable) {
+                android.util.Log.w(TAG, "reader thread died: $t", t)
                 // 连接断开/异常：结束所有等待与活跃通道
                 synchronized(pendingOpens) {
                     val it = pendingOpens.values.iterator()
-                    while (it.hasNext()) it.next().completeExceptionally(IllegalStateException("adb disconnected"))
+                    while (it.hasNext()) it.next().completeExceptionally(IllegalStateException("adb disconnected", t))
                     pendingOpens.clear()
                 }
                 synchronized(activeProcesses) {
@@ -466,6 +478,7 @@ object AdbWirelessController : ShellExecutor {
     private class AdbProcess(
         private val controller: AdbWirelessController,
         private val remoteId: Int,
+        private val localId: Int,
     ) : Process() {
         private val readBuffer = java.util.concurrent.LinkedBlockingDeque<Byte?>()
         private val writeLock = Any()
@@ -486,9 +499,11 @@ object AdbWirelessController : ShellExecutor {
             }
         }
 
-        /** 由全局 reader 调用：服务端 CLSE 或连接断开。写入 EOF 哨兵唤醒阻塞的读。 */
+        /** 由全局 reader 调用：服务端 CLSE 或连接断开。唤醒阻塞的读（EOF 由 exitCode 判定）。 */
         fun markClosed() {
-            readBuffer.put(null)
+            // 注意：不能 put(null) 做 EOF 哨兵 —— LinkedBlockingDeque 禁止 null 元素，
+            // 会抛 NPE 杀死 reader 线程。EOF 判定在 AdbInputStream.read() 里靠
+            // `exitCode != null && readBuffer.isEmpty()` 完成。
             synchronized(exitLock) {
                 exitCode = exitCode ?: 0
                 exitLock.notifyAll()
@@ -515,7 +530,8 @@ object AdbWirelessController : ShellExecutor {
         override fun exitValue(): Int = exitCode ?: throw IllegalThreadStateException("process has not exited")
 
         override fun destroy() {
-            runCatching { controller.sendMessage(CMD_CLSE, remoteId, 0) }
+            // 客户端主动关闭：CLSE(localId, remoteId)
+            runCatching { controller.sendMessage(CMD_CLSE, localId, remoteId) }
             controller.unregisterProcess(remoteId)
             synchronized(exitLock) {
                 exitCode = exitCode ?: 0
