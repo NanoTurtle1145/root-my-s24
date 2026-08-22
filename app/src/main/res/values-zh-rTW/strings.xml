@@ -431,6 +431,8 @@
     <string name="settings_auto_screen_off_summary">執行期間關閉螢幕，以降低核心競態（kernel race）發生的機率</string>
     <string name="settings_brief_log">簡潔日誌模式</string>
     <string name="settings_brief_log_summary">執行日誌僅顯示摘要列，減少雜訊</string>
+    <string name="settings_auto_save_log">自動儲存日誌</string>
+    <string name="settings_auto_save_log_summary">日誌即時寫入磁碟，崩潰/重啟後自動復原（除錯選項）</string>
     <string name="settings_section_about">關於</string>
     <string name="settings_check_update">檢查更新</string>
     <string name="settings_check_update_summary">開啟 GitHub Releases 查看新版本</string>

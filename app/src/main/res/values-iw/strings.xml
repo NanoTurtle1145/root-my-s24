@@ -466,6 +466,8 @@
     <string name="settings_auto_screen_off_summary">מכבה את המסך בזמן ההרצה כדי להקטין את הסיכוי למירוץ (race) בליבת המערכת</string>
     <string name="settings_brief_log">מצב יומן תמציתי</string>
     <string name="settings_brief_log_summary">הצגת רק שורות תקציר ביומן ההרצה כדי להפחית עומס</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">אודות</string>
     <string name="settings_check_update">בדיקת עדכונים</string>
     <string name="settings_check_update_summary">פתיחת GitHub Releases לגרסאות חדשות</string>

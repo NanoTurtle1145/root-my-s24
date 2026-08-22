@@ -441,6 +441,8 @@
     <string name="settings_auto_screen_off_summary">Éteint l\'écran pendant le run afin de réduire le risque de course du noyau</string>
     <string name="settings_brief_log">Mode journal résumé</string>
     <string name="settings_brief_log_summary">Afficher uniquement les lignes de résumé dans le journal du run, pour réduire le désordre</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">À propos</string>
     <string name="settings_check_update">Vérifier les mises à jour</string>
     <string name="settings_check_update_summary">Ouvre les releases GitHub pour les nouvelles versions</string>

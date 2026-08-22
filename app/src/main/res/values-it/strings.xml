@@ -440,6 +440,8 @@
     <string name="settings_auto_screen_off_summary">Spegne lo schermo durante l\'esecuzione per ridurre la probabilità di una race nel kernel</string>
     <string name="settings_brief_log">Modalità registro breve</string>
     <string name="settings_brief_log_summary">Mostra solo le righe di riepilogo nel registro dell\'esecuzione per ridurre il disordine</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">Informazioni</string>
     <string name="settings_check_update">Controlla aggiornamenti</string>
     <string name="settings_check_update_summary">Apre le release GitHub per le nuove versioni</string>

@@ -440,6 +440,8 @@
     <string name="settings_auto_screen_off_summary">Apaga la pantalla durante la ejecución para reducir la probabilidad de una condición de carrera del kernel</string>
     <string name="settings_brief_log">Modo de registro resumido</string>
     <string name="settings_brief_log_summary">Mostrar solo las líneas de resumen en el registro de la ejecución para reducir el desorden</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">Acerca de</string>
     <string name="settings_check_update">Buscar actualizaciones</string>
     <string name="settings_check_update_summary">Abre los lanzamientos de GitHub para nuevas versiones</string>

@@ -502,6 +502,8 @@
     <string name="settings_auto_screen_off_summary">Wyłącza ekran podczas uruchamiania, aby zmniejszyć prawdopodobieństwo wyścigu w jądrze</string>
     <string name="settings_brief_log">Tryb krótkiego dziennika</string>
     <string name="settings_brief_log_summary">Pokazuj tylko linie podsumowujące w dzienniku uruchamiania, aby zmniejszyć bałagan</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">Informacje</string>
     <string name="settings_check_update">Sprawdź aktualizacje</string>
     <string name="settings_check_update_summary">Otwórz GitHub Releases, aby sprawdzić nowe wersje</string>

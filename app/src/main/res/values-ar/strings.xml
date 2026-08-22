@@ -484,6 +484,8 @@
     <string name="settings_auto_screen_off_summary">يُطفئ الشاشة أثناء التشغيل لتقليل احتمال حدوث سباق في النواة</string>
     <string name="settings_brief_log">وضع السجل المختصر</string>
     <string name="settings_brief_log_summary">عرض أسطر الملخص فقط في سجل التشغيل لتقليل الفوضى</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">عن التطبيق</string>
     <string name="settings_check_update">التحقق من وجود تحديثات</string>
     <string name="settings_check_update_summary">فتح صفحة GitHub Releases للبحث عن إصدارات جديدة</string>

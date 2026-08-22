@@ -420,6 +420,8 @@
     <string name="settings_auto_screen_off_summary">実行中に画面をオフにして、カーネルレースの発生確率を下げます</string>
     <string name="settings_brief_log">簡潔ログモード</string>
     <string name="settings_brief_log_summary">実行ログに要約行のみを表示して、ノイズを減らします</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">このアプリについて</string>
     <string name="settings_check_update">アップデートを確認</string>
     <string name="settings_check_update_summary">新しいバージョンについて GitHub Releases を開きます</string>

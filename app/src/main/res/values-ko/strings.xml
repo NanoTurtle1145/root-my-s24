@@ -430,6 +430,8 @@
     <string name="settings_auto_screen_off_summary">실행 중 화면을 꺼서 커널 레이스 발생 확률을 줄입니다</string>
     <string name="settings_brief_log">간략 로그 모드</string>
     <string name="settings_brief_log_summary">실행 로그에 요약 줄만 표시하여 지저분함을 줄입니다</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">정보</string>
     <string name="settings_check_update">업데이트 확인</string>
     <string name="settings_check_update_summary">새 버전을 위해 GitHub Releases를 엽니다</string>

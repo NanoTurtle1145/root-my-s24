@@ -432,6 +432,8 @@
     <string name="settings_auto_screen_off_summary">运行期间自动熄灭屏幕，降低内核竞态概率</string>
     <string name="settings_brief_log">日志模式</string>
     <string name="settings_brief_log_summary">运行日志只显示摘要行，减少刷屏</string>
+    <string name="settings_auto_save_log">自动保存日志</string>
+    <string name="settings_auto_save_log_summary">日志实时写入磁盘，崩溃/重启后自动恢复（调试选项）</string>
     <string name="settings_section_about">关于</string>
     <string name="settings_check_update">检查更新</string>
     <string name="settings_check_update_summary">前往 GitHub Releases 查看新版本</string>

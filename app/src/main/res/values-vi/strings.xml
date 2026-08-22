@@ -429,6 +429,8 @@
     <string name="settings_auto_screen_off_summary">Tắt màn hình trong lúc chạy để giảm xác suất xảy ra race trong kernel</string>
     <string name="settings_brief_log">Chế độ log tóm tắt</string>
     <string name="settings_brief_log_summary">Chỉ hiện các dòng tóm tắt trong log chạy để bớt rối</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">Giới thiệu</string>
     <string name="settings_check_update">Kiểm tra cập nhật</string>
     <string name="settings_check_update_summary">Mở GitHub Releases để xem phiên bản mới</string>

@@ -440,6 +440,8 @@
     <string name="settings_auto_screen_off_summary">در حین اجرا صفحه را خاموش می‌کند تا احتمال رقابت (race) در کرنل کاهش یابد</string>
     <string name="settings_brief_log">حالت لاگ خلاصه</string>
     <string name="settings_brief_log_summary">برای کاهش شلوغی، فقط خطوط خلاصه در لاگ اجرا نمایش داده شود</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">درباره</string>
     <string name="settings_check_update">بررسی به‌روزرسانی</string>
     <string name="settings_check_update_summary">باز کردن GitHub Releases برای نسخه‌های جدید</string>

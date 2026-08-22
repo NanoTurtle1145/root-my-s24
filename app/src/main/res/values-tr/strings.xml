@@ -440,6 +440,8 @@
     <string name="settings_auto_screen_off_summary">Çekirdek yarışı (race) olasılığını azaltmak için çalıştırma sırasında ekranı kapatır</string>
     <string name="settings_brief_log">Kısa günlük modu</string>
     <string name="settings_brief_log_summary">Dağınıklığı azaltmak için çalıştırma günlüğünde yalnızca özet satırlarını gösterir</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">Hakkında</string>
     <string name="settings_check_update">Güncellemeleri kontrol et</string>
     <string name="settings_check_update_summary">Yeni sürümler için GitHub Releases sayfasını açar</string>

@@ -483,6 +483,8 @@
     <string name="settings_auto_screen_off_summary">Вимикає екран під час запуску, щоб зменшити ймовірність гонки в ядрі</string>
     <string name="settings_brief_log">Короткий режим журналу</string>
     <string name="settings_brief_log_summary">Показувати лише підсумкові рядки в журналі запуску, щоб зменшити зайвий шум</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">Про застосунок</string>
     <string name="settings_check_update">Перевірити оновлення</string>
     <string name="settings_check_update_summary">Відкрити GitHub Releases для нових версій</string>

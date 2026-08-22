@@ -440,6 +440,8 @@
     <string name="settings_auto_screen_off_summary">Schaltet den Bildschirm während des Laufs aus, um die Wahrscheinlichkeit eines Kernel-Race zu verringern</string>
     <string name="settings_brief_log">Kurzprotokoll-Modus</string>
     <string name="settings_brief_log_summary">Im Laufprotokoll nur Zusammenfassungszeilen anzeigen, um die Übersicht zu bewahren</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">Über</string>
     <string name="settings_check_update">Nach Updates suchen</string>
     <string name="settings_check_update_summary">Öffnet GitHub Releases für neue Versionen</string>

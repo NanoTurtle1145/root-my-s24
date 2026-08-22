@@ -93,6 +93,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val PREFS_SETTINGS = "settings"
     private val PREFS_FIRMWARE = "firmware_version"
 
+    /** 调试选项：自动保存日志到磁盘 */
+    private val KEY_AUTO_SAVE_LOG = "auto_save_log"
+
     /** 目标固件版本（持久化；切换后立即生效并触发 Compose 重组） */
     var firmwareVersion: FirmwareVersion
         get() = _firmwareVersion.value
@@ -156,6 +159,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     val autoScreenOff: Boolean
         get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
             .getBoolean("auto_screen_off", true)
+
+    /** 调试选项：自动保存日志到磁盘（崩溃/重启后自动恢复）。默认开启。 */
+    fun setAutoSaveLog(enabled: Boolean) {
+        app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .edit().putBoolean(KEY_AUTO_SAVE_LOG, enabled).apply()
+    }
+
+    val autoSaveLog: Boolean
+        get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getBoolean(KEY_AUTO_SAVE_LOG, true)
 
     fun clearLog() {
         captured.clear()
@@ -480,6 +493,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      */
     private fun persistLines(lines: List<LogLine>) {
         if (lines.isEmpty()) return
+        if (!autoSaveLog) return // 调试选项关闭时不落盘
         runCatching {
             persistFile.parentFile?.mkdirs()
             FileOutputStream(persistFile, true).use { fos ->

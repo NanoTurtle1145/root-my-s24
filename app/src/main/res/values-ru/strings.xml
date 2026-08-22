@@ -446,6 +446,8 @@
     <string name="settings_auto_screen_off_summary">Отключает экран во время запуска, чтобы снизить вероятность гонки в ядре</string>
     <string name="settings_brief_log">Краткий режим журнала</string>
     <string name="settings_brief_log_summary">Показывать только строки-сводки в журнале запуска, чтобы уменьшить шум</string>
+    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_section_about">О приложении</string>
     <string name="settings_check_update">Проверить обновления</string>
     <string name="settings_check_update_summary">Открыть GitHub Releases для новых версий</string>
