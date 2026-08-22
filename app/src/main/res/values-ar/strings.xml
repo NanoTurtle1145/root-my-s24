@@ -564,6 +564,7 @@
     <string name="log_failed">فشل: %1$s</string>
     <string name="log_woken">تم إيقاظ الشاشة</string>
     <string name="log_export_ok">تم التصدير إلى Downloads/rootmys9280-log.txt (%1$d حرفًا)</string>
+    <string name="log_export_ok_name">Exported to Downloads/%1$s (%2$d chars)</string>
     <string name="log_export_fail">فشل التصدير: %1$s</string>
     <string name="log_knox_tripped">تم خرق الضمان (warranty_bit=1)</string>
     <string name="log_knox_green">سليم (warranty_bit=0، verifiedbootstate=green)</string>

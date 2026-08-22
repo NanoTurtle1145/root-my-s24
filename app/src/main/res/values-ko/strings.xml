@@ -510,6 +510,7 @@
     <string name="log_failed">실패: %1$s</string>
     <string name="log_woken">화면 켜짐</string>
     <string name="log_export_ok">Downloads/rootmys9280-log.txt로 내보냄 (%1$d자)</string>
+    <string name="log_export_ok_name">Exported to Downloads/%1$s (%2$d chars)</string>
     <string name="log_export_fail">내보내기 실패: %1$s</string>
     <string name="log_knox_tripped">트립됨 (warranty_bit=1)</string>
     <string name="log_knox_green">손상 없음 (warranty_bit=0, verifiedbootstate=green)</string>

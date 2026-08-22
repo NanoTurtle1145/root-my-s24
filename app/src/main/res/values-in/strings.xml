@@ -513,6 +513,7 @@
     <string name="log_failed">Gagal: %1$s</string>
     <string name="log_woken">Layar dibangunkan</string>
     <string name="log_export_ok">Diekspor ke Downloads/rootmys9280-log.txt (%1$d karakter)</string>
+    <string name="log_export_ok_name">Exported to Downloads/%1$s (%2$d chars)</string>
     <string name="log_export_fail">Ekspor gagal: %1$s</string>
     <string name="log_knox_tripped">Terpicu (warranty_bit=1)</string>
     <string name="log_knox_green">Utuh (warranty_bit=0, verifiedbootstate=green)</string>

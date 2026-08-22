@@ -546,6 +546,7 @@
     <string name="log_failed">נכשל: %1$s</string>
     <string name="log_woken">המסך התעורר</string>
     <string name="log_export_ok">יוצא אל Downloads/rootmys9280-log.txt (%1$d תווים)</string>
+    <string name="log_export_ok_name">Exported to Downloads/%1$s (%2$d chars)</string>
     <string name="log_export_fail">הייצוא נכשל: %1$s</string>
     <string name="log_knox_tripped">הופעל (warranty_bit=1)</string>
     <string name="log_knox_green">שלם (warranty_bit=0, verifiedbootstate=green)</string>

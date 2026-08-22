@@ -509,6 +509,7 @@
     <string name="log_failed">Thất bại: %1$s</string>
     <string name="log_woken">Màn hình đã bật</string>
     <string name="log_export_ok">Đã xuất tới Downloads/rootmys9280-log.txt (%1$d ký tự)</string>
+    <string name="log_export_ok_name">Exported to Downloads/%1$s (%2$d chars)</string>
     <string name="log_export_fail">Xuất thất bại: %1$s</string>
     <string name="log_knox_tripped">Đã bị vi phạm (warranty_bit=1)</string>
     <string name="log_knox_green">Nguyên vẹn (warranty_bit=0, verifiedbootstate=green)</string>

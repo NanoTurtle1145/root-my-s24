@@ -526,6 +526,7 @@
     <string name="log_failed">Не удалось: %1$s</string>
     <string name="log_woken">Экран включён</string>
     <string name="log_export_ok">Экспортировано в Downloads/rootmys9280-log.txt (%1$d симв.)</string>
+    <string name="log_export_ok_name">Exported to Downloads/%1$s (%2$d chars)</string>
     <string name="log_export_fail">Ошибка экспорта: %1$s</string>
     <string name="log_knox_tripped">Сработал (warranty_bit=1)</string>
     <string name="log_knox_green">Не нарушен (warranty_bit=0, verifiedbootstate=green)</string>

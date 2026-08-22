@@ -520,6 +520,7 @@
     <string name="log_failed">Error: %1$s</string>
     <string name="log_woken">Pantalla encendida</string>
     <string name="log_export_ok">Exportado a Downloads/rootmys9280-log.txt (%1$d caracteres)</string>
+    <string name="log_export_ok_name">Exported to Downloads/%1$s (%2$d chars)</string>
     <string name="log_export_fail">Error al exportar: %1$s</string>
     <string name="log_knox_tripped">Disparado (warranty_bit=1)</string>
     <string name="log_knox_green">Intacto (warranty_bit=0, verifiedbootstate=green)</string>

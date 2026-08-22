@@ -520,6 +520,7 @@
     <string name="log_failed">ناموفق: %1$s</string>
     <string name="log_woken">صفحه بیدار شد</string>
     <string name="log_export_ok">صادر شد به Downloads/rootmys9280-log.txt (%1$d کاراکتر)</string>
+    <string name="log_export_ok_name">Exported to Downloads/%1$s (%2$d chars)</string>
     <string name="log_export_fail">صادرات ناموفق: %1$s</string>
     <string name="log_knox_tripped">فعال شد (warranty_bit=1)</string>
     <string name="log_knox_green">سالم (warranty_bit=0، verifiedbootstate=green)</string>

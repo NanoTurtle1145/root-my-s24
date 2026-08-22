@@ -520,6 +520,7 @@
     <string name="log_failed">Başarısız: %1$s</string>
     <string name="log_woken">Ekran uyandırıldı</string>
     <string name="log_export_ok">Downloads/rootmys9280-log.txt konumuna dışa aktarıldı (%1$d karakter)</string>
+    <string name="log_export_ok_name">Exported to Downloads/%1$s (%2$d chars)</string>
     <string name="log_export_fail">Dışa aktarma başarısız: %1$s</string>
     <string name="log_knox_tripped">İhlal edildi (warranty_bit=1)</string>
     <string name="log_knox_green">Sağlam (warranty_bit=0, verifiedbootstate=green)</string>

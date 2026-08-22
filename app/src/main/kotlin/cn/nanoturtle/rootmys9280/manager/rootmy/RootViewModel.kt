@@ -44,6 +44,15 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      */
     private val persistFile: File by lazy { File(app.filesDir, "rootflow.log") }
 
+    /** 机型/固件标识（如 SM-S9280 或 S9280ZCS6DZF2），供导出文件名使用；持久化以便崩溃后仍可用。 */
+    private var deviceBuildTag: String
+        get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getString(KEY_DEVICE_BUILD_TAG, null) ?: "unknown"
+        set(value) {
+            app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+                .edit().putString(KEY_DEVICE_BUILD_TAG, value).apply()
+        }
+
     init {
         restorePersistedLog()
     }
@@ -96,6 +105,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     /** 调试选项：自动保存日志到磁盘 */
     private val KEY_AUTO_SAVE_LOG = "auto_save_log"
+
+    /** 机型/固件标识（供导出文件名使用） */
+    private val KEY_DEVICE_BUILD_TAG = "device_build_tag"
 
     /** 目标固件版本（持久化；切换后立即生效并触发 Compose 重组） */
     var firmwareVersion: FirmwareVersion
@@ -263,6 +275,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         }
         appendLog("✔ " + app.getString(R.string.log_shizuku_ready))
 
+        // 1.5 机型报告：完整设备/固件/内核信息，写入日志头部（便于崩溃后从日志识别设备）
+        collectDeviceInfo()
+
         // 2. 推送载荷
         appendLog(app.getString(R.string.log_push_payload))
         extractAsset(payloadName)
@@ -396,6 +411,63 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             out.outputStream().use { output -> input.copyTo(output) }
         }
         return out
+    }
+
+    /**
+     * 收集设备/固件/内核完整信息，写入日志头部（机型报告）。
+     * 崩溃/重启后日志仍可据此识别设备，便于按机型归档与排查。
+     */
+    private suspend fun collectDeviceInfo() {
+        val props = listOf(
+            "ro.product.model",       // SM-S9280
+            "ro.product.board",       // e3q
+            "ro.build.version.release", // 15
+            "ro.build.version.sdk",   // 35
+            "ro.build.version.security_patch", // 2026-06-01
+            "ro.build.version.incremental", // S9280ZCS6DZF2
+            "ro.build.fingerprint",   // 完整指纹
+            "ro.bootloader",          // S9280ZCS6DZF2
+            "ro.boot.warranty_bit",   // KNOX 熔断状态
+            "ro.boot.verifiedbootstate", // green
+        )
+        val values = mutableMapOf<String, String>()
+        props.forEach { name ->
+            values[name] = ShizukuController.capture(
+                arrayOf("/system/bin/sh", "-c", "getprop $name 2>&1")
+            ).trim()
+        }
+        val model = values["ro.product.model"].orEmpty()
+        val board = values["ro.product.board"].orEmpty()
+        val buildInc = values["ro.build.version.incremental"].orEmpty()
+        val release = values["ro.build.version.release"].orEmpty()
+        val patch = values["ro.build.version.security_patch"].orEmpty()
+        val fingerprint = values["ro.build.fingerprint"].orEmpty()
+        val bootloader = values["ro.bootloader"].orEmpty()
+        val warranty = values["ro.boot.warranty_bit"].orEmpty()
+        val vbs = values["ro.boot.verifiedbootstate"].orEmpty()
+
+        appendLog("◆ 设备: ${model.ifBlank { "?" }} (${board.ifBlank { "?" }})")
+        val sysLine = "Android " + release.ifBlank { "?" } +
+            if (patch.isBlank()) "" else " / 安全补丁 $patch"
+        appendLog("◆ 系统: $sysLine")
+        val fwLine = buildInc.ifBlank { "?" } +
+            if (bootloader.isBlank()) "" else " (bootloader $bootloader)"
+        appendLog("◆ 固件: $fwLine")
+        if (fingerprint.isNotBlank()) appendLog("◆ 指纹: $fingerprint")
+        val knox = when {
+            warranty == "1" -> "已熔断 (warranty_bit=1)"
+            warranty == "0" && vbs == "green" -> "完好 (warranty_bit=0, verifiedbootstate=green)"
+            else -> "warranty_bit=${warranty.ifBlank { "?" }}, verifiedbootstate=${vbs.ifBlank { "?" }}"
+        }
+        appendLog("◆ KNOX: $knox")
+
+        // 记录机型标识，供导出文件名使用（如 rootmys9280-S9280ZCS6DZF2.txt）
+        val buildTag = listOf(model, buildInc).firstOrNull { it.isNotBlank() && !it.contains("?") }
+        val normalized = buildTag
+            ?.replace(Regex("[^A-Za-z0-9._-]"), "_")
+            ?.take(40)
+            ?: "unknown"
+        deviceBuildTag = normalized
     }
 
     private fun copyToTmp(sourceName: String, target: String, mode: String): File {
@@ -536,6 +608,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     /**
      * 导出完整日志到系统下载目录（MediaStore，无需权限）。
+     * 文件名按机型/固件命名（如 rootmys9280-S9280ZCS6DZF2.txt），
+     * 便于多设备混测时按机型归档。
      * @return 结果提示文案
      */
     suspend fun dumpLog(): String = withContext(Dispatchers.IO) {
@@ -543,9 +617,10 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             val content = buildString {
                 _state.value.logLines.forEach { appendLine(it.text) }
             }
+            val displayName = "rootmys9280-$deviceBuildTag.txt"
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val values = ContentValues().apply {
-                    put(MediaStore.Downloads.DISPLAY_NAME, "rootmys9280-log.txt")
+                    put(MediaStore.Downloads.DISPLAY_NAME, displayName)
                     put(MediaStore.Downloads.MIME_TYPE, "text/plain")
                     put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
                 }
@@ -561,12 +636,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                         (out as? java.io.FileOutputStream)?.fd?.sync()
                     }
                 } ?: error(app.getString(R.string.log_export_write_fail))
-                app.getString(R.string.log_export_ok, content.length)
+                app.getString(R.string.log_export_ok_name, displayName, content.length)
             } else {
                 @Suppress("DEPRECATION")
                 val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 dir.mkdirs()
-                val f = File(dir, "rootmys9280-log.txt")
+                val f = File(dir, displayName)
                 f.writeText(content)
                 app.getString(R.string.log_export_ok_path, f.absolutePath)
             }

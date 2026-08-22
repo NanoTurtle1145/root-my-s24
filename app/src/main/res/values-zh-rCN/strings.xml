@@ -516,6 +516,7 @@
     <string name="log_failed">失败: %1$s</string>
     <string name="log_woken">已唤醒屏幕</string>
     <string name="log_export_ok">已导出到 下载/rootmys9280-log.txt (%1$d 字符)</string>
+    <string name="log_export_ok_name">已导出到 下载/%1$s (%2$d 字符)</string>
     <string name="log_export_fail">导出失败: %1$s</string>
     <string name="log_knox_tripped">已触发 (warranty_bit=1)</string>
     <string name="log_knox_green">完好 (warranty_bit=0, verifiedbootstate=green)</string>
