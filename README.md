@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-2.0-1E88E5?style=flat-square" alt="Version 2.0"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-2.5.5-1E88E5?style=flat-square" alt="Version 2.5.5"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24"><img src="https://img.shields.io/badge/platform-Android-1E88E5?style=flat-square" alt="Android"></a>
 </p>
@@ -29,32 +29,63 @@
 
 ## 支持设备
 
-| 项目 | 值 |
-|---|---|
-| 机型 | Samsung Galaxy S24 系列（e3q 平台） |
-| 型号 | SM-S9210 / SM-S9260 / SM-S9280（已实测 S9280、S9260） |
-| 固件 | 同代 DZF2（One UI 8.5，如 S9280ZCS6DZF2 / S9260ZCS6DZF2） |
-| 内核 | 6.1.145-android14-11-3254743-abS9280ZCS6DZF2 |
+| 机型 | 固件 | 内核 | 状态 |
+|---|---|---|---|
+| SM-S9280（国行 DZF2） | S9280ZCS6DZF2 | 6.1.145 | 已实测成功（基线） |
+| SM-S9280（港版 DZE2） | S9280ZHS6DZE2 | 6.1.145 | 已实测成功 |
+| SM-S9280（国行 DZG1） | S9280ZCS6DZG1 | 6.1.145 | 已定标 |
+| SM-S9280（港版 CZA1） | S9280ZHS4CZA1 | 6.1.128 | 已定标 |
+| SM-S9210（国行 BYH7，One UI 7） | S9210ZCU4BYH7 | 6.1.99 | 已定标，待真机验证 |
 
-> **机型支持**：S24 系列（e3q 平台）同代固件内核符号一致，同一 DZF2 版本可直接使用（S9280 / S9260 已实测）；
-> 不同构建号需逐符号对比修正（本项目 S9280 vs S928U1 仅 `kmalloc_caches` 一个符号不同）；
-> 跨平台/跨大版本需完整重新定标，且漏洞可能已被修复。适配方法见仓库文档与
-> 适配流程：提取固件内核 → vmlinux-to-elf 恢复符号 → 与参考 target.h 逐项对比 → 生成目标配置 → 真机验证。
+> 同平台（e3q/e1q）同构建号固件内核符号一致，可直接通用；跨构建号需逐符号对比修正；跨平台/跨大版本需完整重新定标，且漏洞可能已被修复。适配方法与各目标定标报告见[文档导航](#文档导航)。
 
 ## 使用流程
 
-1. 安装并启动 Shizuku（无线/有线 ADB 授权）
-2. 打开 RootMyS24，点击「开始 Root」（建议熄屏运行，降低内核竞态概率）
+1. 安装 App，授权方式（v2.5.5 起无线调试为实验性开关，默认关闭）：
+   - **Shizuku**（默认）：安装并启动 Shizuku（无线/有线 ADB 授权）
+   - **无线调试**（实验性）：设置页开启「无线调试授权」后，主页支持通知配对 / 配对码 / 直连
+2. 选择目标固件版本，点击「开始 Root」（建议熄屏运行，降低内核竞态概率）
 3. 等待 exploit 完成，自动执行 KernelSU late-load
 4. 安装 KernelSU Manager（v3.2.5），强制停止后重开，显示「工作中 <LKM> [越狱模式]」
 
-> exploit 是概率性的，失败/重启后重试即可（成功率随尝试累加）。
+> exploit 是概率性的，失败/重启后重试即可（成功率随尝试累加）。成功标记：`exploit completed` + `retval=0 socket=1`。
 
+---
+
+## 文档导航
+
+完整文档中心见 [docs/README.md](docs/README.md)。
+
+### 入门与使用
+
+- [docs/release-v2.5.5.md](docs/release-v2.5.5.md) —— 最新发布说明（下载 / 更新亮点 / 使用方法 / 更新日志）
+- [docs/auth-plan.md](docs/auth-plan.md) —— 授权方案规划（Shizuku / 无线调试各方案状态）
+- [docs/release-v2.2.md](docs/release-v2.2.md) —— v2.2 发布说明（历史）
+
+### 固件适配与定标
+
+- [docs/adaptation-guide.md](docs/adaptation-guide.md) —— 适配方法论（移植到新设备/固件先读这篇）
+- [docs/dze2-target-complete.md](docs/dze2-target-complete.md) —— 港版 DZE2 定标报告
+- [docs/dzg1-target-complete.md](docs/dzg1-target-complete.md) —— 国行 DZG1 定标报告
+- [docs/cza1-target-complete.md](docs/cza1-target-complete.md) —— 港版 CZA1 定标报告
+- [docs/oneui7-adaptation-report.md](docs/oneui7-adaptation-report.md) —— One UI 7 (BYH7) 可行性报告
+- [docs/byh7-target-complete.md](docs/byh7-target-complete.md) —— BYH7 定标完成报告
+
+### 运行日志与故障定位
+
+- [docs/run-log-analysis.md](docs/run-log-analysis.md) —— 成功/失败日志逐行对比与判读
+- [docs/sm-s9380-rmg-root-experience.md](docs/sm-s9380-rmg-root-experience.md) —— SM-S9380 实战经验归档
+
+### 研究资料
+
+- [docs/research-index.md](docs/research-index.md) —— 研究资料全量索引
+- [docs/blog-s9280-root.md](docs/blog-s9280-root.md) —— 博客：S24 Ultra 国行免解锁 Root 实践
+- [samsung-root-research](https://github.com/NanoTurtle1145/samsung-root-research) —— 研究仓库（固件/exploit 工程/定标报告权威镜像）
 
 ## 注意事项
 
-- **停在 DZF2 固件，不要升级**：新固件会修复 CVE-2026-43499 相关漏洞
-- exploit 概率性成功：失败多试几次，必要时重启手机（成功标记：`exploit completed` + `retval=0 socket=1`）
+- **停在已适配固件，不要升级**：新固件会修复 CVE-2026-43499 相关漏洞
+- exploit 概率性成功：失败多试几次，必要时重启手机
 - 运行期间建议熄屏（降低内核竞态导致的崩溃概率）
 - 每次重启手机后需要重新运行一次「开始 Root」以加载 KernelSU 驱动
 
