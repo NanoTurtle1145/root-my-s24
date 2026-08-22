@@ -5,10 +5,19 @@
 ## 下载
 
 - **APK**: `RootMyS24-v2.5.5-release.apk`（v2.5.5, versionCode 71, 签名 CN=S9280Root）
+- **SHA256**: `f7db73d0c377c377bf490fae49a052cef5237c48861d50c8ccb5891d64e3d429`
 - **包名**: `cn.nanoturtle.rootmys9280`
+- **系统要求**: Android 11+（无线调试授权）/ Android 8+（Shizuku 授权）
 - **适用**: SM-S24 系列（S9210 / S9260 / S9280）
 
 > 版本号自 v2.5.1 起改为三段式。
+
+### 已知问题
+
+- **BYH7（One UI 7）**：已定标但待真机验证；真机跑不到 root 阶段时多为 struct page 偏移漂移，日志判读见 [run-log-analysis.md](run-log-analysis.md)
+- **无线调试（实验性，默认关闭）**：端口每次开关无线调试会变化；设置页开启后主页才显示相关控件
+- **exploit 概率性**：失败/重启后重试即可；运行期间建议熄屏降低内核竞态概率
+- **临时 root**：每次重启后需重新运行一次「开始 Root」
 
 ---
 

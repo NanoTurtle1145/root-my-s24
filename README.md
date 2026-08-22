@@ -58,9 +58,14 @@
 
 ### 入门与使用
 
-- [docs/release-v2.5.5.md](docs/release-v2.5.5.md) —— 最新发布说明（下载 / 更新亮点 / 使用方法 / 更新日志）
+- [docs/release-v2.5.5.md](docs/release-v2.5.5.md) —— 最新发布说明（下载 / SHA256 / 系统要求 / 已知问题 / 更新日志）
 - [docs/auth-plan.md](docs/auth-plan.md) —— 授权方案规划（Shizuku / 无线调试各方案状态）
 - [docs/release-v2.2.md](docs/release-v2.2.md) —— v2.2 发布说明（历史）
+
+### 技术原理
+
+- [docs/technical-principles.md](docs/technical-principles.md) —— 本 App 技术原理（漏洞成因 / 利用链 / 为什么免解锁 / 风险）
+- [研究仓库 VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) —— 完整漏洞原理剖析（研究笔记，权威）
 
 ### 固件适配与定标
 
@@ -81,6 +86,12 @@
 - [docs/research-index.md](docs/research-index.md) —— 研究资料全量索引
 - [docs/blog-s9280-root.md](docs/blog-s9280-root.md) —— 博客：S24 Ultra 国行免解锁 Root 实践
 - [samsung-root-research](https://github.com/NanoTurtle1145/samsung-root-research) —— 研究仓库（固件/exploit 工程/定标报告权威镜像）
+
+## 技术原理（概要）
+
+本 App 基于内核漏洞 **CVE-2026-43499**（rtmutex 内核栈 use-after-free）：通过 PI futex 链死锁回滚触发错误清理路径，留下指向已释放内核栈的悬垂指针；复用该栈伪造 `rt_mutex_waiter` 后获得物理内存读写，依次绕过 KASLR、降级 SELinux、以 root 执行辅助程序，最终 late-load KernelSU 驱动。全程不改动持久化分区，bootloader 保持锁定、KNOX e-fuse 不熔断。
+
+> 完整原理（成因 / 利用链 / 防护绕过 / 源码对照）见 [docs/technical-principles.md](docs/technical-principles.md) 与研究仓库 [VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md)。
 
 ## 注意事项
 

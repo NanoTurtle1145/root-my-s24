@@ -10,12 +10,19 @@
 | 文档 | 内容 |
 |---|---|
 | [根 README](../README.md) | 项目简介、特性、支持设备、使用流程、构建方法 |
-| [release-v2.5.5.md](release-v2.5.5.md) | **最新发布说明**（v2.5.5）：下载、更新亮点、使用方法、完整更新日志 |
+| [release-v2.5.5.md](release-v2.5.5.md) | **最新发布说明**（v2.5.5）：下载、SHA256、系统要求、已知问题、完整更新日志 |
 | [auth-plan.md](auth-plan.md) | 授权方案规划：Shizuku / 无线调试直连 / 配对码 / 通知配对，各方案状态 |
 
 **历史发布说明**：`release-v2.2.md`（v2.2 列表式固件选择、BYH7 SELinux 偏移修复）
 
-## 二、固件适配与定标（按目标排序）
+## 二、技术原理
+
+| 文档 | 内容 |
+|---|---|
+| [technical-principles.md](technical-principles.md) | 本 App 技术原理：漏洞成因、利用链全景、为什么免解锁、风险提示、源码对照 |
+| [研究仓库 VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) | 完整漏洞原理剖析（研究笔记，权威）：rtmutex UAF 成因、防护绕过、worklist 竞态 |
+
+## 三、固件适配与定标（按目标排序）
 
 | 目标 | 平台 / 固件 | 内核 | 文档 |
 |---|---|---|---|
@@ -27,14 +34,14 @@
 
 **方法论**：[adaptation-guide.md](adaptation-guide.md) —— 从固件提取到真机验证的完整适配流程复盘，移植到新设备/固件时先读这篇。
 
-## 三、运行日志与故障定位
+## 四、运行日志与故障定位
 
 | 文档 | 内容 |
 |---|---|
 | [run-log-analysis.md](run-log-analysis.md) | S9280 DZF2 成功 vs BYH7 失败逐行对比；失败特征判读表（cache gate / vmemmap 特征 / struct page 偏移） |
 | [sm-s9380-rmg-root-experience.md](sm-s9380-rmg-root-experience.md) | SM-S9380 实战经验归档：boot quiet window 时序、struct page 四项偏移、Shell/App 域差异 |
 
-## 四、研究资料索引
+## 五、研究资料索引
 
 | 文档 | 内容 |
 |---|---|
@@ -43,7 +50,7 @@
 
 ---
 
-## 五、文档维护约定
+## 六、文档维护约定
 
 1. **发布说明**：每个发布版本一个 `release-vX.Y.Z.md`，最新版在 README 与本文档中心头部链接；旧版保留供回溯。
 2. **定标报告**：每适配一个目标写一份 `<目标>-target-complete.md`，标题含平台/固件/内核版本；跨大版本适配先写可行性报告再写定标报告（见 BYH7 两篇）。
