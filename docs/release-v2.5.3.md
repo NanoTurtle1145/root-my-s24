@@ -1,10 +1,10 @@
-# RootMyS24 v2.5.2 发布说明
+# RootMyS24 v2.5.3 发布说明
 
 > 免解锁免刷机 Root —— 只靠一个 App，纯软绕过三星 KNOX 防护，物理内存漏洞一键提权。
 
 ## 下载
 
-- **APK**: `RootMyS24-v2.5.2-release.apk`（v2.5.2, versionCode 62, 签名 CN=S9280Root）
+- **APK**: `RootMyS24-v2.5.3-release.apk`（v2.5.3, versionCode 64, 签名 CN=S9280Root）
 - **包名**: `cn.nanoturtle.rootmys9280`
 - **适用**: SM-S24 系列（S9210 / S9260 / S9280）
 
@@ -12,9 +12,16 @@
 
 ---
 
-## v2.5.2 更新亮点
+## v2.5.3 更新亮点
 
-### 1. 无线调试通知配对（新增）
+### 1. 修复通知发不出（Android 13+ 通知权限）
+
+- 点击「通知配对」先请求 `POST_NOTIFICATIONS` 权限（`rememberLauncherForActivityResult`）
+- 未授予时 `AdbPairingFlow.startSearch` 返回明确错误而非静默失败
+- 用户拒绝后显示引导文案（去系统设置开启）
+- 所有通知异常从静默吞掉改为 `Log.w` 输出，便于排查
+
+### 2. 无线调试通知配对（v2.5.2 引入，保留）
 
 参考 Shizuku 交互，省去手动输入 IP/端口：
 
@@ -79,6 +86,9 @@ Android 11+ 无线调试直连：App 输入系统显示的 IP:端口，RSA 密�
 ## 更新日志
 
 ```
+v2.5.3 (2026-08-22)
+  + 修复通知发不出（Android 13+ 通知权限检查与请求，引导拒绝用户去系统设置开启）
+  + 所有通知异常从静默吞掉改为 Log.w 输出
 v2.5.2 (2026-08-22)
   + 无线调试通知配对（NsdManager 自动发现 + RemoteInput 通知输入配对码）
   + AuthCard 新增「通知配对」按钮（Android 11+，旧系统回退手动输入）
