@@ -123,6 +123,8 @@ v2.5.5 (2026-08-22, versionCode 78)
   + mDNS resolved.host null fallback + 发现失败可见通知
   + BYH7 pipe gate v4（cache_match 放宽接受任何非零 slab_cache）
   + 港版 DZG1（One UI 8.5）与 CZA1（One UI 8.0, kernel 6.1.128，待测）适配
+  + KernelSU late-load unshare EPERM fallback（新 root helper, md5 1a79f8b4）
+  + ADB 通道关闭握手与队列 NPE 修复（CLSE 双向关闭，EOF 判定改由 exitCode）
 v2.5.4 (2026-08-22)
   + 修复 mDNS 过滤条件过严导致第二条通知（输入配对码）不出现
   + 去掉 isLocal / isPortBusy 硬性过滤（服务类型 _adb-tls-pairing 足够唯一）
