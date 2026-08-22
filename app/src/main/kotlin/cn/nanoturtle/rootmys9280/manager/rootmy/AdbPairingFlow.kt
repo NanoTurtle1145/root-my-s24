@@ -17,6 +17,7 @@ import cn.nanoturtle.rootmys9280.manager.ui.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -39,6 +40,7 @@ object AdbPairingFlow {
     private const val CHANNEL_ID = "adb_pairing"
     private const val REPLY_REQUEST = 102
     private const val STOP_REQUEST = 103
+    private const val SEARCH_TIMEOUT_MS = 15_000L
     private const val KEY_REMOTE_INPUT = "pairing_code"
     private const val EXTRA_PORT = "adb_pair_port"
     private const val ACTION_PAIR_REPLY = "cn.nanoturtle.ADB_PAIR_REPLY"
@@ -85,6 +87,14 @@ object AdbPairingFlow {
             notifyInputCode(context, port)
         }
         mdnsPair?.start()
+
+        // 兜底：长时间没发现服务时更新通知提示（可能是无线调试没开/不在同一网络）
+        scope.launch {
+            delay(SEARCH_TIMEOUT_MS)
+            if (searching && pairPort <= 0) {
+                notifySearchTimeout(context)
+            }
+        }
         return null
     }
 
@@ -191,6 +201,20 @@ object AdbPairingFlow {
             NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
         } catch (e: Throwable) {
             Log.w(TAG, "notifySearching failed", e)
+        }
+    }
+
+    private fun notifySearchTimeout(context: Context) {
+        try {
+            val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_menu_edit)
+                .setContentTitle(context.getString(R.string.notification_adb_pairing_not_found_title))
+                .setContentText(context.getString(R.string.notification_adb_pairing_not_found_text))
+                .setAutoCancel(true)
+                .build()
+            NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+        } catch (e: Throwable) {
+            Log.w(TAG, "notifySearchTimeout failed", e)
         }
     }
 

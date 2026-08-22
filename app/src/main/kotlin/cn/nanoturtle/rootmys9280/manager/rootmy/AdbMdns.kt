@@ -59,7 +59,29 @@ class AdbMdns(
     }
 
     private fun onServiceFound(info: NsdServiceInfo) {
-        nsdManager.resolveService(info, AdbResolveListener())
+        resolveWithRetry(info, retries = 0)
+    }
+
+    /** resolve 失败自动重试（NsdManager 的 resolve 偶发失败，重试通常能成功）。 */
+    private fun resolveWithRetry(info: NsdServiceInfo, retries: Int) {
+        if (!registered) return
+        if (retries > MAX_RESOLVE_RETRIES) {
+            Log.w(TAG, "resolve gave up: ${info.serviceName}")
+            return
+        }
+        nsdManager.resolveService(info, object : NsdManager.ResolveListener {
+            override fun onResolveFailed(info: NsdServiceInfo, errorCode: Int) {
+                Log.w(TAG, "resolve failed: ${info.serviceName}, code=$errorCode (retry $retries)")
+                // 延后重试，避免在回调线程里立刻重入
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    resolveWithRetry(info, retries + 1)
+                }, RESOLVE_RETRY_DELAY_MS)
+            }
+
+            override fun onServiceResolved(info: NsdServiceInfo) {
+                onServiceResolved(info)
+            }
+        })
     }
 
     private fun onServiceLost(info: NsdServiceInfo) {
@@ -70,18 +92,23 @@ class AdbMdns(
 
     private fun onServiceResolved(resolved: NsdServiceInfo) {
         if (!registered) return
-        // 过滤：必须是本机地址（回环或局域网 IP），且端口已被占用（adbd 已监听）
         val host = resolved.host?.hostAddress ?: return
-        val isLocal = NetworkInterface.getNetworkInterfaces()?.asSequence()
-            ?.any { netIf ->
-                netIf.inetAddresses?.asSequence()
-                    ?.any { host == it.hostAddress }
-                    ?: false
-            } ?: false
-        if (!isLocal) {
-            Log.v(TAG, "resolved service is not local: $host")
-            return
-        }
+
+        // 本机检查仅用于日志/参考，不做硬性过滤：
+        // 寄生式架构下宿主可能没有 INTERNET 权限，getNetworkInterfaces() 只返回回环，
+        // 解析出的设备局域网 IP 会因此被误判为"非本机"；而 _adb-tls-* 服务类型本身
+        // 足够唯一（只有开启无线调试配对的设备才广播），误连其他设备的概率极低。
+        val isLocal = runCatching {
+            NetworkInterface.getNetworkInterfaces()?.asSequence()
+                ?.any { netIf ->
+                    netIf.inetAddresses?.asSequence()
+                        ?.any { host == it.hostAddress }
+                        ?: false
+                } ?: false
+        }.getOrDefault(false)
+
+        // 端口占用检查同样只作参考：adbd 可能监听在具体 IP 而非 0.0.0.0，
+        // 127.0.0.1 绑定测试不可靠。
         val isPortBusy = try {
             ServerSocket().use { sock ->
                 sock.bind(InetSocketAddress("127.0.0.1", resolved.port), 1)
@@ -90,14 +117,15 @@ class AdbMdns(
         } catch (_: IOException) {
             true
         }
-        if (!isPortBusy) return
+
+        Log.i(TAG, "resolved $serviceType: ${resolved.serviceName} host=$host port=${resolved.port} local=$isLocal portBusy=$isPortBusy")
         discoveredPort = resolved.port
         onServiceFound(host, resolved.port)
     }
 
     private inner class AdbDiscoveryListener : NsdManager.DiscoveryListener {
         override fun onDiscoveryStarted(serviceType: String) {
-            Log.v(TAG, "discovery started: $serviceType")
+            Log.i(TAG, "discovery started: $serviceType")
         }
 
         override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
@@ -105,7 +133,7 @@ class AdbMdns(
         }
 
         override fun onDiscoveryStopped(serviceType: String) {
-            Log.v(TAG, "discovery stopped: $serviceType")
+            Log.i(TAG, "discovery stopped: $serviceType")
         }
 
         override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
@@ -113,7 +141,7 @@ class AdbMdns(
         }
 
         override fun onServiceFound(info: NsdServiceInfo) {
-            Log.v(TAG, "service found: ${info.serviceName}")
+            Log.i(TAG, "service found: ${info.serviceName} type=${info.serviceType}")
             onServiceFound(info)
         }
 
@@ -122,19 +150,11 @@ class AdbMdns(
         }
     }
 
-    private inner class AdbResolveListener : NsdManager.ResolveListener {
-        override fun onResolveFailed(info: NsdServiceInfo, errorCode: Int) {
-            Log.v(TAG, "resolve failed: ${info.serviceName}, code=$errorCode")
-        }
-
-        override fun onServiceResolved(info: NsdServiceInfo) {
-            onServiceResolved(info)
-        }
-    }
-
     companion object {
         const val TLS_CONNECT = "_adb-tls-connect._tcp"
         const val TLS_PAIRING = "_adb-tls-pairing._tcp"
         private const val TAG = "AdbMdns"
+        private const val MAX_RESOLVE_RETRIES = 5
+        private const val RESOLVE_RETRY_DELAY_MS = 800L
     }
 }

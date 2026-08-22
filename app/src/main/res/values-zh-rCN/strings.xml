@@ -479,6 +479,8 @@
     <string name="notification_channel_adb_pairing">无线调试配对</string>
     <string name="notification_adb_pairing_searching_title">正在查找无线调试服务</string>
     <string name="notification_adb_pairing_searching_text">请在开发者选项中开启「无线调试」…</string>
+    <string name="notification_adb_pairing_not_found_title">未找到无线调试服务</string>
+    <string name="notification_adb_pairing_not_found_text">请确认已开启「无线调试」且手机与电脑在同一网络，然后重试</string>
     <string name="notification_adb_pairing_stop">停止</string>
     <string name="notification_adb_pairing_service_found_title">已找到无线调试</string>
     <string name="notification_adb_pairing_service_found_text">请输入设备上显示的 6 位配对码（配对端口 %1$d）</string>
