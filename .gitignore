@@ -22,3 +22,6 @@ captures/
 # 日志与临时文件
 *.log
 *.tmp
+
+# Kotlin daemon session files
+.kotlin/sessions/
