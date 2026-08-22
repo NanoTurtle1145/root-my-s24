@@ -63,6 +63,15 @@
 | `s9280_port/blog_images/` + `blog_s9280_root.md` | 博客与配图 |
 | `s9280_port/KernelSU_v3.2.5_32525-release.apk` | KernelSU Manager（官方） |
 
+## 六·五、运行日志分析与外部经验（2026-08-22 新增）
+
+| 文件 | 说明 |
+|---|---|
+| `run-log-analysis.md` | **S9280 DZF2 成功 vs OneUI7 BYH7 失败** 逐行对比分析（含 struct page 偏移根因修正） |
+| `sm-s9380-rmg-root-experience.md` | **SM-S9380 国行 ZCSCCZG1 临时 Root 实测经验**（酷安文章归档）：CVE-2026-43499 原理、完整利用链、固件 profile 移植偏移（STRUCT_PAGE_*）、boot quiet window 120s 时序、Shell/App 域差异、P0/FOPS 两个 gate 的失败判据、稳定参数基线 |
+
+> BYH7 当前失败根因（2026-08-22 修正）：`struct page` 字段偏移错误（`cache08=fffffffe...` vmemmap 地址特征），需按 6.1.99 BTF 核对 `STRUCT_PAGE_SIZE=0x40`、`STRUCT_SLAB_CACHE_OFF=0x08` 等四项；`object_index=28` 超界为偶发软性差异。
+
 ## 七、关键结论备忘
 
 1. **S9280 与 S928U1 内核符号 16/17 一致**，唯一差异 `kmalloc_caches`：0x176cbb8（国行）vs 0x176c6f8（美版）
