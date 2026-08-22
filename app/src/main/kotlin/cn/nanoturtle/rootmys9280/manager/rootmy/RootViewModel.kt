@@ -292,6 +292,22 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
+     * 通知配对：通过 mDNS 自动发现本机无线调试配对端口，
+     * 弹出通知让用户输入 6 位配对码（RemoteInput），
+     * 配对成功后自动连接。无需手动输入 IP/端口。
+     * 由 AuthCard 的「通知配对」按钮调用。
+     */
+    fun startAdbPairingNotification(context: android.content.Context) {
+        if (AdbPairingFlow.isSearching()) return
+        if (AdbWirelessController.getAdbKey() == null) {
+            appendLog("✘ 密钥未初始化，请先选择授权方式")
+            return
+        }
+        AdbPairingFlow.startSearch(context)
+        appendLog("ℹ " + app.getString(R.string.log_adb_pair_notify_started))
+    }
+
+    /**
      * 读取 KNOX 状态（经 Shizuku 读只读属性，不影响熔断判断）。
      * 注意：本流程不熔断 KNOX；warranty_bit=0 为完好。
      */

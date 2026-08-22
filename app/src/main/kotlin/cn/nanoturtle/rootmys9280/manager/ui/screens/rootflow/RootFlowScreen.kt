@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
+import cn.nanoturtle.rootmys9280.manager.rootmy.AdbPairingFlow
 import cn.nanoturtle.rootmys9280.manager.rootmy.AdbWirelessController
 import cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel
 import cn.nanoturtle.rootmys9280.manager.ui.components.VectorAmbienceSettings
@@ -346,6 +348,7 @@ private fun AuthCard(
     modifier: Modifier = Modifier,
 ) {
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val method = vm.authMethod
     var host by remember { mutableStateOf("") }
     var port by remember { mutableStateOf("") }
@@ -431,7 +434,40 @@ private fun AuthCard(
 
                 // ---- 配对区（未连接时显示）----
                 if (!connected) {
-                    // 配对码输入
+                    // 通知配对：mDNS 自动发现 + 通知输入配对码（Android 11+）
+                    if (AdbPairingFlow.isAvailable()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.rootflow_auth_adb_pair_notify_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.weight(1f).padding(end = 8.dp),
+                            )
+                            androidx.compose.material3.Button(
+                                onClick = {
+                                    vm.startAdbPairingNotification(context)
+                                    error = null
+                                },
+                                enabled = !connecting && !pairing && !AdbPairingFlow.isSearching(),
+                            ) {
+                                Text(stringResource(R.string.rootflow_auth_adb_pair_notify))
+                            }
+                        }
+                        if (AdbPairingFlow.isSearching()) {
+                            Text(
+                                text = stringResource(R.string.rootflow_auth_adb_pairing),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(top = 2.dp),
+                            )
+                        }
+                        HorizontalDivider(Modifier.padding(vertical = 6.dp))
+                    }
+
+                    // 手动配对：配对码输入
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,

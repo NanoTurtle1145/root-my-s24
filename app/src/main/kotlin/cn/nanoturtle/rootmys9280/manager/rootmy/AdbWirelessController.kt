@@ -79,6 +79,12 @@ object AdbWirelessController : ShellExecutor {
         adbKey = AdbKey(loadOrCreateKeyPair(keyDir))
     }
 
+    /** 供 AdbPairingFlow 获取密钥用于通知配对。 */
+    fun getAdbKey(): AdbKey? = adbKey
+
+    /** 通知配对是否已有已配对的密钥（仍在 init 后有效）。 */
+    fun isKeyReady(): Boolean = adbKey != null
+
     fun isConnected(): Boolean {
         val s = socket ?: return false
         return !s.isClosed && s.isConnected

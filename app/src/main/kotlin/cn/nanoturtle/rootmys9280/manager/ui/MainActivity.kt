@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import cn.nanoturtle.rootmys9280.manager.data.repository.LaunchShortcut
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
+import cn.nanoturtle.rootmys9280.manager.rootmy.AdbPairingFlow
 import cn.nanoturtle.rootmys9280.manager.ui.navigation.DeepLink
 import cn.nanoturtle.rootmys9280.manager.ui.screens.splash.SplashGate
 import cn.nanoturtle.rootmys9280.manager.ui.theme.LocalizedContent
@@ -64,6 +65,9 @@ class MainActivity : ComponentActivity() {
         // platform keeps answering with the intent this activity was *created* with, so a rotation
         // offers a destination the reader may have left behind hours ago.
         DeepLink.offerFromCreate(intent)
+        // 无线调试通知配对：通知上的 RemoteInput 结果通过 ClipData 随 intent 送达。
+        // 在 onCreate 与 onNewIntent 两处都转发，覆盖冷启动与进程存活两种路径。
+        AdbPairingFlow.handleIntent(this, intent)
 
         setContent { LocalizedContent { VectorTheme { SplashGate { VectorApp() } } } }
     }
@@ -92,6 +96,7 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         DeepLink.offerFromNewIntent(intent)
+        AdbPairingFlow.handleIntent(this, intent)
     }
 
     /**
