@@ -503,7 +503,7 @@
     <string name="about_disclaimer">Haftungsausschluss: Diese App dient ausschließlich der Sicherheitsforschung und dem persönlichen Lernen. Die Privilegienerweiterung über eine Kernel-Speicherkorruption ist grundsätzlich unsicher; du nutzt sie auf eigenes Risiko. Bitte halte dich an die lokalen Gesetze.</string>
 
     <string name="log_starting">RootMyS24 wird gestartet</string>
-    <string name="log_payload">Payload: %1$s (fest, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload: %1$s (BYH7 fix, pipe gate v2)</string>
     <string name="log_check_shizuku">[1/5] Prüfe Shizuku ...</string>
     <string name="log_shizuku_not_running">Shizuku läuft nicht. Bitte starte zuerst Shizuku!</string>
     <string name="log_shizuku_denied">Shizuku-Berechtigung verweigert</string>

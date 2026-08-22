@@ -492,7 +492,7 @@
     <string name="about_disclaimer">Tuyên bố miễn trừ: Ứng dụng này chỉ dành cho nghiên cứu bảo mật và học tập cá nhân. Việc leo thang đặc quyền thông qua làm hỏng bộ nhớ kernel vốn không chắc chắn; sử dụng tự chịu rủi ro. Vui lòng tuân thủ luật pháp địa phương.</string>
     
     <string name="log_starting">Đang khởi động RootMyS24</string>
-    <string name="log_payload">Payload: %1$s (cố định, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload: %1$s (cố định, kmalloc_caches 0x16bad78)</string>
     <string name="log_check_shizuku">[1/5] Đang kiểm tra Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku không chạy. Vui lòng khởi động Shizuku trước!</string>
     <string name="log_shizuku_denied">Quyền Shizuku bị từ chối</string>

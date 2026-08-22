@@ -492,7 +492,7 @@
     <string name="about_disclaimer">Penyangkalan: Aplikasi ini hanya untuk riset keamanan dan pembelajaran pribadi. Eskalasi hak istimewa lewat kerusakan memori kernel pada dasarnya tidak pasti; gunakan dengan risiko Anda sendiri. Patuhi hukum setempat.</string>
     
     <string name="log_starting">Memulai RootMyS24</string>
-    <string name="log_payload">Payload: %1$s (tetap, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload: %1$s (BYH7 fix, pipe gate v2)</string>
     <string name="log_check_shizuku">[1/5] Memeriksa Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku tidak berjalan. Silakan mulai Shizuku dulu!</string>
     <string name="log_shizuku_denied">Izin Shizuku ditolak</string>

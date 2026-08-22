@@ -503,7 +503,7 @@
     <string name="about_disclaimer">Avvertenza: questa app è solo per ricerca di sicurezza e apprendimento personale. L\'elevazione dei privilegi tramite corruzione della memoria del kernel è per natura incerta; usala a tuo rischio. Rispetta le leggi locali.</string>
 
     <string name="log_starting">Avvio di RootMyS24</string>
-    <string name="log_payload">Payload: %1$s (fisso, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload: %1$s (BYH7 fix, pipe gate v2)</string>
     <string name="log_check_shizuku">[1/5] Verifica di Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku non è in esecuzione. Avvia prima Shizuku!</string>
     <string name="log_shizuku_denied">Autorizzazione Shizuku negata</string>

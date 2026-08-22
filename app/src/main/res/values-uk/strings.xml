@@ -546,7 +546,7 @@
     <string name="about_disclaimer">Відмова від відповідальності: цей застосунок призначено лише для досліджень безпеки та особистого навчання. Підвищення привілеїв через пошкодження пам\'яті ядра за своєю природою невизначене; використовуйте на власний ризик. Дотримуйтеся місцевих законів.</string>
     
     <string name="log_starting">Запуск RootMyS24</string>
-    <string name="log_payload">Корисне навантаження: %1$s (фіксоване, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Корисне навантаження: %1$s (фіксоване, kmalloc_caches 0x16bad78)</string>
     <string name="log_check_shizuku">[1/5] Перевірка Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku не запущено. Спочатку запустіть Shizuku!</string>
     <string name="log_shizuku_denied">У доступі Shizuku відмовлено</string>

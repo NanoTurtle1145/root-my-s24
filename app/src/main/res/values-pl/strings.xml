@@ -557,7 +557,7 @@
     <string name="about_disclaimer">Zastrzeżenie: ta aplikacja służy wyłącznie do badań bezpieczeństwa i osobistej nauki. Podnoszenie uprawnień przez uszkodzenie pamięci jądra jest z natury niepewne; korzystasz na własne ryzyko. Przestrzegaj lokalnych przepisów.</string>
     
     <string name="log_starting">Uruchamianie RootMyS24</string>
-    <string name="log_payload">Payload: %1$s (stały, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload: %1$s (stały, kmalloc_caches 0x16bad78)</string>
     <string name="log_check_shizuku">[1/5] Sprawdzanie Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku nie działa. Najpierw uruchom Shizuku!</string>
     <string name="log_shizuku_denied">Odmowa uprawnień Shizuku</string>

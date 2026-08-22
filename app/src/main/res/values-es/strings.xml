@@ -503,7 +503,7 @@
     <string name="about_disclaimer">Aviso: esta aplicación es solo para investigación de seguridad y aprendizaje personal. La elevación de privilegios mediante corrupción de la memoria del kernel es inherentemente incierta; úsala bajo tu propio riesgo. Cumple las leyes locales.</string>
 
     <string name="log_starting">Iniciando RootMyS24</string>
-    <string name="log_payload">Payload: %1$s (fijo, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload: %1$s (BYH7 fix, pipe gate v2)</string>
     <string name="log_check_shizuku">[1/5] Comprobando Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku no está en ejecución. ¡Inicia Shizuku primero!</string>
     <string name="log_shizuku_denied">Permiso de Shizuku denegado</string>

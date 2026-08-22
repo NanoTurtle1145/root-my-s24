@@ -547,7 +547,7 @@
     <string name="about_disclaimer">إخلاء مسؤولية: هذا التطبيق لأغراض البحث الأمني والتعلم الشخصي فقط. تصعيد الامتيازات عبر إتلاف ذاكرة النواة غير مؤكد بطبيعته؛ استخدمه على مسؤوليتك الخاصة. يرجى الالتزام بالقوانين المحلية.</string>
     
     <string name="log_starting">جارٍ تشغيل RootMyS24</string>
-    <string name="log_payload">الحمولة: %1$s (ثابتة، kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">الحمولة: %1$s (ثابتة، kmalloc_caches 0x16bad78)</string>
     <string name="log_check_shizuku">[1/5] جارٍ التحقق من Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku غير قيد التشغيل. يرجى تشغيل Shizuku أولاً!</string>
     <string name="log_shizuku_denied">تم رفض إذن Shizuku</string>

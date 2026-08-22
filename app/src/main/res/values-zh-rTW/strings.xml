@@ -504,7 +504,7 @@
     <string name="about_disclaimer">免責聲明：本應用程式僅供安全研究與個人學習之用。核心記憶體破壞的權限提升本質上具有不確定性，請自行承擔風險，並請遵守當地法律。</string>
 <!-- RootMyS24 log strings -->
     <string name="log_starting">正在啟動 RootMyS24</string>
-    <string name="log_payload">Payload: %1$s (固定, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload: %1$s (固定, kmalloc_caches 0x16bad78)</string>
     <string name="log_check_shizuku">[1/5] 檢查 Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku 未在執行。請先啟動 Shizuku!</string>
     <string name="log_shizuku_denied">已拒絕 Shizuku 權限</string>

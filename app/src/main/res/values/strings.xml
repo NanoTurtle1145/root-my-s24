@@ -563,7 +563,7 @@
     <string name="about_disclaimer">Disclaimer: This app is for security research and personal learning only. Kernel memory-corruption privilege escalation is inherently uncertain; use at your own risk. Please comply with local laws.</string>
 <!-- RootMyS24 log strings -->
     <string name="log_starting">Starting RootMyS24</string>
-    <string name="log_payload">Payload: %1$s (fixed, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload: %1$s (BYH7 fix, pipe gate v2)</string>
     <string name="log_check_shizuku">[1/5] Checking Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku is not running. Please start Shizuku first!</string>
     <string name="log_shizuku_denied">Shizuku permission denied</string>

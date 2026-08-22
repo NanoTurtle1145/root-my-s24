@@ -493,7 +493,7 @@
     <string name="about_disclaimer">면책 조항: 이 앱은 보안 연구 및 개인 학습 목적으로만 제공됩니다. 커널 메모리 손상 권한 상승은 본질적으로 불확실하며, 사용에 따른 책임은 사용자에게 있습니다. 현지 법률을 준수하십시오.</string>
 
     <string name="log_starting">RootMyS24 시작 중</string>
-    <string name="log_payload">Payload: %1$s (고정, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload: %1$s (고정, kmalloc_caches 0x16bad78)</string>
     <string name="log_check_shizuku">[1/5] Shizuku 확인 중...</string>
     <string name="log_shizuku_not_running">Shizuku가 실행 중이 아닙니다. 먼저 Shizuku를 시작하세요!</string>
     <string name="log_shizuku_denied">Shizuku 권한이 거부되었습니다</string>

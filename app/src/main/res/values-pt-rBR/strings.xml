@@ -503,7 +503,7 @@
     <string name="about_disclaimer">Aviso: este aplicativo é apenas para pesquisa de segurança e aprendizado pessoal. A elevação de privilégios por corrupção de memória do kernel é inerentemente incerta; use por sua conta e risco. Respeite as leis locais.</string>
     
     <string name="log_starting">Iniciando RootMyS24</string>
-    <string name="log_payload">Payload: %1$s (fixo, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload: %1$s (fixo, kmalloc_caches 0x16bad78)</string>
     <string name="log_check_shizuku">[1/5] Verificando Shizuku...</string>
     <string name="log_shizuku_not_running">O Shizuku não está em execução. Inicie o Shizuku primeiro!</string>
     <string name="log_shizuku_denied">Permissão do Shizuku negada</string>

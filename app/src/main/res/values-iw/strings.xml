@@ -525,7 +525,7 @@
     <string name="about_disclaimer">כתב ויתור: האפליקציה מיועדת למחקר אבטחה וללמידה אישית בלבד. הרמת הרשאות דרך פגיעה בזיכרון הליבה אינה ודאית מטבעה; שימוש באחריותכם. נא לעמוד בחוקים המקומיים.</string>
     
     <string name="log_starting">מפעיל את RootMyS24</string>
-    <string name="log_payload">מטען: %1$s (קבוע, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">מטען: %1$s (תיקון BYH7, pipe gate v2)</string>
     <string name="log_check_shizuku">[1/5] בודק את Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku אינו פועל. נא להפעיל את Shizuku קודם!</string>
     <string name="log_shizuku_denied">ההרשאה ל-Shizuku נדחתה</string>

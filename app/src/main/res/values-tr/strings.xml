@@ -503,7 +503,7 @@
     <string name="about_disclaimer">Sorumluluk reddi: Bu uygulama yalnızca güvenlik araştırması ve kişisel öğrenim içindir. Çekirdek belleğinin bozulmasıyla ayrıcalık yükseltme doğası gereği belirsizdir; riski size ait olmak üzere kullanın. Lütfen yerel yasalara uyun.</string>
     
     <string name="log_starting">RootMyS24 başlatılıyor</string>
-    <string name="log_payload">Payload: %1$s (sabit, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload: %1$s (sabit, kmalloc_caches 0x16bad78)</string>
     <string name="log_check_shizuku">[1/5] Shizuku kontrol ediliyor...</string>
     <string name="log_shizuku_not_running">Shizuku çalışmıyor. Lütfen önce Shizuku\'yu başlatın!</string>
     <string name="log_shizuku_denied">Shizuku izni reddedildi</string>

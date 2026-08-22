@@ -509,7 +509,7 @@
     <string name="about_disclaimer">免责声明：本应用仅供安全研究与个人学习使用。内核内存破坏提权存在不确定性，使用后果请自行承担；请遵守当地法律法规，勿用于非法用途。</string>
 <!-- RootMyS24 log strings -->
     <string name="log_starting">RootMyS24 启动中</string>
-    <string name="log_payload">载荷: %1$s (修正版, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">载荷: %1$s (BYH7修复版, pipe gate v2)</string>
     <string name="log_check_shizuku">[1/5] 检查 Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku 未运行。请先启动 Shizuku！</string>
     <string name="log_shizuku_denied">Shizuku 权限被拒绝</string>

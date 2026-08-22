@@ -503,7 +503,7 @@
     <string name="about_disclaimer">سلب مسئولیت: این برنامه فقط برای پژوهش امنیتی و یادگیری شخصی است. بالابردن امتیاز از طریق تخریب حافظهٔ کرنل ذاتاً نامطمئن است؛ با مسئولیت خودتان استفاده کنید. لطفاً قوانین محلی را رعایت کنید.</string>
 
     <string name="log_starting">شروع RootMyS24</string>
-    <string name="log_payload">بار: %1$s (اصلاح‌شده، kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">بار: %1$s (اصلاح BYH7، pipe gate v2)</string>
     <string name="log_check_shizuku">[1/5] بررسی Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku در حال اجرا نیست. لطفاً ابتدا Shizuku را راه‌اندازی کنید!</string>
     <string name="log_shizuku_denied">اجازه Shizuku رد شد</string>

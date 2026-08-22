@@ -504,7 +504,7 @@
     <string name="about_disclaimer">Avertissement : cette application est réservée à la recherche en sécurité et à l\'apprentissage personnel. L\'élévation de privilèges par corruption de la mémoire du noyau est par nature incertaine ; utilisez-la à vos propres risques. Veuillez respecter les lois locales.</string>
 
     <string name="log_starting">Démarrage de RootMyS24</string>
-    <string name="log_payload">Payload : %1$s (fixe, kmalloc_caches 0x176cbb8)</string>
+    <string name="log_payload">Payload : %1$s (BYH7 fix, pipe gate v2)</string>
     <string name="log_check_shizuku">[1/5] Vérification de Shizuku...</string>
     <string name="log_shizuku_not_running">Shizuku n\'est pas en cours d\'exécution. Veuillez d\'abord démarrer Shizuku !</string>
     <string name="log_shizuku_denied">Autorisation Shizuku refusée</string>
