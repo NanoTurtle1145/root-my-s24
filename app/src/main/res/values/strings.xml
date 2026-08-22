@@ -545,6 +545,8 @@
     <string name="notification_adb_pairing_success_connected_text">Paired and connected ✓</string>
     <string name="notification_adb_pairing_failed_title">Pairing failed</string>
     <string name="notification_adb_pairing_code_wrong">Wrong pairing code or code expired</string>
+    <string name="notification_adb_pairing_no_permission">Enable notification permission for this app in System Settings, then try again</string>
+    <string name="log_adb_key_not_ready">Key not initialized — select the authorization method first</string>
     <string name="rootflow_log_title">Run log</string>
     <string name="rootflow_brief">Brief</string>
     <string name="rootflow_detail">Detail</string>

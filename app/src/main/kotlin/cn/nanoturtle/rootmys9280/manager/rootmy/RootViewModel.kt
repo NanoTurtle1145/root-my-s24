@@ -296,15 +296,18 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * 弹出通知让用户输入 6 位配对码（RemoteInput），
      * 配对成功后自动连接。无需手动输入 IP/端口。
      * 由 AuthCard 的「通知配对」按钮调用。
+     * @return null=已开始；非 null=失败原因（如通知权限未开启）
      */
-    fun startAdbPairingNotification(context: android.content.Context) {
-        if (AdbPairingFlow.isSearching()) return
+    fun startAdbPairingNotification(context: android.content.Context): String? {
+        if (AdbPairingFlow.isSearching()) return null
         if (AdbWirelessController.getAdbKey() == null) {
-            appendLog("✘ 密钥未初始化，请先选择授权方式")
-            return
+            return app.getString(R.string.log_adb_key_not_ready)
         }
-        AdbPairingFlow.startSearch(context)
-        appendLog("ℹ " + app.getString(R.string.log_adb_pair_notify_started))
+        val err = AdbPairingFlow.startSearch(context)
+        if (err == null) {
+            appendLog("ℹ " + app.getString(R.string.log_adb_pair_notify_started))
+        }
+        return err
     }
 
     /**

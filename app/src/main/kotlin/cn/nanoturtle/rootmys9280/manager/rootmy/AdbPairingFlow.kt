@@ -60,10 +60,16 @@ object AdbPairingFlow {
      * 开始通知配对流程：创建通知渠道 → mDNS 搜索配对端口 → 发通知。
      * 由 AuthCard 的「通知配对」按钮触发。
      * 无线调试的 mDNS 服务是 Android 11+（API 30）功能，旧系统回退手动配对。
+     * @return null=已开始；非 null=失败原因（如通知权限未开启）
      */
-    fun startSearch(context: Context) {
-        if (searching) return
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
+    fun startSearch(context: Context): String? {
+        if (searching) return null
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return "Android 11+ required"
+        // Android 13+：POST_NOTIFICATIONS 未授予时 notify() 会静默丢弃，
+        // 必须显式检查并引导用户去系统设置开启。
+        if (Build.VERSION.SDK_INT >= 33 && !NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+            return context.getString(R.string.notification_adb_pairing_no_permission)
+        }
         searching = true
         paired = false
         pairPort = -1
@@ -79,6 +85,7 @@ object AdbPairingFlow {
             notifyInputCode(context, port)
         }
         mdnsPair?.start()
+        return null
     }
 
     /** 通知配对是否可用（Android 11+）。 */
@@ -182,8 +189,8 @@ object AdbPairingFlow {
                 .setOngoing(true)
                 .build()
             NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
-        } catch (_: Exception) {
-            // 通知可能因权限不足静默失败
+        } catch (e: Throwable) {
+            Log.w(TAG, "notifySearching failed", e)
         }
     }
 
@@ -215,7 +222,9 @@ object AdbPairingFlow {
                 .setOngoing(true)
                 .build()
             NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
-        } catch (_: Exception) { }
+        } catch (e: Throwable) {
+            Log.w(TAG, "notifyInputCode failed", e)
+        }
     }
 
     private fun notifyWorking(context: Context) {
@@ -227,7 +236,9 @@ object AdbPairingFlow {
                 .setOngoing(true)
                 .build()
             NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
-        } catch (_: Exception) { }
+        } catch (e: Throwable) {
+            Log.w(TAG, "notifyWorking failed", e)
+        }
     }
 
     private fun notifyResult(context: Context, success: Boolean, errorText: String?) {
@@ -262,7 +273,9 @@ object AdbPairingFlow {
                 // 用完后清理
                 stopSearch(context)
             }
-        } catch (_: Exception) { }
+        } catch (e: Throwable) {
+            Log.w(TAG, "notifyResult failed", e)
+        }
     }
 
     // ---- 供外部查询 ----

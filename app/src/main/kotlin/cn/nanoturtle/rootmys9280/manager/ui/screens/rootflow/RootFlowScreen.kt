@@ -1,5 +1,8 @@
 package cn.nanoturtle.rootmys9280.manager.ui.screens.rootflow
 
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,6 +40,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
@@ -357,7 +361,18 @@ private fun AuthCard(
     var connecting by remember { mutableStateOf(false) }
     var pairing by remember { mutableStateOf(false) }
     var paired by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf<String?>(null) }
+    var pairError by remember { mutableStateOf<String?>(null) }
+    // Android 13+ 通知权限：拒绝后再次点击会直接进系统设置
+    val requestNotificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            val err = vm.startAdbPairingNotification(context)
+            if (err != null) pairError = err
+        } else {
+            pairError = context.getString(R.string.notification_adb_pairing_no_permission)
+        }
+    }
 
     Card(modifier = modifier.padding(top = 8.dp).fillMaxWidth()) {
         Column(Modifier.padding(horizontal = 16.dp)) {
@@ -380,14 +395,14 @@ private fun AuthCard(
                         .weight(1f)
                         .clickable(enabled = !state.busy) {
                             vm.setAuthMethod(RootViewModel.AuthMethod.SHIZUKU)
-                            error = null
+                            pairError = null
                         },
                 )
                 androidx.compose.material3.RadioButton(
                     selected = method == RootViewModel.AuthMethod.SHIZUKU,
                     onClick = {
                         vm.setAuthMethod(RootViewModel.AuthMethod.SHIZUKU)
-                        error = null
+                        pairError = null
                     },
                     enabled = !state.busy,
                 )
@@ -403,14 +418,14 @@ private fun AuthCard(
                         .weight(1f)
                         .clickable(enabled = !state.busy) {
                             vm.setAuthMethod(RootViewModel.AuthMethod.ADB_WIRELESS)
-                            error = null
+                            pairError = null
                         },
                 )
                 androidx.compose.material3.RadioButton(
                     selected = method == RootViewModel.AuthMethod.ADB_WIRELESS,
                     onClick = {
                         vm.setAuthMethod(RootViewModel.AuthMethod.ADB_WIRELESS)
-                        error = null
+                        pairError = null
                     },
                     enabled = !state.busy,
                 )
@@ -448,8 +463,18 @@ private fun AuthCard(
                             )
                             androidx.compose.material3.Button(
                                 onClick = {
-                                    vm.startAdbPairingNotification(context)
-                                    error = null
+                                    pairError = null
+                                    // Android 13+ 先请求通知权限，授权后再启动配对
+                                    val granted = Build.VERSION.SDK_INT < 33 ||
+                                        NotificationManagerCompat.from(context).areNotificationsEnabled()
+                                    if (granted) {
+                                        val err = vm.startAdbPairingNotification(context)
+                                        if (err != null) pairError = err
+                                    } else {
+                                        requestNotificationPermissionLauncher.launch(
+                                            android.Manifest.permission.POST_NOTIFICATIONS
+                                        )
+                                    }
                                 },
                                 enabled = !connecting && !pairing && !AdbPairingFlow.isSearching(),
                             ) {
@@ -503,12 +528,12 @@ private fun AuthCard(
                             onClick = {
                                 scope.launch {
                                     pairing = true
-                                    error = null
+                                    pairError = null
                                     val result = vm.pairAdbWireless(host, pairPort, pairCode)
                                     if (result == null) {
                                         paired = true
                                     } else {
-                                        error = result
+                                        pairError = result
                                     }
                                     pairing = false
                                 }
@@ -547,8 +572,8 @@ private fun AuthCard(
                             onClick = {
                                 scope.launch {
                                     connecting = true
-                                    error = null
-                                    error = vm.connectAdbWireless(host, port)
+                                    pairError = null
+                                    pairError = vm.connectAdbWireless(host, port)
                                     connecting = false
                                 }
                             },
@@ -565,16 +590,16 @@ private fun AuthCard(
                     TextButton(
                         onClick = {
                             vm.disconnectAdbWireless()
-                            error = null
+                            pairError = null
                         },
                         enabled = !state.busy,
                     ) {
                         Text(stringResource(R.string.rootflow_auth_adb_disconnect))
                     }
                 }
-                if (error != null) {
+                if (pairError != null) {
                     Text(
-                        text = error.orEmpty(),
+                        text = pairError.orEmpty(),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(top = 4.dp),

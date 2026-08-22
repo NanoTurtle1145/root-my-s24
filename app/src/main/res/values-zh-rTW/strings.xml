@@ -486,6 +486,8 @@
     <string name="notification_adb_pairing_success_connected_text">配對並連線成功 ✓</string>
     <string name="notification_adb_pairing_failed_title">配對失敗</string>
     <string name="notification_adb_pairing_code_wrong">配對碼錯誤或已過期</string>
+    <string name="notification_adb_pairing_no_permission">請在系統設定中為本應用程式開啟通知權限後重試</string>
+    <string name="log_adb_key_not_ready">金鑰未初始化，請先選擇授權方式</string>
     <string name="rootflow_log_title">執行日誌</string>
     <string name="rootflow_brief">簡潔</string>
     <string name="rootflow_detail">詳細</string>
