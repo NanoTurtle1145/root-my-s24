@@ -451,6 +451,8 @@
     <string name="settings_project_home_summary">Código-fonte, problemas e notas de uso</string>
     <string name="settings_version">Versão v%1$s (%2$d)</string>
     <string name="rootflow_detail_fallback">Desbloqueio root do S24 series · sem flash, sem ativar o KNOX</string>
+    <string name="rootflow_firmware_change">Change</string>
+    <string name="rootflow_firmware_pending">Pending</string>
     <string name="rootflow_start">Iniciar Root</string>
     <string name="rootflow_running">Executando...</string>
     <string name="rootflow_done">root concluído</string>

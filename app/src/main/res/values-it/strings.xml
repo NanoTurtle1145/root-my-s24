@@ -451,6 +451,8 @@
     <string name="settings_project_home_summary">Codice sorgente, problemi e note d\'uso</string>
     <string name="settings_version">Versione v%1$s (%2$d)</string>
     <string name="rootflow_detail_fallback">S24 series unlock root · senza flashing, senza attivare KNOX</string>
+    <string name="rootflow_firmware_change">Change</string>
+    <string name="rootflow_firmware_pending">Pending</string>
     <string name="rootflow_start">Avvia Root</string>
     <string name="rootflow_running">In esecuzione…</string>
     <string name="rootflow_done">root completato</string>

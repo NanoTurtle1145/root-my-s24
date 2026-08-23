@@ -440,6 +440,8 @@
     <string name="settings_project_home_summary">Mã nguồn, vấn đề và ghi chú sử dụng</string>
     <string name="settings_version">Phiên bản v%1$s (%2$d)</string>
     <string name="rootflow_detail_fallback">Mở khóa root S24 series · không flash, không kích hoạt KNOX</string>
+    <string name="rootflow_firmware_change">Change</string>
+    <string name="rootflow_firmware_pending">Pending</string>
     <string name="rootflow_start">Bắt đầu Root</string>
     <string name="rootflow_running">Đang chạy...</string>
     <string name="rootflow_done">root hoàn tất</string>

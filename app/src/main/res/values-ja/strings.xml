@@ -431,6 +431,8 @@
     <string name="settings_project_home_summary">ソースコード、問題、使い方のメモ</string>
     <string name="settings_version">バージョン v%1$s (%2$d)</string>
     <string name="rootflow_detail_fallback">S24 series unlock root · フラッシュ不要、KNOX はトリップしません</string>
+    <string name="rootflow_firmware_change">Change</string>
+    <string name="rootflow_firmware_pending">Pending</string>
     <string name="rootflow_start">Root を開始</string>
     <string name="rootflow_running">実行中...</string>
     <string name="rootflow_done">root 完了</string>

@@ -495,6 +495,8 @@
     <string name="settings_project_home_summary">الكود المصدري والمشكلات وملاحظات الاستخدام</string>
     <string name="settings_version">الإصدار v%1$s (%2$d)</string>
     <string name="rootflow_detail_fallback">فتح قفل S24 series root · بدون وميض وبدون تفعيل KNOX</string>
+    <string name="rootflow_firmware_change">Change</string>
+    <string name="rootflow_firmware_pending">Pending</string>
     <string name="rootflow_start">بدء الروت</string>
     <string name="rootflow_running">جارٍ التشغيل...</string>
     <string name="rootflow_done">اكتمل الروت</string>

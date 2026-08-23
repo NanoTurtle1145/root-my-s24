@@ -96,53 +96,71 @@ private fun FirmwareSelectContent(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 )
             }
-            item {
-                Card(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth(),
-                ) {
-                    Column(Modifier.padding(vertical = 8.dp)) {
-                        RootViewModel.FirmwareVersion.entries.forEach { version ->
-                            val selected = firmwareVersion == version
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        vm.firmwareVersion = version
-                                        onBack()
-                                    }
-                                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                RadioButton(
-                                    selected = selected,
-                                    onClick = {
-                                        vm.firmwareVersion = version
-                                        onBack()
-                                    },
-                                )
-                                Spacer(Modifier.width(12.dp))
-                                Column(Modifier.weight(1f)) {
-                                    Text(
-                                        text = version.label,
-                                        style = MaterialTheme.typography.bodyLarge,
+            // 按地区分组展示：国行 / 港版 / 台版（预留）
+            RootViewModel.Region.entries.forEach { region ->
+                val versions = RootViewModel.FirmwareVersion.entries.filter { it.region == region }
+                if (versions.isEmpty()) return@forEach
+                item {
+                    Text(
+                        text = region.label,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    )
+                }
+                item {
+                    Card(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth(),
+                    ) {
+                        Column(Modifier.padding(vertical = 8.dp)) {
+                            versions.forEach { version ->
+                                val selected = firmwareVersion == version
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable(enabled = version.enabled) {
+                                            vm.firmwareVersion = version
+                                            onBack()
+                                        }
+                                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    RadioButton(
+                                        selected = selected,
+                                        onClick = {
+                                            if (version.enabled) {
+                                                vm.firmwareVersion = version
+                                                onBack()
+                                            }
+                                        },
+                                        enabled = version.enabled,
                                     )
+                                    Spacer(Modifier.width(12.dp))
+                                    Column(Modifier.weight(1f)) {
+                                        Text(
+                                            text = version.label,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                        )
+                                        Text(
+                                            text = stringResource(
+                                                R.string.rootflow_firmware_range,
+                                                version.range,
+                                            ),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    }
+                                    Spacer(Modifier.width(8.dp))
                                     Text(
-                                        text = stringResource(
-                                            R.string.rootflow_firmware_range,
-                                            version.range,
-                                        ),
-                                        style = MaterialTheme.typography.bodySmall,
+                                        text = version.assetName.ifEmpty {
+                                            stringResource(R.string.rootflow_firmware_pending)
+                                        },
+                                        style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     )
                                 }
-                                Spacer(Modifier.width(8.dp))
-                                Text(
-                                    text = version.assetName,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
                             }
                         }
                     }

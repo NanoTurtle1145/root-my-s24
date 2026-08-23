@@ -231,7 +231,7 @@ private fun RootFlowContent(
                         )
                         Column(Modifier.weight(1f)) {
                             Text(
-                                text = selectedVersion.label,
+                                text = "${selectedVersion.region.label} · ${selectedVersion.label}",
                                 style = MaterialTheme.typography.bodyLarge,
                             )
                             Text(

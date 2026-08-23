@@ -441,6 +441,8 @@
     <string name="settings_project_home_summary">소스, 이슈 및 사용 방법</string>
     <string name="settings_version">버전 v%1$s (%2$d)</string>
     <string name="rootflow_detail_fallback">S24 series unlock root · 플래싱 없음, KNOX 트립 없음</string>
+    <string name="rootflow_firmware_change">Change</string>
+    <string name="rootflow_firmware_pending">Pending</string>
     <string name="rootflow_start">Root 시작</string>
     <string name="rootflow_running">실행 중...</string>
     <string name="rootflow_done">root 완료</string>

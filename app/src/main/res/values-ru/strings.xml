@@ -457,6 +457,8 @@
     <string name="settings_project_home_summary">Исходный код, проблемы и заметки по использованию</string>
     <string name="settings_version">Версия v%1$s (%2$d)</string>
     <string name="rootflow_detail_fallback">S24 series unlock root · без прошивки, без срабатывания KNOX</string>
+    <string name="rootflow_firmware_change">Change</string>
+    <string name="rootflow_firmware_pending">Pending</string>
     <string name="rootflow_start">Начать Root</string>
     <string name="rootflow_running">Выполняется...</string>
     <string name="rootflow_done">root завершён</string>
