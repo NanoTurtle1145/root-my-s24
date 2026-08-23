@@ -80,9 +80,8 @@ object ShizukuController : ShellExecutor {
     override fun capture(cmd: Array<String>): String {
         val process = exec(cmd)
         return try {
-            val stdout = process.inputStream.bufferedReader().use { it.readText() }
-            val stderr = process.errorStream.bufferedReader().use { it.readText() }
-            if (process.waitFor() == 0) stdout + stderr else ""
+            val out = readAllStreams(process)
+            if (process.waitFor() == 0) out else ""
         } finally {
             if (process.isAlive) process.destroy()
         }
@@ -92,12 +91,43 @@ object ShizukuController : ShellExecutor {
     override fun shell(cmd: String): Pair<Int, String> {
         val process = exec(arrayOf("/system/bin/sh", "-c", cmd))
         return try {
-            val out = process.inputStream.bufferedReader().use { it.readText() } +
-                process.errorStream.bufferedReader().use { it.readText() }
+            val out = readAllStreams(process)
             process.waitFor() to out
         } finally {
             if (process.isAlive) process.destroy()
         }
+    }
+
+    /**
+     * 并发读取 stdout + stderr，避免单流阻塞死锁：
+     * 若命令先写满 stderr 管道缓冲（64KB）再写 stdout，顺序读取会在
+     * stdout 的 readText() 处永久阻塞（stderr 无人消费 → 进程不退出）。
+     * 两个线程同时读两条流可彻底规避。
+     */
+    private fun readAllStreams(process: Process): String {
+        val stdout = StringBuilder()
+        val stderr = StringBuilder()
+        val t1 = Thread {
+            try {
+                process.inputStream.bufferedReader().use { stdout.append(it.readText()) }
+            } catch (_: Throwable) {
+            }
+        }
+        val t2 = Thread {
+            try {
+                process.errorStream.bufferedReader().use { stderr.append(it.readText()) }
+            } catch (_: Throwable) {
+            }
+        }
+        t1.start()
+        t2.start()
+        try {
+            t1.join()
+            t2.join()
+        } catch (_: InterruptedException) {
+            Thread.currentThread().interrupt()
+        }
+        return stdout.toString() + stderr.toString()
     }
 
     override fun writeFile(remotePath: String, mode: String, source: InputStream) {
