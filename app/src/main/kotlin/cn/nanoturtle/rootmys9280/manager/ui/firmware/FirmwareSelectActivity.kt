@@ -139,10 +139,21 @@ private fun FirmwareSelectContent(
                                     )
                                     Spacer(Modifier.width(12.dp))
                                     Column(Modifier.weight(1f)) {
+                                        // 系统版本主标题
                                         Text(
                                             text = version.label,
                                             style = MaterialTheme.typography.bodyLarge,
                                         )
+                                        // 适配机型
+                                        Text(
+                                            text = stringResource(
+                                                R.string.rootflow_firmware_device,
+                                                version.device,
+                                            ),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                        // 适配系统范围
                                         Text(
                                             text = stringResource(
                                                 R.string.rootflow_firmware_range,

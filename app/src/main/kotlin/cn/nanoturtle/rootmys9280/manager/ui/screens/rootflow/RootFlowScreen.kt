@@ -236,6 +236,14 @@ private fun RootFlowContent(
                             )
                             Text(
                                 text = stringResource(
+                                    R.string.rootflow_firmware_device,
+                                    selectedVersion.device,
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Text(
+                                text = stringResource(
                                     R.string.rootflow_firmware_range,
                                     selectedVersion.range,
                                 ),

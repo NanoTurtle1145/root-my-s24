@@ -57,20 +57,24 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     /** 目标系统版本（决定使用哪份 exploit 载荷）。按地区分组：国行 / 港版台版。 */
     enum class FirmwareVersion(
         val assetName: String,
+        /** 系统版本（如 One UI 8.5） */
         val label: String,
+        /** 适配机型（如 SM-S9280 国行） */
+        val device: String,
+        /** 适配系统范围（如 DZE2–DZG1） */
         val range: String,
         val region: Region,
         val enabled: Boolean = true,
     ) {
         // —— 国行 ——
-        DZF2("cve-2026-43499", "One UI 8.5", "DZE2–DZG1", Region.CHINA),
-        BYH7("cve-2026-43499-byh7", "One UI 7", "BYH7", Region.CHINA),
+        DZF2("cve-2026-43499", "One UI 8.5", "SM-S9280/S9260/S9210 国行", "DZE2–DZG1", Region.CHINA),
+        BYH7("cve-2026-43499-byh7", "One UI 7", "SM-S9210 国行", "BYH7", Region.CHINA),
         // —— 国行 Z Fold6 —— 与 S24 同 GKI 构建号，已验证共用 DZF2 载荷成功
-        ZFOLD6("cve-2026-43499", "Z Fold6", "国行 Z Fold6（共用 DZF2 载荷）", Region.CHINA),
+        ZFOLD6("cve-2026-43499", "One UI 8.5", "SM-F9580 国行 Z Fold6", "Z Fold6（共用 DZF2 载荷）", Region.CHINA),
         // —— 港版/台版 —— 港台同构建号可共用载荷，台版直接选用港版条目
         // （港版 DZE2 kmalloc_caches=0x176c6f8 与国行 0x176cbb8 不同，不能用 DZF2 载荷）
-        CZA1("cve-2026-43499-cza1", "One UI 8.0", "CZA1", Region.HONGKONG_TAIWAN),
-        DZE2("cve-2026-43499-dze2", "One UI 8.5", "DZE2–DZG1", Region.HONGKONG_TAIWAN),
+        CZA1("cve-2026-43499-cza1", "One UI 8.0", "SM-S9280 港版/台版", "CZA1", Region.HONGKONG_TAIWAN),
+        DZE2("cve-2026-43499-dze2", "One UI 8.5", "SM-S9280 港版/台版", "DZE2–DZG1", Region.HONGKONG_TAIWAN),
     }
 
     /** 地区分组：国行 / 港版台版（同构建号共用载荷） */

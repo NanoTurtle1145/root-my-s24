@@ -452,6 +452,9 @@
     <string name="settings_version">Version v%1$s (%2$d)</string>
     <string name="rootflow_detail_fallback">S24 series unlock root · sans flash, sans déclenchement de KNOX</string>
     <string name="rootflow_firmware_change">Change</string>
+    <string name="rootflow_firmware_label">System version</string>
+    <string name="rootflow_firmware_range">Firmware range: %1$s</string>
+    <string name="rootflow_firmware_device">Supported devices: %1$s</string>
     <string name="rootflow_firmware_pending">Pending</string>
     <string name="rootflow_start">Démarrer Root</string>
     <string name="rootflow_running">En cours…</string>

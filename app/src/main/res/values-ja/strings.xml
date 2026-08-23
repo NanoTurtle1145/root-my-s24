@@ -431,6 +431,9 @@
     <string name="settings_version">バージョン v%1$s (%2$d)</string>
     <string name="rootflow_detail_fallback">S24 series unlock root · フラッシュ不要、KNOX はトリップしません</string>
     <string name="rootflow_firmware_change">Change</string>
+    <string name="rootflow_firmware_label">System version</string>
+    <string name="rootflow_firmware_range">Firmware range: %1$s</string>
+    <string name="rootflow_firmware_device">Supported devices: %1$s</string>
     <string name="rootflow_firmware_pending">Pending</string>
     <string name="rootflow_start">Root を開始</string>
     <string name="rootflow_running">実行中...</string>
