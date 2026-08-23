@@ -122,3 +122,7 @@ v2.5.1 (2026-08-22)
   + 无线调试配对码授权（TLS + SPAKE2 + libadb.so，免弹窗）
   + BYH7 pipe gate v2 载荷（kmalloc_caches 逐槽位 + 64 页 × 16 slabs 扫描）
 ```
+
+---
+
+> 返回 [文档中心](README.md) · [根 README](../README.md)

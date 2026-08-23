@@ -94,3 +94,7 @@ Samsung 内核有 KDP/RKP/DEFEX 防御。普通 GKI 的 kernelsu.ko 在国行上
 项目已开源（GPL-3.0）：[github.com/nanoturtle1145/root-my-s9280](https://github.com/nanoturtle1145/root-my-s9280)
 
 > 免责声明：本文及项目仅用于安全研究与自有设备维护，使用内核漏洞存在系统崩溃、数据丢失风险，请勿用于非法用途。
+
+---
+
+> 返回 [文档中心](README.md) · [根 README](../README.md)

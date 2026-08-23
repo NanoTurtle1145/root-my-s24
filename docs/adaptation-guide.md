@@ -290,3 +290,7 @@ adb shell uiautomator dump /data/local/tmp/ui.xml && cat /data/local/tmp/ui.xml
 符号定标靠 vmlinux-to-elf + 逐项对比；环境排坑靠"先取证（last_kmsg/压测）、
 再定位（残留进程/并发对象）、后修复（重查/回滚）"。这两件事做扎实，
 剩下的就是按日志阶段地图把链路走通。
+
+---
+
+> 返回 [文档中心](README.md) · [根 README](../README.md)

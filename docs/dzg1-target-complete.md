@@ -57,3 +57,7 @@ perl generate_p0_fingerprint.pl devices_ports/dzg1_unpacked/kernel 0x1f0000 \
 - 目标：国行 S9280ZCS6DZG1 设备
 - 预期：boot_id 泄漏路径修正后成功率高于 DZF2 载荷（此前 DZG1 上 DZF2 载荷概率性失败）
 - 注：港版 S9280ZHS6DZG1（构建 33419968）符号未知，需单独提取内核定标
+
+---
+
+> 返回 [文档中心](README.md) · [根 README](../README.md)

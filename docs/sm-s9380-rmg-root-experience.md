@@ -127,3 +127,7 @@ PSELECT_DELAY_USEC           = 20000 基础延迟
 
 - BuSung-dev / Root-My-Galaxy —— exploit 原作者与 payload 仓库
 - NebuSec / CyberMeowfia —— CVE-2026-43499 漏洞发现
+
+---
+
+> 返回 [文档中心](README.md) · [根 README](../README.md)

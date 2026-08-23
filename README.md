@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-2.5.5-1E88E5?style=flat-square" alt="Version 2.5.5"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-2.5.6-1E88E5?style=flat-square" alt="Version 2.5.6"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24"><img src="https://img.shields.io/badge/platform-Android-1E88E5?style=flat-square" alt="Android"></a>
 </p>
@@ -33,7 +33,7 @@
 |---|---|---|---|
 | SM-S9280（国行 DZF2） | S9280ZCS6DZF2 | 6.1.145 | 已实测成功（基线） |
 | SM-S9280（港版 DZE2） | S9280ZHS6DZE2 | 6.1.145 | 已实测成功 |
-| SM-S9280（国行 DZG1） | S9280ZCS6DZG1 | 6.1.145 | 已定标 |
+| SM-S9280（国行 DZG1） | S9280ZCS6DZG1 | 6.1.145 | 并入 DZF2 载荷（v2.5.6 起） |
 | SM-S9280（港版 CZA1） | S9280ZHS4CZA1 | 6.1.128 | 已定标 |
 | SM-S9210（国行 BYH7，One UI 7） | S9210ZCU4BYH7 | 6.1.99 | 已定标，待真机验证 |
 
@@ -44,7 +44,7 @@
 1. 安装 App，授权方式（v2.5.5 起无线调试为实验性开关，默认关闭）：
    - **Shizuku**（默认）：安装并启动 Shizuku（无线/有线 ADB 授权）
    - **无线调试**（实验性）：设置页开启「无线调试授权」后，主页支持通知配对 / 配对码 / 直连
-2. 选择目标固件版本，点击「开始 Root」（建议熄屏运行，降低内核竞态概率）
+2. 选择目标固件版本（v2.5.6 起按地区分组：国行 / 港版），点击「开始 Root」（建议熄屏运行，降低内核竞态概率）
 3. 等待 exploit 完成，自动执行 KernelSU late-load
 4. 安装 KernelSU Manager（v3.2.5），强制停止后重开，显示「工作中 <LKM> [越狱模式]」
 
@@ -58,8 +58,9 @@
 
 ### 入门与使用
 
-- [docs/release-v2.5.5.md](docs/release-v2.5.5.md) —— 最新发布说明（下载 / SHA256 / 系统要求 / 已知问题 / 更新日志）
+- [docs/release-v2.5.6.md](docs/release-v2.5.6.md) —— 最新发布说明（下载 / SHA256 / 系统要求 / 已知问题 / 更新日志）
 - [docs/auth-plan.md](docs/auth-plan.md) —— 授权方案规划（Shizuku / 无线调试各方案状态）
+- [docs/release-v2.5.5.md](docs/release-v2.5.5.md) —— v2.5.5 发布说明（无线调试收敛为实验性开关）
 - [docs/release-v2.2.md](docs/release-v2.2.md) —— v2.2 发布说明（历史）
 
 ### 技术原理

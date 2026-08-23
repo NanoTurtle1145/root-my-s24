@@ -116,3 +116,7 @@ ANDROID_NDK_HOME=/home/nt/root_research/06_工具链/android-ndk-r29 \
 | 结构体差异 | 构建号与 S928U1 相同，task_struct/pipe_buffer 布局应与 S928U1 一致，风险低（已验证） |
 | 概率性 | exploit 本身概率性，失败/重启属正常现象 |
 | `SLIDE_NFULNL_LOGGER` | DZF2 照抄 S928U1 值（0x16a61b8）仍有偏差仍成功；DZE2 用实测语义值 0x16a61e6，更精确 |
+
+---
+
+> 返回 [文档中心](README.md) · [根 README](../README.md)

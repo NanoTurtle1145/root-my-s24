@@ -60,3 +60,7 @@
   - [VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md)（漏洞原理剖析）
   - [RUN_LOG_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/RUN_LOG_ANALYSIS.md)（成功/失败日志判读）
 - 漏洞研究源：[CVE-2026-43499](https://github.com/IonStack/CVE-2026-43499)（IonStack / NebuSec）
+
+---
+
+> 返回 [文档中心](README.md) · [根 README](../README.md)

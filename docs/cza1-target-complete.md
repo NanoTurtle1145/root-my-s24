@@ -136,3 +136,7 @@ ANDROID_NDK_HOME=/home/nt/root_research/06_工具链/android-ndk-r29 \
 | 结构体差异 | BTF 实测与 DZF2 一致，风险低 |
 | One UI 8.0 差异 | App 域 cgroup/缓存归属可能有差异（参考 SM-S9380 经验），真机需走 App 完整验证 |
 | 概率性 | exploit 本身概率性，失败/重启属正常现象 |
+
+---
+
+> 返回 [文档中心](README.md) · [根 README](../README.md)

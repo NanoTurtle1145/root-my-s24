@@ -79,3 +79,7 @@
 3. **worklist 竞态**：注入 workqueue 时显示驱动并发入队 → 孤儿 work → cancel_work_sync 时 `__list_del_entry_valid` BUG → panic（已用"注入前重查"修复）
 4. **KNOX 完好的判断依据**：`ro.boot.warranty_bit=0` + `verifiedbootstate=green`（官方固件刷机不熔断）
 5. 普通 GKI kernelsu.ko 可在国行加载（version 32525），kdp 变体为备选
+
+---
+
+> 返回 [文档中心](README.md) · [根 README](../README.md)

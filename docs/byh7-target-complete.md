@@ -166,3 +166,7 @@ DZF2:  __event_sched_blocked_reason @ 0x1ff560, 段起始 0x1ff2b0 → 同样 10
 | 真机验证 | 阶段 E 需 One UI 7 设备。设备当前是 DZF2 (rev 6)，无法降级刷 One UI 7 |
 | 概率性 | exploit 本身概率性，成功率随尝试累加，失败可能 panic/重启（正常现象） |
 | 结构体差异 | 6.1.99 vs 6.1.145 若导致某阶段失败，按 ADAPTATION_GUIDE 阶段日志定位并核对 BTF |
+
+---
+
+> 返回 [文档中心](README.md) · [根 README](../README.md)
