@@ -2,7 +2,6 @@
 <resources>
 
     <string name="nav_home">主畫面</string>
-    <string name="nav_modules">模組</string>
     <string name="nav_logs">日誌</string>
 
     <string name="panels_done">完成</string>
