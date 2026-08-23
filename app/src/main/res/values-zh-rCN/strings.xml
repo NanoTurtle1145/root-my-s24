@@ -547,6 +547,7 @@
     <string name="log_diag">诊断: pipe-max-size=%1$s pipe-user-pages=%2$s</string>
     <string name="log_diag_version">诊断: /proc/version=%1$s</string>
     <string name="log_pipe_warn">pipe-max-size (%1$dB) &lt; 128KB (exploit 需要 32 槽=128KB)，F_SETPIPE_SZ 会 EPERM</string>
+    <string name="log_power_save_on">⚠ 省电模式已开启：在线核数可能低于 8，futex 哈希表大小错位会导致 exploit 必然失败，请先关闭省电模式</string>
     <string name="log_cleanup">[2.6/5] 清理残留 exploit 进程与临时文件 ...</string>
     <string name="log_cleanup_done">环境清理完成 (exit=%1$d)</string>
     <string name="log_trigger">[3/5] 触发 CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>

@@ -463,6 +463,18 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             }
         }
 
+        // 2.5.1 省电模式检测：省电模式会热插拔关闭部分核心（在线核数 < possible 核数），
+        //     用户空间 futex_hashsize = 在线核数×256 与内核 roundup_pow2(possible×256)
+        //     错位（如 7 核 → 1792 ≠ 2048），KernelSnitch mm 泄漏必失败。
+        //     （v2.5.4 载荷无 roundup 修复，此检测对未修复载荷尤其重要）
+        val powerSave = shellExecutor.capture(
+            arrayOf("/system/bin/sh", "-c",
+                "dumpsys power 2>/dev/null | grep -oE 'mPowerSaveMode=[a-z]+' | head -1 | cut -d= -f2")
+        ).trim().lowercase()
+        if (powerSave == "true") {
+            appendLog("⚠ " + app.getString(R.string.log_power_save_on))
+        }
+
         // 2.6 清理残留：上次失败的 exploit 子进程/守护进程会残留并污染 uid 2000 的
         //     pipe_bufs 配额，导致 F_SETPIPE_SZ EPERM（16/16 失败根因之一）
         appendLog(app.getString(R.string.log_cleanup))

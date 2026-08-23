@@ -543,6 +543,7 @@
     <string name="log_diag">診斷: pipe-max-size=%1$s pipe-user-pages=%2$s</string>
     <string name="log_diag_version">診斷: /proc/version=%1$s</string>
     <string name="log_pipe_warn">pipe-max-size (%1$d B) &lt; 128KB (漏洞利用需要 32 個 slot=128KB), F_SETPIPE_SZ 將回傳 EPERM</string>
+    <string name="log_power_save_on">⚠ 省電模式已開啟：線上核心數可能低於 8，futex 雜湊表大小錯位會導致漏洞利用必然失敗，請先關閉省電模式</string>
     <string name="log_cleanup">[2.6/5] 清理殘留的漏洞利用程序與暫存檔 ...</string>
     <string name="log_cleanup_done">環境清理完成 (exit=%1$d)</string>
     <string name="log_trigger">[3/5] 觸發 CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>

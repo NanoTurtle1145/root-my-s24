@@ -601,6 +601,7 @@
     <string name="log_diag">Diagnostic: pipe-max-size=%1$s pipe-user-pages=%2$s</string>
     <string name="log_diag_version">Diagnostic: /proc/version=%1$s</string>
     <string name="log_pipe_warn">pipe-max-size (%1$d B) &lt; 128KB (exploit needs 32 slots=128KB), F_SETPIPE_SZ will EPERM</string>
+    <string name="log_power_save_on">⚠ Power saving mode is ON: online cores may drop below 8, futex hash table size will mismatch and the exploit WILL fail. Please turn it off first.</string>
     <string name="log_cleanup">[2.6/5] Cleaning residual exploit processes and temp files ...</string>
     <string name="log_cleanup_done">Environment cleanup done (exit=%1$d)</string>
     <string name="log_trigger">[3/5] Triggering CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
