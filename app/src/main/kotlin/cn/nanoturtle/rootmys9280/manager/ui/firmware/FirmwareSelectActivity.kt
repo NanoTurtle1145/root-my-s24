@@ -96,7 +96,7 @@ private fun FirmwareSelectContent(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 )
             }
-            // 按地区分组展示：国行 / 港版 / 台版（预留）
+            // 按地区分组展示：国行 / 港版台版
             RootViewModel.Region.entries.forEach { region ->
                 val versions = RootViewModel.FirmwareVersion.entries.filter { it.region == region }
                 if (versions.isEmpty()) return@forEach

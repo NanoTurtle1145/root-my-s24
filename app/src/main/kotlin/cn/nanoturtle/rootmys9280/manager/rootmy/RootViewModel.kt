@@ -31,8 +31,7 @@ import java.io.OutputStreamWriter
  *
  * 目标：SM-S24 系列（S9210/S9260/S9280）
  *  - 国行：DZF2（覆盖 DZE2–DZG1，载荷 cve-2026-43499）/ BYH7（One UI 7，载荷 cve-2026-43499-byh7）
- *  - 港版：DZE2（范围与国行一致 DZE2–DZG1，载荷独立 cve-2026-43499-dze2）/ CZA1（One UI 8.0）
- *  - 台版：预留（待适配）
+ *  - 港版/台版：同构建号共用载荷——DZE2（范围 DZE2–DZG1，载荷 cve-2026-43499-dze2）/ CZA1（One UI 8.0）
  *  - DZG1 已禁用：DZG1 载荷真机早期无声崩溃，且与 DZF2 同构建号，直接走 DZF2 载荷
  */
 class RootViewModel(app: Application) : AndroidViewModel(app) {
@@ -54,7 +53,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 .edit().putString(KEY_DEVICE_BUILD_TAG, value).apply()
         }
 
-    /** 目标系统版本（决定使用哪份 exploit 载荷）。按地区分组：国行/港版/台版（预留）。 */
+    /** 目标系统版本（决定使用哪份 exploit 载荷）。按地区分组：国行 / 港版台版。 */
     enum class FirmwareVersion(
         val assetName: String,
         val label: String,
@@ -65,19 +64,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // —— 国行 ——
         DZF2("cve-2026-43499", "One UI 8.5", "DZE2–DZG1", Region.CHINA),
         BYH7("cve-2026-43499-byh7", "One UI 7", "BYH7", Region.CHINA),
-        // —— 港版 —— 范围与国行一致（DZE2–DZG1），载荷独立
+        // —— 港版/台版 —— 港台同构建号可共用载荷，台版直接选用港版条目
         // （港版 DZE2 kmalloc_caches=0x176c6f8 与国行 0x176cbb8 不同，不能用 DZF2 载荷）
-        CZA1("cve-2026-43499-cza1", "One UI 8.0", "CZA1", Region.HONGKONG),
-        DZE2("cve-2026-43499-dze2", "One UI 8.5", "DZE2–DZG1", Region.HONGKONG),
-        // —— 台版 —— 预留（待适配）
-        TAIWAN_PENDING("", "台版（预留）", "待适配", Region.TAIWAN, enabled = false),
+        CZA1("cve-2026-43499-cza1", "One UI 8.0", "CZA1", Region.HONGKONG_TAIWAN),
+        DZE2("cve-2026-43499-dze2", "One UI 8.5", "DZE2–DZG1", Region.HONGKONG_TAIWAN),
     }
 
-    /** 地区分组 */
+    /** 地区分组：国行 / 港版台版（同构建号共用载荷） */
     enum class Region(val label: String) {
         CHINA("国行"),
-        HONGKONG("港版"),
-        TAIWAN("台版"),
+        HONGKONG_TAIWAN("港版/台版"),
     }
 
     /** 授权方式：Shizuku（需装 Shizuku App）或无线调试（Android 11+ 直连） */
