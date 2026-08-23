@@ -5,7 +5,7 @@
 <h1 align="center">RootMyS24</h1>
 
 <p align="center">
-  免解锁 root · Samsung Galaxy S24 系列（S9210 / S9260 / S9280）<br>
+  免解锁 root · Samsung Galaxy S24 系列（S9210 / S9260 / S9280）+ 国行 Z Fold6<br>
   基于内核漏洞 <strong>CVE-2026-43499</strong> 的安全研究项目
 </p>
 
@@ -32,6 +32,7 @@
 | 机型 | 固件 | 内核 | 状态 |
 |---|---|---|---|
 | SM-S9280（国行 DZF2） | S9280ZCS6DZF2 | 6.1.145 | 已实测成功（基线） |
+| SM-F9580（国行 Z Fold6） | 共用 DZF2 载荷 | 同 GKI 构建号 | 酷安用户实测成功 |
 | SM-S9280（港版/台版 DZE2） | S9280ZHS6DZE2 | 6.1.145 | 已实测成功（港台同构建号共用载荷） |
 | SM-S9280（国行 DZG1） | S9280ZCS6DZG1 | 6.1.145 | 并入 DZF2 载荷（v2.5.6 起） |
 | SM-S9280（港版/台版 CZA1） | S9280ZHS4CZA1 | 6.1.128 | 已定标（港台共用） |

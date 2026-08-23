@@ -29,8 +29,9 @@ import java.io.OutputStreamWriter
  * 4. 等待 root 标记
  * 5. KernelSU late-load
  *
- * 目标：SM-S24 系列（S9210/S9260/S9280）
+ * 目标：SM-S24 系列（S9210/S9260/S9280）+ 国行 Z Fold6
  *  - 国行：DZF2（覆盖 DZE2–DZG1，载荷 cve-2026-43499）/ BYH7（One UI 7，载荷 cve-2026-43499-byh7）
+ *  - 国行 Z Fold6：与 S24 同 GKI 构建号，已验证共用 DZF2 载荷（cve-2026-43499）
  *  - 港版/台版：同构建号共用载荷——DZE2（范围 DZE2–DZG1，载荷 cve-2026-43499-dze2）/ CZA1（One UI 8.0）
  *  - DZG1 已禁用：DZG1 载荷真机早期无声崩溃，且与 DZF2 同构建号，直接走 DZF2 载荷
  */
@@ -64,6 +65,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // —— 国行 ——
         DZF2("cve-2026-43499", "One UI 8.5", "DZE2–DZG1", Region.CHINA),
         BYH7("cve-2026-43499-byh7", "One UI 7", "BYH7", Region.CHINA),
+        // —— 国行 Z Fold6 —— 与 S24 同 GKI 构建号，已验证共用 DZF2 载荷成功
+        ZFOLD6("cve-2026-43499", "Z Fold6", "国行 Z Fold6（共用 DZF2 载荷）", Region.CHINA),
         // —— 港版/台版 —— 港台同构建号可共用载荷，台版直接选用港版条目
         // （港版 DZE2 kmalloc_caches=0x176c6f8 与国行 0x176cbb8 不同，不能用 DZF2 载荷）
         CZA1("cve-2026-43499-cza1", "One UI 8.0", "CZA1", Region.HONGKONG_TAIWAN),
