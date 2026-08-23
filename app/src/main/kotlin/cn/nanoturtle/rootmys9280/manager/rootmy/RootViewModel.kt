@@ -30,9 +30,9 @@ import java.io.OutputStreamWriter
  * 5. KernelSU late-load
  *
  * 目标：SM-S24 系列（S9210/S9260/S9280）
- *  - One UI 8.5 / DZF2 载荷 / kernel 6.1.145（默认，适配 DZE2–DZF2，载荷 cve-2026-43499）
- *  - One UI 8.5 / DZG1 载荷 / kernel 6.1.145（DZG1 专用，修正 nfulnl_logger 偏移，载荷 cve-2026-43499-dzg1）
+ *  - One UI 8.5 / DZF2 载荷 / kernel 6.1.145（默认，适配 CZA1/DZE2–DZG1，载荷 cve-2026-43499）
  *  - One UI 7 / BYH7 / kernel 6.1.99（载荷 cve-2026-43499-byh7，e1q S9210）
+ *  - DZG1 已禁用：DZG1 载荷真机早期无声崩溃，且与 DZF2 同构建号，直接走 DZF2 载荷
  */
 class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val app: Application = app
@@ -58,7 +58,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         CZA1("cve-2026-43499-cza1", "One UI 8.0", "港版 CZA1"),
         DZE2("cve-2026-43499-dze2", "One UI 8.5", "港版 DZE2"),
         DZF2("cve-2026-43499", "One UI 8.5", "国行 DZF2"),
-        DZG1("cve-2026-43499-dzg1", "One UI 8.5", "国行 DZG1"),
+        // DZG1 已禁用：DZG1 载荷在真机上早期无声崩溃（失败: null），
+        // 且 DZG1 与 DZF2 同构建号 3254743、函数符号一致，直接用 DZF2 载荷。
         BYH7("cve-2026-43499-byh7", "One UI 7", "国行 BYH7"),
     }
 
