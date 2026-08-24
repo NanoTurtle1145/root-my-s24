@@ -446,6 +446,9 @@
     <string name="rootflow_firmware_range">適配系統範圍: %1$s</string>
     <string name="rootflow_firmware_device">適配機型: %1$s</string>
     <string name="rootflow_firmware_pending">待適配</string>
+    <string name="rootflow_firmware_search_hint">搜尋機型/系統版本/韌體</string>
+    <string name="rootflow_firmware_filter_all">全部</string>
+    <string name="rootflow_firmware_no_match">未找到匹配的韌體</string>
     <string name="rootflow_start">開始 Root</string>
     <string name="rootflow_running">執行中...</string>
     <string name="rootflow_done">root 完成</string>
