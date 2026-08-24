@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -86,6 +88,8 @@ private fun FirmwareSelectContent(
     var query by rememberSaveable { mutableStateOf("") }
     // null = 全部地区；否则只显示该地区
     var filterRegion by remember { mutableStateOf<RootViewModel.Region?>(null) }
+    // null = 全部机型系列；否则只显示该系列
+    var filterSeries by remember { mutableStateOf<RootViewModel.Series?>(null) }
 
     Scaffold(
         topBar = {
@@ -104,7 +108,7 @@ private fun FirmwareSelectContent(
                 .fillMaxSize()
                 .padding(padding),
         ) {
-            // 搜索框
+            // MD3 搜索框：全圆角药丸形
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -121,6 +125,11 @@ private fun FirmwareSelectContent(
                     }
                 },
                 singleLine = true,
+                shape = RoundedCornerShape(28.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(),
             )
@@ -144,20 +153,40 @@ private fun FirmwareSelectContent(
                     Spacer(Modifier.width(8.dp))
                 }
             }
+            // 机型系列筛选
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                FilterChip(
+                    selected = filterSeries == null,
+                    onClick = { filterSeries = null },
+                    label = { Text(stringResource(R.string.rootflow_firmware_filter_all)) },
+                )
+                Spacer(Modifier.width(8.dp))
+                RootViewModel.Series.entries.forEach { series ->
+                    FilterChip(
+                        selected = filterSeries == series,
+                        onClick = { filterSeries = if (filterSeries == series) null else series },
+                        label = { Text(series.label) },
+                    )
+                    Spacer(Modifier.width(8.dp))
+                }
+            }
             Spacer(Modifier.height(4.dp))
 
-            // 过滤逻辑：地区 + 搜索关键词（匹配机型/系统版本/固件范围/载荷名）
+            // 过滤逻辑：地区 + 机型系列 + 搜索关键词（匹配机型/系统版本/固件范围）
             // 未经测试的载荷仅在设置里启用后才显示
             val normalizedQuery = query.trim().lowercase()
             val allVersions = RootViewModel.FirmwareVersion.entries
                 .filter { untestedEnabled || it.tested }
                 .filter { filterRegion == null || it.region == filterRegion }
+                .filter { filterSeries == null || it.series == filterSeries }
                 .filter { version ->
                     normalizedQuery.isEmpty() ||
                         version.label.lowercase().contains(normalizedQuery) ||
                         version.device.lowercase().contains(normalizedQuery) ||
-                        version.range.lowercase().contains(normalizedQuery) ||
-                        version.assetName.lowercase().contains(normalizedQuery)
+                        version.range.lowercase().contains(normalizedQuery)
                 }
 
             if (allVersions.isEmpty()) {
@@ -168,19 +197,11 @@ private fun FirmwareSelectContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(16.dp),
                 )
-            } else if (normalizedQuery.isEmpty() && filterRegion == null) {
-                // 无搜索词、无地区筛选 → 按地区分组展示
+            } else if (normalizedQuery.isEmpty() && filterRegion == null && filterSeries == null) {
+                // 无搜索词、无筛选 → 按地区分组展示
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    item {
-                        Text(
-                            text = stringResource(R.string.rootflow_firmware_hint, firmwareVersion.assetName),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        )
-                    }
                     RootViewModel.Region.entries.forEach { region ->
                         val versions = allVersions.filter { it.region == region }
                         if (versions.isEmpty()) return@forEach
@@ -208,18 +229,10 @@ private fun FirmwareSelectContent(
                     }
                 }
             } else {
-                // 有搜索词或地区筛选 → 平铺展示（不再分组）
+                // 有搜索词或筛选 → 平铺展示（不再分组）
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    item {
-                        Text(
-                            text = stringResource(R.string.rootflow_firmware_hint, firmwareVersion.assetName),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        )
-                    }
                     item {
                         FirmwareVersionCard(
                             versions = allVersions,
@@ -292,14 +305,6 @@ private fun FirmwareVersionCard(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = version.assetName.ifEmpty {
-                            stringResource(R.string.rootflow_firmware_pending)
-                        },
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
                 }
             }
         }

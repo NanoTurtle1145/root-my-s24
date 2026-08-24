@@ -13,14 +13,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.BrightnessAuto
@@ -99,49 +100,59 @@ fun AppearanceSheet(
 
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         LocalDialogLocalizer.current {
-            Column(Modifier.verticalScroll(rememberScrollState()).padding(bottom = 24.dp)) {
-                SheetHeading(stringResource(R.string.appearance_theme), Icons.Rounded.Palette)
-                BrightnessSelector(
-                    selected = ThemeMode.from(themeMode),
-                    onSelect = { settings.setThemeMode(it.key) },
-                )
-
-                HorizontalDivider(Modifier.padding(vertical = 8.dp))
-
-                SheetHeading(stringResource(R.string.appearance_color), Icons.Rounded.Colorize)
-                ColorSection(
-                    dynamicColor = dynamicColor,
-                    seed = seed,
-                    dark = resolvedDark,
-                    onDynamic = settings::setDynamicColor,
-                    onSeed = settings::setSeedColor,
-                )
-                ToggleRow(
-                    title = stringResource(R.string.appearance_amoled),
-                    icon = Icons.Rounded.DarkMode,
-                    subtitle = stringResource(R.string.appearance_amoled_summary),
-                    checked = amoled,
-                    onCheckedChange = settings::setAmoledBlack,
-                )
-
-                HorizontalDivider(Modifier.padding(vertical = 8.dp))
-
-                SheetHeading(stringResource(R.string.settings_ambience), Icons.Rounded.Waves)
-                ChoiceRow {
-                    AmbienceKind.entries.forEach { kind ->
-                        FilterChip(
-                            selected = AmbienceKind.from(ambience) == kind,
-                            onClick = { settings.setHeaderAmbience(kind.key) },
-                            label = { Text(stringResource(kind.labelRes())) },
+            // LazyColumn：与 sheet 的 anchoredDraggable 手势正确协调（verticalScroll 在全屏
+            // 展开时会把顶部点击事件让给 sheet 拖拽层，导致 SegmentedButton 等控件无法点击）
+            androidx.compose.foundation.lazy.LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.92f),
+            ) {
+                item {
+                    Column(Modifier.padding(bottom = 24.dp)) {
+                        SheetHeading(stringResource(R.string.appearance_theme), Icons.Rounded.Palette)
+                        BrightnessSelector(
+                            selected = ThemeMode.from(themeMode),
+                            onSelect = { settings.setThemeMode(it.key) },
                         )
-                    }
-                }
 
-                // A host-supplied tail — LSPatch hangs its floating-navigation toggle here — so a
-                // consumer can add its own settings without the sheet knowing what they are.
-                extra?.let {
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
-                    it()
+                        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
+                        SheetHeading(stringResource(R.string.appearance_color), Icons.Rounded.Colorize)
+                        ColorSection(
+                            dynamicColor = dynamicColor,
+                            seed = seed,
+                            dark = resolvedDark,
+                            onDynamic = settings::setDynamicColor,
+                            onSeed = settings::setSeedColor,
+                        )
+                        ToggleRow(
+                            title = stringResource(R.string.appearance_amoled),
+                            icon = Icons.Rounded.DarkMode,
+                            subtitle = stringResource(R.string.appearance_amoled_summary),
+                            checked = amoled,
+                            onCheckedChange = settings::setAmoledBlack,
+                        )
+
+                        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
+                        SheetHeading(stringResource(R.string.settings_ambience), Icons.Rounded.Waves)
+                        ChoiceRow {
+                            AmbienceKind.entries.forEach { kind ->
+                                FilterChip(
+                                    selected = AmbienceKind.from(ambience) == kind,
+                                    onClick = { settings.setHeaderAmbience(kind.key) },
+                                    label = { Text(stringResource(kind.labelRes())) },
+                                )
+                            }
+                        }
+
+                        // A host-supplied tail — LSPatch hangs its floating-navigation toggle here — so a
+                        // consumer can add its own settings without the sheet knowing what they are.
+                        extra?.let {
+                            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                            it()
+                        }
+                    }
                 }
             }
         }

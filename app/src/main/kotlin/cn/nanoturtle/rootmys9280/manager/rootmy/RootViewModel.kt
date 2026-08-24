@@ -78,6 +78,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // —— 国行 S25 系列 —— Android 15 / kernel 6.6.98（与 S24 的 6.1.145 不同内核系列）
         //    CZG1 载荷独立定标（struct page slab_cache 偏移 0x08，KSU 用 android15-6.6）
         CZG1("cve-2026-43499-czg1", "One UI 8.5", "SM-S9310/S9360/S9380 国行 S25", "CZG1（kernel 6.6）", Region.CHINA, "ksud-android15-6.6"),
+        // —— 国行 S24 Ultra One UI 8.0（kernel 6.1.128，构建号 2755301）——
+        // 与港版 CZA1 同内核版本但不同构建号，代码段符号相同，数据段偏移 +0x10000
+        CZA1_CHC("cve-2026-43499-cza1-chc", "One UI 8.0", "SM-S9280 国行 S24 Ultra", "CHC CZA1", Region.CHINA, "ksud-selected"),
         // —— 港版/台版（实测稳定）—— 港台同构建号可共用载荷，台版直接选用港版条目
         // （港版 DZE2 kmalloc_caches=0x176c6f8 与国行 0x176cbb8 不同，不能用 DZF2 载荷）
         CZA1("cve-2026-43499-cza1", "One UI 8.0", "SM-S9280 港版/台版", "CZA1", Region.HONGKONG_TAIWAN, "ksud-selected"),
@@ -136,12 +139,36 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         W9025DZG3("cve-2026-43499-W9025ZCS4DZG3", "One UI 8.5", "W9025 国行 心系天下 W25", "DZG3", Region.CHINA, "ksud-selected", tested = false),
         W9026BZG3("cve-2026-43499-W9026ZCS8BZG3", "One UI 8.5", "W9026 国行 心系天下 W26", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
         W9026BZF1("cve-2026-43499-W9026ZCU7BZF1", "One UI 8.5", "W9026 国行 心系天下 W26", "BZF1", Region.CHINA, "ksud-android15-6.6", tested = false),
+        ;
+
+        /** 机型系列（固件选择页筛选用）：从机型字符串识别 S23/S24/S25/S26/折叠屏/心系天下 */
+        val series: Series
+            get() =
+                when {
+                    "Z Flip" in device || "Z Fold" in device || device.startsWith("SM-F") -> Series.FOLD
+                    "心系天下" in device || device.startsWith("W9") -> Series.W
+                    "S91" in device -> Series.S23
+                    "S92" in device -> Series.S24
+                    "S93" in device -> Series.S25
+                    "S94" in device -> Series.S26
+                    else -> Series.S24
+                }
     }
 
     /** 地区分组：国行 / 港版台版（同构建号共用载荷） */
     enum class Region(val label: String) {
         CHINA("国行"),
         HONGKONG_TAIWAN("港版/台版"),
+    }
+
+    /** 机型系列（固件选择页筛选用） */
+    enum class Series(val label: String) {
+        S23("S23"),
+        S24("S24"),
+        S25("S25"),
+        S26("S26"),
+        FOLD("折叠屏"),
+        W("心系天下"),
     }
 
     /** 授权方式：Shizuku（需装 Shizuku App）或无线调试（Android 11+ 直连） */
