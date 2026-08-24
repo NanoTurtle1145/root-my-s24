@@ -71,6 +71,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         BYH7("cve-2026-43499-byh7", "One UI 7", "SM-S9210 国行", "BYH7", Region.CHINA),
         // —— 国行 Z Fold6 —— 与 S24 同 GKI 构建号，已验证共用 DZF2 载荷成功
         ZFOLD6("cve-2026-43499", "One UI 8.5", "SM-F9580 国行 Z Fold6", "Z Fold6（共用 DZF2 载荷）", Region.CHINA),
+        // —— 国行 S25 系列 —— Android 15 / kernel 6.6.98（与 S24 的 6.1.145 不同内核系列）
+        //    CZG1 载荷独立定标（struct page slab_cache 偏移 0x08，KSU 用 android15-6.6）
+        CZG1("cve-2026-43499-czg1", "One UI 8.5", "SM-S9310/S9360/S9380 国行 S25", "CZG1（kernel 6.6）", Region.CHINA),
         // —— 港版/台版 —— 港台同构建号可共用载荷，台版直接选用港版条目
         // （港版 DZE2 kmalloc_caches=0x176c6f8 与国行 0x176cbb8 不同，不能用 DZF2 载荷）
         CZA1("cve-2026-43499-cza1", "One UI 8.0", "SM-S9280 港版/台版", "CZA1", Region.HONGKONG_TAIWAN),
@@ -120,7 +123,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     private val payloadName: String get() = firmwareVersion.assetName
     private val rootHelperName = "cve-2026-43499-root"
-    private val ksudName = "ksud-selected"
+    /** KernelSU 内核驱动：按所选固件的内核系列选择（6.1=Android14，6.6=Android15） */
+    private val ksudName: String
+        get() = if (firmwareVersion == FirmwareVersion.CZG1) "ksud-android15-6.6" else "ksud-selected"
     private val PREFS_SETTINGS = "settings"
     private val PREFS_FIRMWARE = "firmware_version"
     private val KEY_AUTH_METHOD = "auth_method"
