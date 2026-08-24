@@ -64,20 +64,78 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         /** 适配系统范围（如 DZE2–DZG1） */
         val range: String,
         val region: Region,
+        /** KernelSU 驱动资产名（按内核系列选择） */
+        val ksud: String,
+        /** 是否经实测验证（false=需在设置里启用「未经测试的载荷」才显示） */
+        val tested: Boolean = true,
         val enabled: Boolean = true,
     ) {
-        // —— 国行 ——
-        DZF2("cve-2026-43499", "One UI 8.5", "SM-S9280/S9260/S9210 国行", "DZE2–DZG1", Region.CHINA),
-        BYH7("cve-2026-43499-byh7", "One UI 7", "SM-S9210 国行", "BYH7", Region.CHINA),
+        // —— 国行（实测稳定）——
+        DZF2("cve-2026-43499", "One UI 8.5", "SM-S9280/S9260/S9210 国行", "DZE2–DZG1", Region.CHINA, "ksud-selected"),
+        BYH7("cve-2026-43499-byh7", "One UI 7", "SM-S9210 国行", "BYH7", Region.CHINA, "ksud-selected"),
         // —— 国行 Z Fold6 —— 与 S24 同 GKI 构建号，已验证共用 DZF2 载荷成功
-        ZFOLD6("cve-2026-43499", "One UI 8.5", "SM-F9580 国行 Z Fold6", "Z Fold6（共用 DZF2 载荷）", Region.CHINA),
+        ZFOLD6("cve-2026-43499", "One UI 8.5", "SM-F9580 国行 Z Fold6", "Z Fold6（共用 DZF2 载荷）", Region.CHINA, "ksud-selected"),
         // —— 国行 S25 系列 —— Android 15 / kernel 6.6.98（与 S24 的 6.1.145 不同内核系列）
         //    CZG1 载荷独立定标（struct page slab_cache 偏移 0x08，KSU 用 android15-6.6）
-        CZG1("cve-2026-43499-czg1", "One UI 8.5", "SM-S9310/S9360/S9380 国行 S25", "CZG1（kernel 6.6）", Region.CHINA),
-        // —— 港版/台版 —— 港台同构建号可共用载荷，台版直接选用港版条目
+        CZG1("cve-2026-43499-czg1", "One UI 8.5", "SM-S9310/S9360/S9380 国行 S25", "CZG1（kernel 6.6）", Region.CHINA, "ksud-android15-6.6"),
+        // —— 港版/台版（实测稳定）—— 港台同构建号可共用载荷，台版直接选用港版条目
         // （港版 DZE2 kmalloc_caches=0x176c6f8 与国行 0x176cbb8 不同，不能用 DZF2 载荷）
-        CZA1("cve-2026-43499-cza1", "One UI 8.0", "SM-S9280 港版/台版", "CZA1", Region.HONGKONG_TAIWAN),
-        DZE2("cve-2026-43499-dze2", "One UI 8.5", "SM-S9280 港版/台版", "DZE2–DZG1", Region.HONGKONG_TAIWAN),
+        CZA1("cve-2026-43499-cza1", "One UI 8.0", "SM-S9280 港版/台版", "CZA1", Region.HONGKONG_TAIWAN, "ksud-selected"),
+        DZE2("cve-2026-43499-dze2", "One UI 8.5", "SM-S9280 港版/台版", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
+
+        // —— 以下为 RootMyGalaxy 移植的载荷（运行时 KASLR 定标，未经本 App 实测）——
+        // 需在设置里启用「启用未经测试的载荷」后才在固件选择页显示。
+        // 内核系列 → ksud：5.15=android13-5.15，6.1=ksud-selected，6.6=android15-6.6，6.12=android16-6.12
+        // —— S23 系列（Android 13/14，kernel 5.15）——
+        S9110FZE3("cve-2026-43499-S9110ZCS8FZE3", "One UI 7", "SM-S9110 国行 S23", "FZE3", Region.CHINA, "ksud-android13-5.15", tested = false),
+        S9110FZG1("cve-2026-43499-S9110ZCS8FZG1", "One UI 7", "SM-S9110 国行 S23", "FZG1", Region.CHINA, "ksud-android13-5.15", tested = false),
+        S9160FZE3("cve-2026-43499-S9160ZCS8FZE3", "One UI 7", "SM-S9160 国行 S23+", "FZE3", Region.CHINA, "ksud-android13-5.15", tested = false),
+        S9160FZG1("cve-2026-43499-S9160ZCS8FZG1", "One UI 7", "SM-S9160 国行 S23+", "FZG1", Region.CHINA, "ksud-android13-5.15", tested = false),
+        S9160HFZE3("cve-2026-43499-S9160ZHS8FZE3", "One UI 7", "SM-S9160 港版 S23+", "FZE3", Region.HONGKONG_TAIWAN, "ksud-android13-5.15", tested = false),
+        S9180FZE3("cve-2026-43499-S9180ZCS8FZE3", "One UI 7", "SM-S9180 国行 S23 Ultra", "FZE3", Region.CHINA, "ksud-android13-5.15", tested = false),
+        S9180FZG1("cve-2026-43499-S9180ZCS8FZG1", "One UI 7", "SM-S9180 国行 S23 Ultra", "FZG1", Region.CHINA, "ksud-android13-5.15", tested = false),
+        // —— S24 系列（Android 14，kernel 6.1）——
+        S9210DZE2("cve-2026-43499-S9210ZCS6DZE2", "One UI 8.5", "SM-S9210 国行 S24", "DZE2", Region.CHINA, "ksud-selected", tested = false),
+        S9210DZF2("cve-2026-43499-S9210ZCS6DZF2", "One UI 8.5", "SM-S9210 国行 S24", "DZF2", Region.CHINA, "ksud-selected", tested = false),
+        S9210DZG1("cve-2026-43499-S9210ZCS6DZG1", "One UI 8.5", "SM-S9210 国行 S24", "DZG1", Region.CHINA, "ksud-selected", tested = false),
+        S9210HDZG1("cve-2026-43499-S9210ZHS6DZG1", "One UI 8.5", "SM-S9210 港版 S24", "DZG1", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
+        S9260DZE2("cve-2026-43499-S9260ZCS6DZE2", "One UI 8.5", "SM-S9260 国行 S24+", "DZE2", Region.CHINA, "ksud-selected", tested = false),
+        S9260DZF2("cve-2026-43499-S9260ZCS6DZF2", "One UI 8.5", "SM-S9260 国行 S24+", "DZF2", Region.CHINA, "ksud-selected", tested = false),
+        S9260DZG1("cve-2026-43499-S9260ZCS6DZG1", "One UI 8.5", "SM-S9260 国行 S24+", "DZG1", Region.CHINA, "ksud-selected", tested = false),
+        S9280DZE2("cve-2026-43499-S9280ZCS6DZE2", "One UI 8.5", "SM-S9280 国行 S24 Ultra", "DZE2", Region.CHINA, "ksud-selected", tested = false),
+        S9280DZF2("cve-2026-43499-S9280ZCS6DZF2", "One UI 8.5", "SM-S9280 国行 S24 Ultra", "DZF2", Region.CHINA, "ksud-selected", tested = false),
+        S9280DZG1("cve-2026-43499-S9280ZCS6DZG1", "One UI 8.5", "SM-S9280 国行 S24 Ultra", "DZG1", Region.CHINA, "ksud-selected", tested = false),
+        S9280HDZG1("cve-2026-43499-S9280ZHS6DZG1", "One UI 8.5", "SM-S9280 港版 S24 Ultra", "DZG1", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
+        // —— S25 系列（Android 15，kernel 6.6）——
+        S9310CZG1("cve-2026-43499-S9310ZCSCCZG1", "One UI 8.5", "SM-S9310 国行 S25", "CZG1", Region.CHINA, "ksud-android15-6.6", tested = false),
+        S9360CZG1("cve-2026-43499-S9360ZCSCCZG1", "One UI 8.5", "SM-S9360 国行 S25+", "CZG1", Region.CHINA, "ksud-android15-6.6", tested = false),
+        S9370CZG1("cve-2026-43499-S9370ZCS9CZG1", "One UI 8.5", "SM-S9370 国行 S25 系列", "CZG1", Region.CHINA, "ksud-android15-6.6", tested = false),
+        S9370CZF1("cve-2026-43499-S9370ZCU8CZF1", "One UI 8.5", "SM-S9370 国行 S25 系列", "CZF1", Region.CHINA, "ksud-android15-6.6", tested = false),
+        S9370HCZG1("cve-2026-43499-S9370ZHS9CZG1", "One UI 8.5", "SM-S9370 港版 S25 系列", "CZG1", Region.HONGKONG_TAIWAN, "ksud-android15-6.6", tested = false),
+        S9380BZA1("cve-2026-43499-S9380ZCS8BZA1", "One UI 8.5", "SM-S9380 国行 S25 Ultra", "BZA1", Region.CHINA, "ksud-android15-6.6", tested = false),
+        S9380BZC1("cve-2026-43499-S9380ZCS9BZC1", "One UI 8.5", "SM-S9380 国行 S25 Ultra", "BZC1", Region.CHINA, "ksud-android15-6.6", tested = false),
+        S9380CZG1("cve-2026-43499-S9380ZCSCCZG1", "One UI 8.5", "SM-S9380 国行 S25 Ultra", "CZG1", Region.CHINA, "ksud-android15-6.6", tested = false),
+        S9380CZF1("cve-2026-43499-S9380ZCUBCZF1", "One UI 8.5", "SM-S9380 国行 S25 Ultra", "CZF1", Region.CHINA, "ksud-android15-6.6", tested = false),
+        // —— S26 系列（Android 16，kernel 6.12）——
+        S9420AZG1("cve-2026-43499-S9420ZCS4AZG1", "One UI 9", "SM-S9420 国行 S26", "AZG1", Region.CHINA, "ksud-android16-6.12", tested = false),
+        S9470AZG1("cve-2026-43499-S9470ZCS4AZG1", "One UI 9", "SM-S9470 国行 S26+", "AZG1", Region.CHINA, "ksud-android16-6.12", tested = false),
+        S9480AZG1("cve-2026-43499-S9480ZCS4AZG1", "One UI 9", "SM-S9480 国行 S26 Ultra", "AZG1", Region.CHINA, "ksud-android16-6.12", tested = false),
+        // —— 折叠屏 ——
+        F7310GZF1("cve-2026-43499-F7310TBS9GZF1", "One UI 7", "SM-F7310 国行 Z Flip5", "GZF1", Region.CHINA, "ksud-android13-5.15", tested = false),
+        F7410DZF2("cve-2026-43499-F7410ZCS4DZF2", "One UI 8.5", "SM-F7410 国行 Z Flip6", "DZF2（同 S24 固件）", Region.CHINA, "ksud-selected", tested = false),
+        F7410DZG3("cve-2026-43499-F7410ZCS4DZG3", "One UI 8.5", "SM-F7410 国行 Z Flip6", "DZG3", Region.CHINA, "ksud-selected", tested = false),
+        F7660BZG3("cve-2026-43499-F7660ZCSBBZG3", "One UI 8.5", "SM-F7660 国行 Z Flip7", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
+        F9460GZF1("cve-2026-43499-F9460ZCS9GZF1", "One UI 7", "SM-F9460 国行 Z Fold5", "GZF1", Region.CHINA, "ksud-android13-5.15", tested = false),
+        F9560DZG3("cve-2026-43499-F9560ZCS4DZG3", "One UI 8.5", "SM-F9560 国行 Z Fold6", "DZG3", Region.CHINA, "ksud-selected", tested = false),
+        F956UDZG3("cve-2026-43499-F956USQS4DZG3", "One UI 8.5", "SM-F956U 美版 Z Fold6", "DZG3", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
+        F9660BZG3("cve-2026-43499-F9660ZCSBBZG3", "One UI 8.5", "SM-F9660 国行 Z Fold7", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
+        F9660BZDP("cve-2026-43499-F9660ZCU9BZDP", "One UI 8.5", "SM-F9660 国行 Z Fold7", "BZDP", Region.CHINA, "ksud-android15-6.6", tested = false),
+        F966BBZG3("cve-2026-43499-F966BXXSBBZG3", "One UI 8.5", "SM-F966B 欧版 Z Fold7", "BZG3", Region.HONGKONG_TAIWAN, "ksud-android15-6.6", tested = false),
+        // —— 心系天下 ——
+        W9025DZF2("cve-2026-43499-W9025ZCS4DZF2", "One UI 8.5", "W9025 国行 心系天下 W25", "DZF2", Region.CHINA, "ksud-selected", tested = false),
+        W9025DZG3("cve-2026-43499-W9025ZCS4DZG3", "One UI 8.5", "W9025 国行 心系天下 W25", "DZG3", Region.CHINA, "ksud-selected", tested = false),
+        W9026BZG3("cve-2026-43499-W9026ZCS8BZG3", "One UI 8.5", "W9026 国行 心系天下 W26", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
+        W9026BZF1("cve-2026-43499-W9026ZCU7BZF1", "One UI 8.5", "W9026 国行 心系天下 W26", "BZF1", Region.CHINA, "ksud-android15-6.6", tested = false),
     }
 
     /** 地区分组：国行 / 港版台版（同构建号共用载荷） */
@@ -123,15 +181,17 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     private val payloadName: String get() = firmwareVersion.assetName
     private val rootHelperName = "cve-2026-43499-root"
-    /** KernelSU 内核驱动：按所选固件的内核系列选择（6.1=Android14，6.6=Android15） */
-    private val ksudName: String
-        get() = if (firmwareVersion == FirmwareVersion.CZG1) "ksud-android15-6.6" else "ksud-selected"
+    /** KernelSU 内核驱动：按所选固件的内核系列选择（5.15/6.1/6.6/6.12 各对应一个资产） */
+    private val ksudName: String get() = firmwareVersion.ksud
     private val PREFS_SETTINGS = "settings"
     private val PREFS_FIRMWARE = "firmware_version"
     private val KEY_AUTH_METHOD = "auth_method"
 
     /** 实验性功能：无线调试授权（默认关闭；设置页开启后主页才显示相关控件） */
     private val KEY_ADB_WIRELESS_ENABLED = "adb_wireless_enabled"
+
+    /** 未经测试的载荷（RootMyGalaxy 移植，未实测）：默认关闭，需设置页手动启用 */
+    private val KEY_UNTESTED_PAYLOADS_ENABLED = "untested_payloads_enabled"
 
     /** 当前 shell 执行器（Shizuku 或无线调试 adb），全部命令经由此执行。 */
     var shellExecutor: ShellExecutor = ShizukuController
@@ -141,6 +201,10 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     /** 无线调试授权是否启用（设置页开关；主页订阅此状态决定是否显示无线调试控件） */
     val adbWirelessEnabled: StateFlow<Boolean> = _adbWirelessEnabled
 
+    private val _untestedPayloadsEnabled = MutableStateFlow(false)
+    /** 未经测试的载荷是否启用（设置页开关；固件选择页据此显示 untested 条目） */
+    val untestedPayloadsEnabled: StateFlow<Boolean> = _untestedPayloadsEnabled
+
     init {
         // 无线调试授权：注入 RSA 密钥存储目录（App 私有目录），恢复上次连接状态
         AdbWirelessController.init(File(app.filesDir, "adb"))
@@ -149,6 +213,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val saved = prefs.getString(KEY_AUTH_METHOD, AuthMethod.SHIZUKU.name)
         val adbEnabled = prefs.getBoolean(KEY_ADB_WIRELESS_ENABLED, false)
         _adbWirelessEnabled.value = adbEnabled
+        _untestedPayloadsEnabled.value = prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false)
         if (adbEnabled && saved == AuthMethod.ADB_WIRELESS.name) {
             shellExecutor = AdbWirelessController
         } else if (!adbEnabled && saved == AuthMethod.ADB_WIRELESS.name) {
@@ -166,6 +231,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         if (!enabled && authMethod == AuthMethod.ADB_WIRELESS) {
             setAuthMethod(AuthMethod.SHIZUKU)
             AdbWirelessController.disconnect()
+        }
+    }
+
+    /** 设置页开关：启用/禁用未经测试的载荷。禁用时若当前选中了 untested 条目则回退 DZF2。 */
+    fun setUntestedPayloadsEnabled(enabled: Boolean) {
+        val prefs = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, enabled).apply()
+        _untestedPayloadsEnabled.value = enabled
+        if (!enabled && !firmwareVersion.tested) {
+            firmwareVersion = FirmwareVersion.DZF2
         }
     }
 
@@ -204,9 +279,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     /** Compose 可观察的固件版本状态（普通属性读写 SharedPreferences 不会触发重组） */
     private val _firmwareVersion: MutableStateFlow<FirmwareVersion> = MutableStateFlow(
         run {
-            val name = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
-                .getString(PREFS_FIRMWARE, FirmwareVersion.DZF2.name)
-            FirmwareVersion.entries.firstOrNull { it.name == name } ?: FirmwareVersion.DZF2
+            val prefs = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            val name = prefs.getString(PREFS_FIRMWARE, FirmwareVersion.DZF2.name)
+            val restored = FirmwareVersion.entries.firstOrNull { it.name == name } ?: FirmwareVersion.DZF2
+            // 未经测试的载荷开关已关且上次选中了 untested 条目：回退到已实测的 DZF2
+            if (!prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false) && !restored.tested) {
+                prefs.edit().putString(PREFS_FIRMWARE, FirmwareVersion.DZF2.name).apply()
+                FirmwareVersion.DZF2
+            } else {
+                restored
+            }
         },
     )
 

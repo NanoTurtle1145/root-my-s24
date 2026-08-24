@@ -71,6 +71,8 @@
     <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_adb_wireless">Wireless debugging auth</string>
     <string name="settings_adb_wireless_summary">Experimental. When enabled, the home screen shows wireless debugging controls (pairing / connect)</string>
+    <string name="settings_untested_payloads">Untested payloads</string>
+    <string name="settings_untested_payloads_summary">Show payloads ported from RootMyGalaxy that have not been verified on this app. Use at your own risk.</string>
     <string name="settings_section_about">About</string>
     <string name="settings_check_update">Check for updates</string>
     <string name="settings_check_update_summary">Open GitHub Releases for new versions</string>

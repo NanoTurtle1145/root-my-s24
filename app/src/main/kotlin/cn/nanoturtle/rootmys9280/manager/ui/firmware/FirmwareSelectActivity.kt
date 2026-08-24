@@ -82,6 +82,7 @@ private fun FirmwareSelectContent(
     onBack: () -> Unit,
 ) {
     val firmwareVersion by vm.firmwareVersionState.collectAsStateWithLifecycle()
+    val untestedEnabled by vm.untestedPayloadsEnabled.collectAsStateWithLifecycle()
     var query by rememberSaveable { mutableStateOf("") }
     // null = 全部地区；否则只显示该地区
     var filterRegion by remember { mutableStateOf<RootViewModel.Region?>(null) }
@@ -146,8 +147,10 @@ private fun FirmwareSelectContent(
             Spacer(Modifier.height(4.dp))
 
             // 过滤逻辑：地区 + 搜索关键词（匹配机型/系统版本/固件范围/载荷名）
+            // 未经测试的载荷仅在设置里启用后才显示
             val normalizedQuery = query.trim().lowercase()
             val allVersions = RootViewModel.FirmwareVersion.entries
+                .filter { untestedEnabled || it.tested }
                 .filter { filterRegion == null || it.region == filterRegion }
                 .filter { version ->
                     normalizedQuery.isEmpty() ||

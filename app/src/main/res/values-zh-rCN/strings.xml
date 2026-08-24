@@ -34,6 +34,8 @@
     <string name="settings_auto_save_log_summary">日志实时写入磁盘，崩溃/重启后自动恢复（调试选项）</string>
     <string name="settings_adb_wireless">无线调试授权</string>
     <string name="settings_adb_wireless_summary">实验性功能。开启后主页才显示无线调试控件（配对/连接）</string>
+    <string name="settings_untested_payloads">未经测试的载荷</string>
+    <string name="settings_untested_payloads_summary">显示从 RootMyGalaxy 移植、未经本应用实测的载荷。风险自负。</string>
     <string name="settings_section_about">关于</string>
     <string name="settings_check_update">检查更新</string>
     <string name="settings_check_update_summary">前往 GitHub Releases 查看新版本</string>

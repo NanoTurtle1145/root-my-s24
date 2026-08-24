@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.SettingsRemote
 import androidx.compose.material.icons.rounded.Update
+import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -44,6 +45,7 @@ private const val KEY_AUTO_SCREEN_OFF = "auto_screen_off"
 private const val KEY_BRIEF_LOG = "brief_log"
 private const val KEY_AUTO_SAVE_LOG = "auto_save_log"
 private const val KEY_ADB_WIRELESS_ENABLED = "adb_wireless_enabled"
+private const val KEY_UNTESTED_PAYLOADS_ENABLED = "untested_payloads_enabled"
 
 /** 分组卡片里的行用透明容器色，避免 ListItem 在 Card 内再叠一层色块。 */
 private val cardRowColors
@@ -71,6 +73,9 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
     }
     var adbWirelessEnabled by remember {
         mutableStateOf(prefs.getBoolean(KEY_ADB_WIRELESS_ENABLED, false))
+    }
+    var untestedPayloadsEnabled by remember {
+        mutableStateOf(prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false))
     }
 
     LazyColumn(
@@ -165,6 +170,28 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                     trailingContent = { Switch(checked = adbWirelessEnabled, onCheckedChange = null) },
                     colors = cardRowColors,
                 ) { Text(stringResource(R.string.settings_adb_wireless)) }
+                HorizontalDivider()
+                ListItem(
+                    modifier =
+                        Modifier.toggleable(
+                            value = untestedPayloadsEnabled,
+                            role = Role.Switch,
+                            onValueChange = { enabled ->
+                                untestedPayloadsEnabled = enabled
+                                prefs.edit().putBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, enabled).apply()
+                                // 同步进程级单例 VM 的 StateFlow，固件选择页据此过滤 untested 条目
+                                runCatching {
+                                    ServiceLocator.rootViewModel.setUntestedPayloadsEnabled(enabled)
+                                }
+                            },
+                        ),
+                    leadingContent = {
+                        Icon(Icons.Rounded.WarningAmber, contentDescription = null)
+                    },
+                    supportingContent = { Text(stringResource(R.string.settings_untested_payloads_summary)) },
+                    trailingContent = { Switch(checked = untestedPayloadsEnabled, onCheckedChange = null) },
+                    colors = cardRowColors,
+                ) { Text(stringResource(R.string.settings_untested_payloads)) }
             }
         }
 
