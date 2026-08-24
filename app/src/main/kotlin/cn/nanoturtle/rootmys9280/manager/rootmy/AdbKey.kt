@@ -1,5 +1,6 @@
 package cn.nanoturtle.rootmys9280.manager.rootmy
 
+import android.annotation.SuppressLint
 import java.math.BigInteger
 import java.net.Socket
 import java.nio.ByteBuffer
@@ -85,6 +86,9 @@ class AdbKey(private val keyPair: KeyPair, private val name: String = "adbkey") 
         override fun chooseServerAlias(keyType: String, issuers: Array<out Principal>?, socket: Socket?): String? = null
     }
 
+    // ADB 无线配对使用自签名证书，认证靠配对码（TLS-PAIRING 协议），
+    // 信任任意证书是协议要求，非安全缺陷。
+    @SuppressLint("TrustAllX509TrustManager", "CustomX509TrustManager")
     private val trustManager = object : X509ExtendedTrustManager() {
         override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?, socket: Socket?) {}
         override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?, engine: SSLEngine?) {}

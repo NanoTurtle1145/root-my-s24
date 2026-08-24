@@ -361,6 +361,8 @@ private fun AuthCard(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    // 预先读取静态资源字符串（在 composable 内可随配置变化自动更新）
+    val noNotificationPermissionText = stringResource(R.string.notification_adb_pairing_no_permission)
     val method = vm.authMethod
     // 无线调试授权是否启用（设置页开关，默认关闭）：关闭时主页不显示任何无线调试控件
     val adbEnabled by vm.adbWirelessEnabled.collectAsStateWithLifecycle()
@@ -381,7 +383,7 @@ private fun AuthCard(
             val err = vm.startAdbPairingNotification(context)
             if (err != null) pairError = err
         } else {
-            pairError = context.getString(R.string.notification_adb_pairing_no_permission)
+            pairError = noNotificationPermissionText
         }
     }
 

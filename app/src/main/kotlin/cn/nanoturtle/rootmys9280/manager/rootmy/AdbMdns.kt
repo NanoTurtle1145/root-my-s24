@@ -27,10 +27,12 @@ import java.net.ServerSocket
  */
 @RequiresApi(Build.VERSION_CODES.R)
 class AdbMdns(
-    private val context: Context,
+    context: Context,
     private val serviceType: String,
     private val onServiceDiscovered: (host: String, port: Int) -> Unit,
 ) {
+    /** 取 application context：AdbPairingFlow 是静态单例，不能长期持有 Activity */
+    private val context: Context = context.applicationContext
 
     private val nsdManager: NsdManager = context.getSystemService(NsdManager::class.java)
     private val discoveryListener = AdbDiscoveryListener()

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <!-- 拼写风格：非编译/运行时影响，属于可接受噪音 -->
+    <issue id="TypographyEllipsis" severity="ignore" />
+    <issue id="TypographyDashes" severity="ignore" />
+    <!-- KTX 扩展建议：非功能性差异 -->
+    <issue id="UseKtx" severity="ignore" />
+    <!-- 依赖版本更新提示：需逐个评估 breaking change，不宜自动升级 -->
+    <issue id="GradleDependency" severity="ignore" />
+    <issue id="NewerVersionAvailable" severity="ignore" />
+    <!-- 地址/host 硬编码：连接本地 ADB 设备，非真实错误 -->
+    <issue id="UnsafeNativeCodeLocation" severity="ignore" />
+    <!-- 内部 API 反射：ADB 配对与 Shizuku 协议必需（如 installFlags/ADB 证书） -->
+    <issue id="DiscouragedPrivateApi" severity="ignore" />
+    <issue id="PrivateApi" severity="ignore" />
+    <!-- 复数候选：仅英文有复数形态，用 string 可接受 -->
+    <issue id="PluralsCandidate" severity="ignore" />
+    <!-- 未使用属性：minSdk=27，back 回调 33+ 属性设置但因兼容性保留 -->
+    <issue id="UnusedAttribute" severity="ignore" />
+    <!-- 动态语言切换：App 内嵌切换，无需 Play Core 下载 -->
+    <issue id="AppBundleLocaleChanges" severity="ignore" />
+    <!-- 拼写检查：英语单词 "via" 非 "vía" 误报 -->
+    <issue id="Typos" severity="ignore" />
+    <!-- mipmap-anydpi-v26: minSdk=27 因此 v26 限定符多余，但 adaptive-icon 必须放在 v26+ 目录 -->
+    <issue id="ObsoleteSdkInt" severity="ignore" />
+    <!-- bcpkix (BouncyCastle) 第三方库自带的 trust-all，非本项目代码 -->
+    <issue id="TrustAllX509TrustManager">
+        <ignore path="**/bcpkix-*.jar" />
+    </issue>
+</lint>

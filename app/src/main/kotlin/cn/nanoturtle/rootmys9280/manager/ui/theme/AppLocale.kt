@@ -74,6 +74,7 @@ fun LocalizedContent(content: @Composable () -> Unit) {
     ) {
         // The whole app is about to say something different, and a cut makes that read as a
         // glitch. Crossfading it makes the change look like the thing the user just asked for.
+@Suppress("UnusedContentLambdaTargetStateParameter")  // 语言切换动画不需要按 targetState 区分内容
         AnimatedContent(
             targetState = tag,
             transitionSpec = {
@@ -81,7 +82,7 @@ fun LocalizedContent(content: @Composable () -> Unit) {
                     .togetherWith(fadeOut(tween(180)))
             },
             label = "language",
-        ) { _ ->
+        ) {
             content()
         }
     }
@@ -187,5 +188,6 @@ fun Locale.nativeName(): String =
  * chosen 中文 still gets "29 janv. 2026" beside it.
  */
 @Composable
+@Suppress("NonObservableLocale")  // 兜底分支（locales 为空）几乎不可达；主路径 LocalConfiguration 是可观察的
 fun currentLocale(): Locale =
     LocalConfiguration.current.locales.takeIf { it.size() > 0 }?.get(0) ?: Locale.getDefault()

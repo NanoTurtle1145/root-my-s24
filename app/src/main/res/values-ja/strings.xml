@@ -1,9 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-
-    <string name="nav_home">ホーム</string>
     <string name="nav_logs">ログ</string>
-
     <string name="panels_done">完了</string>
     <string name="panels_hide">%1$s を非表示</string>
     <string name="panels_show">%1$s を表示</string>
@@ -11,408 +8,18 @@
     <string name="panels_move_later">後ろへ移動</string>
     <string name="panels_ball_open">ナビゲーションを開く</string>
     <string name="panels_ball_close">ナビゲーションを閉じる</string>
-
     <string name="status_active">有効</string>
     <string name="status_degraded">確認が必要です</string>
     <string name="status_inactive">有効化されていません</string>
     <string name="status_mismatched">バージョンが一致しません</string>
     <string name="status_checking">確認しています…</string>
-    <string name="status_open_details">システムの状態を表示</string>
-
-    <string name="issue_sepolicy_title">SELinux ポリシーが読み込まれていません</string>
-    <string name="issue_sepolicy_summary">一部の機能が動作しません。通常は、root 実装によって Vector のポリシールールが適用されなかったことが原因です。</string>
-    <string name="issue_system_server_title">システムフレームワークへの注入に失敗しました</string>
-    <string name="issue_system_server_summary">モジュールがシステムサービスをフックできません。これはまれな問題で、通常は別の root モジュールによる干渉が原因です。</string>
-    <string name="issue_dex2oat_title">DEX 最適化ラッパーは利用できません</string>
-    <string name="issue_dex2oat_summary">一部のシステムプロパティが削除または変更されました。アプリの更新後、モジュールが適用されなくなる可能性があります。</string>
-
-    <string name="system_status">システムの状態</string>
-    <string name="info_api_version">Xposed API</string>
-    <string name="info_framework_version">フレームワーク</string>
-    <string name="info_manager_package">マネージャーのパッケージ名</string>
-    <string name="info_dex2oat">DEX 最適化ラッパー</string>
-    <string name="info_selinux">SELinux ポリシー</string>
-    <string name="info_system_server">システムフレームワーク</string>
-    <string name="info_android">Android</string>
-    <string name="info_device">デバイス</string>
-    <string name="info_abi">アーキテクチャ</string>
-    <string name="info_supported">対応</string>
-    <string name="info_unsupported">非対応</string>
-    <string name="info_loaded">読み込まれています</string>
-    <string name="info_not_loaded">読み込まれていません</string>
-    <string name="info_injected">注入されています</string>
-    <string name="info_not_injected">注入されていません</string>
-    <string name="status_notification">ステータス通知</string>
-    <string name="status_notification_summary">Vector が実行中であることを示す常時表示の通知です。</string>
-    <string name="home_quarter_title">最近のアクティビティ</string>
-    <plurals name="home_commit_count">
-        <item quantity="other">コミット数: %1$d</item>
-    </plurals>
-    <plurals name="home_people_count">
-        <item quantity="other">人数: %1$d</item>
-    </plurals>
-    <string name="home_since">%1$s 以降</string>
-    <string name="home_no_activity">過去 6 ヶ月間、コミットはありません。</string>
-    <string name="home_loading_activity">最近のアクティビティを読み込んでいます…</string>
-    <string name="home_offline">保存されたアクティビティを表示しています — GitHub に接続できませんでした。</string>
-    <string name="home_bumps">依存関係の更新: %1$d 件</string>
-    <string name="home_contribute">参加</string>
-    <string name="home_test_canary">Canary を試す</string>
-    <string name="home_open_issue">問題を報告</string>
-    <string name="home_discussions">ディスカッション</string>
-    <string name="home_review_prs">プルリクエストを確認</string>
-
-    <string name="home_with_coauthor">%1$s と %2$s</string>
-    <string name="home_with_coauthors">%1$s とほか %2$d 名</string>
-
-    <string name="home_month_stats">%1$s・%2$s</string>
-    <plurals name="home_people_count_plain">
-        <item quantity="other">%1$d 人</item>
-    </plurals>
-
-    <plurals name="home_commits_ahead">
-        <item quantity="other">あなたのコミットより新しいもの: %1$d 件</item>
-    </plurals>
-    <string name="home_your_build">お使いのビルド %1$d</string>
-    <plurals name="home_quiet_days">
-        <item quantity="other">アクティビティなし: %1$d 日間</item>
-    </plurals>
-
     <string name="appearance_title">外観</string>
-    <string name="appearance_theme">テーマ</string>
-    <string name="appearance_theme_system">システムの設定に従う</string>
-    <string name="appearance_theme_light">ライト</string>
-    <string name="appearance_theme_dark">ダーク</string>
-    <string name="appearance_dynamic_color">壁紙から配色</string>
-    <string name="appearance_amoled">ダークテーマでピュアブラックを使用</string>
-    <string name="appearance_amoled_summary">OLED 画面での消費電力を抑えます。</string>
-    <string name="egg_two_more">あと 2 回…</string>
-    <string name="egg_one_more">あと 1 回…</string>
-
-    <string name="modules_empty">モジュールがインストールされていません。</string>
-    <string name="modules_active_of">%2$d 個中 %1$d 個が有効</string>
-    <string name="modules_no_match">その検索や絞り込みに一致するモジュールはありません。</string>
-    <string name="modules_backup">モジュールをバックアップ</string>
-    <string name="modules_restore">モジュールを復元</string>
-    <string name="modules_backup_done">%1$d 個のモジュールとその適用範囲をバックアップしました。</string>
-    <string name="modules_backup_failed">バックアップを書き込めませんでした。</string>
-    <string name="modules_restore_done">%1$d 個のモジュールを復元しました。このデバイスにはインストールされていない %2$d 個のモジュールはスキップされました。</string>
-    <string name="modules_restore_failed">そのバックアップを読み込めませんでした。</string>
-    <string name="modules_search_hint">モジュールを検索</string>
-    <string name="modules_clear_search">検索を消去</string>
-    <string name="modules_filter">フィルター</string>
-    <string name="modules_section_active">動作中</string>
-    <string name="modules_section_inactive">停止中</string>
-    <string name="modules_scope_more">+%1$d</string>
-    <string name="modules_sort_enabled">動作中を先に</string>
-    <string name="modules_sort_name">名前順</string>
-    <string name="modules_sort_recent">最近更新された順</string>
-    <string name="modules_sort_scope">適用範囲が広い順</string>
-    <string name="modules_filter_all">すべて</string>
-    <string name="modules_filter_active">有効</string>
-    <string name="modules_filter_inactive">無効</string>
-    <string name="modules_incompatible">libxposed API %1$d が必要ですが、このフレームワークはそれを提供していません。</string>
-    <string name="modules_incompatible_legacy">Xposed API %1$d が必要ですが、このフレームワークでは提供されていません。</string>
-    <string name="modules_api_behind">libxposed API %1$d 向けにビルドされています。API %2$d でインターフェースが変更されたため、このモジュールは正常に動作しない可能性があります。</string>
-    <string name="modules_no_daemon">Vector が動作していないため、モジュール一覧を取得できません。理由を確認するには、ホームからシステムステータスを開いてください。</string>
-
     <string name="web_open_external">ブラウザで表示</string>
-
-    <string name="settings_ambience">ヘッダーの表現</string>
-    <string name="ambience_snow">雪</string>
-    <string name="ambience_maze">迷路</string>
-    <string name="ambience_circuit">回路</string>
-    <string name="ambience_matrix">コードの雨</string>
-    <string name="ambience_none">静止</string>
-
     <string name="settings_navigation">ナビゲーション</string>
     <string name="settings_floating_nav">フローティングナビゲーション</string>
     <string name="settings_floating_nav_summary">バーの代わりに、どこへでもドラッグできる小さなボールを表示します。長押しするとパネルが扇状に開き、タップすると開いたままの状態になります。</string>
     <string name="settings_rearrange_panels">パネルの並べ替え</string>
-    <string name="settings_rearrange_panels_summary">並び順を変更したり、めったに開かないものを非表示にしたりできます。</string>
-
-    <string name="settings_activity">活動フィード</string>
-    <plurals name="settings_window_months">
-        <item quantity="other">直近 %1$d か月</item>
-    </plurals>
-    <string name="settings_open_externally">リンクをブラウザで開く</string>
-    <string name="settings_open_externally_summary">オフのとき、GitHub のページは Vector 内で開きます。</string>
-
-    <string name="scope_use_recommended">モジュールの要求どおりにする</string>
-    <string name="scope_select_visible">表示中のすべてを選択</string>
-    <string name="scope_clear_visible">表示中のすべてを解除</string>
-    <string name="scope_backup_done">適用範囲を保存しました。</string>
-    <string name="scope_backup_failed">そのファイルを読み書きできませんでした。</string>
-    <string name="scope_select">選択</string>
-    <string name="scope_sort">並べ替え</string>
-    <string name="scope_modules">ほかのモジュール</string>
-    <string name="scope_include_new_apps">新しいアプリを自動で追加</string>
-    <string name="scope_include_new_apps_summary">今後インストールされるアプリは、このモジュールの適用範囲に含まれます。</string>
-    <string name="scope_backup">この適用範囲をバックアップ</string>
-    <string name="scope_restore">この適用範囲を復元</string>
-    <string name="scope_sort_package">パッケージ名順</string>
-    <string name="scope_sort_installed">最近インストールした順</string>
-    <string name="scope_sort_updated">最近更新された順</string>
-    <string name="scope_sort_reverse">逆順</string>
-    <string name="scope_sort_relevance">選択済みを先に</string>
-    <string name="scope_sort_name">名前順</string>
-    <string name="scope_search_hint">アプリを検索</string>
-    <string name="scope_system_apps">システムアプリ</string>
-    <string name="scope_games">ゲーム</string>
-    <string name="scope_recommended">このモジュールによって要求されたもの</string>
-    <string name="scope_static">このモジュールは適用範囲を固定しており、ほかのアプリを選択することはできません。</string>
-    <string name="scope_pending">追加 %1$d、削除 %2$d</string>
-    <string name="scope_apply">適用</string>
-    <string name="scope_discard">破棄</string>
-    <string name="scope_applied">適用範囲を反映しました。</string>
-    <string name="scope_apply_failed">フレームワークが新しい適用範囲を拒否しました。</string>
-    <string name="scope_toggle_failed">フレームワークがその変更を拒否しました。</string>
-    <string name="scope_empty_title">フックする対象がありません</string>
-    <string name="scope_empty_message">このモジュールは有効になっていますが、アプリが選択されていないため動作しません。無効にするか、アプリを選択してください。</string>
-    <string name="scope_empty_disable">モジュールを無効化</string>
-    <string name="scope_empty_keep">有効のままにする</string>
-
-    <string name="action_launch">開く</string>
-    <string name="action_app_info">アプリ情報</string>
-    <string name="action_force_stop">強制停止</string>
-    <string name="action_optimize">再最適化</string>
-    <string name="action_uninstall">アンインストール</string>
-    <string name="action_launched">起動しています…</string>
-    <string name="action_no_launcher">このアプリには開く画面がありません。</string>
-    <string name="action_opened_info">アプリ情報を開いています…</string>
-    <string name="action_force_stopped">%1$s を停止しました。</string>
-    <string name="action_optimizing">%1$s を再最適化しています。これには時間がかかる場合があります。</string>
-    <string name="action_optimized">%1$s を再最適化しました。インライン化によって失われていたフックも、これで動作するはずです。</string>
-    <string name="action_optimize_failed">%1$s を再最適化できませんでした。</string>
-    <string name="action_uninstalled">%1$s をアンインストールしました。</string>
-    <string name="action_uninstall_failed">%1$s をアンインストールできませんでした。</string>
-
-    <string name="back">戻る</string>
-    <string name="retry">再試行</string>
-
-    <string name="appearance_color">色</string>
-    <string name="appearance_custom_color">色を選ぶ</string>
-    <string name="modules_expand">説明をすべて表示</string>
-    <string name="modules_collapse">表示を減らす</string>
-    <string name="action_optimize_summary">モジュールがフックする必要のあるメソッドを ART がインライン化しないように、アプリを再コンパイルします</string>
-    <string name="modules_scope_framework">システムフレームワークをフック</string>
-    <string name="scope_origin_locked">モジュールによって固定</string>
-    <string name="scope_origin_chosen">選択したもの</string>
-    <string name="scope_origin_derived">常に適用範囲内</string>
-    <string name="modules_selection_clear">選択を解除</string>
-    <plurals name="modules_selected">
-        <item quantity="other">%1$d 個選択しています</item>
-    </plurals>
-    <string name="modules_batch_enable">選択しているものを全て有効化</string>
-    <string name="modules_batch_disable">選択しているものを全て無効化</string>
-    <string name="modules_batch_partial">うち %1$s 個のみ成功しました</string>
-    <string name="modules_uninstall_title">これらのモジュールをアンインストールしますか？</string>
-    <plurals name="modules_uninstall_body">
-        <item quantity="other">%1$d 個のすべてのモジュールと、それらで設定されたすべての内容が削除されます。この操作は元に戻せません。</item>
-    </plurals>
-    <string name="canary_open_actions">GitHub で開く</string>
-    <string name="canary_none">Canary ビルドはまだ公開されていません。</string>
-    <string name="canary_what_title">Canary とは</string>
-    <string name="canary_what_body">CI によるビルドとチェックのみが行われている、現在の master ブランチの状態です。修正は、リリースに反映されるよりも数日あるいは数週間早く、ここにマージされます。</string>
-    <string name="canary_keep_body">最新の %1$d 件が保持され、どのビルドページからでもそれらの間を移動したり、直前のリリースに戻ったりすることができます。ここには後戻りできない操作は一切ありません。</string>
-    <plurals name="canary_since_commits">
-        <item quantity="other">現在使用しているビルド以降、%1$d 件のコミットがマージされました。</item>
-    </plurals>
-    <plurals name="canary_fixed_since">
-        <item quantity="other">現在使用しているビルド以降に修正された問題 — %1$d 件</item>
-    </plurals>
-    <string name="canary_current">現在、最新の Canary 版を実行しています。CI が再度リリースを行うまでは、テストするものはありません。</string>
-    <string name="canary_ahead">お使いのビルドは公開されているどの Canary ビルドよりも新しいため、それらのいずれかからビルドされたものではありません。</string>
-    <string name="canary_diverged">お使いのビルドには最新の Canary 版の番号が付けられていますが、実際にはその Canary 版からビルドされたものではありません。何をテストしているのかを確実に把握するため、その Canary 版をインストールしてください。</string>
-    <string name="canary_after_release">現在使用しているリリースは、ここにあるどの Canary 版よりも新しいものです。次回の Canary 版は、このリリースをベースにビルドされます。</string>
-    <string name="canary_build">Canary %1$d</string>
-    <string name="canary_report_title">何か見つけましたか？</string>
-    <string name="canary_report_body">Canary 版を運用する最大の意義は、あえて不具合を起こさせることにあります。報告があって初めて、それが修正へとつながるのです。バグを追跡する際はデバッグの ZIP を使用してください。詳細なログが記録されるため、報告に必要な情報が得られます。</string>
-    <string name="home_contributors_by_commits">コミット数順</string>
-    <string name="home_contributors_by_recent">最近の順</string>
-    <string name="scope_recommended_only">モジュールが要求したもの</string>
-    <string name="home_resting">お休み中 — 保存されたアクティビティを表示しています。下にスワイプすると更新します。</string>
-    <string name="report_title">報告する前に</string>
-    <string name="report_step_canary">まず最新の Canary を試す</string>
-    <string name="report_step_canary_body">すでに修正されている可能性があり、メンテナが問題を調査や支援をするにはデバッグビルドが必要です。master ブランチを使い続けてください (プルリクエストのビルドは不安定なため)。</string>
-    <string name="report_step_zygisk">Magisk 以外をお使いですか？ Zygisk を更新してください</string>
-    <string name="report_step_zygisk_body">最新の Zygisk 実装をフラッシュしてください。デバッグビルドが存在する場合は、それを使用してください。</string>
-    <string name="report_step_logs">ログを添付</string>
-    <string name="report_step_logs_body">ログのないバグレポートは、最初からやり直す会話のようなものです。この処理では、添付可能な ZIP ファイルに両方のログが書き出されます。</string>
-    <string name="report_step_crashed">Zygisk がクラッシュした場合</string>
-    <string name="report_step_crashed_body">もうデーモンに対して ZIP ファイルの作成を要求することはできませんが、ファイル自体は書き出されています。他のどのユーザーもアクセスできない状態であっても、root ユーザーであればそれらのファイルを読み取ることができます。</string>
-    <string name="report_open_tracker">課題トラッカーを開く</string>
-    <string name="report_save_with_root">ログフォルダを保存 (root 権限が必要です)</string>
-    <string name="report_saved_to">%1$s に保存しました</string>
-    <string name="report_see_guide">詳しい手引きは課題に</string>
-    <string name="report_root_refused">root 権限の付与が拒否されました。root 権限マネージャーで Vector を許可してから、もう一度試してください%1$s</string>
-    <string name="home_custom_build">独自ビルド — master より先行</string>
-    <string name="language_title">言語</string>
-    <string name="language_system">システムの設定に従う</string>
-    <string name="language_system_summary">デバイスで設定されている言語に従います</string>
-
-    <string name="language_translated_by">翻訳者: %1$s</string>
-    <string name="language_help_short">翻訳</string>
-    <string name="language_help">Vector の翻訳に参加</string>
-
-    <string name="update_title">フレームワークの更新</string>
-    <string name="update_channel_canary">Canary ビルド</string>
-    <string name="update_channel_release">正式版</string>
-    <string name="update_install">インストール</string>
-    <string name="update_downloading">ダウンロード中: %1$s / %2$s</string>
-    <string name="update_cancel_download">ダウンロードをキャンセル</string>
-    <string name="update_flashing">インストールしています…</string>
-    <string name="update_done">インストールしました</string>
-    <string name="update_reboot">再起動</string>
-    <string name="update_reboot_why">再起動後に反映されます</string>
-    <string name="update_none">利用可能なアップデートはありません。</string>
-    <string name="update_no_notes">このリリースには、リリースノートは公開されていません。</string>
-    <string name="update_no_root">root 実装が見つからなかったため、何もフラッシュできません。</string>
-    <string name="update_root_multiple">2 つの root 実装が見つかりました。Vector は、どちらがそのモジュールを管理しているかを推測しません。</string>
-    <string name="update_failed_start">インストーラーを起動できませんでした。</string>
-    <string name="update_failed_download">更新をダウンロードできませんでした。</string>
-    <string name="update_failed_exit">インストーラーが失敗しました (終了コード: %1$d)。</string>
-    <string name="scope_framework_shared">すべてのユーザーで共有されるプロセスであるため、デバイス全体に影響します。</string>
-    <string name="scope_self_hook">このモジュールは独自のアプリに読み込まれ、それによりアクティブであることを報告します</string>
-    <string name="update_no_output">インストーラーは何も出力しませんでした。</string>
-    <string name="update_versions">すべてのバージョン</string>
-    <string name="update_installed">使用中</string>
-    <string name="update_older">より古い</string>
-    <string name="update_rollback">戻す</string>
-    <string name="update_reinstall">再インストール</string>
-    <string name="update_rollback_warning">現在お使いのものより古いバージョンです。古いデータベースを使用する場合、ロールバックを行うと有効になっているモジュールやそれらがフックしている設定がリセットされます。そのため、事前にモジュールのバックアップを取ってください。</string>
-    <string name="settings_window_all">最初から</string>
-    <string name="update_diverged">バージョン番号は同じですが、ビルドが異なります。現在実行中のものは、このリリースからビルドされたものではありません。</string>
-    <string name="home_filter_clear">すべて表示</string>
-    <string name="home_filter_remove">%1$s のみ表示するのを解除</string>
-    <string name="home_history_loading">さらに過去へ…</string>
-    <string name="home_history_more">以前のコミットを読み込む</string>
-    <string name="home_history_beginning">履歴の開始: %1$s</string>
-    <string name="home_scroll_top">先頭に戻る</string>
-    <string name="home_scroll_down">次の画面へ</string>
-    <string name="action_not_in_store">リポジトリにはありません</string>
-    <string name="action_not_in_store_summary">このモジュールの更新を確認できません</string>
-    <string name="action_update_to">%1$s に更新</string>
-    <string name="action_update_from">%1$s から・%2$s</string>
-    <string name="action_reinstall_same">同じバージョン・%1$s</string>
-    <string name="action_update_running">インストールしています…</string>
-    <string name="action_update_no_apk">このリリースにはインストールできる APK がありません</string>
-    <string name="action_update_choose">複数のビルドがあります — リポジトリで選択</string>
-    <string name="action_update_started">更新を開始しました</string>
-    <string name="action_open_store">リポジトリで開く</string>
-    <string name="modules_updating">%1$s を更新しています — %3$d 個中 %2$d 個</string>
-    <string name="modules_updates_title">更新するモジュール</string>
-    <string name="modules_update_versions">%1$s → %2$s・%3$s</string>
-    <string name="modules_update_reinstall">%1$s を再インストール · %2$s</string>
-    <string name="modules_update_ignored">無視中</string>
-    <string name="modules_update_selected">%1$d 件を更新</string>
-    <plurals name="modules_updates">
-        <item quantity="other">%1$d 個のモジュールを更新できます</item>
-    </plurals>
-    <plurals name="modules_updated">
-        <item quantity="other">%1$d 個のモジュールを更新しました</item>
-    </plurals>
-    <plurals name="modules_update_failed">
-        <item quantity="other">%1$d 個のモジュールを更新できませんでした</item>
-    </plurals>
-    <string name="home_window_changed">新しい期間の保存されたアクティビティを表示しています — 引っ張って更新</string>
-    <string name="home_history_window_end">この期間の履歴は以上です</string>
-    <string name="update_same_number">同じ番号、別のビルド</string>
-    <string name="modules_load_no_apk">有効になっていますが、フレームワークは読み込む APK を見つけられませんでした。</string>
-    <string name="modules_load_unusable">有効になっていますが、フレームワークが読み込めませんでした。動作していません。</string>
-    <plurals name="modules_batch_enabled">
-        <item quantity="other">%1$d 個のモジュールを有効化</item>
-    </plurals>
-    <plurals name="modules_batch_disabled">
-        <item quantity="other">%1$d 個のモジュールを無効化</item>
-    </plurals>
-    <plurals name="modules_batch_uninstalled">
-        <item quantity="other">%1$d 個のモジュールをアンインストール</item>
-    </plurals>
-    <plurals name="modules_batch_already_on">
-        <item quantity="other">%1$d 個はすでに有効</item>
-    </plurals>
-    <plurals name="modules_batch_already_off">
-        <item quantity="other">%1$d 個はすでに無効</item>
-    </plurals>
-    <plurals name="modules_batch_all_already_on">
-        <item quantity="other">%1$d 個すべてすでに有効でした</item>
-    </plurals>
-    <plurals name="modules_batch_all_already_off">
-        <item quantity="other">%1$d 個すべてすでに無効でした</item>
-    </plurals>
-    <string name="info_manager_version">マネージャー</string>
-    <string name="action_open_companion">コンパニオンアプリを開く</string>
-    <string name="action_open_companion_summary">製作者がこのモジュールの設定用に用意した画面</string>
-    <string name="action_soft_reboot">ソフトリブート</string>
-    <string name="action_soft_reboot_summary">デバイスを再起動せずにフレームワークを再起動します</string>
-    <string name="action_soft_reboot_confirm">実行中のアプリがすべて終了し、画面が一時的に真っ暗になります。デバイスの電源は入ったままです。</string>
-    <string name="info_section_build">現在の実行環境</string>
-    <string name="info_section_health">動作状況</string>
-    <string name="info_section_device">デバイスの情報</string>
-    <string name="crash_recorded_title">マネージャーが予期せず終了しました</string>
-    <string name="crash_recorded_summary">完全なスタックトレースは、ログのエクスポートの crash_manager に含まれます。</string>
-    <string name="crash_recorded_clear">破棄</string>
-    <string name="crash_what">種類</string>
-    <string name="crash_message">メッセージ</string>
-    <string name="crash_where">場所</string>
-    <string name="crash_when">発生時刻</string>
-    <string name="crash_where_unknown">Vector 自身のコード内にはありません</string>
-    <string name="crash_when_value">%1$s (スレッド: %2$s)</string>
-    <string name="crash_open_trace">スタックトレースを確認</string>
-    <string name="crash_trace">クラッシュ</string>
-    <string name="crash_caused_by">原因</string>
-    <plurals name="crash_frames_elided">
-        <item quantity="other">上と同じスタックがさらに %1$d 段</item>
-    </plurals>
-    <string name="crash_unreadable">このクラッシュ情報を読み取ることができませんでした。コピーして、そのままレポートに添付してください。</string>
-    <string name="force_launcher_icons">アプリがランチャーアイコンを非表示にするのを防止</string>
-    <string name="force_launcher_icons_summary">Android 10 以降、自身のランチャーアイコンを非表示にしたアプリには、代わりにアプリ情報画面を開くアイコンが表示されます。この設定をオフにすると、アイコンを非表示のままにできます。ただし、ランチャーを再起動するまで表示が更新されない可能性があります。ほとんどのモジュールを含め、もともとランチャーアイコンを持たないアプリには影響しません。</string>
-    <string name="action_force_stop_failed">%1$s を停止できませんでした。</string>
-    <string name="modules_load_unsupported_api">有効になっていますが、libxposed API 100 向けにビルドされています。このフレームワークは現在、そのバージョンを読み込みません。</string>
-    <string name="update_root_unknown">このフレームワークのビルドは、どの root 実装がインストールされているかを報告しません。</string>
-    <string name="scope_no_match">その検索や絞り込みに一致するアプリはありません。</string>
-    <string name="scope_apply_effect">各アプリは、次に起動した際にこれを反映します。</string>
-    <string name="info_dex2oat_crashed">クラッシュしました</string>
-    <string name="info_dex2oat_mount_failed">マウントに失敗しました</string>
-    <string name="info_dex2oat_selinux_permissive">SELinux は Permissive です</string>
-    <string name="info_dex2oat_sepolicy_incorrect">SELinux のポリシーが正しくありません</string>
-    <string name="scope_framework_restart_title">フレームワークはまだ反映していません</string>
-    <string name="scope_framework_restart_body">システムフレームワークは、Android による起動時に一度だけ読み込まれます。この変更が反映されるのはフレームワークが再起動したときのみであり、その際、実行中のすべてのアプリは終了しますが、デバイスの電源は入ったままとなります。</string>
-    <string name="scope_framework_restart_later">後で</string>
-    <string name="settings_network">ネットワーク</string>
-    <string name="settings_doh">名前を HTTPS で解決</string>
-    <string name="settings_doh_summary">ネットワークの DNS リゾルバではなく、Cloudflare 経由で名前解決を行います。DNS をブロックしたり改ざんしたりするネットワーク環境に適しています。</string>
-    <string name="settings_doh_untested">まだ名前を解決していません。</string>
-    <string name="settings_doh_bypassed">使用されていません。プロキシが設定されているため、プロキシによって名前解決が行われています。</string>
-    <string name="settings_doh_working">動作中 — %1$s は Cloudflare 経由で解決されました。</string>
-    <string name="settings_doh_fell_back">Cloudflare に接続できませんでした (%1$s)。そのため、このセッションの残りの期間はネットワークのリゾルバが使用されます。</string>
-    <string name="settings_doh_retry">再試行</string>
-
-    <string name="launcher_title">Vector を開く方法</string>
-    <string name="launcher_body">Vector はアプリとしてインストールされていないため、ランチャーには何も表示されません。以下は、Vector に戻ってくるための手段です。</string>
-    <string name="launcher_shortcut">ホーム画面のショートカット</string>
-    <string name="launcher_shortcut_create">作成</string>
-    <string name="launcher_shortcut_unsupported">お使いのランチャーは、固定されたショートカットに対応していません。</string>
-    <string name="launcher_shortcut_refused">お使いのランチャーがショートカットの作成を拒否しました。</string>
-    <string name="launcher_turn_on">オン</string>
-    <string name="launcher_install">アプリとしてインストール</string>
-    <string name="launcher_install_action">インストール</string>
-    <string name="launcher_install_reinstall">再インストール</string>
-    <string name="launcher_install_done">Vector がインストールされました。ランチャーから起動してください。</string>
-    <string name="launcher_install_failed">Vector をインストールできませんでした。</string>
-    <string name="launcher_install_conflict">別のキーで署名された Vector のコピーが既にインストールされています。このバージョンをインストールするには、まずそれを削除する必要があります。</string>
-    <string name="launcher_install_remove">削除</string>
-    <string name="launcher_install_diverged">インストールされている Vector は、ここで実行されているものとは別のビルドです。再インストールすると置き換わります。</string>
-    <string name="launcher_route_available">利用可能</string>
-    <string name="launcher_note">%1$s をダイヤルするか、%2$s のアクションボタンから Vector を開くこともできます。</string>
-    <string name="launcher_root_generic">root マネージャー</string>
-    <string name="launcher_prompt_title">Vector のアイコンはまだありません</string>
-    <string name="launcher_prompt_body">Vector はインストールされるのではなく、別のプロセス内で実行されるため、ランチャーには何も表示されず、Vector に戻ってくる手段もありません。ホーム画面にショートカットを作成するか、通常のアプリとしてインストールしてください。</string>
-    <string name="launcher_prompt_never">今後表示しない</string>
-
-    
-    <string name="settings_screen_title">設定</string>
+    <string name="settings_rearrange_panels_summary">並び順を変更したり、めったに開かないものを非表示にしたりできます。</string>    <string name="back">戻る</string>    <string name="language_title">言語</string>    <string name="settings_screen_title">設定</string>
     <string name="settings_screen_subtitle">実行設定とアプリ情報</string>
     <string name="settings_section_run">実行</string>
     <string name="settings_auto_screen_off">自動画面オフ</string>
@@ -490,7 +97,6 @@
     <string name="about_faq_restart_q">再起動後に再 root は必要ですか？</string>
     <string name="about_faq_restart_a">はい。ブートローダーはロックされているため、再起動のたびに Unlock Root を再実行してください。</string>
     <string name="about_disclaimer">免責事項: このアプリはセキュリティ研究と個人学習のみを目的としています。カーネルメモリ破壊による権限昇格は本質的に不確実であり、利用は自己責任です。現地の法律を遵守してください。</string>
-
     <string name="log_starting">RootMyS24 を開始中</string>
     <string name="log_payload">Payload: %1$s (固定, kmalloc_caches 0x16bad78)</string>
     <string name="log_check_shizuku">[1/5] Shizuku を確認中...</string>
@@ -523,7 +129,6 @@
     <string name="log_flow_done">Root フローが完了しました!</string>
     <string name="log_failed">失敗: %1$s</string>
     <string name="log_woken">画面をオンにしました</string>
-    <string name="log_export_ok">Downloads/rootmys9280-log.txt にエクスポートしました (%1$d 文字)</string>
     <string name="log_export_ok_name">Exported to Downloads/%1$s (%2$d chars)</string>
     <string name="log_export_fail">エクスポートに失敗しました: %1$s</string>
     <string name="log_knox_tripped">トリップ済み (warranty_bit=1)</string>
@@ -531,11 +136,58 @@
     <string name="log_knox_ok">無傷 (warranty_bit=0, verifiedbootstate=%1$s)</string>
     <string name="log_knox_unknown">不明 (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">不明 (Shizuku が必要)</string>
-    <string name="log_binder_unavailable">Shizuku のバインダーを利用できません</string>
-
     <string name="log_export_entry_fail">ダウンロード項目を作成できませんでした</string>
     <string name="log_export_write_fail">ダウンロード項目に書き込めませんでした</string>
     <string name="log_export_ok_path">%1$s にエクスポートしました</string>
     <string name="log_restored">前回のセッションから %1$d 行を復元しました</string>
     <string name="log_persist_failed">ログの自動保存に失敗: %1$s</string>
-<string name="rootflow_auth_adb_pair">Pair with code</string><string name="rootflow_auth_adb_pair_port">Pair port</string><string name="rootflow_auth_adb_pair_code">6-digit pair code</string><string name="rootflow_auth_adb_pair_hint">In Wireless debugging, tap Pair device with pairing code, enter the IP, the 37xxx pairing port and the 6-digit code. Pairing pre-authorizes this device, so Connect will not ask for RSA approval again.</string><string name="rootflow_auth_adb_pairing">Pairing…</string><string name="rootflow_auth_adb_paired">Paired ✓ - now tap Connect</string><string name="adb_wireless_bad_pair_code">Enter the 6-digit pairing code</string><string name="adb_wireless_paired">Paired: %1$s:%2$d - device now trusts this app</string><string name="log_adb_pair_code_wrong">Pairing failed: wrong pairing code or code expired</string><string name="log_adb_pair_failed">Pairing failed: %1$s</string><string name="rootflow_auth_adb_pair_notify">Notify pairing</string><string name="rootflow_auth_adb_pair_notify_hint">Finds this device via mDNS and asks for the 6-digit code in a notification - no need to type the IP or ports.</string><string name="notification_channel_adb_pairing">Wireless debugging pairing</string><string name="notification_adb_pairing_searching_title">Looking for wireless debugging service</string><string name="notification_adb_pairing_searching_text">Enable Wireless debugging in Developer options while this notification is open...</string><string name="notification_adb_pairing_stop">Stop</string><string name="notification_adb_pairing_service_found_title">Wireless debugging found</string><string name="notification_adb_pairing_service_found_text">Enter the 6-digit pairing code shown on this device</string><string name="notification_adb_pairing_input_action">Enter pair code</string><string name="notification_adb_pairing_input_hint">6-digit code</string><string name="notification_adb_pairing_working_title">Pairing...</string><string name="notification_adb_pairing_working_text">Please wait a moment</string><string name="notification_adb_pairing_success_title">Pairing successful</string><string name="notification_adb_pairing_success_text">The device now trusts this app - tap Connect in the app</string><string name="notification_adb_pairing_success_connected_text">Paired and connected</string><string name="notification_adb_pairing_failed_title">Pairing failed</string><string name="notification_adb_pairing_code_wrong">Wrong pairing code or code expired</string><string name="log_adb_pair_notify_started">Pairing notification sent - check the notification and enter the 6-digit code</string><string name="notification_adb_pairing_no_permission">Enable notification permission for this app in System Settings, then try again</string><string name="log_adb_key_not_ready">Key not initialized - select the authorization method first</string><string name="notification_adb_pairing_not_found_title">Wireless debugging not found</string><string name="notification_adb_pairing_not_found_text">Make sure Wireless debugging is enabled and the phone is on the same network, then try again</string><string name="notification_adb_pairing_search_error_title">Wireless debugging search failed</string><string name="notification_adb_pairing_expired_title">Pairing session expired</string><string name="notification_adb_pairing_expired_text">The pairing port changed or timed out. Searching again — please keep the pairing code screen open.</string></resources>
+    <string name="rootflow_auth_adb_pair">Pair with code</string>
+    <string name="rootflow_auth_adb_pair_port">Pair port</string>
+    <string name="rootflow_auth_adb_pair_code">6-digit pair code</string>
+    <string name="rootflow_auth_adb_pairing">Pairing…</string>
+    <string name="rootflow_auth_adb_paired">Paired ✓ - now tap Connect</string>
+    <string name="adb_wireless_bad_pair_code">Enter the 6-digit pairing code</string>
+    <string name="log_adb_pair_code_wrong">Pairing failed: wrong pairing code or code expired</string>
+    <string name="log_adb_pair_failed">Pairing failed: %1$s</string>
+    <string name="rootflow_auth_adb_pair_notify">Notify pairing</string>
+    <string name="rootflow_auth_adb_pair_notify_hint">Finds this device via mDNS and asks for the 6-digit code in a notification - no need to type the IP or ports.</string>
+    <string name="notification_channel_adb_pairing">Wireless debugging pairing</string>
+    <string name="notification_adb_pairing_searching_title">Looking for wireless debugging service</string>
+    <string name="notification_adb_pairing_searching_text">Enable Wireless debugging in Developer options while this notification is open...</string>
+    <string name="notification_adb_pairing_stop">Stop</string>
+    <string name="notification_adb_pairing_service_found_title">Wireless debugging found</string>
+    <string name="notification_adb_pairing_service_found_text">Enter the 6-digit pairing code shown on this device</string>
+    <string name="notification_adb_pairing_input_action">Enter pair code</string>
+    <string name="notification_adb_pairing_input_hint">6-digit code</string>
+    <string name="notification_adb_pairing_working_title">Pairing...</string>
+    <string name="notification_adb_pairing_working_text">Please wait a moment</string>
+    <string name="notification_adb_pairing_success_title">Pairing successful</string>
+    <string name="notification_adb_pairing_success_text">The device now trusts this app - tap Connect in the app</string>
+    <string name="notification_adb_pairing_success_connected_text">Paired and connected</string>
+    <string name="notification_adb_pairing_failed_title">Pairing failed</string>
+    <string name="notification_adb_pairing_code_wrong">Wrong pairing code or code expired</string>
+    <string name="log_adb_pair_notify_started">Pairing notification sent - check the notification and enter the 6-digit code</string>
+    <string name="notification_adb_pairing_no_permission">Enable notification permission for this app in System Settings, then try again</string>
+    <string name="log_adb_key_not_ready">Key not initialized - select the authorization method first</string>
+    <string name="notification_adb_pairing_not_found_title">Wireless debugging not found</string>
+    <string name="notification_adb_pairing_not_found_text">Make sure Wireless debugging is enabled and the phone is on the same network, then try again</string>
+    <string name="notification_adb_pairing_search_error_title">Wireless debugging search failed</string>
+    <string name="notification_adb_pairing_expired_title">Pairing session expired</string>
+    <string name="notification_adb_pairing_expired_text">The pairing port changed or timed out. Searching again — please keep the pairing code screen open.</string>
+    <string name="about_section_support">Support</string>
+    <string name="about_support_body">If this tool has helped you, a small donation keeps it going. Thank you!</string>
+    <string name="about_support_qr_hint">Scan with Alipay or WeChat Pay</string>
+    <string name="about_support_title">Buy the developer a drink</string>
+    <string name="donate_back">Back</string>
+    <string name="donate_body_long">Thank you for considering a donation! Scan the QR code below with Alipay or WeChat Pay. Every bit helps keep this project alive and maintained.</string>
+    <string name="donate_screen_title">Support the project</string>
+    <string name="donate_thanks">Thanks for your support 🐢</string>
+    <string name="donation_body">You have successfully rooted %1$d times — thank you! If RootMyS24 has been useful, a small donation would help keep it going. You can scan the QR code on the About page.</string>
+    <string name="donation_go_about">Open About</string>
+    <string name="donation_later">Later</string>
+    <string name="donation_title">Support the project</string>
+    <string name="nav_about">About</string>
+    <string name="nav_rootflow">Unlock Root</string>
+    <string name="nav_settings">Settings</string>
+    <string name="rootflow_firmware_hint">Payload: %1$s</string>
+</resources>

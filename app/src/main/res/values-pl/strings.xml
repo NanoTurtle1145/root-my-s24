@@ -1,491 +1,24 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    
-    <string name="nav_home">Start</string>
     <string name="nav_logs">Dzienniki</string>
-    
     <string name="panels_done">Gotowe</string>
-    
     <string name="panels_hide">Ukryj %1$s</string>
     <string name="panels_show">Pokaż %1$s</string>
-    
     <string name="panels_move_earlier">Przesuń wcześniej</string>
     <string name="panels_move_later">Przesuń dalej</string>
     <string name="panels_ball_open">Otwórz nawigację</string>
     <string name="panels_ball_close">Zamknij nawigację</string>
-    
     <string name="status_active">Aktywny</string>
     <string name="status_degraded">Problemy</string>
     <string name="status_inactive">Nieaktywowany</string>
-    
     <string name="status_mismatched">Niezgodność wersji</string>
-    <string name="status_checking">Sprawdzanie…</string>
-    <string name="status_open_details">Otwórz stan systemu</string>
-    
-    <string name="issue_sepolicy_title">Zasady SELinux nie zostały załadowane</string>
-    <string name="issue_sepolicy_summary">Niektóre funkcje nie będą działać. Zwykle oznacza to, że implementacja roota nie zastosowała reguł Vectora</string>
-    <string name="issue_system_server_title">Nie udało się wstrzyknąć frameworka systemu</string>
-    <string name="issue_system_server_summary">Moduły nie mogą się podłączyć do usług systemowych. Zdarza się to rzadko i zwykle jest spowodowane przez inny moduł roota, który powoduje konflikt działania.</string>
-    <string name="issue_dex2oat_title">Warstwa optymalizatora DEX jest niedostępna</string>
-    <string name="issue_dex2oat_summary">Niektóre właściwości systemu zostały usunięte lub zmienione. Moduły mogą przestać działać po aktualizacji aplikacji.</string>
-    <string name="crash_recorded_title">Menedżer nieoczekiwanie się zamknął</string>
-    <string name="crash_recorded_summary">Pełny ślad stosu znajduje się w eksporcie dziennika, w sekcji crash_manager.</string>
-    <string name="crash_recorded_clear">Odrzuć</string>
-    <string name="crash_what">Co</string>
-    <string name="crash_message">Wiadomość</string>
-    <string name="crash_where">Gdzie</string>
-    <string name="crash_when">Kiedy</string>
-    
-    <string name="crash_where_unknown">Nigdzie we własnym kodzie Vectora</string>
-    
-    <string name="crash_when_value">%1$s w %2$s</string>
-    <string name="crash_open_trace">Zobacz ślad stosu</string>
-    <string name="crash_trace">Awaria</string>
-    <string name="crash_caused_by">Spowodowana przez</string>
-    
-    <plurals name="crash_frames_elided">
-        <item quantity="one">%1$d ramka więcej, taka sama jak powyżej</item>
-        <item quantity="few">%1$d ramki więcej, takie same jak powyżej</item>
-        <item quantity="many">%1$d ramek więcej, takich samych jak powyżej</item>
-        <item quantity="other">%1$d ramek więcej, takich samych jak powyżej</item>
-    </plurals>
-    <string name="crash_unreadable">Nie udało się odczytać tej awarii. Skopiuj ją i dołącz do raportu w obecnej formie.</string>
-    
-    <string name="system_status">Stan systemu</string>
-    <string name="info_manager_version">Menedżer</string>
-    <string name="info_api_version">API Xposed</string>
-    <string name="info_section_build">Co jest uruchomione?</string>
-    <string name="info_section_health">Czy działa poprawnie?</string>
-    <string name="info_section_device">To urządzenie</string>
-    <string name="info_framework_version">Framework</string>
-    <string name="info_manager_package">Pakiet menedżera</string>
-    <string name="info_dex2oat">Warstwa optymalizatora DEX</string>
-    <string name="info_selinux">Zasady SELinux</string>
-    <string name="info_system_server">Framework systemu</string>
-    <string name="info_android">Android</string>
-    <string name="info_device">Urządzenie</string>
-    <string name="info_abi">Architektura</string>
-    <string name="info_supported">Obsługiwana</string>
-    <string name="info_unsupported">Nieobsługiwana</string>
-    <string name="info_dex2oat_crashed">Uległ awarii</string>
-    <string name="info_dex2oat_mount_failed">Montowanie się nie powiodło</string>
-    <string name="info_dex2oat_selinux_permissive">Zasady SELinux są zezwalające</string>
-    <string name="info_dex2oat_sepolicy_incorrect">Zasady SELinux są nieprawidłowe</string>
-    <string name="info_loaded">Załadowane</string>
-    <string name="info_not_loaded">Niezaładowane</string>
-    <string name="info_injected">Wstrzyknięty</string>
-    <string name="info_not_injected">Niewstrzyknięty</string>
-    <string name="status_notification">Powiadomienie o stanie</string>
-    <string name="status_notification_summary">Stałe powiadomienie pokazujące, że Vector jest uruchomiony.</string>
-    <string name="force_launcher_icons">Nie pozwalaj aplikacjom ukrywać ikon w launcherze</string>
-    <string name="force_launcher_icons_summary">Od Androida 10 aplikacja, która ukrywa własną ikonę launchera, otrzymuje z powrotem jedną ikonę, która otwiera stronę informacji o aplikacji. Wyłącz to, aby pozostała ukryta — launcher może się nie zaktualizować do czasu restartu. Nie dotyczy to aplikacji, które nigdy nie miały ikony launchera, w tym większość modułów.</string>
-    
-    <string name="home_quarter_title">Ostatnia aktywność</string>
-    
-    <plurals name="home_commit_count">
-        <item quantity="one">%1$d zatwierdzenie</item>
-        <item quantity="few">%1$d zatwierdzenia</item>
-        <item quantity="many">%1$d zatwierdzeń</item>
-        <item quantity="other">%1$d zatwierdzeń</item>
-    </plurals>
-    <plurals name="home_people_count">
-        <item quantity="one">od %1$d osoby</item>
-        <item quantity="few">od %1$d osób</item>
-        <item quantity="many">od %1$d osób</item>
-        <item quantity="other">od %1$d osób</item>
-    </plurals>
-    <string name="home_since">od %1$s</string>
-    <string name="home_filter_clear">Pokaż wszystko</string>
-    <string name="home_filter_remove">Przestań pokazywać tylko %1$s</string>
-    <string name="home_scroll_top">Wróć na górę</string>
-    <string name="home_scroll_down">Następny ekran</string>
-    <string name="home_history_loading">Sięgamy dalej wstecz…</string>
-    <string name="home_history_more">Załaduj wcześniejsze zatwierdzenia</string>
-    <string name="home_history_window_end">To wszystko w tym zakresie</string>
-    <string name="home_history_beginning">Tu się zaczęło, %1$s</string>
-    <string name="home_no_activity">Brak zatwierdzeń w ostatnich sześciu miesiącach.</string>
-    <string name="home_loading_activity">Ładowanie ostatniej aktywności…</string>
-    <string name="home_window_changed">Wyświetlana jest zapisana aktywność dla nowego zakresu — pociągnij, aby odświeżyć</string>
-    <string name="home_offline">Wyświetlana jest zapisana aktywność — nie można nawiązać połączenia z GitHubem.</string>
-    <string name="home_bumps">%1$d aktualizacji zależności</string>
-    <string name="home_contribute">Weź udział</string>
-    <string name="home_test_canary">Wypróbuj Canary</string>
-    <string name="home_open_issue">Zgłoś problem</string>
-    <string name="home_discussions">Dyskusje</string>
-    <string name="home_review_prs">Przejrzyj zmianę</string>
-    
-    <string name="home_with_coauthor">%1$s i %2$s</string>
-    <string name="home_with_coauthors">%1$s i %2$d innych</string>
-    <string name="home_month_stats">%1$s · %2$s</string>
-    <plurals name="home_people_count_plain">
-        <item quantity="one">%1$d osoba</item>
-        <item quantity="few">%1$d osoby</item>
-        <item quantity="many">%1$d osób</item>
-        <item quantity="other">%1$d osób</item>
-    </plurals>
-    
-    <plurals name="home_commits_ahead">
-        <item quantity="one">%1$d zatwierdzenie nowsze niż twoje</item>
-        <item quantity="few">%1$d zatwierdzenia nowsze niż twoje</item>
-        <item quantity="many">%1$d zatwierdzeń nowszych niż twoje</item>
-        <item quantity="other">%1$d zatwierdzeń nowszych niż twoje</item>
-    </plurals>
-    <string name="home_your_build">Twoja kompilacja %1$d</string>
-    <plurals name="home_quiet_days">
-        <item quantity="one">%1$d dzień ciszy</item>
-        <item quantity="few">%1$d dni ciszy</item>
-        <item quantity="many">%1$d dni ciszy</item>
-        <item quantity="other">%1$d dni ciszy</item>
-    </plurals>
-    
-    <string name="appearance_title">Wygląd</string>
-    <string name="appearance_theme">Motyw</string>
-    <string name="appearance_theme_system">Zgodny z systemem</string>
-    <string name="appearance_theme_light">Jasny</string>
-    <string name="appearance_theme_dark">Ciemny</string>
-    <string name="appearance_dynamic_color">Kolory tapety</string>
-    <string name="appearance_amoled">Prawdziwy czarny w trybie ciemnym</string>
-    <string name="appearance_amoled_summary">Oszczędza energię na ekranach OLED.</string>
-    <string name="egg_two_more">Jeszcze dwa razy…</string>
-    <string name="egg_one_more">Jeszcze raz…</string>
-    
-    <string name="modules_empty">Nie zainstalowano żadnych modułów.</string>
-    <plurals name="modules_updates">
-        <item quantity="one">%1$d moduł można zaktualizować</item>
-        <item quantity="few">%1$d moduły można zaktualizować</item>
-        <item quantity="many">%1$d modułów można zaktualizować</item>
-        <item quantity="other">%1$d modułów można zaktualizować</item>
-    </plurals>
-    <plurals name="modules_updated">
-        <item quantity="one">Zaktualizowano %1$d moduł</item>
-        <item quantity="few">Zaktualizowano %1$d moduły</item>
-        <item quantity="many">Zaktualizowano %1$d modułów</item>
-        <item quantity="other">Zaktualizowano %1$d modułów</item>
-    </plurals>
-    <plurals name="modules_update_failed">
-        <item quantity="one">Nie udało się zaktualizować %1$d modułu</item>
-        <item quantity="few">Nie udało się zaktualizować %1$d modułów</item>
-        <item quantity="many">Nie udało się zaktualizować %1$d modułów</item>
-        <item quantity="other">Nie udało się zaktualizować %1$d modułów</item>
-    </plurals>
-    <string name="modules_updating">Aktualizowanie %1$s — %2$d z %3$d</string>
-    <string name="modules_updates_title">Moduły do aktualizacji</string>
-    <string name="modules_update_versions">%1$s → %2$s · %3$s</string>
-    <string name="modules_update_reinstall">Zainstaluj ponownie %1$s · %2$s</string>
-    <string name="modules_update_ignored">Ignorowany</string>
-    <string name="modules_update_selected">Zaktualizuj %1$d</string>
-    <string name="modules_active_of">%1$d z %2$d aktywnych</string>
-    <string name="modules_no_match">Żaden moduł nie pasuje do tego wyszukiwania ani filtra.</string>
-    <string name="modules_backup">Utwórz kopię modułów</string>
-    <string name="modules_restore">Przywróć moduły</string>
-    <string name="modules_backup_done">Zapisano %1$d modułów wraz z ich zakresami.</string>
-    <string name="modules_backup_failed">Nie udało się zapisać kopii.</string>
-    <string name="modules_restore_done">Przywrócono %1$d modułów, pominięto %2$d, które nie zostały tutaj zainstalowane.</string>
-    <string name="modules_restore_failed">Nie udało się odczytać tej kopii.</string>
-    <string name="modules_search_hint">Wyszukaj moduły</string>
-    <string name="modules_clear_search">Wyczyść wyszukiwanie</string>
-    <string name="modules_filter">Filtr</string>
-    <string name="modules_section_active">Uruchomione</string>
-    <string name="modules_section_inactive">Nieuruchomione</string>
-    <string name="modules_scope_more">+%1$d</string>
-    <string name="modules_sort_enabled">Najpierw uruchomione</string>
-    <string name="modules_sort_name">Według nazwy</string>
-    <string name="modules_sort_recent">Ostatnio zaktualizowane</string>
-    <string name="modules_sort_scope">Najszerszy zakres</string>
-    <string name="modules_filter_all">Wszystkie</string>
-    <string name="modules_filter_active">Aktywne</string>
-    <string name="modules_filter_inactive">Nieaktywne</string>
-    <string name="modules_load_no_apk">Włączony, ale framework nie mógł znaleźć pliku APK do załadowania.</string>
-    <string name="modules_load_unusable">Włączony, ale framework nie mógł go załadować. Nie jest uruchomiony.</string>
-    <string name="modules_load_unsupported_api">Włączony, ale zbudowany dla libxposed API 100, którego ten framework już nie ładuje.</string>
-    <string name="modules_incompatible">Wymaga API libxposed %1$d, którego ten framework nie zapewnia.</string>
-    <string name="modules_incompatible_legacy">Wymaga API Xposed %1$d, którego ten framework nie zapewnia.</string>
-    <string name="modules_api_behind">Zbudowany dla libxposed API %1$d. API %2$d zmieniło interfejs, więc ten moduł może w pełni nie działać.</string>
-    <string name="modules_no_daemon">Vector nie jest uruchomiony, więc lista modułów jest niedostępna. Otwórz stan systemu z poziomu strony głównej, aby sprawdzić przyczynę.</string>
-    
-    <string name="web_open_external">Otwórz w przeglądarce</string>
-    
-    <string name="settings_ambience">Powierzchnia nagłówka</string>
-    <string name="ambience_snow">Śnieg</string>
-    <string name="ambience_maze">Labirynt</string>
-    <string name="ambience_circuit">Obwód</string>
-    <string name="ambience_matrix">Deszcz kodu</string>
-    <string name="ambience_none">Nieruchoma</string>
-    
+    <string name="status_checking">Sprawdzanie…</string>    
+    <string name="appearance_title">Wygląd</string>    <string name="web_open_external">Otwórz w przeglądarce</string>
     <string name="settings_navigation">Nawigacja</string>
     <string name="settings_floating_nav">Pływająca nawigacja</string>
     <string name="settings_floating_nav_summary">Zastępuje pasek małą kulką, którą można przeciągnąć w dowolne miejsce. Przytrzymaj ją, aby rozłożyć panele, lub naciśnij, aby pozostały otwarte.</string>
     <string name="settings_rearrange_panels">Zmień kolejność paneli</string>
-    <string name="settings_rearrange_panels_summary">Zmień ich kolejność albo ukryj te, których nigdy nie otwierasz.</string>
-    
-    <string name="settings_activity">Strumień aktywności</string>
-    <plurals name="settings_window_months">
-        <item quantity="one">Ostatni %1$d miesiąc</item>
-        <item quantity="few">Ostatnie %1$d miesiące</item>
-        <item quantity="many">Ostatnie %1$d miesięcy</item>
-        <item quantity="other">Ostatnie %1$d miesięcy</item>
-    </plurals>
-    <string name="settings_open_externally">Otwieraj linki w przeglądarce</string>
-    <string name="settings_open_externally_summary">Wyłączone: strony GitHuba otwierają się wewnątrz Vectora.</string>
-    
-    <string name="scope_use_recommended">Użyj tego, czego wymaga moduł</string>
-    <string name="scope_select_visible">Zaznacz wszystko, co jest pokazane</string>
-    <string name="scope_clear_visible">Wyczyść wszystko, co jest pokazane</string>
-    <string name="scope_backup_done">Zakres zapisany.</string>
-    <string name="scope_backup_failed">Nie udało się odczytać ani zapisać tego pliku.</string>
-    <string name="scope_select">Zaznacz</string>
-    <string name="scope_sort">Sortuj</string>
-    <string name="scope_modules">Inne moduły</string>
-    <string name="scope_include_new_apps">Dodaj nowe aplikacje automatycznie</string>
-    <string name="scope_include_new_apps_summary">Aplikacje zainstalowane od teraz trafią do zakresu tego modułu.</string>
-    <string name="scope_backup">Utwórz kopię tego zakresu</string>
-    <string name="scope_restore">Przywróć ten zakres</string>
-    <string name="scope_sort_package">Według nazwy pakietu</string>
-    <string name="scope_sort_installed">Ostatnio zainstalowane</string>
-    <string name="scope_sort_updated">Ostatnio zaktualizowane</string>
-    <string name="scope_sort_reverse">Odwróć kolejność</string>
-    <string name="scope_sort_relevance">Najpierw zaznaczone</string>
-    <string name="scope_sort_name">Według nazwy</string>
-    <string name="scope_search_hint">Wyszukaj aplikacje</string>
-    <string name="scope_no_match">Żadna aplikacja nie spełnia kryteriów wyszukiwania lub filtru.</string>
-    <string name="scope_system_apps">Aplikacje systemowe</string>
-    <string name="scope_games">Gry</string>
-    <string name="scope_recommended">Wymagana przez ten moduł</string>
-    <string name="scope_static">Ten moduł deklaruje stały zakres i nie może być skierowany na inne aplikacje.</string>
-    
-    <string name="scope_pending">%1$d do dodania, %2$d do usunięcia</string>
-    <string name="scope_apply_effect">Każda aplikacja zastosuje to przy następnym uruchomieniu.</string>
-    <string name="scope_apply">Zastosuj</string>
-    <string name="scope_discard">Odrzuć</string>
-    <string name="scope_applied">Zakres zastosowany.</string>
-    <string name="scope_apply_failed">Framework odrzucił nowy zakres.</string>
-    <string name="scope_toggle_failed">Framework odrzucił tę zmianę.</string>
-    <string name="scope_empty_title">Nie ma nic do podłączenia</string>
-    <string name="scope_empty_message">Ten moduł jest włączony, ale nie ma zaznaczonych żadnych aplikacji, więc nic nie zrobi. Wyłącz go lub wybierz jakieś aplikacje.</string>
-    <string name="scope_empty_disable">Wyłącz moduł</string>
-    <string name="scope_empty_keep">Zostaw włączony</string>
-    
-    <string name="action_not_in_store">Nie ma go w katalogu</string>
-    <string name="action_not_in_store_summary">Nie można sprawdzić aktualizacji tego modułu</string>
-    <string name="action_update_to">Zaktualizuj do %1$s</string>
-    <string name="action_update_from">Z %1$s · %2$s</string>
-    <string name="action_reinstall_same">Ta sama wersja · %1$s</string>
-    <string name="action_update_running">Instalowanie…</string>
-    <string name="action_update_no_apk">To wydanie nie ma pliku APK do zainstalowania</string>
-    <string name="action_update_choose">Kilka kompilacji — wybierz jedną w katalogu</string>
-    <string name="action_update_started">Rozpoczęto aktualizację</string>
-    <string name="action_open_companion">Otwórz aplikację towarzyszącą</string>
-    <string name="action_open_companion_summary">Ekran, który autor tego modułu napisał, aby go skonfigurować</string>
-    <string name="action_open_store">Otwórz w katalogu</string>
-    <string name="action_launch">Otwórz</string>
-    <string name="action_app_info">Informacje o aplikacji</string>
-    <string name="action_soft_reboot">Szybki restart</string>
-    <string name="action_soft_reboot_summary">Zrestartuj framework bez restartu telefonu</string>
-    <string name="action_soft_reboot_confirm">Wszystkie uruchomione aplikacje zamykają się, a ekran na chwilę robi się czarny. Sam telefon pozostaje włączony.</string>
-    <string name="action_force_stop">Wymuś zatrzymanie</string>
-    <string name="action_optimize">Zoptymalizuj ponownie</string>
-    <string name="action_uninstall">Odinstaluj</string>
-    <string name="action_launched">Otwieranie…</string>
-    <string name="action_no_launcher">Ta aplikacja nie ma nic do otwarcia.</string>
-    <string name="action_opened_info">Otwieranie informacji o aplikacji…</string>
-    <string name="action_force_stopped">Zatrzymano %1$s.</string>
-    <string name="action_force_stop_failed">Nie udało się zatrzymać %1$s.</string>
-    <string name="action_optimizing">Ponowna optymalizacja %1$s. To może chwilę potrwać.</string>
-    <string name="action_optimized">Ponownie zoptymalizowano %1$s. Podłączenia, które zostały usunięte podczas optymalizacji, powinny teraz działać.</string>
-    <string name="action_optimize_failed">Nie udało się ponownie zoptymalizować %1$s.</string>
-    <string name="action_uninstalled">Odinstalowano %1$s.</string>
-    <string name="action_uninstall_failed">Nie udało się odinstalować %1$s.</string>
-    
-    <string name="back">Wstecz</string>
-    <string name="retry">Spróbuj ponownie</string>
-    <string name="appearance_color">Kolor</string>
-    <string name="appearance_custom_color">Wybierz kolor</string>
-    <string name="modules_expand">Pokaż pełny opis</string>
-    <string name="modules_collapse">Pokaż mniej</string>
-    <string name="action_optimize_summary">Ponownie kompiluje aplikację, aby ART przestał wbudowywać metody, których moduł potrzebuje do podłączenia</string>
-    <string name="modules_scope_framework">Podłącza się do frameworka systemu</string>
-    <string name="scope_origin_locked">Ustalone przez moduł</string>
-    <string name="scope_origin_chosen">Twój wybór</string>
-    <string name="scope_origin_derived">Zawsze w zakresie</string>
-    <string name="modules_selection_clear">Wyczyść zaznaczenie</string>
-    <plurals name="modules_selected">
-        <item quantity="one">%1$d zaznaczony</item>
-        <item quantity="few">%1$d zaznaczone</item>
-        <item quantity="many">%1$d zaznaczonych</item>
-        <item quantity="other">%1$d zaznaczonych</item>
-    </plurals>
-    <string name="modules_batch_enable">Włącz wszystkie zaznaczone</string>
-    <string name="modules_batch_disable">Wyłącz wszystkie zaznaczone</string>
-    <plurals name="modules_batch_enabled">
-        <item quantity="one">Włączono %1$d moduł</item>
-        <item quantity="few">Włączono %1$d moduły</item>
-        <item quantity="many">Włączono %1$d modułów</item>
-        <item quantity="other">Włączono %1$d modułów</item>
-    </plurals>
-    <plurals name="modules_batch_disabled">
-        <item quantity="one">Wyłączono %1$d moduł</item>
-        <item quantity="few">Wyłączono %1$d moduły</item>
-        <item quantity="many">Wyłączono %1$d modułów</item>
-        <item quantity="other">Wyłączono %1$d modułów</item>
-    </plurals>
-    <plurals name="modules_batch_uninstalled">
-        <item quantity="one">Odinstalowano %1$d moduł</item>
-        <item quantity="few">Odinstalowano %1$d moduły</item>
-        <item quantity="many">Odinstalowano %1$d modułów</item>
-        <item quantity="other">Odinstalowano %1$d modułów</item>
-    </plurals>
-    <plurals name="modules_batch_already_on">
-        <item quantity="one">%1$d był już włączony</item>
-        <item quantity="few">%1$d były już włączone</item>
-        <item quantity="many">%1$d było już włączonych</item>
-        <item quantity="other">%1$d było już włączonych</item>
-    </plurals>
-    <plurals name="modules_batch_already_off">
-        <item quantity="one">%1$d był już wyłączony</item>
-        <item quantity="few">%1$d były już wyłączone</item>
-        <item quantity="many">%1$d było już wyłączone</item>
-        <item quantity="other">%1$d było już wyłączone</item>
-    </plurals>
-    <plurals name="modules_batch_all_already_on">
-        <item quantity="one">Był już włączony</item>
-        <item quantity="few">Wszystkie %1$d były już włączone</item>
-        <item quantity="many">Wszystkie %1$d było już włączone</item>
-        <item quantity="other">Wszystkie %1$d było już włączone</item>
-    </plurals>
-    <plurals name="modules_batch_all_already_off">
-        <item quantity="one">Był już wyłączony</item>
-        <item quantity="few">Wszystkie %1$d były już wyłączone</item>
-        <item quantity="many">Wszystkie %1$d było już wyłączone</item>
-        <item quantity="other">Wszystkie %1$d było już wyłączone</item>
-    </plurals>
-    <string name="modules_batch_partial">Tylko %1$s z nich zadziałało</string>
-    <string name="modules_uninstall_title">Odinstalować te moduły?</string>
-    <plurals name="modules_uninstall_body">
-        <item quantity="one">Moduł i wszystko, co zostało w nim skonfigurowane, zostanie usunięte. Tego nie można cofnąć.</item>
-        <item quantity="few">Wszystkie %1$d moduły i wszystko, co zostało w nich skonfigurowane, zostanie usunięte. Tego nie można cofnąć.</item>
-        <item quantity="many">Wszystkie %1$d modułów i wszystko, co zostało w nich skonfigurowane, zostanie usunięte. Tego nie można cofnąć.</item>
-        <item quantity="other">Wszystkie %1$d moduły i wszystko, co zostało w nich skonfigurowane, zostanie usunięte. Tego nie można cofnąć.</item>
-    </plurals>
-    
-    <string name="canary_open_actions">Otwórz na GitHubie</string>
-    <string name="canary_none">Nie opublikowano jeszcze żadnej kompilacji Canary.</string>
-    <string name="canary_what_title">Czym jest Canary?</string>
-    <string name="canary_what_body">Bieżący stan gałęzi master, zbudowany i sprawdzony wyłącznie przez CI, nic więcej. Poprawki trafiają tutaj dni lub tygodnie przed tym, jak trafią do wydania.</string>
-    
-    <string name="canary_keep_body">Najnowsze %1$d są zachowywane, a każda strona kompilacji umożliwia przenoszenie się między nimi lub powrót do ostatniej wersji. Nic tu nie jest drzwiami w jedną stronę.</string>
-    <plurals name="canary_since_commits">
-        <item quantity="one">%1$d zatwierdzenie od czasu twojej kompilacji.</item>
-        <item quantity="few">%1$d zatwierdzenia od czasu twojej kompilacji.</item>
-        <item quantity="many">%1$d zatwierdzeń od czasu twojej kompilacji.</item>
-        <item quantity="other">%1$d zatwierdzeń od czasu twojej kompilacji.</item>
-    </plurals>
-    
-    <plurals name="canary_fixed_since">
-        <item quantity="one">Naprawione od czasu twojej kompilacji</item>
-        <item quantity="few">Naprawione od czasu twojej kompilacji — %1$d zgłoszenia</item>
-        <item quantity="many">Naprawione od czasu twojej kompilacji — %1$d zgłoszeń</item>
-        <item quantity="other">Naprawione od czasu twojej kompilacji — %1$d zgłoszeń</item>
-    </plurals>
-    <string name="canary_current">Używasz najnowszej wersji Canary. Nie ma nic do testowania, dopóki CI nie opublikuje ponownie.</string>
-    <string name="canary_ahead">Twoja kompilacja jest nowsza niż wszystkie opublikowane wersje Canary, więc nie została skompilowana na podstawie żadnej z nich.</string>
-    
-    <string name="canary_diverged">Twoja kompilacja ma najnowszy numer Canary, ale nie została zbudowana na jego podstawie. Zainstaluj go, aby mieć pewność, co testujesz.</string>
-    
-    <string name="canary_after_release">Jesteś na wersji nowszej niż wszystkie Canary tutaj. Kolejne Canary zostanie zbudowane na jej podstawie.</string>
-    
-    <string name="canary_build">Canary %1$d</string>
-    <string name="canary_report_title">Znalazłeś coś?</string>
-    <string name="canary_report_body">Canary, która zawodzi, to właśnie powód, by ją uruchamiać — dopiero zgłoszenie zmienia to w poprawkę. Jeśli tropisz błąd, weź archiwum Debug: zapisuje znacznie więcej, a tego właśnie wymaga zgłoszenie.</string>
-    <string name="home_contributors_by_commits">Najwięcej zatwierdzeń</string>
-    <string name="home_contributors_by_recent">Najnowsi</string>
-    <string name="scope_recommended_only">To, czego wymaga moduł</string>
-    <string name="home_resting">Przerwa — aktywność zapisana. Pociągnij, aby odświeżyć.</string>
-    <string name="report_title">Zanim zgłosisz</string>
-    <string name="report_step_canary">Najpierw wypróbuj najnowsze Canary</string>
-    <string name="report_step_canary_body">Może to być już naprawione, a kompilacja debug jest tym, czego potrzebują opiekunowie, aby ci pomóc. Pozostań na głównej gałęzi — kompilacje żądań zmian są niestabilne.</string>
-    <string name="report_step_zygisk">Nie masz Magiska? Zaktualizuj Zygisk</string>
-    <string name="report_step_zygisk_body">Wgraj najnowszą implementację Zygiska, w jego kompilacji debug, jeśli taka istnieje.</string>
-    <string name="report_step_logs">Dołącz dzienniki</string>
-    <string name="report_step_logs_body">Raport bez dzienników to rozmowa, która zaczyna się od początku. Spowoduje to zapisanie obu dzienników do pliku zip, który możesz dołączyć.</string>
-    <string name="report_step_crashed">Jeśli Zygisk uległ awarii</string>
-    <string name="report_step_crashed_body">Usługa nie może już udostępnić pliku zip na żądanie, ale pliki nadal zostały zapisane. Root może je odczytać, nawet gdy nic innego nie może.</string>
-    <string name="report_open_tracker">Otwórz system zgłaszania problemów</string>
-    <string name="report_save_with_root">Zapisz folder dziennika (wymaga roota)</string>
-    <string name="report_saved_to">Zapisano w %1$s</string>
-    <string name="report_see_guide">Pełny poradnik w zgłoszeniu</string>
-    <string name="report_root_refused">Odmówiono dostępu root. Zezwól Vectorowi na dostęp w swoim menedżerze roota, a następnie spróbuj ponownie%1$s</string>
-    <string name="home_custom_build">Niestandardowa kompilacja — nowsza niż główna</string>
-    <string name="language_title">Język</string>
-    <string name="language_system">Domyślny systemowy</string>
-    <string name="language_system_summary">Używaj języka ustawionego w telefonie</string>
-    <string name="language_translated_by">Przetłumaczone przez %1$s</string>
-    <string name="language_help_short">Tłumacz</string>
-    <string name="language_help">Pomóż tłumaczyć Vector</string>
-    <string name="update_title">Aktualizacja frameworka</string>
-    <string name="update_channel_canary">Kompilacja Canary</string>
-    <string name="update_channel_release">Kompilacja stabilna</string>
-    <string name="update_install">Zainstaluj</string>
-    <string name="update_downloading">Pobieranie %1$s z %2$s</string>
-    <string name="update_cancel_download">Anuluj pobieranie</string>
-    <string name="update_flashing">Instalowanie…</string>
-    <string name="update_done">Zainstalowano</string>
-    <string name="update_reboot">Zrestartuj</string>
-    <string name="update_reboot_why">Zacznie obowiązywać po restarcie</string>
-    <string name="update_none">Brak dostępnych aktualizacji.</string>
-    <string name="update_no_notes">W tym wydaniu nie opublikowano żadnych notatek.</string>
-    <string name="update_no_root">Nie znaleziono implementacji roota, więc nic nie można wgrać.</string>
-    <string name="update_root_unknown">Ta kompilacja frameworka nie informuje, która implementacja roota jest zainstalowana.</string>
-    <string name="update_root_multiple">Znaleziono dwie implementacje roota. Vector nie zgadnie, która z nich jest właścicielem modułu.</string>
-    <string name="update_failed_start">Nie można uruchomić instalatora.</string>
-    <string name="update_failed_download">Nie udało się pobrać aktualizacji.</string>
-    <string name="update_failed_exit">Instalator zakończył się niepowodzeniem (kod wyjścia %1$d).</string>
-    <string name="scope_framework_shared">Jeden proces współdzielony przez każdego użytkownika, co ma wpływ na całe urządzenie</string>
-    <string name="scope_self_hook">Ten moduł jest ładowany do własnej aplikacji, w ten sposób informuje o swojej aktywności</string>
-    <string name="update_no_output">Instalator nie wygenerował żadnego wyniku.</string>
-    <string name="update_versions">Wszystkie wersje</string>
-    <string name="update_installed">Zainstalowana</string>
-    <string name="update_same_number">Ten sam numer, inna kompilacja</string>
-    <string name="update_older">Starsza</string>
-    <string name="update_rollback">Cofnij</string>
-    <string name="update_reinstall">Zainstaluj ponownie</string>
-    <string name="update_rollback_warning">Starsza niż ta, którą posiadasz. Jeśli korzysta ze starszej bazy danych, wycofanie zresetuje, które moduły są włączone i do czego się odwołują — najpierw wykonaj kopię swoich modułów.</string>
-    <string name="settings_window_all">Od początku</string>
-    <string name="update_diverged">Ten sam numer wersji, inna kompilacja — to, co jest uruchomione, nie zostało skompilowane z tej wersji</string>
-    <string name="scope_framework_restart_title">Framework jeszcze tego nie uwzględnił</string>
-    <string name="scope_framework_restart_body">Framework systemu jest ładowany jednorazowo, podczas uruchamiania Androida. Zmiana ta pojawi się dopiero po restarcie frameworka — wszystkie działające aplikacje zostają zamknięte, a sam telefon pozostaje włączony.</string>
-    <string name="scope_framework_restart_later">Później</string>
-    <string name="settings_network">Sieć</string>
-    <string name="settings_doh">Rozwiązuj nazwy przez HTTPS</string>
-    <string name="settings_doh_summary">Rozwiązuje nazwy przez Cloudflare zamiast przez moduł rozpoznawania nazw sieci. Dla sieci, które blokują lub modyfikują zapytania DNS.</string>
-    <string name="settings_doh_untested">Nie wyszukano jeszcze żadnych nazw.</string>
-    <string name="settings_doh_bypassed">Nieużywane: skonfigurowano serwer proxy, więc to on rozwiązuje nazwy.</string>
-    <string name="settings_doh_working">Działa — %1$s zostało rozwiązane za pośrednictwem Cloudflare.</string>
-    <string name="settings_doh_fell_back">Nie można było połączyć się z Cloudflare (%1$s), więc przez resztę tej sesji używany jest moduł rozpoznawania nazw sieci.</string>
-    <string name="settings_doh_retry">Spróbuj ponownie</string>
-    
-    <string name="launcher_title">Jak otworzyć Vectora?</string>
-    <string name="launcher_body">Vector nie jest zainstalowany jako aplikacja, więc w launcherze nie ma nic do pokazania. Oto sposoby jego otwarcia.</string>
-    <string name="launcher_shortcut">Skrót na ekranie głównym</string>
-    <string name="launcher_shortcut_create">Utwórz</string>
-    <string name="launcher_shortcut_unsupported">Twój launcher nie akceptuje przypinania skrótów.</string>
-    <string name="launcher_shortcut_refused">Twój launcher odrzucił skrót.</string>
-    <string name="launcher_turn_on">Włącz</string>
-    <string name="launcher_install">Zainstaluj jako aplikację</string>
-    <string name="launcher_install_action">Zainstaluj</string>
-    <string name="launcher_install_reinstall">Zainstaluj ponownie</string>
-    <string name="launcher_install_done">Vector jest zainstalowany. Otwórz go z launchera.</string>
-    <string name="launcher_install_failed">Nie udało się zainstalować Vectora.</string>
-    <string name="launcher_install_conflict">Kopia Vectora podpisana innym kluczem jest już zainstalowana. Trzeba ją usunąć, zanim ta się zmieści.</string>
-    <string name="launcher_install_remove">Usuń ją</string>
-    <string name="launcher_install_diverged">Zainstalowana kopia to inna wersja Vectora — nie ta uruchomiona tutaj. Ponowna instalacja ją zastąpi.</string>
-    <string name="launcher_route_available">Dostępne</string>
-    <string name="launcher_note">Możesz też wybrać %1$s albo otworzyć Vector przyciskiem działania w %2$s.</string>
-    <string name="launcher_root_generic">twoim menedżerze roota</string>
-    <string name="launcher_prompt_title">Vector nie ma jeszcze ikony</string>
-    <string name="launcher_prompt_body">Vector działa w ramach innego procesu i nie jest instalowany, więc nic nie pojawia się w launcherze, więc nie ma oczywistej drogi powrotu. Dodaj skrót na ekranie głównym lub zainstaluj go jako zwykłą aplikację.</string>
-    <string name="launcher_prompt_never">Nie pytaj ponownie</string>
-
-    
+    <string name="settings_rearrange_panels_summary">Zmień ich kolejność albo ukryj te, których nigdy nie otwierasz.</string>    <string name="back">Wstecz</string>    <string name="language_title">Język</string>
     <string name="settings_screen_title">Ustawienia</string>
     <string name="settings_screen_subtitle">Preferencje uruchamiania i informacje</string>
     <string name="settings_section_run">Uruchamianie</string>
@@ -565,7 +98,6 @@
     <string name="about_faq_restart_q">Czy po ponownym uruchomieniu trzeba ponownie zrootować?</string>
     <string name="about_faq_restart_a">Tak. Bootloader jest zablokowany, więc po każdym ponownym uruchomieniu trzeba uruchomić Unlock Root ponownie.</string>
     <string name="about_disclaimer">Zastrzeżenie: ta aplikacja służy wyłącznie do badań bezpieczeństwa i osobistej nauki. Podnoszenie uprawnień przez uszkodzenie pamięci jądra jest z natury niepewne; korzystasz na własne ryzyko. Przestrzegaj lokalnych przepisów.</string>
-    
     <string name="log_starting">Uruchamianie RootMyS24</string>
     <string name="log_payload">Payload: %1$s (stały, kmalloc_caches 0x16bad78)</string>
     <string name="log_check_shizuku">[1/5] Sprawdzanie Shizuku...</string>
@@ -597,7 +129,6 @@
     <string name="log_flow_done">Proces root zakończony!</string>
     <string name="log_failed">Nie udało się: %1$s</string>
     <string name="log_woken">Ekran wzbudzony</string>
-    <string name="log_export_ok">Wyeksportowano do Downloads/rootmys9280-log.txt (%1$d znaków)</string>
     <string name="log_export_ok_name">Exported to Downloads/%1$s (%2$d chars)</string>
     <string name="log_export_fail">Eksport nie powiódł się: %1$s</string>
     <string name="log_knox_tripped">Naruszony (warranty_bit=1)</string>
@@ -605,11 +136,58 @@
     <string name="log_knox_ok">Nietknięty (warranty_bit=0, verifiedbootstate=%1$s)</string>
     <string name="log_knox_unknown">Nieznany (verifiedbootstate=%1$s)</string>
     <string name="log_knox_needs">Nieznany (wymaga Shizuku)</string>
-    <string name="log_binder_unavailable">Binder Shizuku niedostępny</string>
-
     <string name="log_export_entry_fail">Nie można utworzyć wpisu pobierania</string>
     <string name="log_export_write_fail">Nie można zapisać do wpisu pobierania</string>
     <string name="log_export_ok_path">Wyeksportowano do %1$s</string>
     <string name="log_restored">Restored %1$d lines from last session</string>
     <string name="log_persist_failed">Auto-save log failed: %1$s</string>
-<string name="rootflow_auth_adb_pair">Pair with code</string><string name="rootflow_auth_adb_pair_port">Pair port</string><string name="rootflow_auth_adb_pair_code">6-digit pair code</string><string name="rootflow_auth_adb_pair_hint">In Wireless debugging, tap Pair device with pairing code, enter the IP, the 37xxx pairing port and the 6-digit code. Pairing pre-authorizes this device, so Connect will not ask for RSA approval again.</string><string name="rootflow_auth_adb_pairing">Pairing…</string><string name="rootflow_auth_adb_paired">Paired ✓ - now tap Connect</string><string name="adb_wireless_bad_pair_code">Enter the 6-digit pairing code</string><string name="adb_wireless_paired">Paired: %1$s:%2$d - device now trusts this app</string><string name="log_adb_pair_code_wrong">Pairing failed: wrong pairing code or code expired</string><string name="log_adb_pair_failed">Pairing failed: %1$s</string><string name="rootflow_auth_adb_pair_notify">Notify pairing</string><string name="rootflow_auth_adb_pair_notify_hint">Finds this device via mDNS and asks for the 6-digit code in a notification - no need to type the IP or ports.</string><string name="notification_channel_adb_pairing">Wireless debugging pairing</string><string name="notification_adb_pairing_searching_title">Looking for wireless debugging service</string><string name="notification_adb_pairing_searching_text">Enable Wireless debugging in Developer options while this notification is open...</string><string name="notification_adb_pairing_stop">Stop</string><string name="notification_adb_pairing_service_found_title">Wireless debugging found</string><string name="notification_adb_pairing_service_found_text">Enter the 6-digit pairing code shown on this device</string><string name="notification_adb_pairing_input_action">Enter pair code</string><string name="notification_adb_pairing_input_hint">6-digit code</string><string name="notification_adb_pairing_working_title">Pairing...</string><string name="notification_adb_pairing_working_text">Please wait a moment</string><string name="notification_adb_pairing_success_title">Pairing successful</string><string name="notification_adb_pairing_success_text">The device now trusts this app - tap Connect in the app</string><string name="notification_adb_pairing_success_connected_text">Paired and connected</string><string name="notification_adb_pairing_failed_title">Pairing failed</string><string name="notification_adb_pairing_code_wrong">Wrong pairing code or code expired</string><string name="log_adb_pair_notify_started">Pairing notification sent - check the notification and enter the 6-digit code</string><string name="notification_adb_pairing_no_permission">Enable notification permission for this app in System Settings, then try again</string><string name="log_adb_key_not_ready">Key not initialized - select the authorization method first</string><string name="notification_adb_pairing_not_found_title">Wireless debugging not found</string><string name="notification_adb_pairing_not_found_text">Make sure Wireless debugging is enabled and the phone is on the same network, then try again</string><string name="notification_adb_pairing_search_error_title">Wireless debugging search failed</string><string name="notification_adb_pairing_expired_title">Pairing session expired</string><string name="notification_adb_pairing_expired_text">The pairing port changed or timed out. Searching again — please keep the pairing code screen open.</string></resources>
+    <string name="rootflow_auth_adb_pair">Pair with code</string>
+    <string name="rootflow_auth_adb_pair_port">Pair port</string>
+    <string name="rootflow_auth_adb_pair_code">6-digit pair code</string>
+    <string name="rootflow_auth_adb_pairing">Pairing…</string>
+    <string name="rootflow_auth_adb_paired">Paired ✓ - now tap Connect</string>
+    <string name="adb_wireless_bad_pair_code">Enter the 6-digit pairing code</string>
+    <string name="log_adb_pair_code_wrong">Pairing failed: wrong pairing code or code expired</string>
+    <string name="log_adb_pair_failed">Pairing failed: %1$s</string>
+    <string name="rootflow_auth_adb_pair_notify">Notify pairing</string>
+    <string name="rootflow_auth_adb_pair_notify_hint">Finds this device via mDNS and asks for the 6-digit code in a notification - no need to type the IP or ports.</string>
+    <string name="notification_channel_adb_pairing">Wireless debugging pairing</string>
+    <string name="notification_adb_pairing_searching_title">Looking for wireless debugging service</string>
+    <string name="notification_adb_pairing_searching_text">Enable Wireless debugging in Developer options while this notification is open...</string>
+    <string name="notification_adb_pairing_stop">Stop</string>
+    <string name="notification_adb_pairing_service_found_title">Wireless debugging found</string>
+    <string name="notification_adb_pairing_service_found_text">Enter the 6-digit pairing code shown on this device</string>
+    <string name="notification_adb_pairing_input_action">Enter pair code</string>
+    <string name="notification_adb_pairing_input_hint">6-digit code</string>
+    <string name="notification_adb_pairing_working_title">Pairing...</string>
+    <string name="notification_adb_pairing_working_text">Please wait a moment</string>
+    <string name="notification_adb_pairing_success_title">Pairing successful</string>
+    <string name="notification_adb_pairing_success_text">The device now trusts this app - tap Connect in the app</string>
+    <string name="notification_adb_pairing_success_connected_text">Paired and connected</string>
+    <string name="notification_adb_pairing_failed_title">Pairing failed</string>
+    <string name="notification_adb_pairing_code_wrong">Wrong pairing code or code expired</string>
+    <string name="log_adb_pair_notify_started">Pairing notification sent - check the notification and enter the 6-digit code</string>
+    <string name="notification_adb_pairing_no_permission">Enable notification permission for this app in System Settings, then try again</string>
+    <string name="log_adb_key_not_ready">Key not initialized - select the authorization method first</string>
+    <string name="notification_adb_pairing_not_found_title">Wireless debugging not found</string>
+    <string name="notification_adb_pairing_not_found_text">Make sure Wireless debugging is enabled and the phone is on the same network, then try again</string>
+    <string name="notification_adb_pairing_search_error_title">Wireless debugging search failed</string>
+    <string name="notification_adb_pairing_expired_title">Pairing session expired</string>
+    <string name="notification_adb_pairing_expired_text">The pairing port changed or timed out. Searching again — please keep the pairing code screen open.</string>
+    <string name="about_section_support">Support</string>
+    <string name="about_support_body">If this tool has helped you, a small donation keeps it going. Thank you!</string>
+    <string name="about_support_qr_hint">Scan with Alipay or WeChat Pay</string>
+    <string name="about_support_title">Buy the developer a drink</string>
+    <string name="donate_back">Back</string>
+    <string name="donate_body_long">Thank you for considering a donation! Scan the QR code below with Alipay or WeChat Pay. Every bit helps keep this project alive and maintained.</string>
+    <string name="donate_screen_title">Support the project</string>
+    <string name="donate_thanks">Thanks for your support 🐢</string>
+    <string name="donation_body">You have successfully rooted %1$d times — thank you! If RootMyS24 has been useful, a small donation would help keep it going. You can scan the QR code on the About page.</string>
+    <string name="donation_go_about">Open About</string>
+    <string name="donation_later">Later</string>
+    <string name="donation_title">Support the project</string>
+    <string name="nav_about">About</string>
+    <string name="nav_rootflow">Unlock Root</string>
+    <string name="nav_settings">Settings</string>
+    <string name="rootflow_firmware_hint">Payload: %1$s</string>
+</resources>

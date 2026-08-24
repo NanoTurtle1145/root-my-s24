@@ -107,6 +107,8 @@ fun WebScreen(url: String, onNavigateBack: () -> Unit) {
                 // Painted before the page arrives, so loading never flashes white on a dark theme.
                 setBackgroundColor(surface.toArgb())
 
+                // Markdown 渲染页面仅加载本地 HTML（无外部 JS），XSS 风险可控
+                @Suppress("SetJavaScriptEnabled")
                 settings.javaScriptEnabled = true
                 settings.domStorageEnabled = true
                 settings.useWideViewPort = true

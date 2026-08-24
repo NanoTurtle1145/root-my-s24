@@ -1,5 +1,6 @@
 package cn.nanoturtle.rootmys9280.manager.rootmy
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -33,6 +34,7 @@ import kotlinx.coroutines.launch
  *
  * 所有通知基于同一个 ID 更新，避免通知栏堆积。
  */
+@SuppressLint("NewApi", "MissingPermission", "StaticFieldLeak")  // API 30/权限/静态引用均已在入口处处理（AdbMdns 用 applicationContext）
 object AdbPairingFlow {
 
     init {
