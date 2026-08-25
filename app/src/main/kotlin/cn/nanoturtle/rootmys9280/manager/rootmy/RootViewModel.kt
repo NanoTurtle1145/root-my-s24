@@ -621,7 +621,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             appendLog("◆ " + app.getString(R.string.log_screen_off))
         }
         val env = arrayOf(
-            "EXPLOIT_ATTEMPTS=1",
+            "EXPLOIT_ATTEMPTS=10",
             "P0_ATTEMPT_TIMEOUT_SEC=45",
             "EXPLOIT_ATTEMPT_TIMEOUT_SEC=120",
             "CVE43499_ROOT_HELPER=$tmpRootHelper",
