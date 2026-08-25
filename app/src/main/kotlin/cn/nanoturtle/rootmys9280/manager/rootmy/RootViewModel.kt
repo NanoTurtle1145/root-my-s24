@@ -142,7 +142,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         F956UDZG3("cve-2026-43499-F956USQS4DZG3", "One UI 8.5", "SM-F956U 美版 Z Fold6", "DZG3", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
         F9660BZG3("cve-2026-43499-F9660ZCSBBZG3", "One UI 8.5", "SM-F9660 国行 Z Fold7", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
         F9660BZDP("cve-2026-43499-F9660ZCU9BZDP", "One UI 8.5", "SM-F9660 国行 Z Fold7", "BZDP", Region.CHINA, "ksud-android15-6.6", tested = false),
-        F966BBZG3("cve-2026-43499-F966BXXSBBZG3", "One UI 8.5", "SM-F966B 欧版 Z Fold7", "BZG3", Region.HONGKONG_TAIWAN, "ksud-android15-6.6", tested = false),
+        F966BBZG3("cve-2026-43499-F966BXXSBBZG3", "One UI 8.5", "SM-F966B 欧版 Z Fold7", "BZG3", Region.HONGKONG_TAIWAN, "ksud-android15-6.6"),
         // —— 心系天下 ——
         W9025DZF2("cve-2026-43499-W9025ZCS4DZF2", "One UI 8.5", "W9025 国行 心系天下 W25", "DZF2", Region.CHINA, "ksud-selected", tested = false),
         W9025DZG3("cve-2026-43499-W9025ZCS4DZG3", "One UI 8.5", "W9025 国行 心系天下 W25", "DZG3", Region.CHINA, "ksud-selected", tested = false),
