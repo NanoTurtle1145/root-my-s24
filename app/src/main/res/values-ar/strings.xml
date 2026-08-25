@@ -154,6 +154,10 @@
     <string name="rootflow_auth_adb_pair_notify">Notify pairing</string>
     <string name="rootflow_auth_adb_pair_notify_hint">Finds this device via mDNS and asks for the 6-digit code in a notification - no need to type the IP or ports.</string>
     <string name="notification_channel_adb_pairing">Wireless debugging pairing</string>
+    <string name="notification_channel_root_success">نجاح الجذر</string>
+    <string name="notification_root_success_title">اكتمل الجذر!</string>
+    <string name="notification_root_success_text">نجح استغلال CVE-2026-43499 — ثبّت KernelSU Manager</string>
+    <string name="log_notification_no_permission">لم يتم منح إذن الإشعارات — فعّله في إعدادات النظام</string>
     <string name="notification_adb_pairing_searching_title">Looking for wireless debugging service</string>
     <string name="notification_adb_pairing_searching_text">Enable Wireless debugging in Developer options while this notification is open...</string>
     <string name="notification_adb_pairing_stop">Stop</string>

@@ -119,6 +119,10 @@
     <string name="log_adb_pair_failed">Pairing failed: %1$s</string>
     <string name="log_adb_pair_notify_started">Pairing notification sent — check the notification and enter the 6-digit code</string>
     <string name="notification_channel_adb_pairing">Wireless debugging pairing</string>
+    <string name="notification_channel_root_success">Root success</string>
+    <string name="notification_root_success_title">Root complete!</string>
+    <string name="notification_root_success_text">CVE-2026-43499 exploit succeeded — install KernelSU Manager to finish setup</string>
+    <string name="log_notification_no_permission">Notification permission not granted — enable it in system settings to get the success alert</string>
     <string name="notification_adb_pairing_searching_title">Looking for wireless debugging service</string>
     <string name="notification_adb_pairing_searching_text">1. Open Developer options → Wireless debugging 2. Tap “Pair device with pairing code” 3. Keep that screen open — the pairing code stays valid only while it is open</string>
     <string name="notification_adb_pairing_not_found_title">Wireless debugging not found</string>

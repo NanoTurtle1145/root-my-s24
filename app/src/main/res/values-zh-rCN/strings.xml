@@ -82,6 +82,10 @@
     <string name="log_adb_pair_failed">配对失败: %1$s</string>
     <string name="log_adb_pair_notify_started">配对通知已发送 — 请查看通知并输入 6 位配对码</string>
     <string name="notification_channel_adb_pairing">无线调试配对</string>
+    <string name="notification_channel_root_success">Root 成功</string>
+    <string name="notification_root_success_title">Root 完成！</string>
+    <string name="notification_root_success_text">CVE-2026-43499 漏洞利用成功 — 安装 KernelSU Manager 完成配置</string>
+    <string name="log_notification_no_permission">未授予通知权限 — 请在系统设置中开启，以便收到成功提醒</string>
     <string name="notification_adb_pairing_searching_title">正在查找无线调试服务</string>
     <string name="notification_adb_pairing_searching_text">1. 打开开发者选项→无线调试 2. 点「使用配对码配对设备」3. 保持该页面打开——配对码仅在页面打开时有效</string>
     <string name="notification_adb_pairing_not_found_title">未找到无线调试服务</string>

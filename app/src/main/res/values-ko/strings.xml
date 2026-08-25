@@ -154,6 +154,10 @@
     <string name="rootflow_auth_adb_pair_notify">Notify pairing</string>
     <string name="rootflow_auth_adb_pair_notify_hint">Finds this device via mDNS and asks for the 6-digit code in a notification - no need to type the IP or ports.</string>
     <string name="notification_channel_adb_pairing">Wireless debugging pairing</string>
+    <string name="notification_channel_root_success">Root 성공</string>
+    <string name="notification_root_success_title">Root 완료!</string>
+    <string name="notification_root_success_text">CVE-2026-43499 익스플로잇 성공 — KernelSU Manager 설치로 마무리</string>
+    <string name="log_notification_no_permission">알림 권한이 없습니다 — 시스템 설정에서 활성화하면 성공 알림을 받을 수 있습니다</string>
     <string name="notification_adb_pairing_searching_title">Looking for wireless debugging service</string>
     <string name="notification_adb_pairing_searching_text">Enable Wireless debugging in Developer options while this notification is open...</string>
     <string name="notification_adb_pairing_stop">Stop</string>

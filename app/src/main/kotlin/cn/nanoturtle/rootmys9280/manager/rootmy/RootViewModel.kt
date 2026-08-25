@@ -17,6 +17,15 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import android.util.Log
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
@@ -684,10 +693,56 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
         _state.value = _state.value.copy(rooted = true)
         appendLog("🎉 " + app.getString(R.string.log_flow_done))
+        notifyRootSuccess()
 
         // 捐赠里程碑：root 成功累计到 10/25/50/75/100… 时提示一次
         if (donationManager.recordSuccess()) {
             _donationEvent.tryEmit(donationManager.successCount)
+        }
+    }
+
+    /** 发送 Root 成功通知（熄屏/后台时告知用户；亮屏提示可能被系统省略）。 */
+    @android.annotation.SuppressLint("MissingPermission")  // 运行时已检查 areNotificationsEnabled
+    private fun notifyRootSuccess() {
+        try {
+            if (Build.VERSION.SDK_INT >= 33 &&
+                !NotificationManagerCompat.from(app).areNotificationsEnabled()
+            ) {
+                // Android 13+ 未授权通知：notify() 会被静默丢弃，跳过并在日志提示
+                appendLog("⚠ " + app.getString(R.string.log_notification_no_permission))
+                return
+            }
+            val channelId = "root_success"
+            val manager = app.getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(
+                NotificationChannel(
+                    channelId,
+                    app.getString(R.string.notification_channel_root_success),
+                    NotificationManager.IMPORTANCE_HIGH,
+                ).apply {
+                    setSound(null, null)
+                    setShowBadge(true)
+                }
+            )
+            val contentIntent = PendingIntent.getActivity(
+                app, 0,
+                Intent(app, cn.nanoturtle.rootmys9280.manager.ui.MainActivity::class.java),
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                else PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            val notification: Notification =
+                NotificationCompat.Builder(app, channelId)
+                    .setSmallIcon(android.R.drawable.stat_sys_warning)
+                    .setContentTitle(app.getString(R.string.notification_root_success_title))
+                    .setContentText(app.getString(R.string.notification_root_success_text))
+                    .setContentIntent(contentIntent)
+                    .setAutoCancel(true)
+                    .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                    .build()
+            NotificationManagerCompat.from(app).notify(1001, notification)
+        } catch (t: Throwable) {
+            Log.w("RootViewModel", "notifyRootSuccess failed", t)
         }
     }
 

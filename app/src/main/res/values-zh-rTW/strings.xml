@@ -78,6 +78,10 @@
     <string name="log_adb_pair_failed">配對失敗: %1$s</string>
     <string name="log_adb_pair_notify_started">配對通知已傳送 — 請查看通知並輸入 6 位配對碼</string>
     <string name="notification_channel_adb_pairing">無線除錯配對</string>
+    <string name="notification_channel_root_success">Root 成功</string>
+    <string name="notification_root_success_title">Root 完成！</string>
+    <string name="notification_root_success_text">CVE-2026-43499 漏洞利用成功 — 安裝 KernelSU Manager 完成設定</string>
+    <string name="log_notification_no_permission">未授予通知權限 — 請在系統設定中開啟，以便收到成功提醒</string>
     <string name="notification_adb_pairing_searching_title">正在尋找無線除錯服務</string>
     <string name="notification_adb_pairing_searching_text">1. 開啟開發者選項→無線除錯 2. 點「使用配對碼配對裝置」3. 保持該頁面開啟——配對碼僅在頁面開啟時有效</string>
     <string name="notification_adb_pairing_not_found_title">未找到無線除錯服務</string>
