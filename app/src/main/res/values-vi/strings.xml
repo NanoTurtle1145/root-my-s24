@@ -113,6 +113,8 @@
     <string name="log_pipe_warn">pipe-max-size (%1$d B) &lt; 128KB (exploit cần 32 slot=128KB), F_SETPIPE_SZ sẽ trả về EPERM</string>
     <string name="log_cleanup">[2.6/5] Đang dọn các tiến trình exploit còn sót và tệp tạm ...</string>
     <string name="log_cleanup_done">Dọn môi trường xong (exit=%1$d)</string>
+    <string name="log_warmup">[2.7/5] Khởi động: khởi tạo bộ cấp phát slab ống (400x /system/bin/true) ...</string>
+    <string name="log_warmup_done">Khởi động xong (exit=%1$d %2$s)</string>
     <string name="log_trigger">[3/5] Đang kích hoạt CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
     <string name="log_screen_off">Màn hình đã tắt (sẽ bật lại khi xong; nhấn phím nguồn bất cứ lúc nào để kiểm tra)</string>
     <string name="log_exploit_timeout">exploit hết thời gian chờ (15 phút)</string>

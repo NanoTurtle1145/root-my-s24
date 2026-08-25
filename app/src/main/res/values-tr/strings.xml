@@ -113,6 +113,8 @@
     <string name="log_pipe_warn">pipe-max-size (%1$d B) &lt; 128KB (exploit 32 slot=128KB gerektirir), F_SETPIPE_SZ EPERM döndürür</string>
     <string name="log_cleanup">[2.6/5] Kalıntı exploit süreçleri ve geçici dosyalar temizleniyor ...</string>
     <string name="log_cleanup_done">Ortam temizliği tamamlandı (exit=%1$d)</string>
+    <string name="log_warmup">[2.7/5] Isınma: boru slab ayırıcı başlatılıyor (400x /system/bin/true) ...</string>
+    <string name="log_warmup_done">Isınma tamamlandı (exit=%1$d %2$s)</string>
     <string name="log_trigger">[3/5] CVE-2026-43499 tetikleniyor (LD_PRELOAD /system/bin/true) ...</string>
     <string name="log_screen_off">Ekran kapatıldı (bitince uyanacak; kontrol için istediğiniz zaman güç tuşuna basın)</string>
     <string name="log_exploit_timeout">exploit zaman aşımına uğradı (15 dakika)</string>

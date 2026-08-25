@@ -113,6 +113,8 @@
     <string name="log_pipe_warn">pipe-max-size (%1$d B) &lt; 128KB (o exploit precisa de 32 slots=128KB), F_SETPIPE_SZ retornará EPERM</string>
     <string name="log_cleanup">[2.6/5] Limpando processos residuais do exploit e arquivos temporários ...</string>
     <string name="log_cleanup_done">Limpeza do ambiente concluída (exit=%1$d)</string>
+    <string name="log_warmup">[2.7/5] Aquecimento: inicializando o alocador slab de pipes (400x /system/bin/true) ...</string>
+    <string name="log_warmup_done">Aquecimento concluído (exit=%1$d %2$s)</string>
     <string name="log_trigger">[3/5] Disparando CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
     <string name="log_screen_off">Tela desligada (será reativada ao concluir; pressione o botão de energia a qualquer momento para verificar)</string>
     <string name="log_exploit_timeout">o exploit estourou o tempo (15 minutos)</string>

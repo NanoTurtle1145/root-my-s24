@@ -113,6 +113,8 @@
     <string name="log_power_save_on">⚠ Power saving mode is ON: online cores may drop below 8, the futex hash table size will mismatch and the exploit WILL fail. Turn it off first.</string>
     <string name="log_cleanup">[2.6/5] 残存するエクスプロイトプロセスと一時ファイルをクリーンアップ中 ...</string>
     <string name="log_cleanup_done">環境のクリーンアップ完了 (exit=%1$d)</string>
+    <string name="log_warmup">[2.7/5] ウォームアップ：パイプ slab アロケータを初期化中（400x /system/bin/true）...</string>
+    <string name="log_warmup_done">ウォームアップ完了 (exit=%1$d %2$s)</string>
     <string name="log_trigger">[3/5] CVE-2026-43499 をトリガー中 (LD_PRELOAD /system/bin/true) ...</string>
     <string name="log_screen_off">画面をオフにしました (完了時に復帰します。確認する場合はいつでも電源キーを押してください)</string>
     <string name="log_exploit_timeout">エクスプロイトがタイムアウトしました (15 分)</string>

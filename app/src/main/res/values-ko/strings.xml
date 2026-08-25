@@ -113,6 +113,8 @@
     <string name="log_power_save_on">⚠ Power saving mode is ON: online cores may drop below 8, the futex hash table size will mismatch and the exploit WILL fail. Turn it off first.</string>
     <string name="log_cleanup">[2.6/5] 잔여 익스플로잇 프로세스 및 임시 파일 정리 중 ...</string>
     <string name="log_cleanup_done">환경 정리 완료 (exit=%1$d)</string>
+    <string name="log_warmup">[2.7/5] 워밍업: 파이프 slab 할당자 초기화 중(400x /system/bin/true)...</string>
+    <string name="log_warmup_done">워밍업 완료 (exit=%1$d %2$s)</string>
     <string name="log_trigger">[3/5] CVE-2026-43499 트리거 중 (LD_PRELOAD /system/bin/true) ...</string>
     <string name="log_screen_off">화면이 꺼졌습니다 (완료되면 켜집니다. 확인하려면 언제든지 전원 버튼을 누르세요)</string>
     <string name="log_exploit_timeout">익스플로잇 시간 초과 (15분)</string>

@@ -148,6 +148,8 @@
     <string name="log_power_save_on">⚠ 省電模式已開啟：線上核心數可能低於 8，futex 雜湊表大小錯位會導致漏洞利用必然失敗，請先關閉省電模式</string>
     <string name="log_cleanup">[2.6/5] 清理殘留的漏洞利用程序與暫存檔 ...</string>
     <string name="log_cleanup_done">環境清理完成 (exit=%1$d)</string>
+    <string name="log_warmup">[2.7/5] 預熱：初始化管道 slab 分配器（400x /system/bin/true）...</string>
+    <string name="log_warmup_done">預熱完成 (exit=%1$d %2$s)</string>
     <string name="log_trigger">[3/5] 觸發 CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
     <string name="log_screen_off">螢幕已關閉 (完成時會喚醒; 可隨時按電源鍵查看)</string>
     <string name="log_exploit_timeout">漏洞利用逾時 (15 分鐘)</string>
