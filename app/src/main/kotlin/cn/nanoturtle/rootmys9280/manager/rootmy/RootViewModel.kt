@@ -603,16 +603,6 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         )
         appendLog("✔ " + app.getString(R.string.log_cleanup_done, cleanup.first))
 
-        // 2.7 预热：反复执行 /system/bin/true，让管道 slab 分配器进入稳定状态。
-        //     直接开打时管道竞争成功率低（S24 DZG1 实测超时/内核不稳），
-        //     预热后 p0 pipe oracle 的 F_SETPIPE_SZ 竞争窗口命中率大幅提升。
-        //     （RootMyGalaxy / Samsung Root Kit 同款 warmup 环节）
-        appendLog(app.getString(R.string.log_warmup))
-        val warmup = shellExecutor.shell(
-            "i=0; while [ \$i -lt 400 ]; do /system/bin/true; i=\$((i+1)); done; echo warmup_done"
-        )
-        appendLog("✔ " + app.getString(R.string.log_warmup_done, warmup.first, warmup.second.trim().takeLast(40)))
-
         // 3. 触发 exploit
         appendLog(app.getString(R.string.log_trigger))
         // 运行期间自动熄屏：显示驱动停止 → 消除最大崩溃源（worklist 竞态）
@@ -621,7 +611,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             appendLog("◆ " + app.getString(R.string.log_screen_off))
         }
         val env = arrayOf(
-            "EXPLOIT_ATTEMPTS=10",
+            "EXPLOIT_ATTEMPTS=30",
             "P0_ATTEMPT_TIMEOUT_SEC=45",
             "EXPLOIT_ATTEMPT_TIMEOUT_SEC=120",
             "CVE43499_ROOT_HELPER=$tmpRootHelper",

@@ -113,8 +113,6 @@
     <string name="log_pipe_warn">pipe-max-size (%1$d B) &lt; 128KB (eksploit wymaga 32 slotów=128KB), F_SETPIPE_SZ zwróci EPERM</string>
     <string name="log_cleanup">[2.6/5] Czyszczenie pozostałych procesów eksploita i plików tymczasowych ...</string>
     <string name="log_cleanup_done">Czyszczenie środowiska zakończone (exit=%1$d)</string>
-    <string name="log_warmup">[2.7/5] Rozgrzewka: inicjalizacja alokatora slab potoków (400x /system/bin/true) ...</string>
-    <string name="log_warmup_done">Rozgrzewka zakończona (exit=%1$d %2$s)</string>
     <string name="log_trigger">[3/5] Wyzwalanie CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
     <string name="log_screen_off">Ekran wyłączony (obudzi się po zakończeniu; w każdej chwili naciśnij przycisk zasilania, aby sprawdzić)</string>
     <string name="log_exploit_timeout">eksploit przekroczył limit czasu (15 minut)</string>

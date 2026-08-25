@@ -113,8 +113,6 @@
     <string name="log_power_save_on">⚠ Power saving mode is ON: online cores may drop below 8, the futex hash table size will mismatch and the exploit WILL fail. Turn it off first.</string>
     <string name="log_cleanup">[2.6/5] מנקה תהליכי ניצול שאריים וקבצים זמניים ...</string>
     <string name="log_cleanup_done">ניקוי הסביבה הושלם (exit=%1$d)</string>
-    <string name="log_warmup">[2.7/5] חימום: אתחול מקצה ה-slab של הצינורות (400x /system/bin/true) ...</string>
-    <string name="log_warmup_done">החימום הושלם (exit=%1$d %2$s)</string>
     <string name="log_trigger">[3/5] מפעיל את CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
     <string name="log_screen_off">המסך כובה (יתעורר בסיום; לחצו על מקש ההפעלה בכל עת לבדיקה)</string>
     <string name="log_exploit_timeout">הניצול נכשל עקב פסק זמן (15 דקות)</string>

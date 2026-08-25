@@ -113,8 +113,6 @@
     <string name="log_power_save_on">⚠ Power saving mode is ON: online cores may drop below 8, the futex hash table size will mismatch and the exploit WILL fail. Turn it off first.</string>
     <string name="log_cleanup">[2.6/5] Bereinige verbleibende Exploit-Prozesse und temporäre Dateien ...</string>
     <string name="log_cleanup_done">Umgebungsbereinigung abgeschlossen (exit=%1$d)</string>
-    <string name="log_warmup">[2.7/5] Warmup: Pipe-Slab-Allocator wird initialisiert (400x /system/bin/true) ...</string>
-    <string name="log_warmup_done">Warmup abgeschlossen (exit=%1$d %2$s)</string>
     <string name="log_trigger">[3/5] Löse CVE-2026-43499 aus (LD_PRELOAD /system/bin/true) ...</string>
     <string name="log_screen_off">Bildschirm ausgeschaltet (wird bei Abschluss wieder aktiviert; zum Prüfen jederzeit die Ein-/Aus-Taste drücken)</string>
     <string name="log_exploit_timeout">Exploit-Timeout (15 Minuten)</string>

@@ -152,8 +152,6 @@
     <string name="log_power_save_on">⚠ 省电模式已开启：在线核数可能低于 8，futex 哈希表大小错位会导致 exploit 必然失败，请先关闭省电模式</string>
     <string name="log_cleanup">[2.6/5] 清理残留 exploit 进程与临时文件 ...</string>
     <string name="log_cleanup_done">环境清理完成 (exit=%1$d)</string>
-    <string name="log_warmup">[2.7/5] 预热：初始化管道 slab 分配器（400x /system/bin/true）...</string>
-    <string name="log_warmup_done">预热完成 (exit=%1$d %2$s)</string>
     <string name="log_trigger">[3/5] 触发 CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
     <string name="log_screen_off">已自动熄屏（运行完成后将唤醒；可手动按电源键随时查看）</string>
     <string name="log_exploit_timeout">exploit 超时（15 分钟）</string>

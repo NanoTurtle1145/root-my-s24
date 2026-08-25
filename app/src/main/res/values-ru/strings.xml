@@ -112,8 +112,6 @@
     <string name="log_pipe_warn">pipe-max-size (%1$d Б) &lt; 128KB (эксплойту нужно 32 слота=128KB), F_SETPIPE_SZ вернёт EPERM</string>
     <string name="log_cleanup">[2.6/5] Очистка остаточных процессов эксплойта и временных файлов ...</string>
     <string name="log_cleanup_done">Очистка окружения завершена (exit=%1$d)</string>
-    <string name="log_warmup">[2.7/5] Прогрев: инициализация slab-аллокатора каналов (400x /system/bin/true) ...</string>
-    <string name="log_warmup_done">Прогрев завершён (exit=%1$d %2$s)</string>
     <string name="log_trigger">[3/5] Запуск CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...</string>
     <string name="log_screen_off">Экран выключен (проснётся по завершении; нажмите кнопку питания в любой момент для проверки)</string>
     <string name="log_exploit_timeout">эксплойт превысил время ожидания (15 минут)</string>
