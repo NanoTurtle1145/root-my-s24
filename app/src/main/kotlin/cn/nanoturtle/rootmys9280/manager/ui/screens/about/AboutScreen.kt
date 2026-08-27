@@ -28,8 +28,15 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,12 +68,32 @@ private fun faqList(): List<Faq> =
             answer = stringResource(R.string.about_faq_knox_a),
         ),
         Faq(
+            question = stringResource(R.string.about_faq_devices_q),
+            answer = stringResource(R.string.about_faq_devices_a),
+        ),
+        Faq(
+            question = stringResource(R.string.about_faq_manager_q),
+            answer = stringResource(R.string.about_faq_manager_a),
+        ),
+        Faq(
             question = stringResource(R.string.about_faq_retry_q),
             answer = stringResource(R.string.about_faq_retry_a),
         ),
         Faq(
             question = stringResource(R.string.about_faq_restart_q),
             answer = stringResource(R.string.about_faq_restart_a),
+        ),
+        Faq(
+            question = stringResource(R.string.about_faq_untested_q),
+            answer = stringResource(R.string.about_faq_untested_a),
+        ),
+        Faq(
+            question = stringResource(R.string.about_faq_adb_q),
+            answer = stringResource(R.string.about_faq_adb_a),
+        ),
+        Faq(
+            question = stringResource(R.string.about_faq_uninstall_q),
+            answer = stringResource(R.string.about_faq_uninstall_a),
         ),
     )
 
@@ -80,6 +107,13 @@ fun AboutScreen(
     onOpenDonate: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    var showLicense by remember { mutableStateOf(false) }
+    val licenseFallback = stringResource(R.string.about_license_load_failed)
+    val licenseText = remember(context) {
+        runCatching {
+            context.resources.openRawResource(R.raw.gpl_v3_license).bufferedReader().readText()
+        }.getOrDefault(licenseFallback)
+    }
     // 运行时读取已安装的应用图标，避免依赖具体 mipmap 资源名。
     val appIcon =
         remember(context) {
@@ -88,6 +122,14 @@ fun AboutScreen(
                 info.loadIcon(context.packageManager).toBitmap().asImageBitmap()
             }.getOrNull()
         }
+
+    if (showLicense) {
+        LicenseDialog(
+            title = stringResource(R.string.about_license_title),
+            text = licenseText,
+            onDismiss = { showLicense = false },
+        )
+    }
 
     LazyColumn(
         modifier =
@@ -181,18 +223,21 @@ fun AboutScreen(
                     title = "RootMyS24 (GPL-3.0)",
                     url = "https://github.com/NanoTurtle1145/root-my-s24",
                     onOpenUrl = onOpenUrl,
+                    onOpenLicense = { showLicense = true },
                 )
                 HorizontalDivider()
                 LicenseRow(
                     title = "KernelSU (GPL-2.0)",
                     url = "https://github.com/tiann/KernelSU",
                     onOpenUrl = onOpenUrl,
+                    onOpenLicense = { showLicense = true },
                 )
                 HorizontalDivider()
                 LicenseRow(
                     title = "LSPosed (GPL-3.0)",
                     url = "https://github.com/LSPosed/LSPosed",
                     onOpenUrl = onOpenUrl,
+                    onOpenLicense = { showLicense = true },
                 )
             }
         }
@@ -258,15 +303,51 @@ fun AboutScreen(
     }
 }
 
-/** 一行可点击的开源许可条目。 */
+/** 一行可点击的开源许可条目：点击弹内嵌许可证全文；也可点击链接图标打开源码页。 */
 @Composable
-private fun LicenseRow(title: String, url: String, onOpenUrl: (String) -> Unit) {
+private fun LicenseRow(
+    title: String,
+    url: String,
+    onOpenUrl: (String) -> Unit,
+    onOpenLicense: () -> Unit,
+) {
     ListItem(
-        modifier = Modifier.clickable { onOpenUrl(url) },
+        modifier = Modifier.clickable(onClick = onOpenLicense),
         leadingContent = { Icon(Icons.Rounded.Code, contentDescription = null) },
-        trailingContent = { Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null) },
+        trailingContent = {
+            Icon(
+                Icons.AutoMirrored.Rounded.OpenInNew,
+                contentDescription = null,
+                modifier = Modifier.clickable { onOpenUrl(url) },
+            )
+        },
         colors = cardRowColors,
     ) { Text(title) }
+}
+
+/** 内嵌许可证全文对话框（滚动查看，离线可用）。 */
+@Composable
+private fun LicenseDialog(
+    title: String,
+    text: String,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            Text(
+                text = text,
+                style = VectorMono,
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.about_license_close))
+            }
+        },
+    )
 }
 
 /** 分组标题：与 Vector 各页的 section 标题一致的样式。 */

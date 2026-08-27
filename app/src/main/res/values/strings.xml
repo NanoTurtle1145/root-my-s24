@@ -178,6 +178,19 @@
     <string name="about_faq_retry_a">The exploit raises privileges via kernel memory corruption and succeeds probabilistically; reboot and retry on failure.</string>
     <string name="about_faq_restart_q">Do I need to re-root after a reboot?</string>
     <string name="about_faq_restart_a">Yes. The bootloader is locked, so run Unlock Root again after every reboot.</string>
+    <string name="about_faq_devices_q">Which devices are supported?</string>
+    <string name="about_faq_devices_a">S24 series (S24/S24+/S24 Ultra/Z Flip6/Z Fold6) and S25 series on One UI 8.x, plus many S23/S26 and foldable models through the untested payloads. Pick the firmware matching your build in Firmware selection.</string>
+    <string name="about_faq_manager_q">What should I do after root succeeds?</string>
+    <string name="about_faq_manager_a">The app late-loads KernelSU. Install the KernelSU Manager APK, then open it to manage root permissions and modules.</string>
+    <string name="about_faq_untested_q">What does "untested payloads" in settings do?</string>
+    <string name="about_faq_untested_a">It shows 44 payloads for other regions and models that have not been verified on a physical device. Only enable it if you know your firmware matches.</string>
+    <string name="about_faq_adb_q">Do I need wireless debugging?</string>
+    <string name="about_faq_adb_a">No. Shizuku is the default and works over any connection. Wireless debugging is only shown if you enable it in settings, useful when Shizuku is not running.</string>
+    <string name="about_faq_uninstall_q">How do I fully remove root?</string>
+    <string name="about_faq_uninstall_a">Uninstall the KernelSU Manager, delete /data/local/tmp/ksud-s25u-kdp and temp files, then reboot. KNOX is untouched, so nothing else is changed.</string>
+    <string name="about_license_title">Open-source licenses</string>
+    <string name="about_license_close">Close</string>
+    <string name="about_license_load_failed">License text could not be loaded.</string>
     <string name="about_disclaimer">Disclaimer: This app is for security research and personal learning only. Kernel memory-corruption privilege escalation is inherently uncertain; use at your own risk. Please comply with local laws.</string>
 <!-- RootMyS24 log strings -->
     <string name="log_starting">Starting RootMyS24</string>

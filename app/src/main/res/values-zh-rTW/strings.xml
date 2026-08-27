@@ -137,6 +137,19 @@
     <string name="about_faq_retry_a">此漏洞利用透過核心記憶體破壞來提升權限，成功具有機率性；失敗時請重新開機後再試。</string>
     <string name="about_faq_restart_q">重新開機後需要重新 root 嗎？</string>
     <string name="about_faq_restart_a">需要。因為 bootloader 已鎖定，每次重新開機後都要再次執行 Unlock Root。</string>
+    <string name="about_faq_devices_q">支援哪些機型？</string>
+    <string name="about_faq_devices_a">支援 One UI 8.x 的 S24 系列（S24/S24+/S24 Ultra/Z Flip6/Z Fold6）與 S25 系列，另透過未測試載荷涵蓋多款 S23/S26 與摺疊機型。請在韌體選擇頁選擇與你建置號相符的韌體。</string>
+    <string name="about_faq_manager_q">Root 成功後該做什麼？</string>
+    <string name="about_faq_manager_a">應用會載入 KernelSU。安裝 KernelSU Manager 後開啟即可管理 root 權限與模組。</string>
+    <string name="about_faq_untested_q">設定裡的「未測試載荷」是做什麼的？</string>
+    <string name="about_faq_untested_a">它會顯示 44 個尚未在真機驗證過的其他地區/機型載荷。僅在確認你的韌體相符時再開啟。</string>
+    <string name="about_faq_adb_q">必須使用無線偵錯嗎？</string>
+    <string name="about_faq_adb_a">不必。Shizuku 是預設方式且不需特殊連線；無線偵錯僅在設定中開啟後顯示，用於 Shizuku 未執行時。</string>
+    <string name="about_faq_uninstall_q">如何徹底移除 root？</string>
+    <string name="about_faq_uninstall_a">解除安裝 KernelSU Manager，刪除 /data/local/tmp/ksud-s25u-kdp 與暫存檔後重新啟動即可。KNOX 不受影響，無需其他操作。</string>
+    <string name="about_license_title">開放原始碼授權</string>
+    <string name="about_license_close">關閉</string>
+    <string name="about_license_load_failed">無法載入授權文字。</string>
     <string name="about_disclaimer">免責聲明：本應用程式僅供安全研究與個人學習之用。核心記憶體破壞的權限提升本質上具有不確定性，請自行承擔風險，並請遵守當地法律。</string>
 <!-- RootMyS24 log strings -->
     <string name="log_starting">正在啟動 RootMyS24</string>
