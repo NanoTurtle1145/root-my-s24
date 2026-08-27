@@ -227,7 +227,7 @@ fun AboutScreen(
                 )
                 HorizontalDivider()
                 LicenseRow(
-                    title = "KernelSU (GPL-2.0)",
+                    title = "KernelSU (GPL-3.0)",
                     url = "https://github.com/tiann/KernelSU",
                     onOpenUrl = onOpenUrl,
                     onOpenLicense = { showLicense = true },
