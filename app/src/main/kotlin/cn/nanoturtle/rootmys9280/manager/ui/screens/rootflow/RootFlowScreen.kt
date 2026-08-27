@@ -209,10 +209,12 @@ private fun RootFlowContent(
         }
 
         item {
+            // 固件卡：卡片序列第一张 —— 上方大圆角，下方有授权卡 → 下圆角收小
             Card(
                 modifier = Modifier
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp)
                     .fillMaxWidth(),
+                shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
             ) {
                 Column(Modifier.padding(16.dp)) {
                     // 目标系统版本选择（入口卡片 → 独立选择 Activity）
@@ -325,6 +327,7 @@ private fun RootFlowContent(
         }
 
         item {
+            // 授权卡：序列中间 —— 上下圆角都收小（上方固件卡、下方设置卡）
             AuthCard(
                 vm = vm,
                 state = state,
@@ -333,6 +336,7 @@ private fun RootFlowContent(
         }
 
         item {
+            // 设置卡：序列倒数第二 —— 上圆角收小，下方日志标题 → 下圆角也收小
             SettingsCard(
                 vm = vm,
                 state = state,
@@ -346,15 +350,16 @@ private fun RootFlowContent(
         }
 
         item {
-            // 日志标题：独立卡片。下方还有日志行 → 下圆角收小；无日志 → 全大圆角
+            // 日志标题：序列倒数第二张 —— 上方设置卡 → 上圆角收小；
+            // 下方有日志行 → 下圆角收小；无日志行 → 下圆角恢复大（序列最后一张）
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp),
                 shape = if (shown.isEmpty()) {
-                    RoundedCornerShape(20.dp)
+                    RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
                 } else {
-                    RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
+                    RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
                 },
                 color = MaterialTheme.colorScheme.surfaceContainer,
             ) {
@@ -379,12 +384,11 @@ private fun RootFlowContent(
         }
 
         itemsIndexed(shown) { index, line ->
-            val isFirst = index == 0
             val isLast = index == shown.lastIndex
-            // 每行独立卡片：外侧大圆角，相邻侧收小为 4dp（不连成一片，保留间距）
+            // 每行独立卡片：上方（标题卡/上行）→ 上圆角收小 4dp；下方无卡片（末行）→ 下圆角大 20dp
             val shape = RoundedCornerShape(
-                topStart = if (isFirst) 20.dp else 4.dp,
-                topEnd = if (isFirst) 20.dp else 4.dp,
+                topStart = 4.dp,
+                topEnd = 4.dp,
                 bottomStart = if (isLast) 20.dp else 4.dp,
                 bottomEnd = if (isLast) 20.dp else 4.dp,
             )
@@ -453,7 +457,10 @@ private fun AuthCard(
         }
     }
 
-    Card(modifier = modifier.padding(top = 8.dp).fillMaxWidth()) {
+    Card(
+        modifier = modifier.padding(top = 8.dp).fillMaxWidth(),
+        shape = RoundedCornerShape(4.dp),
+    ) {
         Column(Modifier.padding(horizontal = 16.dp)) {
             Text(
                 text = stringResource(R.string.rootflow_auth_label),
@@ -711,6 +718,7 @@ private fun SettingsCard(
         modifier = modifier
             .padding(top = 8.dp)
             .fillMaxWidth(),
+        shape = RoundedCornerShape(4.dp),
     ) {
         Column(Modifier.padding(horizontal = 16.dp)) {
             Row(
