@@ -346,7 +346,7 @@ private fun RootFlowContent(
         }
 
         item {
-            // 分组圆角：日志标题是组首 —— 顶部大圆角、底部收小（紧贴下方日志行）
+            // 日志标题：独立卡片。下方还有日志行 → 下圆角收小；无日志 → 全大圆角
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -379,18 +379,19 @@ private fun RootFlowContent(
         }
 
         itemsIndexed(shown) { index, line ->
+            val isFirst = index == 0
             val isLast = index == shown.lastIndex
+            // 每行独立卡片：外侧大圆角，相邻侧收小为 4dp（不连成一片，保留间距）
+            val shape = RoundedCornerShape(
+                topStart = if (isFirst) 20.dp else 4.dp,
+                topEnd = if (isFirst) 20.dp else 4.dp,
+                bottomStart = if (isLast) 20.dp else 4.dp,
+                bottomEnd = if (isLast) 20.dp else 4.dp,
+            )
             val container = if (line.summary) {
                 MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
             } else {
                 MaterialTheme.colorScheme.surfaceContainer
-            }
-            val shape = if (isLast) {
-                // 组尾：底部恢复大圆角
-                RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
-            } else {
-                // 组中：上下圆角都收小（与上下行连成一体）
-                RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 0.dp, bottomEnd = 0.dp)
             }
             Surface(
                 color = container,
@@ -398,7 +399,7 @@ private fun RootFlowContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .padding(bottom = if (isLast) 8.dp else 1.dp),
+                    .padding(top = 4.dp),
             ) {
                 Text(
                     text = line.text,
