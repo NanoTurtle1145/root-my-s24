@@ -1,5 +1,6 @@
 package cn.nanoturtle.rootmys9280.manager.ui.screens.logs
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -103,16 +104,24 @@ fun LogsScreen(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                items(shown) { line ->
+                itemsIndexed(shown) { index, line ->
+                    // 大小圆角分组：首行上大圆角、末行下大圆角、中间收小
+                    val isLast = index == shown.lastIndex
                     val container =
                         if (line.summary) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                        else Color.Transparent
+                        else MaterialTheme.colorScheme.surfaceContainer
                     Surface(
                         color = container,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 1.dp),
+                        shape =
+                            RoundedCornerShape(
+                                topStart = if (index == 0) 20.dp else 4.dp,
+                                topEnd = if (index == 0) 20.dp else 4.dp,
+                                bottomStart = if (isLast) 20.dp else 4.dp,
+                                bottomEnd = if (isLast) 20.dp else 4.dp,
+                            ),
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
                             text = line.text,

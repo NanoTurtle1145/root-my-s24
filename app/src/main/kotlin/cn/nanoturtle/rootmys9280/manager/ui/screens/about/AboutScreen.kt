@@ -3,6 +3,7 @@ package cn.nanoturtle.rootmys9280.manager.ui.screens.about
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -21,12 +22,11 @@ import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material.icons.rounded.VolunteerActivism
-import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.AlertDialog
@@ -191,76 +191,84 @@ fun AboutScreen(
 
         item {
             SectionLabel(stringResource(R.string.about_section_device))
-            Card(modifier = Modifier.fillMaxWidth()) {
-                ListItem(
-                    leadingContent = {
-                        Icon(Icons.Rounded.Smartphone, contentDescription = null)
-                    },
-                    supportingContent = { Text(Build.MODEL, style = VectorMono) },
-                    colors = cardRowColors,
-                ) { Text(stringResource(R.string.about_device_model)) }
-                HorizontalDivider()
-                ListItem(
-                    leadingContent = { Icon(Icons.Rounded.Android, contentDescription = null) },
-                    supportingContent = {
-                        Text("Android ${Build.VERSION.RELEASE}", style = VectorMono)
-                    },
-                    colors = cardRowColors,
-                ) { Text(stringResource(R.string.about_system_version)) }
-                HorizontalDivider()
-                ListItem(
-                    leadingContent = { Icon(Icons.Rounded.Fingerprint, contentDescription = null) },
-                    supportingContent = { Text(Build.FINGERPRINT, style = VectorMono) },
-                    colors = cardRowColors,
-                ) { Text(stringResource(R.string.about_build_fingerprint)) }
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                GroupedRow(index = 0, count = 3) {
+                    ListItem(
+                        leadingContent = {
+                            Icon(Icons.Rounded.Smartphone, contentDescription = null)
+                        },
+                        supportingContent = { Text(Build.MODEL, style = VectorMono) },
+                        colors = cardRowColors,
+                    ) { Text(stringResource(R.string.about_device_model)) }
+                }
+                GroupedRow(index = 1, count = 3) {
+                    ListItem(
+                        leadingContent = { Icon(Icons.Rounded.Android, contentDescription = null) },
+                        supportingContent = {
+                            Text("Android ${Build.VERSION.RELEASE}", style = VectorMono)
+                        },
+                        colors = cardRowColors,
+                    ) { Text(stringResource(R.string.about_system_version)) }
+                }
+                GroupedRow(index = 2, count = 3) {
+                    ListItem(
+                        leadingContent = { Icon(Icons.Rounded.Fingerprint, contentDescription = null) },
+                        supportingContent = { Text(Build.FINGERPRINT, style = VectorMono) },
+                        colors = cardRowColors,
+                    ) { Text(stringResource(R.string.about_build_fingerprint)) }
+                }
             }
         }
 
         item {
             SectionLabel(stringResource(R.string.about_section_source))
-            Card(modifier = Modifier.fillMaxWidth()) {
-                LicenseRow(
-                    title = "RootMyS24 (GPL-3.0)",
-                    url = "https://github.com/NanoTurtle1145/root-my-s24",
-                    onOpenUrl = onOpenUrl,
-                    onOpenLicense = { showLicense = true },
-                )
-                HorizontalDivider()
-                LicenseRow(
-                    title = "KernelSU (GPL-3.0)",
-                    url = "https://github.com/tiann/KernelSU",
-                    onOpenUrl = onOpenUrl,
-                    onOpenLicense = { showLicense = true },
-                )
-                HorizontalDivider()
-                LicenseRow(
-                    title = "LSPosed (GPL-3.0)",
-                    url = "https://github.com/LSPosed/LSPosed",
-                    onOpenUrl = onOpenUrl,
-                    onOpenLicense = { showLicense = true },
-                )
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                GroupedRow(index = 0, count = 3) {
+                    LicenseRow(
+                        title = "RootMyS24 (GPL-3.0)",
+                        url = "https://github.com/NanoTurtle1145/root-my-s24",
+                        onOpenUrl = onOpenUrl,
+                        onOpenLicense = { showLicense = true },
+                    )
+                }
+                GroupedRow(index = 1, count = 3) {
+                    LicenseRow(
+                        title = "KernelSU (GPL-3.0)",
+                        url = "https://github.com/tiann/KernelSU",
+                        onOpenUrl = onOpenUrl,
+                        onOpenLicense = { showLicense = true },
+                    )
+                }
+                GroupedRow(index = 2, count = 3) {
+                    LicenseRow(
+                        title = "LSPosed (GPL-3.0)",
+                        url = "https://github.com/LSPosed/LSPosed",
+                        onOpenUrl = onOpenUrl,
+                        onOpenLicense = { showLicense = true },
+                    )
+                }
             }
         }
 
         item {
             SectionLabel(stringResource(R.string.about_section_faq))
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(16.dp)) {
-                    faqList().forEachIndexed { index, faq ->
-                        if (index > 0) {
-                            HorizontalDivider(Modifier.padding(vertical = 12.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                val faqs = faqList()
+                faqs.forEachIndexed { index, faq ->
+                    GroupedRow(index = index, count = faqs.size) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Q: ${faq.question}",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                text = "A: ${faq.answer}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
                         }
-                        Text(
-                            text = "Q: ${faq.question}",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = "A: ${faq.answer}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
                     }
                 }
             }
@@ -268,13 +276,12 @@ fun AboutScreen(
 
         item {
             SectionLabel(stringResource(R.string.about_section_support))
-            Card(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable { onOpenDonate() },
-            ) {
+            GroupedRow(index = 0, count = 1) {
                 ListItem(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onOpenDonate() },
                     leadingContent = {
                         Icon(
                             Icons.Rounded.VolunteerActivism,
@@ -359,4 +366,30 @@ private fun SectionLabel(title: String) {
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
     )
+}
+
+/**
+ * 大小圆角分组的行容器：组内首行上大圆角、末行下大圆角、中间行上下收小。
+ * 每行独立 Surface（surfaceContainer 底色），行间由调用方 spacing 分隔。
+ */
+@Composable
+private fun GroupedRow(
+    index: Int,
+    count: Int,
+    content: @Composable () -> Unit,
+) {
+    val shape =
+        RoundedCornerShape(
+            topStart = if (index == 0) 20.dp else 4.dp,
+            topEnd = if (index == 0) 20.dp else 4.dp,
+            bottomStart = if (index == count - 1) 20.dp else 4.dp,
+            bottomEnd = if (index == count - 1) 20.dp else 4.dp,
+        )
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = shape,
+        color = MaterialTheme.colorScheme.surfaceContainer,
+    ) {
+        content()
+    }
 }

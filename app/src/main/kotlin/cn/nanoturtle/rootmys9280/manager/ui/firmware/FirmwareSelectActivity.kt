@@ -262,29 +262,41 @@ private fun FirmwareSelectContent(
     }
 }
 
-/** 固件版本列表卡片：每行 系统版本 + 适配机型 + 适配系统范围 */
+/** 固件版本列表：每行 系统版本 + 适配机型 + 适配系统范围，大小圆角分组。 */
 @Composable
 private fun FirmwareVersionCard(
     versions: List<RootViewModel.FirmwareVersion>,
     selected: RootViewModel.FirmwareVersion,
     onSelect: (RootViewModel.FirmwareVersion) -> Unit,
 ) {
-    Card(
+    Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth(),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp),
     ) {
-        Column(Modifier.padding(vertical = 8.dp)) {
-            versions.forEach { version ->
-                val isSelected = selected == version
-                val rowBackground =
-                    if (isSelected) MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
-                    else Color.Transparent
+        versions.forEachIndexed { index, version ->
+            val isSelected = selected == version
+            val isLast = index == versions.lastIndex
+            val shape =
+                RoundedCornerShape(
+                    topStart = if (index == 0) 20.dp else 4.dp,
+                    topEnd = if (index == 0) 20.dp else 4.dp,
+                    bottomStart = if (isLast) 20.dp else 4.dp,
+                    bottomEnd = if (isLast) 20.dp else 4.dp,
+                )
+            val container =
+                if (isSelected) MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+                else MaterialTheme.colorScheme.surfaceContainer
+            androidx.compose.material3.Surface(
+                color = container,
+                shape = shape,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(enabled = version.enabled) { onSelect(version) }
-                        .background(rowBackground, RoundedCornerShape(12.dp))
                         .padding(horizontal = 16.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
