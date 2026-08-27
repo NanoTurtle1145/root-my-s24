@@ -15,11 +15,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -269,7 +275,18 @@ private fun RootFlowContent(
                         androidx.compose.material3.Button(
                             onClick = { vm.start() },
                             enabled = !state.busy,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                            ),
                         ) {
+                            if (!state.busy) {
+                                Icon(
+                                    Icons.Rounded.PlayArrow,
+                                    contentDescription = null,
+                                    modifier = Modifier.width(18.dp).height(18.dp),
+                                )
+                                Spacer(Modifier.width(6.dp))
+                            }
                             Text(
                                 if (state.busy) {
                                     stringResource(R.string.rootflow_running)
@@ -278,12 +295,22 @@ private fun RootFlowContent(
                                 },
                             )
                         }
-                        Spacer(Modifier.padding(start = 12.dp))
+                        Spacer(Modifier.width(12.dp))
                         if (state.busy) {
-                            CircularProgressIndicator(modifier = Modifier.height(20.dp))
+                            CircularProgressIndicator(modifier = Modifier.height(20.dp).width(20.dp))
                         }
                         if (state.rooted) {
-                            Text("✓ ${stringResource(R.string.rootflow_done)}", color = Color(0xFF4CAF50))
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                color = Color(0xFF4CAF50).copy(alpha = 0.15f),
+                                contentColor = Color(0xFF2E7D32),
+                            ) {
+                                Text(
+                                    "✓ ${stringResource(R.string.rootflow_done)}",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                                )
+                            }
                         }
                     }
                     Spacer(Modifier.height(8.dp))
@@ -318,34 +345,53 @@ private fun RootFlowContent(
         }
 
         item {
-            Row(
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surfaceContainer,
             ) {
-                Text(stringResource(R.string.rootflow_log_title), style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.weight(1f))
-                TextButton(
-                    onClick = { brief = !brief },
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(if (brief) stringResource(R.string.rootflow_detail) else stringResource(R.string.rootflow_brief))
+                    Text(
+                        stringResource(R.string.rootflow_log_title),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(Modifier.weight(1f))
+                    TextButton(
+                        onClick = { brief = !brief },
+                    ) {
+                        Text(if (brief) stringResource(R.string.rootflow_detail) else stringResource(R.string.rootflow_brief))
+                    }
                 }
             }
         }
 
         items(shown) { line ->
-            Text(
-                text = line.text,
-                fontSize = 13.sp,
-                fontFamily = FontFamily.Monospace,
-                fontWeight = if (line.summary) FontWeight.Bold else FontWeight.Normal,
-                color = if (line.summary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            val container = if (line.summary) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else Color.Transparent
+            Surface(
+                color = container,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp)
+                    .padding(horizontal = 16.dp)
                     .padding(vertical = 1.dp),
-            )
+            ) {
+                Text(
+                    text = line.text,
+                    fontSize = 13.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = if (line.summary) FontWeight.Bold else FontWeight.Normal,
+                    color = if (line.summary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                )
+            }
         }
         item {
             Spacer(Modifier.height(24.dp))

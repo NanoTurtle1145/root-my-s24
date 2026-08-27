@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,10 +15,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Clear
@@ -32,6 +36,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -42,6 +47,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -133,44 +139,48 @@ private fun FirmwareSelectContent(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(),
             )
-            // 地区筛选
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
+            // 地区筛选（横向滚动，窄屏不溢出）
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
             ) {
-                FilterChip(
-                    selected = filterRegion == null,
-                    onClick = { filterRegion = null },
-                    label = { Text(stringResource(R.string.rootflow_firmware_filter_all)) },
-                )
-                Spacer(Modifier.width(8.dp))
-                RootViewModel.Region.entries.forEach { region ->
+                item {
+                    FilterChip(
+                        selected = filterRegion == null,
+                        onClick = { filterRegion = null },
+                        label = { Text(stringResource(R.string.rootflow_firmware_filter_all)) },
+                    )
+                }
+                items(RootViewModel.Region.entries.toList()) { region ->
                     FilterChip(
                         selected = filterRegion == region,
                         onClick = { filterRegion = if (filterRegion == region) null else region },
                         label = { Text(region.label) },
                     )
-                    Spacer(Modifier.width(8.dp))
                 }
             }
-            // 机型系列筛选
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
+            // 机型系列筛选（横向滚动）
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
             ) {
-                FilterChip(
-                    selected = filterSeries == null,
-                    onClick = { filterSeries = null },
-                    label = { Text(stringResource(R.string.rootflow_firmware_filter_all)) },
-                )
-                Spacer(Modifier.width(8.dp))
-                RootViewModel.Series.entries.forEach { series ->
+                item {
+                    FilterChip(
+                        selected = filterSeries == null,
+                        onClick = { filterSeries = null },
+                        label = { Text(stringResource(R.string.rootflow_firmware_filter_all)) },
+                    )
+                }
+                items(RootViewModel.Series.entries.toList()) { series ->
                     FilterChip(
                         selected = filterSeries == series,
                         onClick = { filterSeries = if (filterSeries == series) null else series },
                         label = { Text(series.label) },
                     )
-                    Spacer(Modifier.width(8.dp))
                 }
             }
             Spacer(Modifier.height(4.dp))
@@ -267,10 +277,14 @@ private fun FirmwareVersionCard(
         Column(Modifier.padding(vertical = 8.dp)) {
             versions.forEach { version ->
                 val isSelected = selected == version
+                val rowBackground =
+                    if (isSelected) MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+                    else Color.Transparent
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable(enabled = version.enabled) { onSelect(version) }
+                        .background(rowBackground, RoundedCornerShape(12.dp))
                         .padding(horizontal = 16.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -282,10 +296,26 @@ private fun FirmwareVersionCard(
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
                         // 系统版本主标题
-                        Text(
-                            text = version.label,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = version.label,
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                            if (version.tested) {
+                                Spacer(Modifier.width(6.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                    contentColor = MaterialTheme.colorScheme.primary,
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.rootflow_firmware_tested),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.dp),
+                                    )
+                                }
+                            }
+                        }
                         // 适配机型
                         Text(
                             text = stringResource(

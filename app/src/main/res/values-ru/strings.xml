@@ -46,6 +46,7 @@
     <string name="rootflow_firmware_search_hint">Search device/version/firmware</string>
     <string name="rootflow_firmware_filter_all">All</string>
     <string name="rootflow_firmware_no_match">No matching firmware found</string>
+    <string name="rootflow_firmware_tested">проверено</string>
     <string name="rootflow_start">Начать Root</string>
     <string name="rootflow_running">Выполняется...</string>
     <string name="rootflow_done">root завершён</string>

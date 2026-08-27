@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -69,6 +72,7 @@ fun LogsScreen(
             TextButton(onClick = { brief = !brief }) {
                 Text(if (brief) stringResource(R.string.logs_detail) else stringResource(R.string.logs_brief))
             }
+            Spacer(Modifier.weight(1f))
             TextButton(
                 onClick = {
                     scope.launch {
@@ -101,16 +105,26 @@ fun LogsScreen(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 items(shown) { line ->
-                    Text(
-                        text = line.text,
-                        fontSize = 13.sp,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = if (line.summary) FontWeight.Bold else FontWeight.Normal,
-                        color = if (line.summary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    val container =
+                        if (line.summary) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        else Color.Transparent
+                    Surface(
+                        color = container,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 1.dp),
-                    )
+                    ) {
+                        Text(
+                            text = line.text,
+                            fontSize = 13.sp,
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = if (line.summary) FontWeight.Bold else FontWeight.Normal,
+                            color = if (line.summary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 10.dp, vertical = 4.dp),
+                        )
+                    }
                 }
             }
         }

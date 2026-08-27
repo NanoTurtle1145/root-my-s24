@@ -52,6 +52,7 @@
     <string name="rootflow_firmware_search_hint">搜索机型/系统版本/固件</string>
     <string name="rootflow_firmware_filter_all">全部</string>
     <string name="rootflow_firmware_no_match">未找到匹配的固件</string>
+    <string name="rootflow_firmware_tested">已实测</string>
     <string name="rootflow_start">开始 Root</string>
     <string name="rootflow_running">运行中...</string>
     <string name="rootflow_done">root 完成</string>
