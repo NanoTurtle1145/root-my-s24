@@ -802,6 +802,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         }
         appendLog("◆ KNOX: $knox")
 
+        // 版本号：便于从导出的日志直接辨认 build
+        val verName = try {
+            app.packageManager.getPackageInfo(app.packageName, 0).versionName.orEmpty()
+        } catch (_: Exception) { "?" }
+        val verCode = try {
+            val pi = app.packageManager.getPackageInfo(app.packageName, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) pi.longVersionCode else pi.versionCode.toLong()
+        } catch (_: Exception) { 0L }
+        appendLog("◆ 版本: RootMyS24 v${verName} (build ${verCode})")
+
         // 记录机型标识，供导出文件名使用（如 rootmys9280-S9280ZCS6DZF2.txt）
         val buildTag = listOf(model, buildInc).firstOrNull { it.isNotBlank() && !it.contains("?") }
         val normalized = buildTag
@@ -975,6 +985,15 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             // 优先导出内存日志；若内存为空（重启后恢复失败等），兜底从持久化文件读取，
             // 确保"疯狂按保存"也能拿到完整内容。
             val content = buildString {
+                // 导出头部带上版本/build 信息，便于从文件直接辨认（内存日志清空后仍可追溯）
+                val verName = try {
+                    app.packageManager.getPackageInfo(app.packageName, 0).versionName.orEmpty()
+                } catch (_: Exception) { "?" }
+                val verCode = try {
+                    val pi = app.packageManager.getPackageInfo(app.packageName, 0)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) pi.longVersionCode else pi.versionCode.toLong()
+                } catch (_: Exception) { 0L }
+                appendLine("RootMyS24 v${verName} (build ${verCode})")
                 val memLines = _state.value.logLines
                 if (memLines.isNotEmpty()) {
                     memLines.forEach { appendLine(it.text) }
