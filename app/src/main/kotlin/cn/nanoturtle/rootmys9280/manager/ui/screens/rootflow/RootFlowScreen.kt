@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -345,11 +346,16 @@ private fun RootFlowContent(
         }
 
         item {
+            // 分组圆角：日志标题是组首 —— 顶部大圆角、底部收小（紧贴下方日志行）
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-                shape = RoundedCornerShape(16.dp),
+                shape = if (shown.isEmpty()) {
+                    RoundedCornerShape(20.dp)
+                } else {
+                    RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
+                },
                 color = MaterialTheme.colorScheme.surfaceContainer,
             ) {
                 Row(
@@ -372,14 +378,27 @@ private fun RootFlowContent(
             }
         }
 
-        items(shown) { line ->
-            val container = if (line.summary) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else Color.Transparent
+        itemsIndexed(shown) { index, line ->
+            val isLast = index == shown.lastIndex
+            val container = if (line.summary) {
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            } else {
+                MaterialTheme.colorScheme.surfaceContainer
+            }
+            val shape = if (isLast) {
+                // 组尾：底部恢复大圆角
+                RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
+            } else {
+                // 组中：上下圆角都收小（与上下行连成一体）
+                RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomStart = 0.dp, bottomEnd = 0.dp)
+            }
             Surface(
                 color = container,
+                shape = shape,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .padding(vertical = 1.dp),
+                    .padding(bottom = if (isLast) 8.dp else 1.dp),
             ) {
                 Text(
                     text = line.text,
