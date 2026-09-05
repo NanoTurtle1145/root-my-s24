@@ -94,6 +94,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // （港版 DZE2 kmalloc_caches=0x176c6f8 与国行 0x176cbb8 不同，不能用 DZF2 载荷）
         CZA1("cve-2026-43499-cza1", "One UI 8.0", "SM-S9280 港版/台版", "CZA1", Region.HONGKONG_TAIWAN, "ksud-selected"),
         DZE2("cve-2026-43499-dze2", "One UI 8.5", "SM-S9280 港版/台版", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
+        // 台湾 S24+（SM-S9260, e2q）DZG1：实测使用港版 DZE2 载荷成功（单设备记录，issue #3）
+        S9260TW_DZE2("cve-2026-43499-dze2", "One UI 8.5", "SM-S9260 台版 S24+", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
 
         // —— 以下为 RootMyGalaxy 移植的载荷（运行时 KASLR 定标，未经本 App 实测）——
         // 需在设置里启用「启用未经测试的载荷」后才在固件选择页显示。
