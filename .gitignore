@@ -25,3 +25,6 @@ captures/
 
 # Kotlin daemon session files
 .kotlin/sessions/
+
+# 项目提示词（仅本地，不提交）
+AGENTS.md
