@@ -1,0 +1,353 @@
+RootMyS24 v3.1.0 (build 126)
+↻ 已從上次工作階段還原 1 行日誌
+ℹ 配對通知已傳送 — 請查看通知並輸入 6 位配對碼
+◆ 正在啟動 RootMyS24
+◆ Payload: cve-2026-43499-cza1 (固定, kmalloc_caches 0x16bad78)
+[1/5] 檢查 Shizuku...
+✔ Shizuku 已就緒
+✗ 失敗: Attempt to invoke virtual method 'java.lang.Class java.lang.Object.getClass()' on a null object reference
+◆ 正在啟動 RootMyS24
+◆ Payload: cve-2026-43499-cza1 (固定, kmalloc_caches 0x16bad78)
+[1/5] 檢查 Shizuku...
+✔ Shizuku 已就緒
+✗ 失敗: Attempt to invoke virtual method 'java.lang.Class java.lang.Object.getClass()' on a null object reference
+◆ 正在啟動 RootMyS24
+◆ Payload: cve-2026-43499-cza1 (固定, kmalloc_caches 0x16bad78)
+[1/5] 檢查 Shizuku...
+✔ Shizuku 已就緒
+✗ 失敗: Attempt to invoke virtual method 'java.lang.Class java.lang.Object.getClass()' on a null object reference
+◆ 正在啟動 RootMyS24
+◆ Payload: cve-2026-43499-cza1 (固定, kmalloc_caches 0x16bad78)
+[1/5] 檢查 Shizuku...
+✔ Shizuku 已就緒
+◆ 设备: SM-S9260 (pineapple)
+◆ 系统: Android 16 / 安全补丁 2026-03-05
+◆ 固件: S9260ZHS5CZC1 (bootloader S9260ZHS5CZC1)
+◆ 指纹: samsung/e2qzhx/e2q:16/BP2A.250605.031.A3/S9260ZHS5CZC1:user/release-keys
+◆ KNOX: 完好 (warranty_bit=0, verifiedbootstate=green)
+◆ 版本: RootMyS24 v3.1.0 (build 126)
+[2/5] 正在將 Payload 推送到 /data/local/tmp ...
+✔ 推送完成 (cve-2026-43499-cza1=104128 B, cve-2026-43499-root=27200 B)
+◆ 診斷: pipe-max-size=? pipe-user-pages=cat: /proc/sys/fs/pipe-user-pages-soft: Permission denied
+cat: /proc/sys/fs/pipe-user-pages-hard: Permission denied
+n/a
+◆ 診斷: /proc/version=Linux version 6.1.128-android14-11-31999054-abS9260ZHS5CZC1 (build-user@build-host) (Android (10087095, +pgo, +bolt, +lto, -mlgo, based on r487747c) clang version 17.0.2 (https://android.googlesource.
+[2.6/5] 清理殘留的漏洞利用程序與暫存檔 ...
+✔ 環境清理完成 (exit=137)
+[3/5] 觸發 CVE-2026-43499 (LD_PRELOAD /system/bin/true) ...
+[+] preload supervisor pid=29309 attempts=30 base_delay=20000 p0_timeout=45 timeout=120
+[+] exploit attempt=1/30 pid=29312 delay=50000 p0_offset=scan
+[+] startup context pid=29312 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=29312 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=29312 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=29312 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=1/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=2/30 pid=342 delay=50000 p0_offset=scan
+[+] startup context pid=342 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=342 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=342 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=342 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=2/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=3/30 pid=6693 delay=50000 p0_offset=scan
+[+] startup context pid=6693 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=6693 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=6693 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=6693 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=3/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=4/30 pid=11146 delay=50000 p0_offset=scan
+[+] startup context pid=11146 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=11146 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=11146 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=11146 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=4/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=5/30 pid=14801 delay=50000 p0_offset=scan
+[+] startup context pid=14801 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=14801 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=14801 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=14801 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=5/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=6/30 pid=18324 delay=50000 p0_offset=scan
+[+] startup context pid=18324 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=18324 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=18324 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=18324 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=6/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=7/30 pid=21929 delay=50000 p0_offset=scan
+[+] startup context pid=21929 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=21929 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=21929 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=21929 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=7/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=8/30 pid=26039 delay=50000 p0_offset=scan
+[+] startup context pid=26039 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=26039 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=26039 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=26039 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=8/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=9/30 pid=30242 delay=50000 p0_offset=scan
+[+] startup context pid=30242 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=30242 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=30242 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=30242 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=9/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=10/30 pid=1990 delay=50000 p0_offset=scan
+[+] startup context pid=1990 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=1990 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=1990 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=1990 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=10/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=11/30 pid=8082 delay=50000 p0_offset=scan
+[+] startup context pid=8082 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=8082 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=8082 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=8082 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=11/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=12/30 pid=12215 delay=50000 p0_offset=scan
+[+] startup context pid=12215 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=12215 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=12215 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=12215 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[*] p0 pipe oracle prepared base=ffffff89e4800000 pipes=160 gate_slots=1
+[-] KernelSnitch mm_struct leak failed
+[*] kernel page prepare mode=1 attempt=1/2 elapsed_ms=5710 base=0000000000000000
+[-] prepare_kernel_page retry 1/2
+[-] KernelSnitch mm_struct leak failed
+[*] kernel page prepare mode=1 attempt=2/2 elapsed_ms=3906 base=0000000000000000
+[-] prepare_kernel_page retry 2/2
+[-] prepare_kernel_page did not find usable nonzero source pointers
+[!] slide kaslr leak failed
+[-] exploit attempt=12/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=13/30 pid=23229 delay=50000 p0_offset=scan
+[+] startup context pid=23229 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=23229 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=23229 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=23229 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=13/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=14/30 pid=27544 delay=50000 p0_offset=scan
+[+] startup context pid=27544 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=27544 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=27544 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=27544 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=14/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=15/30 pid=31376 delay=50000 p0_offset=scan
+[+] startup context pid=31376 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=31376 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=31376 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=31376 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=15/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=16/30 pid=4304 delay=50000 p0_offset=scan
+[+] startup context pid=4304 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=4304 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=4304 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=4304 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[*] p0 pipe oracle prepared base=ffffff8897a28000 pipes=160 gate_slots=1
+[-] KernelSnitch mm_struct leak failed
+[*] kernel page prepare mode=1 attempt=1/2 elapsed_ms=5823 base=0000000000000000
+[-] prepare_kernel_page retry 1/2
+[-] KernelSnitch mm_struct leak failed
+[*] kernel page prepare mode=1 attempt=2/2 elapsed_ms=3173 base=0000000000000000
+[-] prepare_kernel_page retry 2/2
+[-] prepare_kernel_page did not find usable nonzero source pointers
+[!] slide kaslr leak failed
+[-] exploit attempt=16/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=17/30 pid=16838 delay=50000 p0_offset=scan
+[+] startup context pid=16838 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=16838 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=16838 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=16838 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=17/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=18/30 pid=20486 delay=50000 p0_offset=scan
+[+] startup context pid=20486 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=20486 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=20486 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=20486 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=18/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=19/30 pid=24405 delay=50000 p0_offset=scan
+[+] startup context pid=24405 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=24405 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=24405 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=24405 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=19/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=20/30 pid=28677 delay=50000 p0_offset=scan
+[+] startup context pid=28677 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=28677 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=28677 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=28677 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=20/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=21/30 pid=32340 delay=50000 p0_offset=scan
+[+] startup context pid=32340 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=32340 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=32340 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=32340 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=21/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=22/30 pid=5990 delay=50000 p0_offset=scan
+[+] startup context pid=5990 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=5990 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=5990 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=5990 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=22/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=23/30 pid=10644 delay=50000 p0_offset=scan
+[+] startup context pid=10644 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=10644 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=10644 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=10644 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=23/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=24/30 pid=14341 delay=50000 p0_offset=scan
+[+] startup context pid=14341 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=14341 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=14341 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=14341 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=24/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=25/30 pid=17851 delay=50000 p0_offset=scan
+[+] startup context pid=17851 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=17851 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=17851 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=17851 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=25/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=26/30 pid=21538 delay=50000 p0_offset=scan
+[+] startup context pid=21538 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=21538 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=21538 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=21538 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=26/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=27/30 pid=25543 delay=50000 p0_offset=scan
+[+] startup context pid=25543 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=25543 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=25543 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=25543 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=27/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=28/30 pid=29839 delay=50000 p0_offset=scan
+[+] startup context pid=29839 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=29839 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=29839 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=29839 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=28/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=29/30 pid=1169 delay=50000 p0_offset=scan
+[+] startup context pid=1169 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=1169 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=1169 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=1169 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=29/30 failed status=255
+[*] safe retry quiet delay seconds=5
+[+] exploit attempt=30/30 pid=7651 delay=50000 p0_offset=scan
+[+] startup context pid=7651 uid=2000 euid=2000 gid=2000 egid=2000 attr=u:r:shell:s0 enforce=1
+[+] startup limits pid=7651 NoNewPrivs=0 Seccomp=0 Seccomp_filters=0
+[+] build config pid=7651 label=e3q-S9280ZHS4CZA1-app-physical-p0-oracle slide=pselect main=pselect
+[+] p0 profile pid=7651 phys_offset=0000000080000000 kernel_phys_load=00000000a8000000 delta=0000000028000000 slide_logger=ffffff802960b705 bootid_data=ffffff802a27ab38 init_task=ffffff802a15f8c0 root_tg=ffffff802a34cd80 sysctl_bootid=ffffff802a4c35a8
+[-] slide tracefs pre-oracle unavailable; using physical scan
+[!] pipe KernelSnitch sk_buff page leak failed
+[!] pipe page child did not report base
+[-] exploit attempt=30/30 failed status=255
+[!] exploit failed after 30 independent attempts
+✗ 失敗: 漏洞利用未完成 (可能需要多次嘗試 / 重新開機, 具機率性)
