@@ -82,6 +82,15 @@ fun LogsScreen(
                     }
                 },
             ) { Text(stringResource(R.string.logs_export)) }
+            TextButton(
+                onClick = {
+                    scope.launch {
+                        val result = vm.uploadLog()
+                        android.widget.Toast.makeText(context, result, android.widget.Toast.LENGTH_LONG)
+                            .show()
+                    }
+                },
+            ) { Text(stringResource(R.string.logs_upload)) }
             TextButton(onClick = { vm.clearLog() }) { Text(stringResource(R.string.logs_clear)) }
         }
 

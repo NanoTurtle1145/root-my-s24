@@ -333,6 +333,15 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     /** 供独立选择页收集的版本状态流（进程级单例 VM，跨 Activity 同步） */
     val firmwareVersionState: StateFlow<FirmwareVersion> = _firmwareVersion
 
+    /** 「每次询问」模式下运行结束后的上传提示（true=应弹窗）。 */
+    private val _uploadPrompt = MutableStateFlow(false)
+    val uploadPrompt: StateFlow<Boolean> = _uploadPrompt
+
+    /** 用户已经处理过本次提示（上传或跳过），关掉弹窗。 */
+    fun dismissUploadPrompt() {
+        _uploadPrompt.value = false
+    }
+
     private val tmpPayload: String get() = "/data/local/tmp/$payloadName"
     private val tmpRootHelper = "/data/local/tmp/$rootHelperName"
     private val tmpKsud = "/data/local/tmp/$ksudName"
@@ -361,6 +370,15 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                     appendLog("◆ " + app.getString(R.string.log_woken))
                 }
                 _state.value = _state.value.copy(busy = false)
+                // 一次运行结束后的日志处理：始终提供则直接上报；每次询问则弹一次提示；
+                // 不提供什么都不做。上传失败不影响运行结果，也不会打断 UI。
+                when (OnboardingPrefs.logSharing(app)) {
+                    LogSharing.ALWAYS -> appendLog("◆ " + uploadLog())
+                    LogSharing.MANUAL -> {
+                        if (LogUploader.isConfigured(app)) _uploadPrompt.value = true
+                    }
+                    LogSharing.NEVER -> Unit
+                }
             }
         }
     }
@@ -984,30 +1002,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      */
     suspend fun dumpLog(): String = withContext(Dispatchers.IO) {
         runCatching {
-            // 优先导出内存日志；若内存为空（重启后恢复失败等），兜底从持久化文件读取，
-            // 确保"疯狂按保存"也能拿到完整内容。
-            val content = buildString {
-                // 导出头部带上版本/build 信息，便于从文件直接辨认（内存日志清空后仍可追溯）
-                val verName = try {
-                    app.packageManager.getPackageInfo(app.packageName, 0).versionName.orEmpty()
-                } catch (_: Exception) { "?" }
-                val verCode = try {
-                    val pi = app.packageManager.getPackageInfo(app.packageName, 0)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) pi.longVersionCode else pi.versionCode.toLong()
-                } catch (_: Exception) { 0L }
-                appendLine("RootMyS24 v${verName} (build ${verCode})")
-                val memLines = _state.value.logLines
-                if (memLines.isNotEmpty()) {
-                    memLines.forEach { appendLine(it.text) }
-                } else if (persistFile.exists()) {
-                    persistFile.readLines().forEach { appendLine(it) }
-                } else {
-                    val failure = persistFailure
-                    if (failure != null) {
-                        appendLine("⚠ " + app.getString(R.string.log_persist_failed, failure))
-                    }
-                }
-            }
+            val content = buildLogText()
             val displayName = "rootmys9280-$deviceBuildTag.txt"
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val values = ContentValues().apply {
@@ -1041,6 +1036,54 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun stripAnsi(s: String): String =
         s.replace(ANSI_ESCAPE, "").replace("\r", "")
+
+    /**
+     * 当前这份日志的完整文本（含版本头部）。
+     *
+     * 优先用内存日志；内存为空（刚重启、恢复失败等）时兜底读持久化文件，
+     * 保证"导出/上传"任何时候都能拿到内容。导出与上报共用这一份，
+     * 避免两条路径各拼一次导致内容不一致。
+     */
+    private fun buildLogText(): String = buildString {
+        val verName = try {
+            app.packageManager.getPackageInfo(app.packageName, 0).versionName.orEmpty()
+        } catch (_: Exception) { "?" }
+        val verCode = try {
+            val pi = app.packageManager.getPackageInfo(app.packageName, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) pi.longVersionCode else pi.versionCode.toLong()
+        } catch (_: Exception) { 0L }
+        appendLine("RootMyS24 v${verName} (build ${verCode})")
+        val memLines = _state.value.logLines
+        if (memLines.isNotEmpty()) {
+            memLines.forEach { appendLine(it.text) }
+        } else if (persistFile.exists()) {
+            persistFile.readLines().forEach { appendLine(it) }
+        } else {
+            val failure = persistFailure
+            if (failure != null) {
+                appendLine("⚠ " + app.getString(R.string.log_persist_failed, failure))
+            }
+        }
+    }
+
+    /**
+     * 上报当前日志到收集端。
+     *
+     * @return 可直接展示的结果文案（成功/失败/未配置/已关闭）。
+     */
+    suspend fun uploadLog(): String = withContext(Dispatchers.IO) {
+        if (OnboardingPrefs.logSharing(app) == LogSharing.NEVER) {
+            return@withContext app.getString(R.string.log_upload_off)
+        }
+        if (!LogUploader.isConfigured(app)) {
+            return@withContext app.getString(R.string.log_upload_not_configured)
+        }
+        val outcome =
+            if (_state.value.rooted) "success" else "failed@stage${currentStage}"
+        val error = LogUploader.upload(app, buildLogText(), deviceBuildTag, outcome)
+        if (error == null) app.getString(R.string.log_upload_ok)
+        else app.getString(R.string.log_upload_fail, error)
+    }
 
     companion object {
         const val MAX_LOG_LINES = 4000

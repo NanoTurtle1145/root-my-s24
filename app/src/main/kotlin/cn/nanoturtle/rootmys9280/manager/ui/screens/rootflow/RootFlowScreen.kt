@@ -95,7 +95,10 @@ private fun RootFlowContent(
     var showAppearance by remember { mutableStateOf(false) }
     var showLanguage by remember { mutableStateOf(false) }
     var donationMilestone by remember { mutableIntStateOf(0) }
+    // 「每次询问」模式下运行结束后是否弹上传提示
+    val uploadPrompt by vm.uploadPrompt.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val context = androidx.compose.ui.platform.LocalContext.current
     val listState = rememberLazyListState()
 
     // 捐赠里程碑事件：达到 10/25/50/75/100… 次 root 成功时弹出一次
@@ -160,6 +163,39 @@ private fun RootFlowContent(
             dismissButton = {
                 TextButton(onClick = { donationMilestone = 0 }) {
                     Text(stringResource(R.string.donation_later))
+                }
+            },
+        )
+    }
+
+    // 「每次询问」模式：一轮运行结束后弹一次提示，用户决定这次传不传。
+    // 上传在后台协程里做，结果用 Toast 告诉用户，不阻塞界面。
+    if (uploadPrompt) {
+        AlertDialog(
+            onDismissRequest = { vm.dismissUploadPrompt() },
+            title = { Text(stringResource(R.string.log_upload_prompt_title)) },
+            text = { Text(stringResource(R.string.log_upload_prompt_body)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        vm.dismissUploadPrompt()
+                        scope.launch {
+                            val result = vm.uploadLog()
+                            android.widget.Toast.makeText(
+                                    context,
+                                    result,
+                                    android.widget.Toast.LENGTH_LONG,
+                                )
+                                .show()
+                        }
+                    },
+                ) {
+                    Text(stringResource(R.string.logs_upload))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { vm.dismissUploadPrompt() }) {
+                    Text(stringResource(R.string.log_upload_skip))
                 }
             },
         )

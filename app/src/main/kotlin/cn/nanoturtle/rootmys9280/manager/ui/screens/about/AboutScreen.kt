@@ -20,6 +20,7 @@ import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material.icons.rounded.VolunteerActivism
 import androidx.compose.material3.Icon
@@ -105,6 +106,7 @@ private fun faqList(): List<Faq> =
 fun AboutScreen(
     onOpenUrl: (String) -> Unit,
     onOpenDonate: () -> Unit = {},
+    onOpenWiki: () -> Unit = {},
 ) {
     val context = LocalContext.current
     var showLicense by remember { mutableStateOf(false) }
@@ -247,6 +249,28 @@ fun AboutScreen(
                         onOpenLicense = { showLicense = true },
                     )
                 }
+            }
+        }
+
+        item {
+            SectionLabel(stringResource(R.string.about_section_guide))
+            GroupedRow(index = 0, count = 1) {
+                ListItem(
+                    modifier = Modifier.fillMaxWidth().clickable { onOpenWiki() },
+                    leadingContent = {
+                        Icon(
+                            Icons.Rounded.MenuBook,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    },
+                    headlineContent = { Text(stringResource(R.string.about_view_wiki)) },
+                    supportingContent = { Text(stringResource(R.string.about_view_wiki_summary)) },
+                    trailingContent = {
+                        Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null)
+                    },
+                    colors = cardRowColors,
+                )
             }
         }
 

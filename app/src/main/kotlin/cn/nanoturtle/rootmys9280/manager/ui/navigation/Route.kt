@@ -51,6 +51,9 @@ sealed interface TopLevelRoute : Route {
 /** 捐赠页：展示收款二维码。 */
 @Serializable data object Donate : Route
 
+/** 必读指南：临时 root 的原理与变砖警告，「关于」页可反复进入。 */
+@Serializable data object Wiki : Route
+
 /**
  * Label and icon for a bar item. Titles come from resources; no hard-coded English.
  *

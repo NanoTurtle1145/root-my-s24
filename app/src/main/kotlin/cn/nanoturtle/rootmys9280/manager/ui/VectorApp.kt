@@ -12,6 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -32,6 +35,8 @@ import cn.nanoturtle.rootmys9280.manager.ui.screens.rootflow.RootFlowScreen
 import cn.nanoturtle.rootmys9280.manager.ui.screens.logs.LogsScreen
 import cn.nanoturtle.rootmys9280.manager.ui.screens.settings.SettingsScreen
 import cn.nanoturtle.rootmys9280.manager.ui.screens.about.AboutScreen
+import cn.nanoturtle.rootmys9280.manager.ui.screens.onboarding.OnboardingScreen
+import cn.nanoturtle.rootmys9280.manager.rootmy.OnboardingPrefs
 
 /**
  * The app shell.
@@ -44,6 +49,15 @@ import cn.nanoturtle.rootmys9280.manager.ui.screens.about.AboutScreen
 @Composable
 fun VectorApp() {
     val navigator = rememberNavigator()
+
+    // 首次启动先走引导（必读指南 / 通知权限 / 日志共享），做完写标记就不再出现。
+    // 放在最外层整体替换，而不是塞进导航栈：引导期间不该有底部栏，也不该能被返回键绕过。
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var onboardingDone by remember { mutableStateOf(OnboardingPrefs.isDone(context)) }
+    if (!onboardingDone) {
+        OnboardingScreen(onFinished = { onboardingDone = true })
+        return
+    }
 
     CompositionLocalProvider(
         LocalNavigator provides navigator,
@@ -142,6 +156,12 @@ private fun EntryProviderScope<NavKey>.registerRoutes(navigator: Navigator) {
         AboutScreen(
             onOpenUrl = { url -> navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Web(url)) },
             onOpenDonate = { navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Donate) },
+            onOpenWiki = { navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Wiki) },
+        )
+    }
+    entry<cn.nanoturtle.rootmys9280.manager.ui.navigation.Wiki> {
+        cn.nanoturtle.rootmys9280.manager.ui.screens.wiki.WikiScreen(
+            onNavigateBack = { navigator.back() },
         )
     }
     entry<cn.nanoturtle.rootmys9280.manager.ui.navigation.Donate> {

@@ -3,17 +3,22 @@ package cn.nanoturtle.rootmys9280.manager.ui.screens.settings
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Notes
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Bedtime
+import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.SettingsRemote
@@ -24,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -32,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +48,8 @@ import androidx.compose.ui.unit.dp
 import cn.nanoturtle.rootmys9280.manager.BuildConfig
 import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
+import cn.nanoturtle.rootmys9280.manager.rootmy.LogSharing
+import cn.nanoturtle.rootmys9280.manager.rootmy.OnboardingPrefs
 import cn.nanoturtle.rootmys9280.manager.ui.theme.VectorMono
 
 private const val PREFS_SETTINGS = "settings"
@@ -79,6 +88,10 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
     }
     var untestedPayloadsEnabled by remember {
         mutableStateOf(prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false))
+    }
+    // 日志共享方式：引导页写过一次，这里读出来并在改动时回写。
+    var logSharing by remember {
+        mutableStateOf(OnboardingPrefs.logSharing(context))
     }
 
     LazyColumn(
@@ -262,11 +275,79 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
         }
 
         item {
+            SectionLabel(stringResource(R.string.settings_section_privacy))
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                // 首次启动问过一次的选择，之后在这里随时能改。
+                GroupedRow(index = 0, count = 1) {
+                    Column(Modifier.padding(vertical = 12.dp)) {
+                        ListItem(
+                            leadingContent = {
+                                Icon(Icons.Rounded.CloudUpload, contentDescription = null)
+                            },
+                            supportingContent = {
+                                Text(stringResource(R.string.settings_log_sharing_summary))
+                            },
+                            colors = cardRowColors,
+                        ) { Text(stringResource(R.string.settings_log_sharing)) }
+                        LogSharing.entries.forEach { mode ->
+                            LogSharingOption(
+                                mode = mode,
+                                selected = logSharing == mode,
+                                onSelect = {
+                                    logSharing = mode
+                                    OnboardingPrefs.setLogSharing(context, mode)
+                                },
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        item {
             Text(
                 text = stringResource(R.string.settings_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
                 style = VectorMono,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
+            )
+        }
+    }
+}
+
+/** 设置页里的一个日志共享单选项（与首次引导页同一组文案）。 */
+@Composable
+private fun LogSharingOption(
+    mode: LogSharing,
+    selected: Boolean,
+    onSelect: () -> Unit,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .selectable(selected = selected, role = Role.RadioButton, onClick = onSelect)
+                .padding(horizontal = 16.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        Spacer(Modifier.width(8.dp))
+        Column(Modifier.weight(1f)) {
+            Text(
+                text =
+                    stringResource(
+                        cn.nanoturtle.rootmys9280.manager.ui.screens.onboarding.logSharingLabel(mode)
+                    ),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text =
+                    stringResource(
+                        cn.nanoturtle.rootmys9280.manager.ui.screens.onboarding
+                            .logSharingDescription(mode)
+                    ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
