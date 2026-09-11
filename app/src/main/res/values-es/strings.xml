@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">¿Compartir el registro de esta ejecución?</string>
     <string name="log_upload_prompt_body">El registro ayuda a diagnosticar fallos en tu firmware. Contiene el modelo, la versión del firmware y las fases del exploit, sin datos personales.</string>
     <string name="log_upload_skip">Esta vez no</string>
+    <string name="settings_section_debug">Depuración</string>
+    <string name="settings_debug_test_db">Probar la conexión con el servidor de registros</string>
+    <string name="settings_debug_install_id">ID de instalación</string>
+    <string name="settings_debug_rerun_onboarding">Volver a mostrar la guía inicial</string>
+    <string name="settings_debug_off">Desactivar el modo de depuración</string>
+    <string name="settings_debug_on">Modo de depuración activado</string>
+    <string name="settings_debug_taps_left">Faltan %1$d pulsaciones para activar el modo de depuración</string>
+    <string name="log_test_ok">Servidor de registros accesible</string>
+    <string name="settings_debug_testing">Probando…</string>
 </resources>

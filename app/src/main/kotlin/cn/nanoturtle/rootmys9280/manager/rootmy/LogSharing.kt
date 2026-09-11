@@ -71,4 +71,12 @@ object OnboardingPrefs {
     fun markNotificationAsked(context: Context) {
         prefs(context).edit().putBoolean(KEY_NOTIF_ASKED, true).apply()
     }
+
+    /**
+     * 让首次引导重新出现（调试项：验证引导本身，或用户想再看一遍）。
+     * 只清「已完成」标记；指南已读、通知已问、日志共享选择都保留。
+     */
+    fun resetOnboarding(context: Context) {
+        prefs(context).edit().putBoolean(KEY_ONBOARDING_DONE, false).apply()
+    }
 }

@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">Chia sẻ nhật ký lần chạy này?</string>
     <string name="log_upload_prompt_body">Nhật ký giúp chẩn đoán lỗi trên firmware của bạn. Nó chứa model, phiên bản firmware và các bước exploit — không có dữ liệu cá nhân.</string>
     <string name="log_upload_skip">Lần này thôi</string>
+    <string name="settings_section_debug">Gỡ lỗi</string>
+    <string name="settings_debug_test_db">Kiểm tra kết nối máy chủ nhật ký</string>
+    <string name="settings_debug_install_id">ID cài đặt</string>
+    <string name="settings_debug_rerun_onboarding">Hiện lại hướng dẫn lần đầu</string>
+    <string name="settings_debug_off">Tắt chế độ gỡ lỗi</string>
+    <string name="settings_debug_on">Đã bật chế độ gỡ lỗi</string>
+    <string name="settings_debug_taps_left">Còn %1$d lần chạm để bật chế độ gỡ lỗi</string>
+    <string name="log_test_ok">Máy chủ nhật ký truy cập được</string>
+    <string name="settings_debug_testing">Đang kiểm tra…</string>
 </resources>

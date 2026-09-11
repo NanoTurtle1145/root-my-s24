@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">Partager le journal de cette exécution ?</string>
     <string name="log_upload_prompt_body">Le journal aide à diagnostiquer les échecs sur votre firmware. Il contient le modèle, la version du firmware et les étapes de l\'exploit — aucune donnée personnelle.</string>
     <string name="log_upload_skip">Pas cette fois</string>
+    <string name="settings_section_debug">Débogage</string>
+    <string name="settings_debug_test_db">Tester la connexion au serveur de journaux</string>
+    <string name="settings_debug_install_id">ID d\'installation</string>
+    <string name="settings_debug_rerun_onboarding">Réafficher le guide de première utilisation</string>
+    <string name="settings_debug_off">Désactiver le mode débogage</string>
+    <string name="settings_debug_on">Mode débogage activé</string>
+    <string name="settings_debug_taps_left">Encore %1$d appuis pour activer le mode débogage</string>
+    <string name="log_test_ok">Serveur de journaux joignable</string>
+    <string name="settings_debug_testing">Test en cours…</string>
 </resources>

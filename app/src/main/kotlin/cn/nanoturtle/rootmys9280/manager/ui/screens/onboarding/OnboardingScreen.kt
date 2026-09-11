@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
@@ -71,7 +74,14 @@ fun OnboardingScreen(onFinished: () -> Unit) {
         }
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        Box(Modifier.fillMaxSize()) {
+        // 引导页渲染在 NavigationSuiteScaffold 之外，因此要自己让开系统栏：
+        // 应用是 edge-to-edge 的，三大金刚键的导航栏会盖住底部按钮，
+        // 点击会被系统导航栏吃掉（手势导航下则是被手势条挡住的观感问题）。
+        Box(
+            Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+        ) {
             when (step) {
                 // 第 1 步：必读指南。读完点按钮才放行，避免用户不知道临时 root 的性质就去安装 LKM。
                 0 -> {

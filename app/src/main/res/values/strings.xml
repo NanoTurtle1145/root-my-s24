@@ -290,4 +290,13 @@
     <string name="log_upload_prompt_title">Share this run\'s log?</string>
     <string name="log_upload_prompt_body">The log helps diagnose failures on your firmware. It holds the phone model, firmware version and exploit stages — no personal data.</string>
     <string name="log_upload_skip">Not this time</string>
+    <string name="settings_section_debug">Debug</string>
+    <string name="settings_debug_test_db">Test log server connection</string>
+    <string name="settings_debug_install_id">Install ID</string>
+    <string name="settings_debug_rerun_onboarding">Show the first-run guide again</string>
+    <string name="settings_debug_off">Turn off debug mode</string>
+    <string name="settings_debug_on">Debug mode enabled</string>
+    <string name="settings_debug_taps_left">%1$d more taps to enable debug mode</string>
+    <string name="log_test_ok">Log server reachable</string>
+    <string name="settings_debug_testing">Testing…</string>
 </resources>

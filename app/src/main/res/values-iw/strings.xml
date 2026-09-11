@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">לשתף את יומן ההרצה הזה?</string>
     <string name="log_upload_prompt_body">היומן עוזר לאבחן תקלות בקושחה שלכם. הוא מכיל דגם, גרסת קושחה ושלבי exploit — בלי נתונים אישיים.</string>
     <string name="log_upload_skip">לא הפעם</string>
+    <string name="settings_section_debug">ניפוי</string>
+    <string name="settings_debug_test_db">בדיקת חיבור לשרת היומנים</string>
+    <string name="settings_debug_install_id">מזהה התקנה</string>
+    <string name="settings_debug_rerun_onboarding">הצג שוב את מדריך ההפעלה הראשונה</string>
+    <string name="settings_debug_off">כיבוי מצב ניפוי</string>
+    <string name="settings_debug_on">מצב ניפוי הופעל</string>
+    <string name="settings_debug_taps_left">עוד %1$d הקשות להפעלת מצב ניפוי</string>
+    <string name="log_test_ok">שרת היומנים זמין</string>
+    <string name="settings_debug_testing">בודק…</string>
 </resources>

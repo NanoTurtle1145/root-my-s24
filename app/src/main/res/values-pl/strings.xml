@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">Udostępnić dziennik tego uruchomienia?</string>
     <string name="log_upload_prompt_body">Dziennik pomaga zdiagnozować błędy na twoim firmware. Zawiera model, wersję firmware i etapy exploita — bez danych osobowych.</string>
     <string name="log_upload_skip">Nie tym razem</string>
+    <string name="settings_section_debug">Debugowanie</string>
+    <string name="settings_debug_test_db">Sprawdź połączenie z serwerem dzienników</string>
+    <string name="settings_debug_install_id">ID instalacji</string>
+    <string name="settings_debug_rerun_onboarding">Pokaż ponownie przewodnik pierwszego uruchomienia</string>
+    <string name="settings_debug_off">Wyłącz tryb debugowania</string>
+    <string name="settings_debug_on">Tryb debugowania włączony</string>
+    <string name="settings_debug_taps_left">Jeszcze %1$d dotknięć, aby włączyć tryb debugowania</string>
+    <string name="log_test_ok">Serwer dzienników osiągalny</string>
+    <string name="settings_debug_testing">Testowanie…</string>
 </resources>

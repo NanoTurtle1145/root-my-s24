@@ -1085,6 +1085,21 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         else app.getString(R.string.log_upload_fail, error)
     }
 
+    /**
+     * 调试项：测试日志收集端是否可达。服务端只做数据库连通性自检、不写入日志，
+     * 所以可以反复点。
+     *
+     * @return 可直接展示的结果文案。
+     */
+    suspend fun testLogEndpoint(): String = withContext(Dispatchers.IO) {
+        if (!LogUploader.isConfigured(app)) {
+            return@withContext app.getString(R.string.log_upload_not_configured)
+        }
+        val error = LogUploader.ping(app)
+        if (error == null) app.getString(R.string.log_test_ok)
+        else app.getString(R.string.log_upload_fail, error)
+    }
+
     companion object {
         const val MAX_LOG_LINES = 4000
 

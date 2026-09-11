@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">Condividere il log di questa esecuzione?</string>
     <string name="log_upload_prompt_body">Il log aiuta a diagnosticare i fallimenti sul tuo firmware. Contiene modello, versione del firmware e fasi dell\'exploit, nessun dato personale.</string>
     <string name="log_upload_skip">Non stavolta</string>
+    <string name="settings_section_debug">Debug</string>
+    <string name="settings_debug_test_db">Verifica connessione al server dei log</string>
+    <string name="settings_debug_install_id">ID installazione</string>
+    <string name="settings_debug_rerun_onboarding">Mostra di nuovo la guida iniziale</string>
+    <string name="settings_debug_off">Disattiva modalità debug</string>
+    <string name="settings_debug_on">Modalità debug attivata</string>
+    <string name="settings_debug_taps_left">Ancora %1$d tocchi per attivare la modalità debug</string>
+    <string name="log_test_ok">Server dei log raggiungibile</string>
+    <string name="settings_debug_testing">Verifica in corso…</string>
 </resources>

@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">گزارش این اجرا به اشتراک گذاشته شود؟</string>
     <string name="log_upload_prompt_body">گزارش به تشخیص خطاها روی فرم‌وری شما کمک می‌کند. شامل مدل، نسخه فرم‌وری و مراحل اکسپلویت است و داده شخصی ندارد.</string>
     <string name="log_upload_skip">این بار نه</string>
+    <string name="settings_section_debug">اشکال‌زدایی</string>
+    <string name="settings_debug_test_db">آزمایش اتصال به سرور گزارش</string>
+    <string name="settings_debug_install_id">شناسه نصب</string>
+    <string name="settings_debug_rerun_onboarding">نمایش دوباره راهنمای نخستین اجرا</string>
+    <string name="settings_debug_off">خاموش کردن حالت اشکال‌زدایی</string>
+    <string name="settings_debug_on">حالت اشکال‌زدایی روشن شد</string>
+    <string name="settings_debug_taps_left">%1$d ضربه دیگر تا روشن شدن حالت اشکال‌زدایی</string>
+    <string name="log_test_ok">سرور گزارش در دسترس است</string>
+    <string name="settings_debug_testing">در حال آزمایش…</string>
 </resources>

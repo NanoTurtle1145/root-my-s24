@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">이번 실행 로그를 공유할까요?</string>
     <string name="log_upload_prompt_body">로그는 펌웨어에서 발생한 실패를 진단하는 데 도움이 됩니다. 기기 모델, 펌웨어 버전, exploit 단계가 담기며 개인 정보는 없습니다.</string>
     <string name="log_upload_skip">이번에는 안 함</string>
+    <string name="settings_section_debug">디버그</string>
+    <string name="settings_debug_test_db">로그 서버 연결 테스트</string>
+    <string name="settings_debug_install_id">설치 ID</string>
+    <string name="settings_debug_rerun_onboarding">첫 실행 안내 다시 보기</string>
+    <string name="settings_debug_off">디버그 모드 끄기</string>
+    <string name="settings_debug_on">디버그 모드가 켜졌습니다</string>
+    <string name="settings_debug_taps_left">디버그 모드까지 %1$d번 더 탭</string>
+    <string name="log_test_ok">로그 서버에 연결됨</string>
+    <string name="settings_debug_testing">테스트 중…</string>
 </resources>

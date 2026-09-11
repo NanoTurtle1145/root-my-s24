@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
@@ -19,6 +20,8 @@ import androidx.compose.material.icons.automirrored.rounded.Notes
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.CloudUpload
+import androidx.compose.material.icons.rounded.Fingerprint
+import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.SettingsRemote
@@ -35,8 +38,10 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,8 +54,10 @@ import cn.nanoturtle.rootmys9280.manager.BuildConfig
 import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
 import cn.nanoturtle.rootmys9280.manager.rootmy.LogSharing
+import cn.nanoturtle.rootmys9280.manager.rootmy.LogUploader
 import cn.nanoturtle.rootmys9280.manager.rootmy.OnboardingPrefs
 import cn.nanoturtle.rootmys9280.manager.ui.theme.VectorMono
+import kotlinx.coroutines.launch
 
 private const val PREFS_SETTINGS = "settings"
 private const val KEY_AUTO_SCREEN_OFF = "auto_screen_off"
@@ -58,6 +65,10 @@ private const val KEY_BRIEF_LOG = "brief_log"
 private const val KEY_AUTO_SAVE_LOG = "auto_save_log"
 private const val KEY_ADB_WIRELESS_ENABLED = "adb_wireless_enabled"
 private const val KEY_UNTESTED_PAYLOADS_ENABLED = "untested_payloads_enabled"
+private const val KEY_DEBUG_MODE = "debug_mode"
+
+/** 点版本号多少下开启调试模式 */
+private const val DEBUG_TAPS = 7
 
 /** 分组卡片里的行用透明容器色，避免 ListItem 在 Card 内再叠一层色块。 */
 private val cardRowColors
@@ -93,6 +104,21 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
     var logSharing by remember {
         mutableStateOf(OnboardingPrefs.logSharing(context))
     }
+    // 调试模式：点版本号七下开启（与 Android 开发者选项同一套习惯）
+    var debugMode by remember { mutableStateOf(prefs.getBoolean(KEY_DEBUG_MODE, false)) }
+    var versionTaps by remember { mutableIntStateOf(0) }
+    val scope = rememberCoroutineScope()
+    val vm = ServiceLocator.rootViewModel
+    // 文案在组合作用域取好，避免在点击回调里用 context.getString（配置变更时会拿到旧值）
+    val rerunGuideMsg = stringResource(R.string.settings_debug_rerun_onboarding)
+    val debugOnMsg = stringResource(R.string.settings_debug_on)
+    val testingMsg = stringResource(R.string.settings_debug_testing)
+    // 连点会快过重组，versionTaps 可能超过 DEBUG_TAPS；这里夹紧，提示不会出现负数
+    val tapsRemaining = (DEBUG_TAPS - versionTaps).coerceAtLeast(0)
+    val tapsLeftMsg = stringResource(R.string.settings_debug_taps_left, tapsRemaining)
+    // 调试项的测试结果就地显示（不弹 Toast），所以放在状态里而不是 Toast 里
+    var debugResult by remember { mutableStateOf<String?>(null) }
+    var testing by remember { mutableStateOf(false) }
 
     LazyColumn(
         modifier =
@@ -304,13 +330,131 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
             }
         }
 
+        // 调试分区只在「点版本号七下」之后出现，普通用户看不到这些危险/诊断入口。
+        if (debugMode) {
+            item {
+                SectionLabel(stringResource(R.string.settings_section_debug))
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    GroupedRow(index = 0, count = 4) {
+                        Column {
+                            ListItem(
+                                modifier =
+                                    Modifier.clickable {
+                                        if (testing) return@clickable
+                                        // 结果就地显示，不弹 Toast：诊断信息要能停在那儿慢慢看，
+                                        // Toast 一闪而过还得再点一次才能复现。
+                                        testing = true
+                                        debugResult = testingMsg
+                                        scope.launch {
+                                            debugResult = vm.testLogEndpoint()
+                                            testing = false
+                                        }
+                                    },
+                                leadingContent = {
+                                    Icon(Icons.Rounded.CloudUpload, contentDescription = null)
+                                },
+                                supportingContent = {
+                                    Text(LogUploader.endpoint(context), style = VectorMono)
+                                },
+                                colors = cardRowColors,
+                            ) { Text(stringResource(R.string.settings_debug_test_db)) }
+                            debugResult?.let { result ->
+                                Text(
+                                    text = result,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                                )
+                            }
+                        }
+                    }
+                    GroupedRow(index = 1, count = 4) {
+                        ListItem(
+                            leadingContent = {
+                                Icon(Icons.Rounded.Fingerprint, contentDescription = null)
+                            },
+                            supportingContent = {
+                                Text(LogUploader.installId(context), style = VectorMono)
+                            },
+                            colors = cardRowColors,
+                        ) { Text(stringResource(R.string.settings_debug_install_id)) }
+                    }
+                    GroupedRow(index = 2, count = 4) {
+                        ListItem(
+                            modifier =
+                                Modifier.clickable {
+                                    OnboardingPrefs.resetOnboarding(context)
+                                    debugResult = rerunGuideMsg
+                                },
+                            leadingContent = {
+                                Icon(Icons.Rounded.MenuBook, contentDescription = null)
+                            },
+                            colors = cardRowColors,
+                        ) { Text(stringResource(R.string.settings_debug_rerun_onboarding)) }
+                    }
+                    GroupedRow(index = 3, count = 4) {
+                        ListItem(
+                            modifier =
+                                Modifier.clickable {
+                                    prefs.edit().putBoolean(KEY_DEBUG_MODE, false).apply()
+                                    debugMode = false
+                                },
+                            leadingContent = {
+                                Icon(Icons.Rounded.WarningAmber, contentDescription = null)
+                            },
+                            colors = cardRowColors,
+                        ) { Text(stringResource(R.string.settings_debug_off)) }
+                    }
+                }
+            }
+        }
+
         item {
-            Text(
-                text = stringResource(R.string.settings_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
-                style = VectorMono,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
-            )
+            Column {
+                Text(
+                    text =
+                        stringResource(
+                            R.string.settings_version,
+                            BuildConfig.VERSION_NAME,
+                            BuildConfig.VERSION_CODE,
+                        ),
+                    style = VectorMono,
+                    color =
+                        if (debugMode) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier =
+                        Modifier.padding(top = 16.dp).clickable {
+                            // 点七下开启调试模式；已开启后再点不再有作用（避免误关）
+                            if (debugMode) return@clickable
+                            versionTaps++
+                            if (!debugMode && versionTaps >= DEBUG_TAPS) {
+                                // commit() 而不是 apply()：这是用户刚做的选择，
+                                // 紧接着进程被系统杀掉也不能丢
+                                prefs.edit().putBoolean(KEY_DEBUG_MODE, true).commit()
+                                debugMode = true
+                                // 计数用完即归零：既不会残留成负数，再点也不会重复触发
+                                versionTaps = 0
+                            }
+                        },
+                )
+                // 进度就地提示，同样不弹 Toast
+                if (debugMode) {
+                    Text(
+                        text = debugOnMsg,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                } else if (versionTaps > 0) {
+                    Text(
+                        text = tapsLeftMsg,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+                Spacer(Modifier.height(24.dp))
+            }
         }
     }
 }

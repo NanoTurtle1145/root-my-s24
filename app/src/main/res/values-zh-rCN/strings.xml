@@ -253,4 +253,13 @@
     <string name="log_upload_prompt_title">共享本次运行日志？</string>
     <string name="log_upload_prompt_body">日志用于诊断固件上的失败问题，包含机型、固件版本和 exploit 各阶段信息，不含个人数据。</string>
     <string name="log_upload_skip">这次不用</string>
+    <string name="settings_section_debug">调试</string>
+    <string name="settings_debug_test_db">测试日志服务器连通性</string>
+    <string name="settings_debug_install_id">机器标识</string>
+    <string name="settings_debug_rerun_onboarding">重新显示首次引导</string>
+    <string name="settings_debug_off">关闭调试模式</string>
+    <string name="settings_debug_on">调试模式已开启</string>
+    <string name="settings_debug_taps_left">再点 %1$d 下开启调试模式</string>
+    <string name="log_test_ok">日志服务器连通正常</string>
+    <string name="settings_debug_testing">测试中…</string>
 </resources>

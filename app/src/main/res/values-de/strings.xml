@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">Protokoll dieses Durchlaufs teilen?</string>
     <string name="log_upload_prompt_body">Das Protokoll hilft, Fehler auf deiner Firmware zu finden. Es enthält Gerätemodell, Firmware-Version und Exploit-Phasen – keine persönlichen Daten.</string>
     <string name="log_upload_skip">Diesmal nicht</string>
+    <string name="settings_section_debug">Debug</string>
+    <string name="settings_debug_test_db">Verbindung zum Log-Server testen</string>
+    <string name="settings_debug_install_id">Installations-ID</string>
+    <string name="settings_debug_rerun_onboarding">Einführung erneut anzeigen</string>
+    <string name="settings_debug_off">Debug-Modus ausschalten</string>
+    <string name="settings_debug_on">Debug-Modus aktiviert</string>
+    <string name="settings_debug_taps_left">Noch %1$d Tipps zum Aktivieren des Debug-Modus</string>
+    <string name="log_test_ok">Log-Server erreichbar</string>
+    <string name="settings_debug_testing">Wird getestet…</string>
 </resources>

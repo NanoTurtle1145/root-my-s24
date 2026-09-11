@@ -252,4 +252,13 @@
     <string name="log_upload_prompt_title">هل تشارك سجل هذا التشغيل؟</string>
     <string name="log_upload_prompt_body">يساعد السجل في تشخيص الأعطال على برنامجك الثابت. يحتوي على الطراز وإصدار البرنامج الثابت ومراحل الاستغلال، دون أي بيانات شخصية.</string>
     <string name="log_upload_skip">ليس هذه المرة</string>
+    <string name="settings_section_debug">تصحيح</string>
+    <string name="settings_debug_test_db">اختبار الاتصال بخادم السجلات</string>
+    <string name="settings_debug_install_id">معرّف التثبيت</string>
+    <string name="settings_debug_rerun_onboarding">إظهار دليل الاستخدام الأول مجددًا</string>
+    <string name="settings_debug_off">إيقاف وضع التصحيح</string>
+    <string name="settings_debug_on">تم تشغيل وضع التصحيح</string>
+    <string name="settings_debug_taps_left">بقيت %1$d نقرات لتشغيل وضع التصحيح</string>
+    <string name="log_test_ok">خادم السجلات متاح</string>
+    <string name="settings_debug_testing">جارٍ الاختبار…</string>
 </resources>

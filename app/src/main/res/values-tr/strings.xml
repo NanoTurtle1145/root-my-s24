@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">Bu çalıştırmanın günlüğü paylaşılsın mı?</string>
     <string name="log_upload_prompt_body">Günlük, belleniminizdeki hataları teşhis etmeye yardımcı olur. Model, bellenim sürümü ve exploit aşamalarını içerir; kişisel veri içermez.</string>
     <string name="log_upload_skip">Bu sefer değil</string>
+    <string name="settings_section_debug">Hata ayıklama</string>
+    <string name="settings_debug_test_db">Günlük sunucusu bağlantısını sına</string>
+    <string name="settings_debug_install_id">Kurulum kimliği</string>
+    <string name="settings_debug_rerun_onboarding">İlk kullanım kılavuzunu yeniden göster</string>
+    <string name="settings_debug_off">Hata ayıklama modunu kapat</string>
+    <string name="settings_debug_on">Hata ayıklama modu açık</string>
+    <string name="settings_debug_taps_left">Hata ayıklama modu için %1$d dokunuş daha</string>
+    <string name="log_test_ok">Günlük sunucusuna ulaşılıyor</string>
+    <string name="settings_debug_testing">Sınanıyor…</string>
 </resources>

@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">今回の実行ログを共有しますか？</string>
     <string name="log_upload_prompt_body">ログはお使いのファームウェアでの失敗の診断に役立ちます。端末のモデル、ファームウェアのバージョン、exploit の各段階が含まれ、個人情報は含まれません。</string>
     <string name="log_upload_skip">今回はしない</string>
+    <string name="settings_section_debug">デバッグ</string>
+    <string name="settings_debug_test_db">ログサーバーの接続をテスト</string>
+    <string name="settings_debug_install_id">インストール ID</string>
+    <string name="settings_debug_rerun_onboarding">初回ガイドをもう一度表示</string>
+    <string name="settings_debug_off">デバッグモードをオフ</string>
+    <string name="settings_debug_on">デバッグモードを有効にしました</string>
+    <string name="settings_debug_taps_left">あと %1$d 回タップでデバッグモード</string>
+    <string name="log_test_ok">ログサーバーに接続できます</string>
+    <string name="settings_debug_testing">テスト中…</string>
 </resources>

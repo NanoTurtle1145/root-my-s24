@@ -252,4 +252,13 @@
     <string name="log_upload_prompt_title">分享本次執行日誌？</string>
     <string name="log_upload_prompt_body">日誌用於診斷韌體上的失敗問題，包含機型、韌體版本與 exploit 各階段資訊，不含個人資料。</string>
     <string name="log_upload_skip">這次不用</string>
+    <string name="settings_section_debug">偵錯</string>
+    <string name="settings_debug_test_db">測試日誌伺服器連線</string>
+    <string name="settings_debug_install_id">機器識別碼</string>
+    <string name="settings_debug_rerun_onboarding">重新顯示首次引導</string>
+    <string name="settings_debug_off">關閉偵錯模式</string>
+    <string name="settings_debug_on">偵錯模式已開啟</string>
+    <string name="settings_debug_taps_left">再點 %1$d 下開啟偵錯模式</string>
+    <string name="log_test_ok">日誌伺服器連線正常</string>
+    <string name="settings_debug_testing">測試中…</string>
 </resources>

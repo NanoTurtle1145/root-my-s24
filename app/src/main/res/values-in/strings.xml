@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">Bagikan log eksekusi ini?</string>
     <string name="log_upload_prompt_body">Log membantu mendiagnosis kegagalan pada firmware Anda. Isinya model, versi firmware, dan tahapan exploit — tanpa data pribadi.</string>
     <string name="log_upload_skip">Tidak kali ini</string>
+    <string name="settings_section_debug">Debug</string>
+    <string name="settings_debug_test_db">Uji koneksi server log</string>
+    <string name="settings_debug_install_id">ID instalasi</string>
+    <string name="settings_debug_rerun_onboarding">Tampilkan lagi panduan awal</string>
+    <string name="settings_debug_off">Matikan mode debug</string>
+    <string name="settings_debug_on">Mode debug aktif</string>
+    <string name="settings_debug_taps_left">%1$d ketukan lagi untuk mengaktifkan mode debug</string>
+    <string name="log_test_ok">Server log dapat dijangkau</string>
+    <string name="settings_debug_testing">Menguji…</string>
 </resources>

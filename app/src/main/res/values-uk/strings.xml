@@ -249,4 +249,13 @@
     <string name="log_upload_prompt_title">Надіслати журнал цього запуску?</string>
     <string name="log_upload_prompt_body">Журнал допомагає знайти причини збоїв на вашій прошивці. Він містить модель, версію прошивки та етапи експлуатації — без особистих даних.</string>
     <string name="log_upload_skip">Не цього разу</string>
+    <string name="settings_section_debug">Налагодження</string>
+    <string name="settings_debug_test_db">Перевірити зв\'язок із сервером журналів</string>
+    <string name="settings_debug_install_id">ID встановлення</string>
+    <string name="settings_debug_rerun_onboarding">Показати вступну інструкцію знову</string>
+    <string name="settings_debug_off">Вимкнути режим налагодження</string>
+    <string name="settings_debug_on">Режим налагодження увімкнено</string>
+    <string name="settings_debug_taps_left">Ще %1$d натискань для ввімкнення режиму налагодження</string>
+    <string name="log_test_ok">Сервер журналів доступний</string>
+    <string name="settings_debug_testing">Перевірка…</string>
 </resources>

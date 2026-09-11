@@ -248,4 +248,13 @@
     <string name="log_upload_prompt_title">Отправить журнал этого запуска?</string>
     <string name="log_upload_prompt_body">Журнал помогает найти причины сбоев на вашей прошивке. Он содержит модель, версию прошивки и этапы эксплуатации — без личных данных.</string>
     <string name="log_upload_skip">Не в этот раз</string>
+    <string name="settings_section_debug">Отладка</string>
+    <string name="settings_debug_test_db">Проверить связь с сервером журналов</string>
+    <string name="settings_debug_install_id">ID установки</string>
+    <string name="settings_debug_rerun_onboarding">Показать вводную инструкцию снова</string>
+    <string name="settings_debug_off">Выключить режим отладки</string>
+    <string name="settings_debug_on">Режим отладки включён</string>
+    <string name="settings_debug_taps_left">Ещё %1$d нажатий для включения режима отладки</string>
+    <string name="log_test_ok">Сервер журналов доступен</string>
+    <string name="settings_debug_testing">Проверка…</string>
 </resources>
