@@ -97,6 +97,10 @@ private fun RootFlowContent(
     var donationMilestone by remember { mutableIntStateOf(0) }
     // 「每次询问」模式下运行结束后是否弹上传提示
     val uploadPrompt by vm.uploadPrompt.collectAsStateWithLifecycle()
+    // 载荷与固件构建不匹配的确认提示（非 null 即弹窗）
+    val buildMismatch by vm.buildMismatch.collectAsStateWithLifecycle()
+    // Root 过程中 Shizuku 消失：引导改用无线调试直连
+    val shizukuLost by vm.shizukuLost.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val context = androidx.compose.ui.platform.LocalContext.current
     val listState = rememberLazyListState()
@@ -163,6 +167,44 @@ private fun RootFlowContent(
             dismissButton = {
                 TextButton(onClick = { donationMilestone = 0 }) {
                     Text(stringResource(R.string.donation_later))
+                }
+            },
+        )
+    }
+
+    // 构建不匹配：先问一句再跑，避免拿另一个构建的载荷白跑几十轮
+    buildMismatch?.let { message ->
+        AlertDialog(
+            onDismissRequest = { vm.dismissBuildMismatch() },
+            title = { Text(stringResource(R.string.rootflow_build_mismatch_title)) },
+            text = { Text(message) },
+            confirmButton = {
+                TextButton(onClick = { vm.confirmStartAnyway() }) {
+                    Text(stringResource(R.string.rootflow_build_mismatch_continue))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { vm.dismissBuildMismatch() }) {
+                    Text(stringResource(R.string.rootflow_build_mismatch_cancel))
+                }
+            },
+        )
+    }
+
+    // Shizuku 被系统回收：给出可执行的出路，而不是让用户反复点开始
+    if (shizukuLost) {
+        AlertDialog(
+            onDismissRequest = { vm.dismissShizukuLost() },
+            title = { Text(stringResource(R.string.rootflow_shizuku_lost_title)) },
+            text = { Text(stringResource(R.string.rootflow_shizuku_lost_body)) },
+            confirmButton = {
+                TextButton(onClick = { vm.switchToAdbWireless() }) {
+                    Text(stringResource(R.string.rootflow_shizuku_lost_switch))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { vm.dismissShizukuLost() }) {
+                    Text(stringResource(R.string.rootflow_shizuku_lost_later))
                 }
             },
         )

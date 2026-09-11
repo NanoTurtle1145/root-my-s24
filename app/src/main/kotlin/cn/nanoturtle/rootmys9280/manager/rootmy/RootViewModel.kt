@@ -80,7 +80,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val enabled: Boolean = true,
     ) {
         // —— 国行（实测稳定）——
-        DZF2("cve-2026-43499", "One UI 8.5", "SM-S9280/S9260/S9210 国行", "DZE2–DZG1", Region.CHINA, "ksud-selected"),
+        DZF2("cve-2026-43499", "One UI 8.5", "S24 全系 · 国行", "DZE2–DZG1", Region.CHINA, "ksud-selected"),
         BYH7("cve-2026-43499-byh7", "One UI 7", "SM-S9210 国行", "BYH7", Region.CHINA, "ksud-selected"),
         // —— 国行 Z Fold6 —— 与 S24 同 GKI 构建号，已验证共用 DZF2 载荷成功
         ZFOLD6("cve-2026-43499", "One UI 8.5", "SM-F9580 国行 Z Fold6", "Z Fold6（共用 DZF2 载荷）", Region.CHINA, "ksud-selected"),
@@ -89,13 +89,13 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         CZG1("cve-2026-43499-czg1", "One UI 8.5", "SM-S9310/S9360/S9380 国行 S25", "CZG1（kernel 6.6）", Region.CHINA, "ksud-android15-6.6"),
         // —— 国行 S24 Ultra One UI 8.0（kernel 6.1.128，构建号 2755301）——
         // 与港版 CZA1 同内核版本但不同构建号，代码段符号相同，数据段偏移 +0x10000
-        CZA1_CHC("cve-2026-43499-cza1-chc", "One UI 8.0", "SM-S9280 国行 S24 Ultra", "CHC CZA1", Region.CHINA, "ksud-selected"),
+        CZA1_CHC("cve-2026-43499-cza1-chc", "One UI 8.0", "S24 全系 · 国行", "CHC CZA1", Region.CHINA, "ksud-selected"),
         // —— 港版/台版（实测稳定）—— 港台同构建号可共用载荷，台版直接选用港版条目
         // （港版 DZE2 kmalloc_caches=0x176c6f8 与国行 0x176cbb8 不同，不能用 DZF2 载荷）
-        CZA1("cve-2026-43499-cza1", "One UI 8.0", "SM-S9280 港版/台版", "CZA1", Region.HONGKONG_TAIWAN, "ksud-selected"),
-        DZE2("cve-2026-43499-dze2", "One UI 8.5", "SM-S9280 港版/台版", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
+        CZA1("cve-2026-43499-cza1", "One UI 8.0", "S24 全系 · 外版", "CZA1", Region.HONGKONG_TAIWAN, "ksud-selected"),
+        DZE2("cve-2026-43499-dze2", "One UI 8.5", "S24 全系 · 外版", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
         // 台湾 S24+（SM-S9260, e2q）DZG1：实测使用港版 DZE2 载荷成功（单设备记录，issue #3）
-        S9260TW_DZE2("cve-2026-43499-dze2", "One UI 8.5", "SM-S9260 台版 S24+", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
+        S9260TW_DZE2("cve-2026-43499-dze2", "One UI 8.5", "S24 全系 · 外版", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
 
         // —— 以下为 RootMyGalaxy 移植的载荷（运行时 KASLR 定标，未经本 App 实测）——
         // 需在设置里启用「启用未经测试的载荷」后才在固件选择页显示。
@@ -109,17 +109,17 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         S9180FZE3("cve-2026-43499-S9180ZCS8FZE3", "One UI 7", "SM-S9180 国行 S23 Ultra", "FZE3", Region.CHINA, "ksud-android13-5.15", tested = false),
         S9180FZG1("cve-2026-43499-S9180ZCS8FZG1", "One UI 7", "SM-S9180 国行 S23 Ultra", "FZG1", Region.CHINA, "ksud-android13-5.15", tested = false),
         // —— S24 系列（Android 14，kernel 6.1）——
-        S9210DZE2("cve-2026-43499-S9210ZCS6DZE2", "One UI 8.5", "SM-S9210 国行 S24", "DZE2", Region.CHINA, "ksud-selected", tested = false),
-        S9210DZF2("cve-2026-43499-S9210ZCS6DZF2", "One UI 8.5", "SM-S9210 国行 S24", "DZF2", Region.CHINA, "ksud-selected", tested = false),
-        S9210DZG1("cve-2026-43499-S9210ZCS6DZG1", "One UI 8.5", "SM-S9210 国行 S24", "DZG1", Region.CHINA, "ksud-selected", tested = false),
-        S9210HDZG1("cve-2026-43499-S9210ZHS6DZG1", "One UI 8.5", "SM-S9210 港版 S24", "DZG1", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
-        S9260DZE2("cve-2026-43499-S9260ZCS6DZE2", "One UI 8.5", "SM-S9260 国行 S24+", "DZE2", Region.CHINA, "ksud-selected", tested = false),
-        S9260DZF2("cve-2026-43499-S9260ZCS6DZF2", "One UI 8.5", "SM-S9260 国行 S24+", "DZF2", Region.CHINA, "ksud-selected", tested = false),
-        S9260DZG1("cve-2026-43499-S9260ZCS6DZG1", "One UI 8.5", "SM-S9260 国行 S24+", "DZG1", Region.CHINA, "ksud-selected", tested = false),
-        S9280DZE2("cve-2026-43499-S9280ZCS6DZE2", "One UI 8.5", "SM-S9280 国行 S24 Ultra", "DZE2", Region.CHINA, "ksud-selected", tested = false),
-        S9280DZF2("cve-2026-43499-S9280ZCS6DZF2", "One UI 8.5", "SM-S9280 国行 S24 Ultra", "DZF2", Region.CHINA, "ksud-selected", tested = false),
-        S9280DZG1("cve-2026-43499-S9280ZCS6DZG1", "One UI 8.5", "SM-S9280 国行 S24 Ultra", "DZG1", Region.CHINA, "ksud-selected", tested = false),
-        S9280HDZG1("cve-2026-43499-S9280ZHS6DZG1", "One UI 8.5", "SM-S9280 港版 S24 Ultra", "DZG1", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
+        S9210DZE2("cve-2026-43499-S9210ZCS6DZE2", "One UI 8.5", "S24 全系 · 国行", "DZE2", Region.CHINA, "ksud-selected", tested = false),
+        S9210DZF2("cve-2026-43499-S9210ZCS6DZF2", "One UI 8.5", "S24 全系 · 国行", "DZF2", Region.CHINA, "ksud-selected", tested = false),
+        S9210DZG1("cve-2026-43499-S9210ZCS6DZG1", "One UI 8.5", "S24 全系 · 国行", "DZG1", Region.CHINA, "ksud-selected", tested = false),
+        S9210HDZG1("cve-2026-43499-S9210ZHS6DZG1", "One UI 8.5", "S24 全系 · 外版", "DZG1", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
+        S9260DZE2("cve-2026-43499-S9260ZCS6DZE2", "One UI 8.5", "S24 全系 · 国行", "DZE2", Region.CHINA, "ksud-selected", tested = false),
+        S9260DZF2("cve-2026-43499-S9260ZCS6DZF2", "One UI 8.5", "S24 全系 · 国行", "DZF2", Region.CHINA, "ksud-selected", tested = false),
+        S9260DZG1("cve-2026-43499-S9260ZCS6DZG1", "One UI 8.5", "S24 全系 · 国行", "DZG1", Region.CHINA, "ksud-selected", tested = false),
+        S9280DZE2("cve-2026-43499-S9280ZCS6DZE2", "One UI 8.5", "S24 全系 · 国行", "DZE2", Region.CHINA, "ksud-selected", tested = false),
+        S9280DZF2("cve-2026-43499-S9280ZCS6DZF2", "One UI 8.5", "S24 全系 · 国行", "DZF2", Region.CHINA, "ksud-selected", tested = false),
+        S9280DZG1("cve-2026-43499-S9280ZCS6DZG1", "One UI 8.5", "S24 全系 · 国行", "DZG1", Region.CHINA, "ksud-selected", tested = false),
+        S9280HDZG1("cve-2026-43499-S9280ZHS6DZG1", "One UI 8.5", "S24 全系 · 外版", "DZG1", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
         // —— S25 系列（Android 15，kernel 6.6）——
         S9310CZG1("cve-2026-43499-S9310ZCSCCZG1", "One UI 8.5", "SM-S9310 国行 S25", "CZG1", Region.CHINA, "ksud-android15-6.6", tested = false),
         S9360CZG1("cve-2026-43499-S9360ZCSCCZG1", "One UI 8.5", "SM-S9360 国行 S25+", "CZG1", Region.CHINA, "ksud-android15-6.6", tested = false),
@@ -151,6 +151,46 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         W9026BZG3("cve-2026-43499-W9026ZCS8BZG3", "One UI 8.5", "W9026 国行 心系天下 W26", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
         W9026BZF1("cve-2026-43499-W9026ZCU7BZF1", "One UI 8.5", "W9026 国行 心系天下 W26", "BZF1", Region.CHINA, "ksud-android15-6.6", tested = false),
         ;
+
+        /**
+         * 条目覆盖的构建码（4 位，如 DZE2 / DZG1 / CZA1）。
+         *
+         * 载荷是按**内核构建**定标的：同一构建号的 S24 全系（S9210/S9260/S9280，
+         * 含港台与欧美外版）通用——外版之间可以互串；跨构建号则不成立。
+         * 因此这里从资产名里的 PDA 或适配范围里抽出构建码，用于启动前判断
+         * 「用户选的载荷是否覆盖当前固件」，避免拿另一个构建的载荷空跑几百次。
+         *
+         * 正则要求构建码前后都不是字母数字，避免把 "Z Fold6" 里的 OLD6 之类当构建码。
+         */
+        private val coveredBuildCodes: List<String>
+            get() {
+                val source = (assetName + " " + range).uppercase()
+                return Regex("(?<![A-Z0-9])[A-Z]{3}\\d(?![0-9A-Z])")
+                    .findAll(source)
+                    .map { it.value }
+                    .toList()
+            }
+
+        /**
+         * 当前固件的构建码是否落在该条目覆盖范围内。
+         *
+         * 解析不出构建码时返回 true（宁可放过也不误报）——判据不足就不打扰用户。
+         * 范围内的两个端点按字典序比较即可：DZE2 < DZF1 < DZF2 < DZG1。
+         */
+        fun coversBuild(deviceBuildTag: String): Boolean {
+            val dev = deviceBuildTag.takeLast(4).uppercase()
+            if (dev.length < 4 || !dev.matches(Regex("[A-Z]{3}\\d"))) return true
+            val codes = coveredBuildCodes
+            return when (codes.size) {
+                0 -> true
+                1 -> codes[0] == dev
+                else -> dev in minOf(codes.first(), codes.last())..maxOf(codes.first(), codes.last())
+            }
+        }
+
+        /** 供不匹配提示展示：这个条目实际覆盖的构建描述。 */
+        val coveredLabel: String
+            get() = coveredBuildCodes.joinToString(" / ").ifEmpty { range }
 
         /** 机型系列（固件选择页筛选用）：从机型字符串识别 S23/S24/S25/S26/折叠屏/心系天下 */
         val series: Series
@@ -242,6 +282,44 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val _untestedPayloadsEnabled = MutableStateFlow(false)
     /** 未经测试的载荷是否启用（设置页开关；固件选择页据此显示 untested 条目） */
     val untestedPayloadsEnabled: StateFlow<Boolean> = _untestedPayloadsEnabled
+
+    /**
+     * 所选载荷与当前固件构建不符时的确认提示（非 null 即应弹窗）。
+     *
+     * 载荷按内核构建定标，跨构建号套用会在漏洞链第一步就失败；与其让用户空跑，
+     * 不如先问一句——但仍允许继续（用户可能已知情，或我们解析不出构建码）。
+     */
+    private val _buildMismatch = MutableStateFlow<String?>(null)
+    val buildMismatch: StateFlow<String?> = _buildMismatch
+
+    /** Root 过程中检测到 Shizuku 消失（例如熄屏后被系统回收）。 */
+    private val _shizukuLost = MutableStateFlow(false)
+    val shizukuLost: StateFlow<Boolean> = _shizukuLost
+
+    /** 用户看过构建不匹配提示，取消本次启动。 */
+    fun dismissBuildMismatch() {
+        _buildMismatch.value = null
+    }
+
+    /** 用户选择「仍然继续」：记下这次选择后照常启动。 */
+    fun confirmStartAnyway() {
+        _buildMismatch.value = null
+        startInternal(force = true)
+    }
+
+    fun dismissShizukuLost() {
+        _shizukuLost.value = false
+    }
+
+    /**
+     * 用户选择改用无线调试直连：打开实验开关、切授权方式。
+     * 这条通道由本 App 自己维持 ADB 连接，不依赖 Shizuku 进程是否存活。
+     */
+    fun switchToAdbWireless() {
+        _shizukuLost.value = false
+        setAdbWirelessEnabled(true)
+        setAuthMethod(AuthMethod.ADB_WIRELESS)
+    }
 
     init {
         // 无线调试授权：注入 RSA 密钥存储目录（App 私有目录），恢复上次连接状态
@@ -346,8 +424,25 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val tmpRootHelper = "/data/local/tmp/$rootHelperName"
     private val tmpKsud = "/data/local/tmp/$ksudName"
 
-    fun start() {
+    fun start() = startInternal(force = false)
+
+    /**
+     * 启动 Root 流程。
+     *
+     * @param force true 表示用户已在「载荷与固件不匹配」提示里选择继续。
+     */
+    private fun startInternal(force: Boolean) {
         if (_state.value.busy) return
+        // 载荷按内核构建定标：构建不符时先提醒，避免拿另一个构建的载荷空跑几十轮
+        if (!force && !firmwareVersion.coversBuild(deviceBuildTag)) {
+            _buildMismatch.value =
+                app.getString(
+                    R.string.rootflow_build_mismatch_body,
+                    firmwareVersion.coveredLabel,
+                    deviceBuildTag,
+                )
+            return
+        }
         // 新一轮运行：重置增量缓冲（日志历史保留，可手动清空）
         captured.clear()
         pendingPartial = ""
@@ -357,7 +452,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             try {
                 runRootFlow()
             } catch (t: Throwable) {
-                appendLog("✗ " + app.getString(R.string.log_failed, t.message))
+                appendLog("✗ " + app.getString(R.string.log_failed, friendlyError(t)))
             } finally {
                 // 唤醒屏幕（如果运行期间自动熄屏了）。shell 通道可能中途断开，
                 // 这里必须兜底：finally 里的异常会覆盖上面的 catch，导致 app 崩溃。
@@ -563,6 +658,10 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         when (authMethod) {
             AuthMethod.SHIZUKU -> {
                 if (!ShizukuController.pingUntilRunning()) {
+                    // 熄屏后 Shizuku 常被系统回收（或它依附的 ADB 会话被回收），
+                    // 这时给出可执行的出路：改用本 App 自带的无线调试直连
+                    appendLog("ℹ " + app.getString(R.string.log_shizuku_lost_hint))
+                    _shizukuLost.value = true
                     throw IllegalStateException(app.getString(R.string.log_shizuku_not_running))
                 }
                 if (!ShizukuController.requestPermission()) {
@@ -1032,6 +1131,24 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 app.getString(R.string.log_export_ok_path, f.absolutePath)
             }
         }.getOrElse { app.getString(R.string.log_export_fail, it.message) }
+    }
+
+    /**
+     * 给用户看的错误文案。
+     *
+     * 直接把异常 message 抛给用户时，Java 侧空指针会长成
+     * “Attempt to invoke virtual method … on a null object reference” 这种没人看得懂的东西。
+     * 这类内部异常统一换成可读提示（细节仍在日志里），其余照原样显示。
+     */
+    private fun friendlyError(t: Throwable): String {
+        val raw = t.message?.trim().orEmpty()
+        if (raw.isEmpty()) return app.getString(R.string.log_error_unknown)
+        val internal =
+            raw.contains("null object reference", ignoreCase = true) ||
+                raw.contains("Attempt to invoke", ignoreCase = true) ||
+                raw.startsWith("java.") ||
+                raw.startsWith("kotlin.")
+        return if (internal) app.getString(R.string.log_error_internal) else raw
     }
 
     private fun stripAnsi(s: String): String =

@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">%1$d ضربه دیگر تا روشن شدن حالت اشکال‌زدایی</string>
     <string name="log_test_ok">سرور گزارش در دسترس است</string>
     <string name="settings_debug_testing">در حال آزمایش…</string>
+    <string name="rootflow_build_mismatch_title">پیلود با فریم‌ور مطابقت ندارد</string>
+    <string name="rootflow_build_mismatch_body">پیلود انتخاب‌شده برای ساخت %1$s است، اما این گوشی روی %2$s است. پیلودها بر اساس ساخت هسته کالیبره می‌شوند؛ با عدم تطابق معمولاً همان اولین مرحله زنجیره شکست می‌خورد. باز هم ادامه می‌دهید؟</string>
+    <string name="rootflow_build_mismatch_continue">باز هم ادامه بده</string>
+    <string name="rootflow_build_mismatch_cancel">لغو</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku متوقف شد</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku دیگر اجرا نمی‌شود — سیستم اغلب پس از خاموش شدن صفحه آن را آزاد می‌کند. Shizuku را دوباره اجرا کنید یا به مسیر «اشکال‌زدایی بی‌سیم» این برنامه که به آن وابسته نیست بروید.</string>
+    <string name="rootflow_shizuku_lost_switch">استفاده از اشکال‌زدایی بی‌سیم</string>
+    <string name="rootflow_shizuku_lost_later">بعداً</string>
+    <string name="log_shizuku_lost_hint">Shizuku دیگر اجرا نمی‌شود (اغلب پس از خاموش شدن صفحه آزاد می‌شود). آن را دوباره اجرا کنید یا از صفحه اصلی به اشکال‌زدایی بی‌سیم بروید.</string>
+    <string name="log_error_unknown">خطای ناشناخته (جزئیات در گزارش)</string>
+    <string name="log_error_internal">خطای داخلی — دوباره تلاش کنید؛ اگر تکرار شد گزارش را بفرستید</string>
 </resources>

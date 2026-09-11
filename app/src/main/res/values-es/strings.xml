@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">Faltan %1$d pulsaciones para activar el modo de depuración</string>
     <string name="log_test_ok">Servidor de registros accesible</string>
     <string name="settings_debug_testing">Probando…</string>
+    <string name="rootflow_build_mismatch_title">El payload no coincide con tu firmware</string>
+    <string name="rootflow_build_mismatch_body">El payload elegido cubre la compilación %1$s, pero este teléfono usa %2$s. Los payloads se calibran por compilación del kernel; si no coincide, suele fallar el primer paso de la cadena. ¿Continuar igualmente?</string>
+    <string name="rootflow_build_mismatch_continue">Continuar igualmente</string>
+    <string name="rootflow_build_mismatch_cancel">Cancelar</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku se ha detenido</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku ya no se ejecuta: el sistema suele reclamarlo al apagar la pantalla. Reinícialo o cambia al canal de depuración inalámbrica de esta app, que no depende de Shizuku.</string>
+    <string name="rootflow_shizuku_lost_switch">Usar depuración inalámbrica</string>
+    <string name="rootflow_shizuku_lost_later">Más tarde</string>
+    <string name="log_shizuku_lost_hint">Shizuku ya no se ejecuta (suele reclamarse al apagar la pantalla). Reinícialo o cambia a depuración inalámbrica en la pantalla de inicio.</string>
+    <string name="log_error_unknown">Error desconocido (detalles en el registro)</string>
+    <string name="log_error_internal">Error interno: vuelve a intentarlo; si persiste, comparte el registro</string>
 </resources>

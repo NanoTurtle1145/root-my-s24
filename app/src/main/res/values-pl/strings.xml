@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">Jeszcze %1$d dotknięć, aby włączyć tryb debugowania</string>
     <string name="log_test_ok">Serwer dzienników osiągalny</string>
     <string name="settings_debug_testing">Testowanie…</string>
+    <string name="rootflow_build_mismatch_title">Payload nie pasuje do firmware</string>
+    <string name="rootflow_build_mismatch_body">Wybrany payload obsługuje kompilację %1$s, a telefon ma %2$s. Payloady są kalibrowane pod kompilację jądra, więc przy niezgodności zwykle zawodzi już pierwszy krok łańcucha. Kontynuować mimo to?</string>
+    <string name="rootflow_build_mismatch_continue">Kontynuuj mimo to</string>
+    <string name="rootflow_build_mismatch_cancel">Anuluj</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku zostało zatrzymane</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku nie działa — system często zwalnia go po wyłączeniu ekranu. Uruchom Shizuku ponownie albo przełącz się na kanał „Debugowanie bezprzewodowe” w tej aplikacji, który nie zależy od Shizuku.</string>
+    <string name="rootflow_shizuku_lost_switch">Użyj debugowania bezprzewodowego</string>
+    <string name="rootflow_shizuku_lost_later">Później</string>
+    <string name="log_shizuku_lost_hint">Shizuku nie działa (często zwalniane po wyłączeniu ekranu). Uruchom je ponownie lub włącz debugowanie bezprzewodowe na ekranie głównym.</string>
+    <string name="log_error_unknown">Nieznany błąd (szczegóły w dzienniku)</string>
+    <string name="log_error_internal">Błąd wewnętrzny — spróbuj ponownie; jeśli się powtarza, prześlij dziennik</string>
 </resources>

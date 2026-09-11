@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">Noch %1$d Tipps zum Aktivieren des Debug-Modus</string>
     <string name="log_test_ok">Log-Server erreichbar</string>
     <string name="settings_debug_testing">Wird getestet…</string>
+    <string name="rootflow_build_mismatch_title">Payload passt nicht zur Firmware</string>
+    <string name="rootflow_build_mismatch_body">Die gewählte Payload deckt Build %1$s ab, dieses Gerät läuft aber auf %2$s. Payloads werden pro Kernel-Build kalibriert; bei Abweichung scheitert meist schon der erste Schritt der Exploit-Kette. Trotzdem fortfahren?</string>
+    <string name="rootflow_build_mismatch_continue">Trotzdem fortfahren</string>
+    <string name="rootflow_build_mismatch_cancel">Abbrechen</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku ist beendet</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku läuft nicht mehr – das System gibt es nach dem Ausschalten des Bildschirms oft frei. Starte Shizuku neu oder wechsle auf den WLAN-Debugging-Kanal dieser App, der nicht von Shizuku abhängt.</string>
+    <string name="rootflow_shizuku_lost_switch">WLAN-Debugging nutzen</string>
+    <string name="rootflow_shizuku_lost_later">Später</string>
+    <string name="log_shizuku_lost_hint">Shizuku läuft nicht mehr (wird nach Bildschirm-aus oft freigegeben). Starte es neu oder wechsle auf der Startseite zu WLAN-Debugging.</string>
+    <string name="log_error_unknown">Unbekannter Fehler (Details im Protokoll)</string>
+    <string name="log_error_internal">Interner Fehler – bitte erneut versuchen; bei Wiederholung bitte das Protokoll senden</string>
 </resources>

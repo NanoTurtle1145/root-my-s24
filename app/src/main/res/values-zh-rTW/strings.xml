@@ -261,4 +261,15 @@
     <string name="settings_debug_taps_left">再點 %1$d 下開啟偵錯模式</string>
     <string name="log_test_ok">日誌伺服器連線正常</string>
     <string name="settings_debug_testing">測試中…</string>
+    <string name="rootflow_build_mismatch_title">載荷與韌體不匹配</string>
+    <string name="rootflow_build_mismatch_body">所選載荷涵蓋構建 %1$s，但本機韌體是 %2$s。載荷依核心構建定標，構建不符時通常會在漏洞鏈第一步就失敗。仍要繼續嗎？</string>
+    <string name="rootflow_build_mismatch_continue">仍然繼續</string>
+    <string name="rootflow_build_mismatch_cancel">取消</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku 已掉線</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku 已停止執行——關閉螢幕後系統常會回收它。你可以重新啟動 Shizuku，或改用本應用程式內建的「無線偵錯」通道（不依賴 Shizuku）。</string>
+    <string name="rootflow_shizuku_lost_switch">改用無線偵錯</string>
+    <string name="rootflow_shizuku_lost_later">稍後</string>
+    <string name="log_shizuku_lost_hint">Shizuku 已不在執行（關閉螢幕後常被系統回收）。請重新啟動它，或在主頁授權卡片改用「無線偵錯」。</string>
+    <string name="log_error_unknown">未知錯誤（詳情見日誌）</string>
+    <string name="log_error_internal">內部錯誤——請重試；若反覆出現請把日誌提供給我們</string>
 </resources>

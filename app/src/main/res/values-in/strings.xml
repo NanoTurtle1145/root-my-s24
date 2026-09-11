@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">%1$d ketukan lagi untuk mengaktifkan mode debug</string>
     <string name="log_test_ok">Server log dapat dijangkau</string>
     <string name="settings_debug_testing">Menguji…</string>
+    <string name="rootflow_build_mismatch_title">Payload tidak cocok dengan firmware</string>
+    <string name="rootflow_build_mismatch_body">Payload yang dipilih mencakup build %1$s, tetapi ponsel ini memakai %2$s. Payload dikalibrasi per build kernel, jadi ketidakcocokan biasanya gagal di langkah pertama rantai eksploit. Tetap lanjutkan?</string>
+    <string name="rootflow_build_mismatch_continue">Tetap lanjutkan</string>
+    <string name="rootflow_build_mismatch_cancel">Batal</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku berhenti</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku tidak lagi berjalan — sistem sering mengambilnya setelah layar mati. Mulai ulang Shizuku, atau beralih ke kanal Debug nirkabel aplikasi ini yang tidak bergantung pada Shizuku.</string>
+    <string name="rootflow_shizuku_lost_switch">Pakai debug nirkabel</string>
+    <string name="rootflow_shizuku_lost_later">Nanti</string>
+    <string name="log_shizuku_lost_hint">Shizuku tidak lagi berjalan (sering diambil setelah layar mati). Mulai ulang, atau beralih ke debug nirkabel di layar utama.</string>
+    <string name="log_error_unknown">Kesalahan tidak diketahui (detail di log)</string>
+    <string name="log_error_internal">Kesalahan internal — coba lagi; bila berulang, kirim lognya</string>
 </resources>

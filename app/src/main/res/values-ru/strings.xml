@@ -257,4 +257,15 @@
     <string name="settings_debug_taps_left">Ещё %1$d нажатий для включения режима отладки</string>
     <string name="log_test_ok">Сервер журналов доступен</string>
     <string name="settings_debug_testing">Проверка…</string>
+    <string name="rootflow_build_mismatch_title">Пейлоад не соответствует прошивке</string>
+    <string name="rootflow_build_mismatch_body">Выбранный пейлоад рассчитан на сборку %1$s, а на телефоне %2$s. Пейлоады калибруются под сборку ядра, поэтому при несовпадении обычно ломается уже первый шаг цепочки. Всё равно продолжить?</string>
+    <string name="rootflow_build_mismatch_continue">Всё равно продолжить</string>
+    <string name="rootflow_build_mismatch_cancel">Отмена</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku остановлен</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku больше не работает — система часто выгружает его после выключения экрана. Перезапустите Shizuku или перейдите на канал «Отладка по Wi-Fi» в этом приложении: он не зависит от Shizuku.</string>
+    <string name="rootflow_shizuku_lost_switch">Отладка по Wi-Fi</string>
+    <string name="rootflow_shizuku_lost_later">Позже</string>
+    <string name="log_shizuku_lost_hint">Shizuku больше не работает (часто выгружается после выключения экрана). Перезапустите его или включите отладку по Wi-Fi на главном экране.</string>
+    <string name="log_error_unknown">Неизвестная ошибка (подробности в журнале)</string>
+    <string name="log_error_internal">Внутренняя ошибка — попробуйте снова; если повторяется, пришлите журнал</string>
 </resources>

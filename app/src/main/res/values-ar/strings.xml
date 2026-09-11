@@ -261,4 +261,15 @@
     <string name="settings_debug_taps_left">بقيت %1$d نقرات لتشغيل وضع التصحيح</string>
     <string name="log_test_ok">خادم السجلات متاح</string>
     <string name="settings_debug_testing">جارٍ الاختبار…</string>
+    <string name="rootflow_build_mismatch_title">الحِزمة لا تطابق البرنامج الثابت</string>
+    <string name="rootflow_build_mismatch_body">الحِزمة المختارة تغطي البناء %1$s، لكن هذا الهاتف على %2$s. تُعاير الحِزم حسب بناء النواة، وعند عدم التطابق تفشل عادةً أول خطوة في سلسلة الاستغلال. هل تريد المتابعة؟</string>
+    <string name="rootflow_build_mismatch_continue">المتابعة على أي حال</string>
+    <string name="rootflow_build_mismatch_cancel">إلغاء</string>
+    <string name="rootflow_shizuku_lost_title">توقّف Shizuku</string>
+    <string name="rootflow_shizuku_lost_body">لم يعد Shizuku يعمل — غالبًا ما يسترجعه النظام بعد إطفاء الشاشة. أعد تشغيل Shizuku، أو انتقل إلى قناة «تصحيح الأخطاء اللاسلكي» في هذا التطبيق والتي لا تعتمد عليه.</string>
+    <string name="rootflow_shizuku_lost_switch">استخدام التصحيح اللاسلكي</string>
+    <string name="rootflow_shizuku_lost_later">لاحقًا</string>
+    <string name="log_shizuku_lost_hint">لم يعد Shizuku يعمل (يُسترجع غالبًا بعد إطفاء الشاشة). أعد تشغيله أو انتقل إلى التصحيح اللاسلكي من الشاشة الرئيسية.</string>
+    <string name="log_error_unknown">خطأ غير معروف (التفاصيل في السجل)</string>
+    <string name="log_error_internal">خطأ داخلي — أعد المحاولة؛ وإن تكرر فأرسل السجل</string>
 </resources>

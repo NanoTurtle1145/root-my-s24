@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">Ancora %1$d tocchi per attivare la modalità debug</string>
     <string name="log_test_ok">Server dei log raggiungibile</string>
     <string name="settings_debug_testing">Verifica in corso…</string>
+    <string name="rootflow_build_mismatch_title">Il payload non corrisponde al firmware</string>
+    <string name="rootflow_build_mismatch_body">Il payload scelto copre la build %1$s, ma questo telefono usa %2$s. I payload sono calibrati per build del kernel; se non coincide, di solito fallisce il primo passo della catena. Continuare comunque?</string>
+    <string name="rootflow_build_mismatch_continue">Continua comunque</string>
+    <string name="rootflow_build_mismatch_cancel">Annulla</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku è terminato</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku non è più in esecuzione: il sistema tende a chiuderlo dopo lo spegnimento dello schermo. Riavvialo oppure passa al canale Debug wireless di questa app, che non dipende da Shizuku.</string>
+    <string name="rootflow_shizuku_lost_switch">Usa Debug wireless</string>
+    <string name="rootflow_shizuku_lost_later">Più tardi</string>
+    <string name="log_shizuku_lost_hint">Shizuku non è più in esecuzione (spesso chiuso dopo lo spegnimento dello schermo). Riavvialo o passa a Debug wireless dalla schermata iniziale.</string>
+    <string name="log_error_unknown">Errore sconosciuto (dettagli nel log)</string>
+    <string name="log_error_internal">Errore interno: riprova; se persiste, invia il log</string>
 </resources>

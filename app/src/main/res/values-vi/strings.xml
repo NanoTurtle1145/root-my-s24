@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">Còn %1$d lần chạm để bật chế độ gỡ lỗi</string>
     <string name="log_test_ok">Máy chủ nhật ký truy cập được</string>
     <string name="settings_debug_testing">Đang kiểm tra…</string>
+    <string name="rootflow_build_mismatch_title">Payload không khớp với firmware</string>
+    <string name="rootflow_build_mismatch_body">Payload đã chọn dành cho bản dựng %1$s, nhưng máy này đang ở %2$s. Payload được hiệu chuẩn theo bản dựng nhân, nên khi lệch thường hỏng ngay bước đầu của chuỗi khai thác. Vẫn tiếp tục?</string>
+    <string name="rootflow_build_mismatch_continue">Vẫn tiếp tục</string>
+    <string name="rootflow_build_mismatch_cancel">Huỷ</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku đã dừng</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku không còn chạy — hệ thống thường thu hồi nó sau khi tắt màn hình. Hãy khởi động lại Shizuku, hoặc chuyển sang kênh «Gỡ lỗi không dây» của ứng dụng này (không phụ thuộc Shizuku).</string>
+    <string name="rootflow_shizuku_lost_switch">Dùng gỡ lỗi không dây</string>
+    <string name="rootflow_shizuku_lost_later">Để sau</string>
+    <string name="log_shizuku_lost_hint">Shizuku không còn chạy (thường bị thu hồi sau khi tắt màn hình). Hãy khởi động lại hoặc chuyển sang gỡ lỗi không dây ở màn hình chính.</string>
+    <string name="log_error_unknown">Lỗi không xác định (xem nhật ký để biết chi tiết)</string>
+    <string name="log_error_internal">Lỗi nội bộ — hãy thử lại; nếu lặp lại, gửi nhật ký cho chúng tôi</string>
 </resources>

@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">あと %1$d 回タップでデバッグモード</string>
     <string name="log_test_ok">ログサーバーに接続できます</string>
     <string name="settings_debug_testing">テスト中…</string>
+    <string name="rootflow_build_mismatch_title">ペイロードがファームウェアと一致しません</string>
+    <string name="rootflow_build_mismatch_body">選択したペイロードはビルド %1$s 用ですが、この端末は %2$s です。ペイロードはカーネルビルド単位で調整されているため、不一致だと攻撃チェーンの最初の段階で失敗します。続行しますか？</string>
+    <string name="rootflow_build_mismatch_continue">そのまま続行</string>
+    <string name="rootflow_build_mismatch_cancel">キャンセル</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku が停止しました</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku が動作していません。画面消灯後にシステムが回収することがよくあります。Shizuku を再起動するか、Shizuku に依存しないこのアプリの「ワイヤレスデバッグ」経路に切り替えてください。</string>
+    <string name="rootflow_shizuku_lost_switch">ワイヤレスデバッグを使う</string>
+    <string name="rootflow_shizuku_lost_later">後で</string>
+    <string name="log_shizuku_lost_hint">Shizuku が動作していません（消灯後に回収されがちです）。再起動するか、ホーム画面でワイヤレスデバッグに切り替えてください。</string>
+    <string name="log_error_unknown">不明なエラー（詳細はログ参照）</string>
+    <string name="log_error_internal">内部エラーです。再試行してください。繰り返す場合はログを送ってください</string>
 </resources>

@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">Hata ayıklama modu için %1$d dokunuş daha</string>
     <string name="log_test_ok">Günlük sunucusuna ulaşılıyor</string>
     <string name="settings_debug_testing">Sınanıyor…</string>
+    <string name="rootflow_build_mismatch_title">Payload yazılımla uyuşmuyor</string>
+    <string name="rootflow_build_mismatch_body">Seçilen payload %1$s derlemesini kapsıyor, ancak bu telefon %2$s üzerinde. Payload\'lar çekirdek derlemesine göre kalibre edilir; uyuşmazlıkta zincirin ilk adımı genelde başarısız olur. Yine de sürdürülsün mü?</string>
+    <string name="rootflow_build_mismatch_continue">Yine de sürdür</string>
+    <string name="rootflow_build_mismatch_cancel">İptal</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku kapandı</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku artık çalışmıyor — sistem ekran kapanınca onu sık sık geri alır. Shizuku\'yu yeniden başlatın ya da Shizuku\'ya bağlı olmayan bu uygulamanın kablosuz hata ayıklama kanalına geçin.</string>
+    <string name="rootflow_shizuku_lost_switch">Kablosuz hata ayıklamayı kullan</string>
+    <string name="rootflow_shizuku_lost_later">Daha sonra</string>
+    <string name="log_shizuku_lost_hint">Shizuku artık çalışmıyor (ekran kapanınca sık sık geri alınır). Yeniden başlatın veya ana ekrandan kablosuz hata ayıklamaya geçin.</string>
+    <string name="log_error_unknown">Bilinmeyen hata (ayrıntılar günlükte)</string>
+    <string name="log_error_internal">İç hata — tekrar deneyin; sürerse günlüğü paylaşın</string>
 </resources>

@@ -299,4 +299,15 @@
     <string name="settings_debug_taps_left">%1$d more taps to enable debug mode</string>
     <string name="log_test_ok">Log server reachable</string>
     <string name="settings_debug_testing">Testing…</string>
+    <string name="rootflow_build_mismatch_title">Payload does not match your firmware</string>
+    <string name="rootflow_build_mismatch_body">The selected payload covers build %1$s, but this phone is on %2$s. Payloads are calibrated per kernel build, so a mismatch usually fails at the very first step of the exploit chain. Continue anyway?</string>
+    <string name="rootflow_build_mismatch_continue">Continue anyway</string>
+    <string name="rootflow_build_mismatch_cancel">Cancel</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku is gone</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku was stopped — the system often reclaims it after the screen turns off. You can restart Shizuku, or switch to this app\'s own Wireless debugging channel, which does not depend on Shizuku.</string>
+    <string name="rootflow_shizuku_lost_switch">Use Wireless debugging</string>
+    <string name="rootflow_shizuku_lost_later">Later</string>
+    <string name="log_shizuku_lost_hint">Shizuku is no longer running (often reclaimed after screen-off). Restart it, or switch to Wireless debugging in the home screen\'s authorization card.</string>
+    <string name="log_error_unknown">Unknown error (see the log for details)</string>
+    <string name="log_error_internal">Internal error - please try again; if it keeps happening, share the log</string>
 </resources>

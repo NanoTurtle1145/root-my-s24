@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">Ще %1$d натискань для ввімкнення режиму налагодження</string>
     <string name="log_test_ok">Сервер журналів доступний</string>
     <string name="settings_debug_testing">Перевірка…</string>
+    <string name="rootflow_build_mismatch_title">Пейлоад не відповідає прошивці</string>
+    <string name="rootflow_build_mismatch_body">Вибраний пейлоад розрахований на збірку %1$s, а на телефоні %2$s. Пейлоади калібрують під збірку ядра, тому за незбігу зазвичай ламається вже перший крок ланцюга. Усе одно продовжити?</string>
+    <string name="rootflow_build_mismatch_continue">Усе одно продовжити</string>
+    <string name="rootflow_build_mismatch_cancel">Скасувати</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku зупинено</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku більше не працює — система часто вивантажує його після вимкнення екрана. Перезапустіть Shizuku або перейдіть на канал «Налагодження по Wi-Fi» у цій програмі: він не залежить від Shizuku.</string>
+    <string name="rootflow_shizuku_lost_switch">Налагодження по Wi-Fi</string>
+    <string name="rootflow_shizuku_lost_later">Пізніше</string>
+    <string name="log_shizuku_lost_hint">Shizuku більше не працює (часто вивантажується після вимкнення екрана). Перезапустіть його або увімкніть налагодження по Wi-Fi на головному екрані.</string>
+    <string name="log_error_unknown">Невідома помилка (подробиці в журналі)</string>
+    <string name="log_error_internal">Внутрішня помилка — спробуйте ще раз; якщо повторюється, надішліть журнал</string>
 </resources>

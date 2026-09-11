@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">עוד %1$d הקשות להפעלת מצב ניפוי</string>
     <string name="log_test_ok">שרת היומנים זמין</string>
     <string name="settings_debug_testing">בודק…</string>
+    <string name="rootflow_build_mismatch_title">המטען לא תואם לקושחה</string>
+    <string name="rootflow_build_mismatch_body">המטען שנבחר מתאים לבנייה %1$s, אבל המכשיר הזה על %2$s. מטענים מכויילים לפי בניית הליבה, ולכן אי-התאמה מכשילה בדרך כלל כבר את השלב הראשון. להמשיך בכל זאת?</string>
+    <string name="rootflow_build_mismatch_continue">להמשיך בכל זאת</string>
+    <string name="rootflow_build_mismatch_cancel">ביטול</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku נעצר</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku אינו פועל עוד — המערכת מרבה לאסוף אותו לאחר כיבוי המסך. הפעילו את Shizuku מחדש, או עברו לערוץ «ניפוי אלחוטי» של האפליקציה הזו, שאינו תלוי בו.</string>
+    <string name="rootflow_shizuku_lost_switch">להשתמש בניפוי אלחוטי</string>
+    <string name="rootflow_shizuku_lost_later">מאוחר יותר</string>
+    <string name="log_shizuku_lost_hint">Shizuku אינו פועל עוד (נאסף לעיתים קרובות לאחר כיבוי המסך). הפעילו אותו מחדש או עברו לניפוי אלחוטי במסך הבית.</string>
+    <string name="log_error_unknown">שגיאה לא ידועה (פרטים ביומן)</string>
+    <string name="log_error_internal">שגיאה פנימית — נסו שוב; אם זה חוזר, שלחו את היומן</string>
 </resources>

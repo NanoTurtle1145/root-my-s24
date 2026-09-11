@@ -258,4 +258,15 @@
     <string name="settings_debug_taps_left">Encore %1$d appuis pour activer le mode débogage</string>
     <string name="log_test_ok">Serveur de journaux joignable</string>
     <string name="settings_debug_testing">Test en cours…</string>
+    <string name="rootflow_build_mismatch_title">Charge utile incompatible avec le firmware</string>
+    <string name="rootflow_build_mismatch_body">La charge utile choisie couvre la version %1$s, mais ce téléphone est en %2$s. Les charges utiles sont calibrées par version de noyau ; en cas d\'écart, la première étape de la chaîne échoue presque toujours. Continuer quand même ?</string>
+    <string name="rootflow_build_mismatch_continue">Continuer quand même</string>
+    <string name="rootflow_build_mismatch_cancel">Annuler</string>
+    <string name="rootflow_shizuku_lost_title">Shizuku s\'est arrêté</string>
+    <string name="rootflow_shizuku_lost_body">Shizuku ne tourne plus — le système le récupère souvent après extinction de l\'écran. Redémarrez Shizuku, ou passez au canal « Débogage sans fil » de cette application, qui n\'en dépend pas.</string>
+    <string name="rootflow_shizuku_lost_switch">Utiliser le débogage sans fil</string>
+    <string name="rootflow_shizuku_lost_later">Plus tard</string>
+    <string name="log_shizuku_lost_hint">Shizuku ne tourne plus (souvent récupéré après extinction de l\'écran). Redémarrez-le, ou passez au débogage sans fil depuis la page d\'accueil.</string>
+    <string name="log_error_unknown">Erreur inconnue (détails dans le journal)</string>
+    <string name="log_error_internal">Erreur interne — réessayez ; si cela se répète, envoyez le journal</string>
 </resources>
