@@ -254,6 +254,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     /** exploit 进程的原始输出累积缓冲（跨轮询保留，用于计算增量） */
     private val captured = StringBuilder()
+
+    /** 本轮运行在 logLines 里的起始下标（-1 表示未开始过，此时上报退化为整段）。 */
+    private var runStartIndex = -1
     /** 未以换行结尾的半行（下次追加时续上） */
     private var pendingPartial = ""
     /** 当前阶段（由 [n/5] 标题行驱动） */
@@ -449,6 +452,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         captured.clear()
         pendingPartial = ""
         currentStage = 0
+        // 记下本轮在日志缓冲里的起点：日志是会话累计的，上报时必须只带本轮，
+        // 否则一条日志里混着好几轮，判成败只能靠猜（曾出现「日志里明明成功了却记成失败」）
+        runStartIndex = _state.value.logLines.size
         _state.value = _state.value.copy(busy = true, rooted = false, currentStage = 0)
         viewModelScope.launch {
             try {
@@ -1186,7 +1192,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) pi.longVersionCode else pi.versionCode.toLong()
         } catch (_: Exception) { 0L }
         appendLine("RootMyS24 v${verName} (build ${verCode})")
-        val memLines = _state.value.logLines
+        val all = _state.value.logLines
+        // 只取本轮：从 runStartIndex 切到末尾。起点无效（重启后、清空日志）时退回整段，
+        // 保证任何情况下都有东西可上报。
+        val memLines =
+            if (runStartIndex in 0 until all.size) all.subList(runStartIndex, all.size) else all
         if (memLines.isNotEmpty()) {
             memLines.forEach { appendLine(it.text) }
         } else if (persistFile.exists()) {
@@ -1211,8 +1221,15 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         if (!LogUploader.isConfigured(app)) {
             return@withContext app.getString(R.string.log_upload_not_configured)
         }
+        // 结果标记分两类：stage<3 还没进 exploit（授权未就绪、内部错误等），
+        // 这类不是「漏洞利用失败」，单独标记后统计与面板都能把它降权处理，
+        // 不必再去日志正文里猜。
         val outcome =
-            if (_state.value.rooted) "success" else "failed@stage${currentStage}"
+            when {
+                _state.value.rooted -> "success"
+                currentStage < 3 -> "not-started@stage${currentStage}"
+                else -> "failed@stage${currentStage}"
+            }
         val error = LogUploader.upload(app, buildLogText(), effectiveBuildTag, outcome)
         if (error == null) app.getString(R.string.log_upload_ok)
         else app.getString(R.string.log_upload_fail, error)
