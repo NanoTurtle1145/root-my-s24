@@ -1213,10 +1213,34 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         }
         val outcome =
             if (_state.value.rooted) "success" else "failed@stage${currentStage}"
-        val error = LogUploader.upload(app, buildLogText(), deviceBuildTag, outcome)
+        val error = LogUploader.upload(app, buildLogText(), effectiveBuildTag, outcome)
         if (error == null) app.getString(R.string.log_upload_ok)
         else app.getString(R.string.log_upload_fail, error)
     }
+
+    /**
+     * 无需任何权限的构建串来源（兜底）。
+     *
+     * 正常路径是 collectDeviceInfo() 用 getprop 读 ro.build.version.incremental，
+     * 但那条路要等授权可用才走得到——而用户往往正是「授权不可用」或 stage1 就失败的时候
+     * 才来反馈，于是 buildTag 常年是 unknown（云端 43% 的日志就是这样丢掉了固件信息）。
+     * Build.FINGERPRINT 与 os.version 不需要权限，且里面就带着同一个构建串。
+     */
+    private fun detectedBuildTag(): String {
+        // samsung/e3qzcx/e3q:16/BP4A.251205.006/S9280ZCS6DZH3:user/release-keys
+        val fromFingerprint =
+            Build.FINGERPRINT.split("/").getOrNull(4)?.substringBefore(":")?.trim().orEmpty()
+        if (fromFingerprint.isNotEmpty()) return fromFingerprint
+        // 6.1.145-android14-11-3254743-abS9280ZCS6DZH3
+        val kernel = System.getProperty("os.version").orEmpty()
+        return Regex("ab([A-Z0-9]{8,})").find(kernel)?.groupValues?.get(1).orEmpty()
+    }
+
+    /** 对外（上报/反馈/展示）用的构建串：优先用已采集到的，缺失则即时推断。 */
+    val effectiveBuildTag: String
+        get() =
+            deviceBuildTag.takeIf { it.isNotBlank() && it != "unknown" }
+                ?: detectedBuildTag().ifEmpty { "unknown" }
 
     /** 反馈里的「问题类型」。这几项覆盖了实际收到的问题，选项化后用户不用组织语言。 */
     enum class FeedbackKind {
@@ -1246,7 +1270,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             "device" to Build.DEVICE,
             "android" to Build.VERSION.RELEASE,
             "sdk" to Build.VERSION.SDK_INT.toString(),
-            "firmware" to deviceBuildTag,
+            "firmware" to effectiveBuildTag,
             "kernel" to (System.getProperty("os.version") ?: "?"),
             "payload" to firmwareVersion.assetName,
             "payloadScope" to "${firmwareVersion.device} / ${firmwareVersion.range}",
