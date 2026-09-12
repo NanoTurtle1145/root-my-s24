@@ -257,6 +257,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     /** 本轮运行在 logLines 里的起始下标（-1 表示未开始过，此时上报退化为整段）。 */
     private var runStartIndex = -1
+
+    /**
+     * 本轮运行编号，形如 `<机器标识前 8 位>-<起始毫秒>`。
+     *
+     * 每次运行写进日志一行（`RUN-ID: …`），服务端拿它做精确去重：
+     * 同一轮无论被自动发送还是被手动重复上传，编号都一样，直接判重即可；
+     * 也就不必再靠"抹掉数字再哈希"这种启发式（那种做法理论上能被构造碰撞）。
+     * 前缀带机器标识，便于人肉定位；毫秒后缀保证同一台机器多次运行互不相同。
+     */
+    private var currentRunId = ""
     /** 未以换行结尾的半行（下次追加时续上） */
     private var pendingPartial = ""
     /** 当前阶段（由 [n/5] 标题行驱动） */
@@ -455,6 +465,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 记下本轮在日志缓冲里的起点：日志是会话累计的，上报时必须只带本轮，
         // 否则一条日志里混着好几轮，判成败只能靠猜（曾出现「日志里明明成功了却记成失败」）
         runStartIndex = _state.value.logLines.size
+        // 每轮开头写一行运行编号，供服务端精确去重（见 currentRunId 注释）
+        currentRunId = newRunId()
+        appendLog("RUN-ID: $currentRunId")
         _state.value = _state.value.copy(busy = true, rooted = false, currentStage = 0)
         viewModelScope.launch {
             try {
@@ -1153,6 +1166,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 app.getString(R.string.log_export_ok_path, f.absolutePath)
             }
         }.getOrElse { app.getString(R.string.log_export_fail, it.message) }
+    }
+
+    /** 生成本轮运行编号：机器标识前 8 位 + 起始毫秒（纯 ASCII，服务端好解析）。 */
+    private fun newRunId(): String {
+        val prefix = LogUploader.installId(app).take(8).ifBlank { "unknown" }
+        return "$prefix-${System.currentTimeMillis()}"
     }
 
     /**
