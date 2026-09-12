@@ -85,7 +85,7 @@ fun LogsScreen(
             TextButton(
                 onClick = {
                     scope.launch {
-                        val result = vm.uploadLog()
+                        val result = vm.uploadLog(RootViewModel.SOURCE_MANUAL)
                         android.widget.Toast.makeText(context, result, android.widget.Toast.LENGTH_LONG)
                             .show()
                     }

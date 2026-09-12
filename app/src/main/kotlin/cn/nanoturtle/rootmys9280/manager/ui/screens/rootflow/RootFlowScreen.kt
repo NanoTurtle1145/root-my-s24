@@ -222,7 +222,7 @@ private fun RootFlowContent(
                     onClick = {
                         vm.dismissUploadPrompt()
                         scope.launch {
-                            val result = vm.uploadLog()
+                            val result = vm.uploadLog(RootViewModel.SOURCE_PROMPT)
                             android.widget.Toast.makeText(
                                     context,
                                     result,

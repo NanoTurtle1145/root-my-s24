@@ -476,7 +476,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 // 一次运行结束后的日志处理：始终提供则直接上报；每次询问则弹一次提示；
                 // 不提供什么都不做。上传失败不影响运行结果，也不会打断 UI。
                 when (OnboardingPrefs.logSharing(app)) {
-                    LogSharing.ALWAYS -> appendLog("◆ " + uploadLog())
+                    LogSharing.ALWAYS -> appendLog("◆ " + uploadLog(SOURCE_AUTO))
                     LogSharing.MANUAL -> {
                         if (LogUploader.isConfigured(app)) _uploadPrompt.value = true
                     }
@@ -1183,7 +1183,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * 保证"导出/上传"任何时候都能拿到内容。导出与上报共用这一份，
      * 避免两条路径各拼一次导致内容不一致。
      */
-    private fun buildLogText(): String = buildString {
+    private fun buildLogText(onlyCurrentRun: Boolean = true): String = buildString {
         val verName = try {
             app.packageManager.getPackageInfo(app.packageName, 0).versionName.orEmpty()
         } catch (_: Exception) { "?" }
@@ -1196,7 +1196,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 只取本轮：从 runStartIndex 切到末尾。起点无效（重启后、清空日志）时退回整段，
         // 保证任何情况下都有东西可上报。
         val memLines =
-            if (runStartIndex in 0 until all.size) all.subList(runStartIndex, all.size) else all
+            if (onlyCurrentRun && runStartIndex in 0 until all.size) {
+                all.subList(runStartIndex, all.size)
+            } else {
+                all
+            }
         if (memLines.isNotEmpty()) {
             memLines.forEach { appendLine(it.text) }
         } else if (persistFile.exists()) {
@@ -1214,23 +1218,37 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      *
      * @return 可直接展示的结果文案（成功/失败/未配置/已关闭）。
      */
-    suspend fun uploadLog(): String = withContext(Dispatchers.IO) {
-        if (OnboardingPrefs.logSharing(app) == LogSharing.NEVER) {
+    /**
+     * 上报日志。
+     *
+     * @param source 上传来源：`auto`=运行结束自动发送、`prompt`=「每次询问」弹窗发送、
+     *   `manual`=日志页手动上传。服务端据此区分「一次运行尝试」与「用户手动提交的诊断」，
+     *   手动提交不计入成功率——否则同一份日志反复点上传就能把成功率刷上去。
+     */
+    suspend fun uploadLog(source: String = SOURCE_AUTO): String = withContext(Dispatchers.IO) {
+        if (OnboardingPrefs.logSharing(app) == LogSharing.NEVER && source != SOURCE_MANUAL) {
             return@withContext app.getString(R.string.log_upload_off)
         }
         if (!LogUploader.isConfigured(app)) {
             return@withContext app.getString(R.string.log_upload_not_configured)
         }
-        // 结果标记分两类：stage<3 还没进 exploit（授权未就绪、内部错误等），
-        // 这类不是「漏洞利用失败」，单独标记后统计与面板都能把它降权处理，
-        // 不必再去日志正文里猜。
+        val manual = source == SOURCE_MANUAL
+        // 手动上传是「把我看到的日志发出去」，所以带整段缓冲；自动/弹窗带本轮，
+        // 这样 outcome 与日志内容说的是同一件事。
+        val log = buildLogText(onlyCurrentRun = !manual)
         val outcome =
-            when {
-                _state.value.rooted -> "success"
-                currentStage < 3 -> "not-started@stage${currentStage}"
-                else -> "failed@stage${currentStage}"
+            if (manual) {
+                "manual"
+            } else {
+                // stage<3 还没进 exploit（授权未就绪、内部错误等），不是漏洞利用失败；
+                // 单独标记后统计与面板都能把它降权处理，不必去日志正文里猜。
+                when {
+                    _state.value.rooted -> "success"
+                    currentStage < 3 -> "not-started@stage${currentStage}"
+                    else -> "failed@stage${currentStage}"
+                }
             }
-        val error = LogUploader.upload(app, buildLogText(), effectiveBuildTag, outcome)
+        val error = LogUploader.upload(app, log, effectiveBuildTag, outcome, source)
         if (error == null) app.getString(R.string.log_upload_ok)
         else app.getString(R.string.log_upload_fail, error)
     }
@@ -1339,6 +1357,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     companion object {
+        /** 上传来源标记，与统计口径对应（manual 不计入成功率）。 */
+        const val SOURCE_AUTO = "auto"
+        const val SOURCE_PROMPT = "prompt"
+        const val SOURCE_MANUAL = "manual"
+
         const val MAX_LOG_LINES = 4000
 
         /** 持久化文件大小阈值（超过后裁剪到尾部 MAX_LOG_LINES 行） */

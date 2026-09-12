@@ -93,6 +93,7 @@ object LogUploader {
         log: String,
         buildTag: String,
         outcome: String,
+        source: String = "auto",
     ): String? {
         val url = endpoint(context)
         if (url.isBlank()) return "not-configured"
@@ -101,6 +102,7 @@ object LogUploader {
             basePayload(context)
                 .put("buildTag", buildTag)
                 .put("outcome", outcome)
+                .put("source", source)
                 .put("log", log)
                 .toString()
 
