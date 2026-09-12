@@ -269,4 +269,5 @@
     <string name="log_shizuku_lost_hint">Shizuku ya no se ejecuta (suele reclamarse al apagar la pantalla). Reinícialo o cambia a depuración inalámbrica en la pantalla de inicio.</string>
     <string name="log_error_unknown">Error desconocido (detalles en el registro)</string>
     <string name="log_error_internal">Error interno: vuelve a intentarlo; si persiste, comparte el registro</string>
+    <string name="log_device_info_failed">No se pudo leer la info del dispositivo: %1$s (continuando)</string>
 </resources>

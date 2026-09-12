@@ -272,4 +272,5 @@
     <string name="log_shizuku_lost_hint">Shizuku 已不在執行（關閉螢幕後常被系統回收）。請重新啟動它，或在主頁授權卡片改用「無線偵錯」。</string>
     <string name="log_error_unknown">未知錯誤（詳情見日誌）</string>
     <string name="log_error_internal">內部錯誤——請重試；若反覆出現請把日誌提供給我們</string>
+    <string name="log_device_info_failed">裝置資訊讀取失敗：%1$s（繼續執行）</string>
 </resources>

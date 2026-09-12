@@ -269,4 +269,5 @@
     <string name="log_shizuku_lost_hint">Shizuku non è più in esecuzione (spesso chiuso dopo lo spegnimento dello schermo). Riavvialo o passa a Debug wireless dalla schermata iniziale.</string>
     <string name="log_error_unknown">Errore sconosciuto (dettagli nel log)</string>
     <string name="log_error_internal">Errore interno: riprova; se persiste, invia il log</string>
+    <string name="log_device_info_failed">Impossibile leggere le info del dispositivo: %1$s (continuo)</string>
 </resources>

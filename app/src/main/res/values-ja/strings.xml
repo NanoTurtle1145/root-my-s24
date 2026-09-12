@@ -269,4 +269,5 @@
     <string name="log_shizuku_lost_hint">Shizuku が動作していません（消灯後に回収されがちです）。再起動するか、ホーム画面でワイヤレスデバッグに切り替えてください。</string>
     <string name="log_error_unknown">不明なエラー（詳細はログ参照）</string>
     <string name="log_error_internal">内部エラーです。再試行してください。繰り返す場合はログを送ってください</string>
+    <string name="log_device_info_failed">端末情報を取得できません: %1$s（続行します）</string>
 </resources>

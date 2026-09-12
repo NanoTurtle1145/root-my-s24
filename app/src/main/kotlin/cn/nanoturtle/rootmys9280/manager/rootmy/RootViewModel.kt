@@ -80,7 +80,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val enabled: Boolean = true,
     ) {
         // —— 国行（实测稳定）——
-        DZF2("cve-2026-43499", "One UI 8.5", "S24 全系 · 国行", "DZE2–DZG1", Region.CHINA, "ksud-selected"),
+        // 覆盖范围按实测放宽到 DZH3：云端日志里 S9280/S9210 国行 DZH3 用本载荷均成功
+        // （#44、#71），原先写 DZE2–DZG1 会让这些用户被误判为「构建不符」
+        DZF2("cve-2026-43499", "One UI 8.5", "S24 全系 · 国行", "DZE2–DZH3", Region.CHINA, "ksud-selected"),
         BYH7("cve-2026-43499-byh7", "One UI 7", "SM-S9210 国行", "BYH7", Region.CHINA, "ksud-selected"),
         // —— 国行 Z Fold6 —— 与 S24 同 GKI 构建号，已验证共用 DZF2 载荷成功
         ZFOLD6("cve-2026-43499", "One UI 8.5", "SM-F9580 国行 Z Fold6", "Z Fold6（共用 DZF2 载荷）", Region.CHINA, "ksud-selected"),
@@ -878,6 +880,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * 崩溃/重启后日志仍可据此识别设备，便于按机型归档与排查。
      */
     private suspend fun collectDeviceInfo() {
+        // 采集失败（例如 Shizuku 恰好被回收）不应中断 Root 流程：设备信息是诊断信息，
+        // 不是流程前提。失败时记一行，让日志仍能看出「设备信息缺失」这个事实。
+        try {
         val props = listOf(
             "ro.product.model",       // SM-S9280
             "ro.product.board",       // e3q
@@ -892,9 +897,14 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         )
         val values = mutableMapOf<String, String>()
         props.forEach { name ->
-            values[name] = shellExecutor.capture(
-                arrayOf("/system/bin/sh", "-c", "getprop $name 2>&1")
-            ).trim()
+            // Shizuku 的 binder 调用可能返回 null（超时/对端回收），Kotlin 的 .trim() 会在这里
+            // 抛 “null object reference”。设备信息只是诊断用，取不到就留空，绝不能让整轮失败。
+            values[name] = runCatching {
+                    shellExecutor.capture(arrayOf("/system/bin/sh", "-c", "getprop $name 2>&1"))
+                }
+                .getOrNull()
+                ?.trim()
+                .orEmpty()
         }
         val model = values["ro.product.model"].orEmpty()
         val board = values["ro.product.board"].orEmpty()
@@ -931,13 +941,19 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         } catch (_: Exception) { 0L }
         appendLog("◆ 版本: RootMyS24 v${verName} (build ${verCode})")
 
-        // 记录机型标识，供导出文件名使用（如 rootmys9280-S9280ZCS6DZF2.txt）
-        val buildTag = listOf(model, buildInc).firstOrNull { it.isNotBlank() && !it.contains("?") }
+        // 记录机型标识，供导出文件名（rootmys9280-S9280ZCS6DZF2.txt）与日志上报使用。
+        // 必须优先取固件串而不是型号：分析日志时要按「构建」聚合，型号说明不了兼容性
+        // （S24 全系同构建通用），先前取 model 让云端 build_tag 全是 SM-S9280 这类值。
+        val buildTag = listOf(buildInc, bootloader, model)
+            .firstOrNull { it.isNotBlank() && !it.contains("?") }
         val normalized = buildTag
             ?.replace(Regex("[^A-Za-z0-9._-]"), "_")
             ?.take(40)
             ?: "unknown"
         deviceBuildTag = normalized
+        } catch (t: Throwable) {
+            appendLog("⚠ " + app.getString(R.string.log_device_info_failed, friendlyError(t)))
+        }
     }
 
     private fun copyToTmp(sourceName: String, target: String, mode: String): File {

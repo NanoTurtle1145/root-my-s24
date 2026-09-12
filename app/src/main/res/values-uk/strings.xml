@@ -269,4 +269,5 @@
     <string name="log_shizuku_lost_hint">Shizuku більше не працює (часто вивантажується після вимкнення екрана). Перезапустіть його або увімкніть налагодження по Wi-Fi на головному екрані.</string>
     <string name="log_error_unknown">Невідома помилка (подробиці в журналі)</string>
     <string name="log_error_internal">Внутрішня помилка — спробуйте ще раз; якщо повторюється, надішліть журнал</string>
+    <string name="log_device_info_failed">Не вдалося прочитати дані пристрою: %1$s (продовжуємо)</string>
 </resources>

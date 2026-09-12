@@ -269,4 +269,5 @@
     <string name="log_shizuku_lost_hint">Shizuku läuft nicht mehr (wird nach Bildschirm-aus oft freigegeben). Starte es neu oder wechsle auf der Startseite zu WLAN-Debugging.</string>
     <string name="log_error_unknown">Unbekannter Fehler (Details im Protokoll)</string>
     <string name="log_error_internal">Interner Fehler – bitte erneut versuchen; bei Wiederholung bitte das Protokoll senden</string>
+    <string name="log_device_info_failed">Geräteinfo nicht lesbar: %1$s (fahre fort)</string>
 </resources>

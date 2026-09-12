@@ -269,4 +269,5 @@
     <string name="log_shizuku_lost_hint">Shizuku không còn chạy (thường bị thu hồi sau khi tắt màn hình). Hãy khởi động lại hoặc chuyển sang gỡ lỗi không dây ở màn hình chính.</string>
     <string name="log_error_unknown">Lỗi không xác định (xem nhật ký để biết chi tiết)</string>
     <string name="log_error_internal">Lỗi nội bộ — hãy thử lại; nếu lặp lại, gửi nhật ký cho chúng tôi</string>
+    <string name="log_device_info_failed">Không đọc được thông tin thiết bị: %1$s (tiếp tục)</string>
 </resources>

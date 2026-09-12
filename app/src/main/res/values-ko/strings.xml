@@ -269,4 +269,5 @@
     <string name="log_shizuku_lost_hint">Shizuku가 실행 중이 아닙니다(화면 꺼짐 후 자주 회수됨). 다시 시작하거나 홈에서 무선 디버깅으로 전환하세요.</string>
     <string name="log_error_unknown">알 수 없는 오류(자세한 내용은 로그 참조)</string>
     <string name="log_error_internal">내부 오류입니다. 다시 시도하세요. 반복되면 로그를 보내주세요</string>
+    <string name="log_device_info_failed">기기 정보를 읽지 못했습니다: %1$s (계속 진행)</string>
 </resources>

@@ -269,4 +269,5 @@
     <string name="log_shizuku_lost_hint">Shizuku nie działa (często zwalniane po wyłączeniu ekranu). Uruchom je ponownie lub włącz debugowanie bezprzewodowe na ekranie głównym.</string>
     <string name="log_error_unknown">Nieznany błąd (szczegóły w dzienniku)</string>
     <string name="log_error_internal">Błąd wewnętrzny — spróbuj ponownie; jeśli się powtarza, prześlij dziennik</string>
+    <string name="log_device_info_failed">Nie udało się odczytać informacji o urządzeniu: %1$s (kontynuuję)</string>
 </resources>

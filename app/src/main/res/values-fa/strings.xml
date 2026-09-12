@@ -269,4 +269,5 @@
     <string name="log_shizuku_lost_hint">Shizuku دیگر اجرا نمی‌شود (اغلب پس از خاموش شدن صفحه آزاد می‌شود). آن را دوباره اجرا کنید یا از صفحه اصلی به اشکال‌زدایی بی‌سیم بروید.</string>
     <string name="log_error_unknown">خطای ناشناخته (جزئیات در گزارش)</string>
     <string name="log_error_internal">خطای داخلی — دوباره تلاش کنید؛ اگر تکرار شد گزارش را بفرستید</string>
+    <string name="log_device_info_failed">خواندن اطلاعات دستگاه ناموفق بود: %1$s (ادامه)</string>
 </resources>

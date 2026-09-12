@@ -272,4 +272,5 @@
     <string name="log_shizuku_lost_hint">لم يعد Shizuku يعمل (يُسترجع غالبًا بعد إطفاء الشاشة). أعد تشغيله أو انتقل إلى التصحيح اللاسلكي من الشاشة الرئيسية.</string>
     <string name="log_error_unknown">خطأ غير معروف (التفاصيل في السجل)</string>
     <string name="log_error_internal">خطأ داخلي — أعد المحاولة؛ وإن تكرر فأرسل السجل</string>
+    <string name="log_device_info_failed">تعذّر قراءة معلومات الجهاز: %1$s (المتابعة)</string>
 </resources>

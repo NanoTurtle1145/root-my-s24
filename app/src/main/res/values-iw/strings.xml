@@ -269,4 +269,5 @@
     <string name="log_shizuku_lost_hint">Shizuku אינו פועל עוד (נאסף לעיתים קרובות לאחר כיבוי המסך). הפעילו אותו מחדש או עברו לניפוי אלחוטי במסך הבית.</string>
     <string name="log_error_unknown">שגיאה לא ידועה (פרטים ביומן)</string>
     <string name="log_error_internal">שגיאה פנימית — נסו שוב; אם זה חוזר, שלחו את היומן</string>
+    <string name="log_device_info_failed">לא ניתן לקרוא פרטי מכשיר: %1$s (ממשיך)</string>
 </resources>
