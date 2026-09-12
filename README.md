@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.1.0-1E88E5?style=flat-square" alt="Version 3.1.0"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.3.0-1E88E5?style=flat-square" alt="Version 3.3.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24"><img src="https://img.shields.io/badge/platform-Android-1E88E5?style=flat-square" alt="Android"></a>
 </p>
@@ -18,6 +18,23 @@
 > 安全研究声明：本项目仅用于安全研究与自有设备维护。使用内核漏洞提权存在导致系统崩溃、数据丢失、设备变砖的风险，使用者需自行承担一切后果。请勿用于非法用途。
 
 ---
+
+## 使用情况
+
+> 以下为**匿名聚合**统计（数据来自 App 内可选的运行日志共享）：不含 IP、城市或任何设备标识。
+> 图表由项目服务器动态生成，随数据自动更新。
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=summary" alt="RootMyS24 使用统计" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=country" alt="用户地区分布" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=firmware" alt="固件构建分布" width="100%">
+</p>
 
 ## 特性
 
