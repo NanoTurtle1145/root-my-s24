@@ -290,4 +290,12 @@
     <string name="feedback_ok">Đã gửi báo cáo — cảm ơn!</string>
     <string name="feedback_fail">Gửi thất bại: %1$s</string>
     <string name="rootflow_series_hint">Dùng được cho cả dòng S24 (S9210 / S9260 / S9280): máy nào cùng bản dựng đều được. Bản Trung Quốc và bản quốc tế không dùng chung, nhưng Hồng Kông/Đài Loan và châu Âu/Mỹ thì dùng chung được.</string>
+    <string name="update_new_title">Đã có phiên bản %1$s</string>
+    <string name="update_new_body">Đang dùng %1$s (bản dựng %2$d), mới nhất %3$s (bản dựng %4$d).</string>
+    <string name="update_new_source">Nguồn tải: %1$s</string>
+    <string name="update_download_install">Tải và cài đặt</string>
+    <string name="update_later">Để sau</string>
+    <string name="update_latest">Đã là bản mới nhất (%1$s)</string>
+    <string name="update_check_failed">Kiểm tra cập nhật thất bại: %1$s</string>
+    <string name="update_downloading">Đang tải — sẽ hỏi cài đặt khi xong</string>
 </resources>

@@ -293,4 +293,12 @@
     <string name="feedback_ok">回報已送出，感謝！</string>
     <string name="feedback_fail">送出失敗：%1$s</string>
     <string name="rootflow_series_hint">S24 全系列通用（S9210 / S9260 / S9280）：同一個構建號即可，不分機型。國行與外版不可混用，港台與歐美外版之間可互串。</string>
+    <string name="update_new_title">發現新版本 %1$s</string>
+    <string name="update_new_body">目前 %1$s（build %2$d），最新 %3$s（build %4$d）。</string>
+    <string name="update_new_source">下載來源：%1$s</string>
+    <string name="update_download_install">下載並安裝</string>
+    <string name="update_later">稍後</string>
+    <string name="update_latest">已是最新版本（%1$s）</string>
+    <string name="update_check_failed">檢查更新失敗：%1$s</string>
+    <string name="update_downloading">正在下載，完成後會提示安裝</string>
 </resources>

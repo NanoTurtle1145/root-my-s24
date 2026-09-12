@@ -290,4 +290,12 @@
     <string name="feedback_ok">Meldung gesendet - danke!</string>
     <string name="feedback_fail">Senden fehlgeschlagen: %1$s</string>
     <string name="rootflow_series_hint">Gilt für die gesamte S24-Reihe (S9210 / S9260 / S9280): jedes Modell mit gleichem Build. China- und Auslands-Builds sind nicht austauschbar, Hongkong/Taiwan und Europa/USA untereinander schon.</string>
+    <string name="update_new_title">Version %1$s verfügbar</string>
+    <string name="update_new_body">Installiert %1$s (Build %2$d), neueste %3$s (Build %4$d).</string>
+    <string name="update_new_source">Download-Quelle: %1$s</string>
+    <string name="update_download_install">Laden und installieren</string>
+    <string name="update_later">Später</string>
+    <string name="update_latest">Bereits aktuell (%1$s)</string>
+    <string name="update_check_failed">Updateprüfung fehlgeschlagen: %1$s</string>
+    <string name="update_downloading">Wird geladen - nach Abschluss wirst du zur Installation gefragt</string>
 </resources>

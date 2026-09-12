@@ -290,4 +290,12 @@
     <string name="feedback_ok">Rapport envoyé - merci !</string>
     <string name="feedback_fail">Échec de l\'envoi : %1$s</string>
     <string name="rootflow_series_hint">Valable pour toute la série S24 (S9210 / S9260 / S9280) : n\'importe quel modèle au même build. Les builds chinois et internationaux ne se mélangent pas, mais Hong Kong/Taïwan et Europe/USA sont interchangeables.</string>
+    <string name="update_new_title">Version %1$s disponible</string>
+    <string name="update_new_body">Installée %1$s (build %2$d), dernière %3$s (build %4$d).</string>
+    <string name="update_new_source">Source du téléchargement : %1$s</string>
+    <string name="update_download_install">Télécharger et installer</string>
+    <string name="update_later">Plus tard</string>
+    <string name="update_latest">Déjà à jour (%1$s)</string>
+    <string name="update_check_failed">Échec de la vérification : %1$s</string>
+    <string name="update_downloading">Téléchargement en cours - l\'installation sera proposée à la fin</string>
 </resources>

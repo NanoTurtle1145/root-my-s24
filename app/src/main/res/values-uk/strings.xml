@@ -290,4 +290,12 @@
     <string name="feedback_ok">Звіт надіслано — дякуємо!</string>
     <string name="feedback_fail">Не вдалося надіслати: %1$s</string>
     <string name="rootflow_series_hint">Підходить для всієї серії S24 (S9210 / S9260 / S9280): будь-яка модель з тією ж збіркою. Китайські та міжнародні збірки не змішуються, а Гонконг/Тайвань і Європа/США взаємозамінні.</string>
+    <string name="update_new_title">Доступна версія %1$s</string>
+    <string name="update_new_body">Встановлено %1$s (збірка %2$d), остання %3$s (збірка %4$d).</string>
+    <string name="update_new_source">Джерело завантаження: %1$s</string>
+    <string name="update_download_install">Завантажити й установити</string>
+    <string name="update_later">Пізніше</string>
+    <string name="update_latest">Уже найновіша версія (%1$s)</string>
+    <string name="update_check_failed">Не вдалося перевірити оновлення: %1$s</string>
+    <string name="update_downloading">Триває завантаження — після завершення буде запропоновано встановлення</string>
 </resources>

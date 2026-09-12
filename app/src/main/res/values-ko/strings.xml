@@ -290,4 +290,12 @@
     <string name="feedback_ok">신고를 보냈습니다. 감사합니다!</string>
     <string name="feedback_fail">전송 실패: %1$s</string>
     <string name="rootflow_series_hint">S24 시리즈 전체에서 사용할 수 있습니다(S9210 / S9260 / S9280). 같은 빌드면 기종은 상관없습니다. 중국판과 해외판은 호환되지 않지만, 홍콩/대만과 유럽/미국 해외판끼리는 서로 쓸 수 있습니다.</string>
+    <string name="update_new_title">버전 %1$s 사용 가능</string>
+    <string name="update_new_body">설치됨 %1$s(build %2$d), 최신 %3$s(build %4$d).</string>
+    <string name="update_new_source">다운로드 출처: %1$s</string>
+    <string name="update_download_install">다운로드 후 설치</string>
+    <string name="update_later">나중에</string>
+    <string name="update_latest">이미 최신 버전입니다(%1$s)</string>
+    <string name="update_check_failed">업데이트 확인 실패: %1$s</string>
+    <string name="update_downloading">다운로드 중 — 완료되면 설치를 묻습니다</string>
 </resources>

@@ -290,4 +290,12 @@
     <string name="feedback_ok">گزارش ارسال شد — سپاسگزاریم!</string>
     <string name="feedback_fail">ارسال ناموفق: %1$s</string>
     <string name="rootflow_series_hint">برای کل سری S24 کار می‌کند (S9210 / S9260 / S9280): هر مدلی با همان ساخت. ساخت چین و ساخت خارج قابل ترکیب نیستند، اما هنگ‌کنگ/تایوان و اروپا/آمریکا با هم قابل استفاده‌اند.</string>
+    <string name="update_new_title">نسخه %1$s موجود است</string>
+    <string name="update_new_body">نصب‌شده %1$s (ساخت %2$d)، جدیدترین %3$s (ساخت %4$d).</string>
+    <string name="update_new_source">منبع دانلود: %1$s</string>
+    <string name="update_download_install">دانلود و نصب</string>
+    <string name="update_later">بعداً</string>
+    <string name="update_latest">همین حالا به‌روز است (%1$s)</string>
+    <string name="update_check_failed">بررسی به‌روزرسانی ناموفق: %1$s</string>
+    <string name="update_downloading">در حال دانلود — پس از پایان نصب پیشنهاد می‌شود</string>
 </resources>

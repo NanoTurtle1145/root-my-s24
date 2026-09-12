@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.automirrored.rounded.Notes
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.CloudUpload
+import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Feedback
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.MenuBook
@@ -29,6 +31,7 @@ import androidx.compose.material.icons.rounded.SettingsRemote
 import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -37,7 +40,9 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +61,7 @@ import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
 import cn.nanoturtle.rootmys9280.manager.rootmy.LogSharing
 import cn.nanoturtle.rootmys9280.manager.rootmy.LogUploader
+import cn.nanoturtle.rootmys9280.manager.rootmy.UpdateChecker
 import cn.nanoturtle.rootmys9280.manager.rootmy.OnboardingPrefs
 import cn.nanoturtle.rootmys9280.manager.ui.theme.VectorMono
 import kotlinx.coroutines.launch
@@ -105,6 +111,39 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
     var logSharing by remember {
         mutableStateOf(OnboardingPrefs.logSharing(context))
     }
+    // 更新检查：查云端清单 → 有新版本则弹窗 → 交给系统下载器 → 完成后拉起安装器
+    var checkingUpdate by remember { mutableStateOf(false) }
+    var updateError by remember { mutableStateOf<String?>(null) }
+    var pendingRelease by remember { mutableStateOf<UpdateChecker.Release?>(null) }
+    var downloadId by remember { mutableStateOf<Long?>(null) }
+    val downloadingMsg = stringResource(R.string.update_downloading)
+    // 点击回调里要拼文案，用配置感知的 Resources，避免 lint 的 LocalContextGetResourceValueCall
+    val resources = androidx.compose.ui.platform.LocalResources.current
+    // 下载完成回调：系统下载器发 ACTION_DOWNLOAD_COMPLETE，拿到完成的那条就拉起安装
+    DisposableEffect(downloadId) {
+        val id = downloadId
+        if (id == null) {
+            onDispose {}
+        } else {
+            val receiver =
+                object : android.content.BroadcastReceiver() {
+                    override fun onReceive(ctx: android.content.Context, intent: android.content.Intent) {
+                        val done = intent.getLongExtra(android.app.DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
+                        if (done == id) {
+                            UpdateChecker.installIntent(ctx, id)?.let { ctx.startActivity(it) }
+                        }
+                    }
+                }
+            androidx.core.content.ContextCompat.registerReceiver(
+                context,
+                receiver,
+                android.content.IntentFilter(android.app.DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                androidx.core.content.ContextCompat.RECEIVER_EXPORTED,
+            )
+            onDispose { runCatching { context.unregisterReceiver(receiver) } }
+        }
+    }
+
     // 调试模式：点版本号七下开启（与 Android 开发者选项同一套习惯）
     var debugMode by remember { mutableStateOf(prefs.getBoolean(KEY_DEBUG_MODE, false)) }
     var versionTaps by remember { mutableIntStateOf(0) }
@@ -120,6 +159,57 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
     // 调试项的测试结果就地显示（不弹 Toast），所以放在状态里而不是 Toast 里
     var debugResult by remember { mutableStateOf<String?>(null) }
     var testing by remember { mutableStateOf(false) }
+
+    pendingRelease?.let { latest ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { pendingRelease = null },
+            title = { Text(stringResource(R.string.update_new_title, latest.versionName)) },
+            text = {
+                Column {
+                    Text(
+                        stringResource(
+                            R.string.update_new_body,
+                            UpdateChecker.currentVersionName(context),
+                            UpdateChecker.currentVersionCode(context),
+                            latest.versionName,
+                            latest.versionCode,
+                        )
+                    )
+                    if (latest.notes.isNotBlank()) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(latest.notes, style = MaterialTheme.typography.bodySmall)
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        stringResource(R.string.update_new_source, latest.url),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        // 优先自建服务器，失败再退 GitHub 镜像
+                        val url = latest.url.ifBlank { latest.mirror }
+                        val fileName = "RootMyS24-v${latest.versionName}-build${latest.versionCode}.apk"
+                        downloadId =
+                            runCatching { UpdateChecker.startDownload(context, url, fileName) }
+                                .getOrElse { -1L }
+                        pendingRelease = null
+                        updateError = downloadingMsg
+                    },
+                ) {
+                    Text(stringResource(R.string.update_download_install))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingRelease = null }) {
+                    Text(stringResource(R.string.update_later))
+                }
+            },
+        )
+    }
 
     LazyColumn(
         modifier =
@@ -271,12 +361,49 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                     ListItem(
                         modifier =
                             Modifier.clickable {
-                                onOpenUrl("https://github.com/NanoTurtle1145/root-my-s24/releases")
+                                // 查自建服务器的版本清单（比 GitHub 稳），有新版本就地下载安装
+                                if (checkingUpdate) return@clickable
+                                checkingUpdate = true
+                                updateError = null
+                                scope.launch {
+                                    runCatching { UpdateChecker.fetchLatest() }
+                                        .onSuccess { latest ->
+                                            if (latest.versionCode >
+                                                UpdateChecker.currentVersionCode(context)
+                                            ) {
+                                                pendingRelease = latest
+                                            } else {
+                                                updateError = resources.getString(
+                                                    R.string.update_latest,
+                                                    UpdateChecker.currentVersionName(context),
+                                                )
+                                            }
+                                        }
+                                        .onFailure {
+                                            updateError = resources.getString(
+                                                R.string.update_check_failed,
+                                                friendlyMessage(it),
+                                            )
+                                        }
+                                    checkingUpdate = false
+                                }
                             },
                         leadingContent = { Icon(Icons.Rounded.Update, contentDescription = null) },
-                        supportingContent = { Text(stringResource(R.string.settings_check_update_summary)) },
+                        supportingContent = {
+                            Text(
+                                updateError
+                                    ?: stringResource(R.string.settings_check_update_summary)
+                            )
+                        },
                         trailingContent = {
-                            Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null)
+                            if (checkingUpdate) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(18.dp),
+                                    strokeWidth = 2.dp,
+                                )
+                            } else {
+                                Icon(Icons.Rounded.Download, contentDescription = null)
+                            }
                         },
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_check_update)) }
@@ -511,6 +638,10 @@ private fun LogSharingOption(
         }
     }
 }
+
+/** 更新检查失败的提示文案：异常消息为空时给个兜底。 */
+private fun friendlyMessage(t: Throwable): String =
+    t.message?.takeIf { it.isNotBlank() } ?: t.javaClass.simpleName
 
 /** 分组标题：与 Vector 各页的 section 标题一致的样式。 */
 @Composable

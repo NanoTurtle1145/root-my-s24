@@ -331,4 +331,12 @@
     <string name="feedback_ok">Report sent - thank you!</string>
     <string name="feedback_fail">Could not send: %1$s</string>
     <string name="rootflow_series_hint">Works across the whole S24 series (S9210 / S9260 / S9280): any model with the same build. China and overseas builds are not interchangeable, but Hong Kong/Taiwan and Europe/US builds can be used interchangeably.</string>
+    <string name="update_new_title">Version %1$s available</string>
+    <string name="update_new_body">Installed %1$s (build %2$d), latest %3$s (build %4$d).</string>
+    <string name="update_new_source">Download source: %1$s</string>
+    <string name="update_download_install">Download and install</string>
+    <string name="update_later">Later</string>
+    <string name="update_latest">Already up to date (%1$s)</string>
+    <string name="update_check_failed">Update check failed: %1$s</string>
+    <string name="update_downloading">Downloading - you will be asked to install when it finishes</string>
 </resources>

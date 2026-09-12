@@ -293,4 +293,12 @@
     <string name="feedback_ok">تم إرسال البلاغ — شكرًا لك!</string>
     <string name="feedback_fail">فشل الإرسال: %1$s</string>
     <string name="rootflow_series_hint">يعمل مع كامل سلسلة S24 ‏(S9210 / S9260 / S9280): أي طراز بنفس البناء. بناءات الصين والبناءات الخارجية لا تُخلط، لكن هونغ كونغ/تايوان وأوروبا/أمريكا يمكن تبادلها.</string>
+    <string name="update_new_title">الإصدار %1$s متاح</string>
+    <string name="update_new_body">المثبّت %1$s (بناء %2$d)، الأحدث %3$s (بناء %4$d).</string>
+    <string name="update_new_source">مصدر التنزيل: %1$s</string>
+    <string name="update_download_install">تنزيل وتثبيت</string>
+    <string name="update_later">لاحقًا</string>
+    <string name="update_latest">لديك أحدث إصدار (%1$s)</string>
+    <string name="update_check_failed">فشل التحقق من التحديث: %1$s</string>
+    <string name="update_downloading">جارٍ التنزيل — سيُطلب التثبيت عند الانتهاء</string>
 </resources>

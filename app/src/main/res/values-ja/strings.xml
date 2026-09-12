@@ -290,4 +290,12 @@
     <string name="feedback_ok">報告を送信しました。ありがとうございます！</string>
     <string name="feedback_fail">送信に失敗しました: %1$s</string>
     <string name="rootflow_series_hint">S24 シリーズ全体で使えます（S9210 / S9260 / S9280）。同じビルドなら機種は問いません。中国版と海外版は互換しませんが、香港/台湾と欧米の海外版同士は相互利用できます。</string>
+    <string name="update_new_title">バージョン %1$s があります</string>
+    <string name="update_new_body">インストール済み %1$s（build %2$d）、最新 %3$s（build %4$d）。</string>
+    <string name="update_new_source">ダウンロード元: %1$s</string>
+    <string name="update_download_install">ダウンロードしてインストール</string>
+    <string name="update_later">後で</string>
+    <string name="update_latest">最新版です（%1$s）</string>
+    <string name="update_check_failed">更新の確認に失敗しました: %1$s</string>
+    <string name="update_downloading">ダウンロード中 — 完了後にインストールを確認します</string>
 </resources>

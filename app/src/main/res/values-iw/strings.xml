@@ -290,4 +290,12 @@
     <string name="feedback_ok">הדיווח נשלח — תודה!</string>
     <string name="feedback_fail">השליחה נכשלה: %1$s</string>
     <string name="rootflow_series_hint">עובד לכל סדרת S24 ‏(S9210 / S9260 / S9280): כל דגם עם אותה בנייה. בניות סין ובניות חו״ל אינן מתחלפות, אך הונג קונג/טייוואן ואירופה/ארה״ב כן.</string>
+    <string name="update_new_title">גרסה %1$s זמינה</string>
+    <string name="update_new_body">מותקנת %1$s (build %2$d), האחרונה %3$s (build %4$d).</string>
+    <string name="update_new_source">מקור ההורדה: %1$s</string>
+    <string name="update_download_install">הורד והתקן</string>
+    <string name="update_later">מאוחר יותר</string>
+    <string name="update_latest">כבר מעודכן (%1$s)</string>
+    <string name="update_check_failed">בדיקת העדכון נכשלה: %1$s</string>
+    <string name="update_downloading">מוריד — בסיום תתבקש להתקין</string>
 </resources>

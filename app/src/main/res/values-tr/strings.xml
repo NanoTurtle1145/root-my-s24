@@ -290,4 +290,12 @@
     <string name="feedback_ok">Bildirim gönderildi — teşekkürler!</string>
     <string name="feedback_fail">Gönderilemedi: %1$s</string>
     <string name="rootflow_series_hint">Tüm S24 serisi için geçerlidir (S9210 / S9260 / S9280): aynı derlemeye sahip her model. Çin ve yurt dışı derlemeler karışmaz, ancak Hong Kong/Tayvan ile Avrupa/ABD birbiriyle kullanılabilir.</string>
+    <string name="update_new_title">%1$s sürümü hazır</string>
+    <string name="update_new_body">Kurulu %1$s (build %2$d), en yeni %3$s (build %4$d).</string>
+    <string name="update_new_source">İndirme kaynağı: %1$s</string>
+    <string name="update_download_install">İndir ve kur</string>
+    <string name="update_later">Daha sonra</string>
+    <string name="update_latest">Zaten güncel (%1$s)</string>
+    <string name="update_check_failed">Güncelleme denetimi başarısız: %1$s</string>
+    <string name="update_downloading">İndiriliyor — bitince kurulum sorulacak</string>
 </resources>
