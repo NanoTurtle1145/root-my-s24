@@ -97,7 +97,8 @@
 
 ### 固件适配与定标
 
-- [docs/adaptation-guide.md](docs/adaptation-guide.md) —— 适配方法论（移植到新设备/固件先读这篇）
+- **[docs/adaptation-guide-full.md](docs/adaptation-guide-full.md) —— 完整适配指南（手把手，照着做即可；含判据与失败分类）⭐**
+- [docs/adaptation-guide.md](docs/adaptation-guide.md) —— 适配方法论（旧版，偏原理）
 - [docs/dze2-target-complete.md](docs/dze2-target-complete.md) —— 港版 DZE2 定标报告
 - [docs/dzg1-target-complete.md](docs/dzg1-target-complete.md) —— 国行 DZG1 定标报告
 - [docs/cza1-target-complete.md](docs/cza1-target-complete.md) —— 港版 CZA1 定标报告
