@@ -274,4 +274,24 @@
     <string name="log_error_unknown">未知错误（详情见日志）</string>
     <string name="log_error_internal">内部错误——请重试；若反复出现请把日志发给我们</string>
     <string name="log_device_info_failed">设备信息读取失败：%1$s（继续执行）</string>
+    <string name="settings_section_feedback">反馈</string>
+    <string name="settings_feedback">问题反馈</string>
+    <string name="settings_feedback_summary">把机型、固件与日志一起提交，便于定位</string>
+    <string name="feedback_title">问题反馈</string>
+    <string name="feedback_subtitle">选一下遇到的情况，下面的信息会一起提交</string>
+    <string name="feedback_kind_label">遇到的情况</string>
+    <string name="feedback_kind_never_root">一直失败，拿不到 root</string>
+    <string name="feedback_kind_stuck">卡在某一步或超时</string>
+    <string name="feedback_kind_after_root">root 成功但模块/功能不工作</string>
+    <string name="feedback_kind_ui">界面或翻译问题</string>
+    <string name="feedback_kind_other">其他</string>
+    <string name="feedback_note_label">补充说明</string>
+    <string name="feedback_note_hint">可留空</string>
+    <string name="feedback_info_label">会一起提交的信息</string>
+    <string name="feedback_attach_log">附带运行日志</string>
+    <string name="feedback_attach_log_summary">含机型、固件与 exploit 各阶段，不含个人数据</string>
+    <string name="feedback_submit">提交反馈</string>
+    <string name="feedback_ok">反馈已提交，感谢！</string>
+    <string name="feedback_fail">提交失败：%1$s</string>
+    <string name="rootflow_series_hint">S24 全系通用（S9210 / S9260 / S9280）：同一构建号即可，不分机型。国行与外版不可混用，港台与欧美外版之间可互串。</string>
 </resources>

@@ -212,6 +212,25 @@ private fun FirmwareSelectContent(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                 ) {
+                    // 兼容范围提示：载荷按构建定标、S24 全系通用，这条最容易被误解，
+                    // 所以放在列表最上面，看条目之前先看到它
+                    item {
+                        Surface(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                            shape = androidx.compose.foundation.shape.RoundedCornerShape(14.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainer,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.rootflow_series_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(12.dp),
+                            )
+                        }
+                    }
                     RootViewModel.Region.entries.forEach { region ->
                         val versions = allVersions.filter { it.region == region }
                         if (versions.isEmpty()) return@forEach

@@ -94,10 +94,10 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         CZA1_CHC("cve-2026-43499-cza1-chc", "One UI 8.0", "S24 全系 · 国行", "CHC CZA1", Region.CHINA, "ksud-selected"),
         // —— 港版/台版（实测稳定）—— 港台同构建号可共用载荷，台版直接选用港版条目
         // （港版 DZE2 kmalloc_caches=0x176c6f8 与国行 0x176cbb8 不同，不能用 DZF2 载荷）
-        CZA1("cve-2026-43499-cza1", "One UI 8.0", "S24 全系 · 外版", "CZA1", Region.HONGKONG_TAIWAN, "ksud-selected"),
-        DZE2("cve-2026-43499-dze2", "One UI 8.5", "S24 全系 · 外版", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
+        CZA1("cve-2026-43499-cza1", "One UI 8.0", "S24 全系 · 外版（港版/台版）", "CZA1", Region.HONGKONG_TAIWAN, "ksud-selected"),
+        DZE2("cve-2026-43499-dze2", "One UI 8.5", "S24 全系 · 外版（港版/台版）", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
         // 台湾 S24+（SM-S9260, e2q）DZG1：实测使用港版 DZE2 载荷成功（单设备记录，issue #3）
-        S9260TW_DZE2("cve-2026-43499-dze2", "One UI 8.5", "S24 全系 · 外版", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
+        S9260TW_DZE2("cve-2026-43499-dze2", "One UI 8.5", "S24 全系 · 外版（台版 S24+）", "DZE2–DZG1", Region.HONGKONG_TAIWAN, "ksud-selected"),
 
         // —— 以下为 RootMyGalaxy 移植的载荷（运行时 KASLR 定标，未经本 App 实测）——
         // 需在设置里启用「启用未经测试的载荷」后才在固件选择页显示。
@@ -1216,6 +1216,70 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val error = LogUploader.upload(app, buildLogText(), deviceBuildTag, outcome)
         if (error == null) app.getString(R.string.log_upload_ok)
         else app.getString(R.string.log_upload_fail, error)
+    }
+
+    /** 反馈里的「问题类型」。这几项覆盖了实际收到的问题，选项化后用户不用组织语言。 */
+    enum class FeedbackKind {
+        NEVER_ROOT,
+        STUCK,
+        AFTER_ROOT,
+        UI,
+        OTHER,
+    }
+
+    /**
+     * 反馈要带的运行环境信息。
+     *
+     * 都用本进程可直接读到的来源（Build / System 属性 / PowerManager），不依赖 shell：
+     * 用户往往正是在授权不可用时来反馈，这时候再去 getprop 只会让反馈本身失败。
+     */
+    fun feedbackInfo(): Map<String, String> {
+        val power =
+            runCatching {
+                    val pm = app.getSystemService(android.content.Context.POWER_SERVICE)
+                        as android.os.PowerManager
+                    if (pm.isPowerSaveMode) "on" else "off"
+                }
+                .getOrDefault("?")
+        return linkedMapOf(
+            "model" to Build.MODEL,
+            "device" to Build.DEVICE,
+            "android" to Build.VERSION.RELEASE,
+            "sdk" to Build.VERSION.SDK_INT.toString(),
+            "firmware" to deviceBuildTag,
+            "kernel" to (System.getProperty("os.version") ?: "?"),
+            "payload" to firmwareVersion.assetName,
+            "payloadScope" to "${firmwareVersion.device} / ${firmwareVersion.range}",
+            "authMethod" to authMethod.name,
+            "powerSave" to power,
+            "ksu" to if (_state.value.rooted) "loaded" else "not-loaded",
+        )
+    }
+
+    /**
+     * 提交反馈。
+     *
+     * @param includeLog 是否附带当前运行日志（由用户在界面上显式勾选）。
+     * @return 可直接展示的结果文案。
+     */
+    suspend fun submitFeedback(
+        kind: FeedbackKind,
+        note: String,
+        includeLog: Boolean,
+    ): String = withContext(Dispatchers.IO) {
+        if (!LogUploader.isConfigured(app)) {
+            return@withContext app.getString(R.string.log_upload_not_configured)
+        }
+        val error =
+            LogUploader.sendFeedback(
+                context = app,
+                kind = kind.name,
+                note = note.trim(),
+                info = feedbackInfo(),
+                log = if (includeLog) buildLogText() else null,
+            )
+        if (error == null) app.getString(R.string.feedback_ok)
+        else app.getString(R.string.feedback_fail, error)
     }
 
     /**

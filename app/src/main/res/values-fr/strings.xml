@@ -270,4 +270,24 @@
     <string name="log_error_unknown">Erreur inconnue (détails dans le journal)</string>
     <string name="log_error_internal">Erreur interne — réessayez ; si cela se répète, envoyez le journal</string>
     <string name="log_device_info_failed">Infos appareil illisibles : %1$s (on continue)</string>
+    <string name="settings_section_feedback">Retour</string>
+    <string name="settings_feedback">Signaler un problème</string>
+    <string name="settings_feedback_summary">Envoie modèle, firmware et journal pour faciliter le diagnostic</string>
+    <string name="feedback_title">Signaler un problème</string>
+    <string name="feedback_subtitle">Choisissez ce qui s\'est passé - les infos ci-dessous suivent</string>
+    <string name="feedback_kind_label">Ce qui s\'est passé</string>
+    <string name="feedback_kind_never_root">Le root n\'aboutit jamais</string>
+    <string name="feedback_kind_stuck">Ça bloque ou expire à une étape</string>
+    <string name="feedback_kind_after_root">Root obtenu, mais modules/fonctions KO</string>
+    <string name="feedback_kind_ui">Interface ou traduction</string>
+    <string name="feedback_kind_other">Autre chose</string>
+    <string name="feedback_note_label">Précisions</string>
+    <string name="feedback_note_hint">Facultatif</string>
+    <string name="feedback_info_label">Envoyé avec le rapport</string>
+    <string name="feedback_attach_log">Joindre le journal</string>
+    <string name="feedback_attach_log_summary">Modèle, firmware et étapes de l\'exploit - aucune donnée personnelle</string>
+    <string name="feedback_submit">Envoyer</string>
+    <string name="feedback_ok">Rapport envoyé - merci !</string>
+    <string name="feedback_fail">Échec de l\'envoi : %1$s</string>
+    <string name="rootflow_series_hint">Valable pour toute la série S24 (S9210 / S9260 / S9280) : n\'importe quel modèle au même build. Les builds chinois et internationaux ne se mélangent pas, mais Hong Kong/Taïwan et Europe/USA sont interchangeables.</string>
 </resources>

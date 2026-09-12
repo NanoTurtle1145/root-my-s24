@@ -270,4 +270,24 @@
     <string name="log_error_unknown">Kesalahan tidak diketahui (detail di log)</string>
     <string name="log_error_internal">Kesalahan internal — coba lagi; bila berulang, kirim lognya</string>
     <string name="log_device_info_failed">Gagal membaca info perangkat: %1$s (lanjut)</string>
+    <string name="settings_section_feedback">Masukan</string>
+    <string name="settings_feedback">Laporkan masalah</string>
+    <string name="settings_feedback_summary">Mengirim model, firmware, dan log sekaligus agar mudah dilacak</string>
+    <string name="feedback_title">Laporkan masalah</string>
+    <string name="feedback_subtitle">Pilih yang terjadi — info di bawah ikut terkirim</string>
+    <string name="feedback_kind_label">Yang terjadi</string>
+    <string name="feedback_kind_never_root">Tidak pernah berhasil root</string>
+    <string name="feedback_kind_stuck">Macet atau waktu habis di suatu langkah</string>
+    <string name="feedback_kind_after_root">Root berhasil, modul tidak jalan</string>
+    <string name="feedback_kind_ui">Antarmuka atau terjemahan</string>
+    <string name="feedback_kind_other">Lainnya</string>
+    <string name="feedback_note_label">Tambahan</string>
+    <string name="feedback_note_hint">Opsional</string>
+    <string name="feedback_info_label">Ikut terkirim</string>
+    <string name="feedback_attach_log">Sertakan log</string>
+    <string name="feedback_attach_log_summary">Model, firmware, dan tahap exploit — tanpa data pribadi</string>
+    <string name="feedback_submit">Kirim laporan</string>
+    <string name="feedback_ok">Laporan terkirim — terima kasih!</string>
+    <string name="feedback_fail">Gagal mengirim: %1$s</string>
+    <string name="rootflow_series_hint">Berlaku untuk seluruh seri S24 (S9210 / S9260 / S9280): model apa pun dengan build yang sama. Build China dan luar negeri tidak bisa dicampur, tetapi Hong Kong/Taiwan dan Eropa/AS bisa saling dipakai.</string>
 </resources>

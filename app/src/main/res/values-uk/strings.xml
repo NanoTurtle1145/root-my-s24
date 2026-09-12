@@ -270,4 +270,24 @@
     <string name="log_error_unknown">Невідома помилка (подробиці в журналі)</string>
     <string name="log_error_internal">Внутрішня помилка — спробуйте ще раз; якщо повторюється, надішліть журнал</string>
     <string name="log_device_info_failed">Не вдалося прочитати дані пристрою: %1$s (продовжуємо)</string>
+    <string name="settings_section_feedback">Відгук</string>
+    <string name="settings_feedback">Повідомити про проблему</string>
+    <string name="settings_feedback_summary">Надішле модель, прошивку та журнал разом — так легше знайти причину</string>
+    <string name="feedback_title">Повідомити про проблему</string>
+    <string name="feedback_subtitle">Виберіть, що сталося — дані нижче підуть разом зі звітом</string>
+    <string name="feedback_kind_label">Що сталося</string>
+    <string name="feedback_kind_never_root">Root так і не виходить</string>
+    <string name="feedback_kind_stuck">Зависає або таймаут</string>
+    <string name="feedback_kind_after_root">Root є, модулі не працюють</string>
+    <string name="feedback_kind_ui">Інтерфейс або переклад</string>
+    <string name="feedback_kind_other">Інше</string>
+    <string name="feedback_note_label">Доповнення</string>
+    <string name="feedback_note_hint">Необов\'язково</string>
+    <string name="feedback_info_label">Піде разом зі звітом</string>
+    <string name="feedback_attach_log">Додати журнал</string>
+    <string name="feedback_attach_log_summary">Модель, прошивка та етапи експлуатації — без особистих даних</string>
+    <string name="feedback_submit">Надіслати</string>
+    <string name="feedback_ok">Звіт надіслано — дякуємо!</string>
+    <string name="feedback_fail">Не вдалося надіслати: %1$s</string>
+    <string name="rootflow_series_hint">Підходить для всієї серії S24 (S9210 / S9260 / S9280): будь-яка модель з тією ж збіркою. Китайські та міжнародні збірки не змішуються, а Гонконг/Тайвань і Європа/США взаємозамінні.</string>
 </resources>

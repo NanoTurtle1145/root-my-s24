@@ -270,4 +270,24 @@
     <string name="log_error_unknown">알 수 없는 오류(자세한 내용은 로그 참조)</string>
     <string name="log_error_internal">내부 오류입니다. 다시 시도하세요. 반복되면 로그를 보내주세요</string>
     <string name="log_device_info_failed">기기 정보를 읽지 못했습니다: %1$s (계속 진행)</string>
+    <string name="settings_section_feedback">피드백</string>
+    <string name="settings_feedback">문제 신고</string>
+    <string name="settings_feedback_summary">기기·펌웨어·로그를 함께 보내 원인 파악이 빨라집니다</string>
+    <string name="feedback_title">문제 신고</string>
+    <string name="feedback_subtitle">상황을 골라 주세요. 아래 정보가 함께 전송됩니다</string>
+    <string name="feedback_kind_label">무슨 일이 있었나요</string>
+    <string name="feedback_kind_never_root">계속 실패해서 root가 안 됨</string>
+    <string name="feedback_kind_stuck">특정 단계에서 멈추거나 시간 초과</string>
+    <string name="feedback_kind_after_root">root는 됐지만 모듈이 동작 안 함</string>
+    <string name="feedback_kind_ui">화면 또는 번역 문제</string>
+    <string name="feedback_kind_other">기타</string>
+    <string name="feedback_note_label">추가 설명</string>
+    <string name="feedback_note_hint">선택 사항</string>
+    <string name="feedback_info_label">함께 전송되는 정보</string>
+    <string name="feedback_attach_log">실행 로그 첨부</string>
+    <string name="feedback_attach_log_summary">기기, 펌웨어, exploit 단계 포함 — 개인 정보 없음</string>
+    <string name="feedback_submit">신고 보내기</string>
+    <string name="feedback_ok">신고를 보냈습니다. 감사합니다!</string>
+    <string name="feedback_fail">전송 실패: %1$s</string>
+    <string name="rootflow_series_hint">S24 시리즈 전체에서 사용할 수 있습니다(S9210 / S9260 / S9280). 같은 빌드면 기종은 상관없습니다. 중국판과 해외판은 호환되지 않지만, 홍콩/대만과 유럽/미국 해외판끼리는 서로 쓸 수 있습니다.</string>
 </resources>

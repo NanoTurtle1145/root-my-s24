@@ -270,4 +270,24 @@
     <string name="log_error_unknown">שגיאה לא ידועה (פרטים ביומן)</string>
     <string name="log_error_internal">שגיאה פנימית — נסו שוב; אם זה חוזר, שלחו את היומן</string>
     <string name="log_device_info_failed">לא ניתן לקרוא פרטי מכשיר: %1$s (ממשיך)</string>
+    <string name="settings_section_feedback">משוב</string>
+    <string name="settings_feedback">דיווח על בעיה</string>
+    <string name="settings_feedback_summary">שולח דגם, קושחה ויומן יחד כדי לאתר את הבעיה</string>
+    <string name="feedback_title">דיווח על בעיה</string>
+    <string name="feedback_subtitle">בחרו מה קרה — הפרטים למטה יישלחו איתם</string>
+    <string name="feedback_kind_label">מה קרה</string>
+    <string name="feedback_kind_never_root">לא מצליח להגיע ל-root</string>
+    <string name="feedback_kind_stuck">נתקע או פג זמן בכל שלב</string>
+    <string name="feedback_kind_after_root">ה-root עבד אבל מודולים לא</string>
+    <string name="feedback_kind_ui">בעיית ממשק או תרגום</string>
+    <string name="feedback_kind_other">משהו אחר</string>
+    <string name="feedback_note_label">הערות</string>
+    <string name="feedback_note_hint">אופציונלי</string>
+    <string name="feedback_info_label">נשלח עם הדיווח</string>
+    <string name="feedback_attach_log">צרף יומן הרצה</string>
+    <string name="feedback_attach_log_summary">דגם, קושחה ושלבי exploit — בלי נתונים אישיים</string>
+    <string name="feedback_submit">שלח דיווח</string>
+    <string name="feedback_ok">הדיווח נשלח — תודה!</string>
+    <string name="feedback_fail">השליחה נכשלה: %1$s</string>
+    <string name="rootflow_series_hint">עובד לכל סדרת S24 ‏(S9210 / S9260 / S9280): כל דגם עם אותה בנייה. בניות סין ובניות חו״ל אינן מתחלפות, אך הונג קונג/טייוואן ואירופה/ארה״ב כן.</string>
 </resources>

@@ -270,4 +270,24 @@
     <string name="log_error_unknown">Lỗi không xác định (xem nhật ký để biết chi tiết)</string>
     <string name="log_error_internal">Lỗi nội bộ — hãy thử lại; nếu lặp lại, gửi nhật ký cho chúng tôi</string>
     <string name="log_device_info_failed">Không đọc được thông tin thiết bị: %1$s (tiếp tục)</string>
+    <string name="settings_section_feedback">Phản hồi</string>
+    <string name="settings_feedback">Báo lỗi</string>
+    <string name="settings_feedback_summary">Gửi kèm model, firmware và nhật ký để dễ xác định nguyên nhân</string>
+    <string name="feedback_title">Báo lỗi</string>
+    <string name="feedback_subtitle">Chọn tình huống gặp phải — thông tin bên dưới sẽ gửi kèm</string>
+    <string name="feedback_kind_label">Tình huống</string>
+    <string name="feedback_kind_never_root">Mãi không lấy được root</string>
+    <string name="feedback_kind_stuck">Bị treo hoặc quá thời gian ở một bước</string>
+    <string name="feedback_kind_after_root">Có root nhưng module không chạy</string>
+    <string name="feedback_kind_ui">Giao diện hoặc bản dịch</string>
+    <string name="feedback_kind_other">Khác</string>
+    <string name="feedback_note_label">Bổ sung</string>
+    <string name="feedback_note_hint">Không bắt buộc</string>
+    <string name="feedback_info_label">Sẽ gửi kèm báo cáo</string>
+    <string name="feedback_attach_log">Đính kèm nhật ký</string>
+    <string name="feedback_attach_log_summary">Model, firmware và các bước exploit — không có dữ liệu cá nhân</string>
+    <string name="feedback_submit">Gửi báo cáo</string>
+    <string name="feedback_ok">Đã gửi báo cáo — cảm ơn!</string>
+    <string name="feedback_fail">Gửi thất bại: %1$s</string>
+    <string name="rootflow_series_hint">Dùng được cho cả dòng S24 (S9210 / S9260 / S9280): máy nào cùng bản dựng đều được. Bản Trung Quốc và bản quốc tế không dùng chung, nhưng Hồng Kông/Đài Loan và châu Âu/Mỹ thì dùng chung được.</string>
 </resources>

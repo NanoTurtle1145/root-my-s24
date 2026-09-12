@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.rounded.Notes
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.CloudUpload
+import androidx.compose.material.icons.rounded.Feedback
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Code
@@ -79,7 +80,7 @@ private val cardRowColors
  * 纯静态 UI，偏好直接读写 SharedPreferences("settings")，无需 ViewModel。
  */
 @Composable
-fun SettingsScreen(onOpenUrl: (String) -> Unit) {
+fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {}) {
     val context = LocalContext.current
     val prefs =
         remember(context) {
@@ -297,6 +298,20 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit) {
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_project_home)) }
                 }
+            }
+        }
+
+        item {
+            SectionLabel(stringResource(R.string.settings_section_feedback))
+            GroupedRow(index = 0, count = 1) {
+                ListItem(
+                    modifier = Modifier.fillMaxWidth().clickable { onOpenFeedback() },
+                    leadingContent = {
+                        Icon(Icons.Rounded.Feedback, contentDescription = null)
+                    },
+                    supportingContent = { Text(stringResource(R.string.settings_feedback_summary)) },
+                    colors = cardRowColors,
+                ) { Text(stringResource(R.string.settings_feedback)) }
             }
         }
 

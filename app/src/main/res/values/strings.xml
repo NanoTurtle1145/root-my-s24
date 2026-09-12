@@ -311,4 +311,24 @@
     <string name="log_error_unknown">Unknown error (see the log for details)</string>
     <string name="log_error_internal">Internal error - please try again; if it keeps happening, share the log</string>
     <string name="log_device_info_failed">Could not read device info: %1$s (continuing)</string>
+    <string name="settings_section_feedback">Feedback</string>
+    <string name="settings_feedback">Report a problem</string>
+    <string name="settings_feedback_summary">Sends your model, firmware and log together so it can be pinpointed</string>
+    <string name="feedback_title">Report a problem</string>
+    <string name="feedback_subtitle">Pick what happened - the details below go with it</string>
+    <string name="feedback_kind_label">What happened</string>
+    <string name="feedback_kind_never_root">It never reaches root</string>
+    <string name="feedback_kind_stuck">It hangs or times out at some step</string>
+    <string name="feedback_kind_after_root">Root worked, but modules or features do not</string>
+    <string name="feedback_kind_ui">Interface or translation problem</string>
+    <string name="feedback_kind_other">Something else</string>
+    <string name="feedback_note_label">Anything to add</string>
+    <string name="feedback_note_hint">Optional</string>
+    <string name="feedback_info_label">Sent along with your report</string>
+    <string name="feedback_attach_log">Attach the run log</string>
+    <string name="feedback_attach_log_summary">Model, firmware and exploit stages - no personal data</string>
+    <string name="feedback_submit">Send report</string>
+    <string name="feedback_ok">Report sent - thank you!</string>
+    <string name="feedback_fail">Could not send: %1$s</string>
+    <string name="rootflow_series_hint">Works across the whole S24 series (S9210 / S9260 / S9280): any model with the same build. China and overseas builds are not interchangeable, but Hong Kong/Taiwan and Europe/US builds can be used interchangeably.</string>
 </resources>

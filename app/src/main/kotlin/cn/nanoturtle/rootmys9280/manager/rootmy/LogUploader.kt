@@ -108,6 +108,34 @@ object LogUploader {
     }
 
     /**
+     * 提交问题反馈。
+     *
+     * 与日志上报走同一个端点、同一套令牌与限流，但落到独立的 feedback 表：
+     * 反馈是用户主动填的，带着「问题类型 + 结构化环境信息」，比纯日志更好定位。
+     *
+     * @param info 结构化环境信息（机型/固件/内核/授权方式/省电状态…），键值对直接带给服务端。
+     * @param log 附带的运行日志；用户没勾选时传 null。
+     * @return 成功返回 null，失败返回可直接展示的原因。
+     */
+    suspend fun sendFeedback(
+        context: Context,
+        kind: String,
+        note: String,
+        info: Map<String, String>,
+        log: String?,
+    ): String? {
+        val url = endpoint(context)
+        if (url.isBlank()) return "not-configured"
+        val payload = basePayload(context)
+            .put("action", "feedback")
+            .put("kind", kind)
+            .put("note", note)
+            .put("info", JSONObject(info as Map<*, *>))
+        if (log != null) payload.put("log", log)
+        return post(url, payload.toString())
+    }
+
+    /**
      * 连通性自检：只让服务端确认「能连上数据库」，不写入任何日志。
      * 供设置里的调试项使用。
      *

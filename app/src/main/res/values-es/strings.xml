@@ -270,4 +270,24 @@
     <string name="log_error_unknown">Error desconocido (detalles en el registro)</string>
     <string name="log_error_internal">Error interno: vuelve a intentarlo; si persiste, comparte el registro</string>
     <string name="log_device_info_failed">No se pudo leer la info del dispositivo: %1$s (continuando)</string>
+    <string name="settings_section_feedback">Comentarios</string>
+    <string name="settings_feedback">Informar de un problema</string>
+    <string name="settings_feedback_summary">Envía modelo, firmware y registro juntos para poder localizarlo</string>
+    <string name="feedback_title">Informar de un problema</string>
+    <string name="feedback_subtitle">Elige qué pasó: los datos de abajo se envían contigo</string>
+    <string name="feedback_kind_label">Qué pasó</string>
+    <string name="feedback_kind_never_root">Nunca llega a root</string>
+    <string name="feedback_kind_stuck">Se queda colgado o agota el tiempo</string>
+    <string name="feedback_kind_after_root">Root sí, pero módulos o funciones no</string>
+    <string name="feedback_kind_ui">Interfaz o traducción</string>
+    <string name="feedback_kind_other">Otra cosa</string>
+    <string name="feedback_note_label">Añadir algo</string>
+    <string name="feedback_note_hint">Opcional</string>
+    <string name="feedback_info_label">Se envía con tu informe</string>
+    <string name="feedback_attach_log">Adjuntar el registro</string>
+    <string name="feedback_attach_log_summary">Modelo, firmware y fases del exploit, sin datos personales</string>
+    <string name="feedback_submit">Enviar informe</string>
+    <string name="feedback_ok">Informe enviado. ¡Gracias!</string>
+    <string name="feedback_fail">No se pudo enviar: %1$s</string>
+    <string name="rootflow_series_hint">Válido para toda la serie S24 (S9210 / S9260 / S9280): cualquier modelo con la misma compilación. Las compilaciones de China y las internacionales no se mezclan, pero Hong Kong/Taiwán y Europa/EE. UU. sí son intercambiables.</string>
 </resources>

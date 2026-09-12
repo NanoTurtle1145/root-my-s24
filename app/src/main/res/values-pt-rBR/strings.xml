@@ -270,4 +270,24 @@
     <string name="log_error_unknown">Erro desconhecido (detalhes no log)</string>
     <string name="log_error_internal">Erro interno — tente de novo; se persistir, envie o log</string>
     <string name="log_device_info_failed">Falha ao ler informações do aparelho: %1$s (continuando)</string>
+    <string name="settings_section_feedback">Feedback</string>
+    <string name="settings_feedback">Relatar um problema</string>
+    <string name="settings_feedback_summary">Envia modelo, firmware e log juntos para facilitar o diagnóstico</string>
+    <string name="feedback_title">Relatar um problema</string>
+    <string name="feedback_subtitle">Escolha o que aconteceu - os dados abaixo vão junto</string>
+    <string name="feedback_kind_label">O que aconteceu</string>
+    <string name="feedback_kind_never_root">Nunca chega ao root</string>
+    <string name="feedback_kind_stuck">Trava ou dá timeout em alguma etapa</string>
+    <string name="feedback_kind_after_root">Root ok, mas módulos/funções não</string>
+    <string name="feedback_kind_ui">Interface ou tradução</string>
+    <string name="feedback_kind_other">Outra coisa</string>
+    <string name="feedback_note_label">Complemento</string>
+    <string name="feedback_note_hint">Opcional</string>
+    <string name="feedback_info_label">Enviado com o relato</string>
+    <string name="feedback_attach_log">Anexar o log</string>
+    <string name="feedback_attach_log_summary">Modelo, firmware e etapas do exploit, sem dados pessoais</string>
+    <string name="feedback_submit">Enviar relato</string>
+    <string name="feedback_ok">Relato enviado - obrigado!</string>
+    <string name="feedback_fail">Falha ao enviar: %1$s</string>
+    <string name="rootflow_series_hint">Vale para toda a linha S24 (S9210 / S9260 / S9280): qualquer modelo com a mesma compilação. Compilações chinesas e internacionais não se misturam, mas Hong Kong/Taiwan e Europa/EUA são intercambiáveis.</string>
 </resources>

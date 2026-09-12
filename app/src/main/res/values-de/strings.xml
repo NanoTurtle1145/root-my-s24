@@ -270,4 +270,24 @@
     <string name="log_error_unknown">Unbekannter Fehler (Details im Protokoll)</string>
     <string name="log_error_internal">Interner Fehler – bitte erneut versuchen; bei Wiederholung bitte das Protokoll senden</string>
     <string name="log_device_info_failed">Geräteinfo nicht lesbar: %1$s (fahre fort)</string>
+    <string name="settings_section_feedback">Feedback</string>
+    <string name="settings_feedback">Problem melden</string>
+    <string name="settings_feedback_summary">Sendet Modell, Firmware und Protokoll mit, damit es sich eingrenzen lässt</string>
+    <string name="feedback_title">Problem melden</string>
+    <string name="feedback_subtitle">Wähle aus, was passiert ist - die Angaben unten gehen mit</string>
+    <string name="feedback_kind_label">Was ist passiert</string>
+    <string name="feedback_kind_never_root">Es kommt nie zu root</string>
+    <string name="feedback_kind_stuck">Es hängt oder läuft in einen Timeout</string>
+    <string name="feedback_kind_after_root">Root lief, aber Module/Funktionen nicht</string>
+    <string name="feedback_kind_ui">Oberfläche oder Übersetzung</string>
+    <string name="feedback_kind_other">Etwas anderes</string>
+    <string name="feedback_note_label">Ergänzungen</string>
+    <string name="feedback_note_hint">Optional</string>
+    <string name="feedback_info_label">Wird mitgesendet</string>
+    <string name="feedback_attach_log">Protokoll anhängen</string>
+    <string name="feedback_attach_log_summary">Modell, Firmware und Exploit-Phasen - keine persönlichen Daten</string>
+    <string name="feedback_submit">Meldung senden</string>
+    <string name="feedback_ok">Meldung gesendet - danke!</string>
+    <string name="feedback_fail">Senden fehlgeschlagen: %1$s</string>
+    <string name="rootflow_series_hint">Gilt für die gesamte S24-Reihe (S9210 / S9260 / S9280): jedes Modell mit gleichem Build. China- und Auslands-Builds sind nicht austauschbar, Hongkong/Taiwan und Europa/USA untereinander schon.</string>
 </resources>

@@ -150,6 +150,7 @@ private fun EntryProviderScope<NavKey>.registerRoutes(navigator: Navigator) {
     entry<TopLevelRoute.Settings> {
         SettingsScreen(
             onOpenUrl = { url -> navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Web(url)) },
+            onOpenFeedback = { navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Feedback) },
         )
     }
     entry<TopLevelRoute.About> {
@@ -157,6 +158,11 @@ private fun EntryProviderScope<NavKey>.registerRoutes(navigator: Navigator) {
             onOpenUrl = { url -> navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Web(url)) },
             onOpenDonate = { navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Donate) },
             onOpenWiki = { navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Wiki) },
+        )
+    }
+    entry<cn.nanoturtle.rootmys9280.manager.ui.navigation.Feedback> {
+        cn.nanoturtle.rootmys9280.manager.ui.screens.feedback.FeedbackScreen(
+            onNavigateBack = { navigator.back() },
         )
     }
     entry<cn.nanoturtle.rootmys9280.manager.ui.navigation.Wiki> {

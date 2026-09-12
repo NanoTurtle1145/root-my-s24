@@ -273,4 +273,24 @@
     <string name="log_error_unknown">خطأ غير معروف (التفاصيل في السجل)</string>
     <string name="log_error_internal">خطأ داخلي — أعد المحاولة؛ وإن تكرر فأرسل السجل</string>
     <string name="log_device_info_failed">تعذّر قراءة معلومات الجهاز: %1$s (المتابعة)</string>
+    <string name="settings_section_feedback">ملاحظات</string>
+    <string name="settings_feedback">الإبلاغ عن مشكلة</string>
+    <string name="settings_feedback_summary">يرسل الطراز والبرنامج الثابت والسجل معًا لتسهيل تحديد المشكلة</string>
+    <string name="feedback_title">الإبلاغ عن مشكلة</string>
+    <string name="feedback_subtitle">اختر ما حدث — وستُرسل المعلومات أدناه معه</string>
+    <string name="feedback_kind_label">ما الذي حدث</string>
+    <string name="feedback_kind_never_root">لا يصل إلى الروت أبدًا</string>
+    <string name="feedback_kind_stuck">يتوقف أو تنتهي المهلة في خطوة ما</string>
+    <string name="feedback_kind_after_root">نجح الروت لكن الوحدات لا تعمل</string>
+    <string name="feedback_kind_ui">مشكلة في الواجهة أو الترجمة</string>
+    <string name="feedback_kind_other">شيء آخر</string>
+    <string name="feedback_note_label">إضافات</string>
+    <string name="feedback_note_hint">اختياري</string>
+    <string name="feedback_info_label">تُرسل مع البلاغ</string>
+    <string name="feedback_attach_log">إرفاق سجل التشغيل</string>
+    <string name="feedback_attach_log_summary">الطراز والبرنامج الثابت ومراحل الاستغلال — دون بيانات شخصية</string>
+    <string name="feedback_submit">إرسال البلاغ</string>
+    <string name="feedback_ok">تم إرسال البلاغ — شكرًا لك!</string>
+    <string name="feedback_fail">فشل الإرسال: %1$s</string>
+    <string name="rootflow_series_hint">يعمل مع كامل سلسلة S24 ‏(S9210 / S9260 / S9280): أي طراز بنفس البناء. بناءات الصين والبناءات الخارجية لا تُخلط، لكن هونغ كونغ/تايوان وأوروبا/أمريكا يمكن تبادلها.</string>
 </resources>

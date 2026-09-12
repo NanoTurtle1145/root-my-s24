@@ -270,4 +270,24 @@
     <string name="log_error_unknown">Errore sconosciuto (dettagli nel log)</string>
     <string name="log_error_internal">Errore interno: riprova; se persiste, invia il log</string>
     <string name="log_device_info_failed">Impossibile leggere le info del dispositivo: %1$s (continuo)</string>
+    <string name="settings_section_feedback">Feedback</string>
+    <string name="settings_feedback">Segnala un problema</string>
+    <string name="settings_feedback_summary">Invia modello, firmware e log insieme per facilitare la diagnosi</string>
+    <string name="feedback_title">Segnala un problema</string>
+    <string name="feedback_subtitle">Scegli cosa è successo: i dati sotto vanno con la segnalazione</string>
+    <string name="feedback_kind_label">Cosa è successo</string>
+    <string name="feedback_kind_never_root">Non arriva mai al root</string>
+    <string name="feedback_kind_stuck">Si blocca o va in timeout</string>
+    <string name="feedback_kind_after_root">Root ok, ma moduli o funzioni no</string>
+    <string name="feedback_kind_ui">Interfaccia o traduzione</string>
+    <string name="feedback_kind_other">Altro</string>
+    <string name="feedback_note_label">Aggiunte</string>
+    <string name="feedback_note_hint">Facoltativo</string>
+    <string name="feedback_info_label">Inviato con la segnalazione</string>
+    <string name="feedback_attach_log">Allega il log</string>
+    <string name="feedback_attach_log_summary">Modello, firmware e fasi dell\'exploit, nessun dato personale</string>
+    <string name="feedback_submit">Invia segnalazione</string>
+    <string name="feedback_ok">Segnalazione inviata, grazie!</string>
+    <string name="feedback_fail">Invio non riuscito: %1$s</string>
+    <string name="rootflow_series_hint">Valido per tutta la serie S24 (S9210 / S9260 / S9280): qualsiasi modello con la stessa build. Le build cinesi e quelle internazionali non si mescolano, ma Hong Kong/Taiwan ed Europa/USA sono intercambiabili.</string>
 </resources>

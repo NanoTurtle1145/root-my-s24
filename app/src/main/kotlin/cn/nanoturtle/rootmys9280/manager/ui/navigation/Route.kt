@@ -54,6 +54,9 @@ sealed interface TopLevelRoute : Route {
 /** 必读指南：临时 root 的原理与变砖警告，「关于」页可反复进入。 */
 @Serializable data object Wiki : Route
 
+/** 问题反馈：选项化收集关键信息，便于定位。 */
+@Serializable data object Feedback : Route
+
 /**
  * Label and icon for a bar item. Titles come from resources; no hard-coded English.
  *

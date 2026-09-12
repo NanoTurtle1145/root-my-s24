@@ -270,4 +270,24 @@
     <string name="log_error_unknown">Nieznany błąd (szczegóły w dzienniku)</string>
     <string name="log_error_internal">Błąd wewnętrzny — spróbuj ponownie; jeśli się powtarza, prześlij dziennik</string>
     <string name="log_device_info_failed">Nie udało się odczytać informacji o urządzeniu: %1$s (kontynuuję)</string>
+    <string name="settings_section_feedback">Opinie</string>
+    <string name="settings_feedback">Zgłoś problem</string>
+    <string name="settings_feedback_summary">Wyśle model, firmware i dziennik razem — łatwiej to zlokalizować</string>
+    <string name="feedback_title">Zgłoś problem</string>
+    <string name="feedback_subtitle">Wybierz, co się stało — dane poniżej idą razem z zgłoszeniem</string>
+    <string name="feedback_kind_label">Co się stało</string>
+    <string name="feedback_kind_never_root">Nigdy nie udaje się uzyskać roota</string>
+    <string name="feedback_kind_stuck">Zawiesza się lub przekracza czas</string>
+    <string name="feedback_kind_after_root">Root jest, moduły nie działają</string>
+    <string name="feedback_kind_ui">Interfejs lub tłumaczenie</string>
+    <string name="feedback_kind_other">Coś innego</string>
+    <string name="feedback_note_label">Uzupełnienie</string>
+    <string name="feedback_note_hint">Opcjonalne</string>
+    <string name="feedback_info_label">Wysyłane ze zgłoszeniem</string>
+    <string name="feedback_attach_log">Dołącz dziennik</string>
+    <string name="feedback_attach_log_summary">Model, firmware i etapy exploita — bez danych osobowych</string>
+    <string name="feedback_submit">Wyślij zgłoszenie</string>
+    <string name="feedback_ok">Zgłoszenie wysłane — dziękujemy!</string>
+    <string name="feedback_fail">Nie udało się wysłać: %1$s</string>
+    <string name="rootflow_series_hint">Działa dla całej serii S24 (S9210 / S9260 / S9280): dowolny model z tą samą kompilacją. Kompilacje chińskie i międzynarodowe się nie mieszają, ale Hongkong/Tajwan i Europa/USA są wymienne.</string>
 </resources>

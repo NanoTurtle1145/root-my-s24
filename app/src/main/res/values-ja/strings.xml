@@ -270,4 +270,24 @@
     <string name="log_error_unknown">不明なエラー（詳細はログ参照）</string>
     <string name="log_error_internal">内部エラーです。再試行してください。繰り返す場合はログを送ってください</string>
     <string name="log_device_info_failed">端末情報を取得できません: %1$s（続行します）</string>
+    <string name="settings_section_feedback">フィードバック</string>
+    <string name="settings_feedback">問題を報告</string>
+    <string name="settings_feedback_summary">機種・ファームウェア・ログをまとめて送るので特定が早くなります</string>
+    <string name="feedback_title">問題を報告</string>
+    <string name="feedback_subtitle">状況を選んでください。下の情報も一緒に送られます</string>
+    <string name="feedback_kind_label">起きていること</string>
+    <string name="feedback_kind_never_root">何度やっても root が取れない</string>
+    <string name="feedback_kind_stuck">途中で止まる／タイムアウトする</string>
+    <string name="feedback_kind_after_root">root は成功したがモジュールが動かない</string>
+    <string name="feedback_kind_ui">表示や翻訳の問題</string>
+    <string name="feedback_kind_other">その他</string>
+    <string name="feedback_note_label">補足</string>
+    <string name="feedback_note_hint">任意</string>
+    <string name="feedback_info_label">一緒に送信される情報</string>
+    <string name="feedback_attach_log">実行ログを添付</string>
+    <string name="feedback_attach_log_summary">機種・ファームウェア・exploit の各段階を含みます。個人情報は含みません</string>
+    <string name="feedback_submit">報告を送信</string>
+    <string name="feedback_ok">報告を送信しました。ありがとうございます！</string>
+    <string name="feedback_fail">送信に失敗しました: %1$s</string>
+    <string name="rootflow_series_hint">S24 シリーズ全体で使えます（S9210 / S9260 / S9280）。同じビルドなら機種は問いません。中国版と海外版は互換しませんが、香港/台湾と欧米の海外版同士は相互利用できます。</string>
 </resources>
