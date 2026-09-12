@@ -33,6 +33,10 @@
 </p>
 
 <p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=outcome" alt="运行结果构成" width="100%">
+</p>
+
+<p align="center">
   <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=firmware" alt="固件构建分布" width="100%">
 </p>
 
