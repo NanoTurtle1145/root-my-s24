@@ -128,6 +128,8 @@
 - exploit 概率性成功：失败多试几次，必要时重启手机
 - 运行期间建议熄屏（降低内核竞态导致的崩溃概率）
 - 每次重启手机后需要重新运行一次「开始 Root」以加载 KernelSU 驱动
+- **跑完就当机器处于脆弱状态**：exploit 会故意留一个进程占住已回收的内核页（`stability keeper`），内核处于不稳定态。不管成功失败，拿到 root 后要做的事赶紧做，然后**立刻重启**，不要在这个状态下正常使用手机——解锁屏幕会唤醒显示/GPU 一大串 work，撞上这堆残留结构就会卡死重启。
+- **跑之前先重启**：上一次失败后不重启就接着跑，往往只会一直失败（残留状态未清理）。
 
 ## 构建
 
@@ -135,6 +137,19 @@
 ./gradlew :app:assembleDebug    # debug APK
 ./gradlew :app:assembleRelease  # release APK（需自行配置签名）
 ```
+
+版本号仍由 git 推导（`versionCode` = 提交数，`versionName` = 最近的 tag），但**预发布渠道**会给
+versionName 追加一个后缀，方便把 beta 包与正式发布区分开（关于页/设置页显示、APK manifest、上传的运行日志里的 appVersion 都会带上）：
+
+```sh
+./gradlew :app:assembleRelease -Prms24Channel=beta1    # → 3.3.0-beta1 (138)
+./gradlew :app:assembleRelease -Prms24Channel=beta2    # → 3.3.0-beta2 (138)
+./gradlew :app:assembleRelease -Prms24Channel=stable   # 正式版 → 3.3.0 (138)
+```
+
+每个 beta 递增编号，产物按 `RootMyS24-v{版本}-{渠道}-build{versionCode}.apk` 命名（如
+`RootMyS24-v3.3.0-beta2-build138.apk`），这样一眼能看出某台机器装的是哪一版。
+渠道后缀**不改变版本号本身**（versionCode 与 tag 推导出的基础版本都不动）。
 
 载荷（exploit / root helper / ksud）已内置在 `app/src/main/assets/`。载荷构建链属开发者职责，不在本仓库范围。
 

@@ -92,6 +92,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // —— 国行 S24 Ultra One UI 8.0（kernel 6.1.128，构建号 2755301）——
         // 与港版 CZA1 同内核版本但不同构建号，代码段符号相同，数据段偏移 +0x10000
         CZA1_CHC("cve-2026-43499-cza1-chc", "One UI 8.0", "S24 全系 · 国行", "CHC CZA1", Region.CHINA, "ksud-selected"),
+        // —— 测试入口（需在设置里启用「未经测试的载荷」才显示）——
+        // DZH3 + 新构建的 ksud 3.3.0（versionCode 32601，内嵌 DZH3 模块）；
+        // 载荷用当前源码重编的 DZF2 家族那份（DZF2 与 DZH3 符号布局 99.99% 相同）
+        DZH3_KSU330("cve-2026-43499", "One UI 8.5", "S24 全系 · 国行", "DZH3 · KSU 3.3.0 测试", Region.CHINA, "ksud-dzh3-32601", tested = false),
+        // CHC CZB2：独立定标载荷（kernel 6.1.128，构建号 2755301）+ 32525 ksud
+        CZB2_CHC("cve-2026-43499-czb2", "One UI 8.0", "S24 全系 · 国行", "CHC CZB2", Region.CHINA, "ksud-czb2-32525", tested = false),
         // —— 港版/台版（实测稳定）—— 港台同构建号可共用载荷，台版直接选用港版条目
         // （港版 DZE2 kmalloc_caches=0x176c6f8 与国行 0x176cbb8 不同，不能用 DZF2 载荷）
         CZA1("cve-2026-43499-cza1", "One UI 8.0", "S24 全系 · 外版（港版/台版）", "CZA1", Region.HONGKONG_TAIWAN, "ksud-selected"),

@@ -218,6 +218,24 @@ val versionHashProvider =
     }
 val versionNameProvider = providers.of(GitLatestTagValueSource::class.java) {}
 
+/**
+ * Pre-release channel tag appended to the reported version name, e.g. `3.3.0-beta`.
+ *
+ * This never touches the version number itself: the version code still comes from the commit
+ * count and the base version still comes from the nearest tag. It only marks the build as a
+ * pre-release so beta APKs are told apart from the stable release on the About/Settings screen,
+ * in the APK manifest, and in the run logs uploaded for diagnostics.
+ *
+ * `-Prms24Channel=beta` is the default while 3.3.x is in beta; pass `-Prms24Channel=stable`
+ * (or an empty value) to get the bare tag version.
+ */
+val appChannel = providers.gradleProperty("rms24Channel").orElse("beta").get().trim().lowercase()
+
+val reportedVersionName =
+    versionNameProvider.get().let { base ->
+        if (appChannel.isEmpty() || appChannel == "stable") base else "$base-$appChannel"
+    }
+
 val injectedPackageName = "com.android.shell"
 val injectedPackageUid = 2000
 val defaultManagerPackageName = "cn.nanoturtle.rootmys9280"
@@ -277,13 +295,13 @@ subprojects {
                     targetSdk = androidTargetSdkVersion
 
                     versionCode = versionCodeProvider.get().toInt()
-                    versionName = versionNameProvider.get()
+                    versionName = reportedVersionName
                 }
 
                 val flags =
                     listOf(
                         "-DVERSION_CODE=${versionCodeProvider.get()}",
-                        "-DVERSION_NAME='\"${versionNameProvider.get()}\"'",
+                        "-DVERSION_NAME='\"$reportedVersionName\"'",
                         // parallel_hashmap reaches for <emmintrin.h> whenever __SSE2__ is defined,
                         // and that header's static inline intrinsics arrive twice on the x86 ABIs:
                         // dex_builder.ixx and dex_helper.ixx each include phmap in their global
