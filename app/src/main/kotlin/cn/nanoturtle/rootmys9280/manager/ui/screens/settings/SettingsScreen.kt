@@ -72,6 +72,7 @@ private const val KEY_BRIEF_LOG = "brief_log"
 private const val KEY_AUTO_SAVE_LOG = "auto_save_log"
 private const val KEY_ADB_WIRELESS_ENABLED = "adb_wireless_enabled"
 private const val KEY_UNTESTED_PAYLOADS_ENABLED = "untested_payloads_enabled"
+private const val KEY_DF_ENGINE_ENABLED = "df_engine_enabled"
 private const val KEY_DEBUG_MODE = "debug_mode"
 
 /** 点版本号多少下开启调试模式 */
@@ -106,6 +107,10 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
     }
     var untestedPayloadsEnabled by remember {
         mutableStateOf(prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false))
+    }
+    // DirtyFrag 引擎（alpha）：默认关闭，开启后跑 root 前会先做设备自检
+    var dfEngineEnabled by remember {
+        mutableStateOf(prefs.getBoolean(KEY_DF_ENGINE_ENABLED, false))
     }
     // 日志共享方式：引导页写过一次，这里读出来并在改动时回写。
     var logSharing by remember {
@@ -323,7 +328,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                 }
                 GroupedRow(
                     index = 4,
-                    count = 5,
+                    count = 6,
                 ) {
                     ListItem(
                         modifier =
@@ -346,6 +351,31 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                         trailingContent = { Switch(checked = untestedPayloadsEnabled, onCheckedChange = null) },
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_untested_payloads)) }
+                }
+                GroupedRow(
+                    index = 5,
+                    count = 6,
+                ) {
+                    ListItem(
+                        modifier =
+                            Modifier.toggleable(
+                                value = dfEngineEnabled,
+                                role = Role.Switch,
+                                onValueChange = { enabled ->
+                                    dfEngineEnabled = enabled
+                                    prefs.edit().putBoolean(KEY_DF_ENGINE_ENABLED, enabled).apply()
+                                    runCatching {
+                                        ServiceLocator.rootViewModel.setDfEngineEnabled(enabled)
+                                    }
+                                },
+                            ),
+                        leadingContent = {
+                            Icon(Icons.Rounded.Code, contentDescription = null)
+                        },
+                        supportingContent = { Text(stringResource(R.string.settings_df_engine_summary)) },
+                        trailingContent = { Switch(checked = dfEngineEnabled, onCheckedChange = null) },
+                        colors = cardRowColors,
+                    ) { Text(stringResource(R.string.settings_df_engine)) }
                 }
             }
         }

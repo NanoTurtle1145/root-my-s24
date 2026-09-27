@@ -1,6 +1,7 @@
 package cn.nanoturtle.rootmys9280.manager.rootmy
 
 import android.app.Application
+import cn.nanoturtle.rootmys9280.manager.rootmy.dirtyfrag.DfDeviceCheck
 import android.content.ContentValues
 import android.os.Build
 import android.os.Environment
@@ -292,9 +293,22 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     /** 未经测试的载荷（RootMyGalaxy 移植，未实测）：默认关闭，需设置页手动启用 */
     private val KEY_UNTESTED_PAYLOADS_ENABLED = "untested_payloads_enabled"
 
+    /**
+     * DirtyFrag 引擎（alpha 实验）。默认关闭。
+     *
+     * 与 GhostLock（现有链路）是互补关系而非替代：DirtyFrag 是确定性漏洞、
+     * 不需要 Shizuku/ADB 配对、支持开机自动恢复，但会加载 permissive LKM 并
+     * 污染页缓存。开关打开后：先做设备自检并输出报告，自检不过就拒绝动手。
+     */
+    private val KEY_DF_ENGINE_ENABLED = "df_engine_enabled"
+
     /** 当前 shell 执行器（Shizuku 或无线调试 adb），全部命令经由此执行。 */
     var shellExecutor: ShellExecutor = ShizukuController
         private set
+
+    private val _dfEngineEnabled = MutableStateFlow(false)
+    /** DirtyFrag 引擎开关状态流（供 UI 观察；读取当前值请用 dfEngineEnabled） */
+    val dfEngineEnabledFlow: StateFlow<Boolean> = _dfEngineEnabled
 
     private val _adbWirelessEnabled = MutableStateFlow(false)
     /** 无线调试授权是否启用（设置页开关；主页订阅此状态决定是否显示无线调试控件） */
@@ -351,6 +365,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val adbEnabled = prefs.getBoolean(KEY_ADB_WIRELESS_ENABLED, false)
         _adbWirelessEnabled.value = adbEnabled
         _untestedPayloadsEnabled.value = prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false)
+        _dfEngineEnabled.value = prefs.getBoolean(KEY_DF_ENGINE_ENABLED, false)
         if (adbEnabled && saved == AuthMethod.ADB_WIRELESS.name) {
             shellExecutor = AdbWirelessController
         } else if (!adbEnabled && saved == AuthMethod.ADB_WIRELESS.name) {
@@ -514,6 +529,17 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     val autoScreenOff: Boolean
         get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
             .getBoolean("auto_screen_off", true)
+
+    /** 设置页的"DirtyFrag 引擎（alpha）"开关；读 prefs 实时生效。 */
+    fun setDfEngineEnabled(enabled: Boolean) {
+        app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .edit().putBoolean(KEY_DF_ENGINE_ENABLED, enabled).apply()
+        _dfEngineEnabled.value = enabled
+    }
+
+    val dfEngineEnabled: Boolean
+        get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getBoolean(KEY_DF_ENGINE_ENABLED, false)
 
     /** 调试选项：自动保存日志到磁盘（崩溃/重启后自动恢复）。默认开启。 */
     fun setAutoSaveLog(enabled: Boolean) {
@@ -757,6 +783,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 "rm -f /data/local/tmp/temp_su.sock /data/local/tmp/ksud-s25u-kdp /data/local/tmp/.ksud-stage; echo ok"
         )
         appendLog("✔ " + app.getString(R.string.log_cleanup_done, cleanup.first))
+
+        // 2.7 DirtyFrag 引擎(alpha)设备自检：只读探测，全过才允许后续动手。
+        //     alpha1 阶段只输出报告，不执行注入；自检不过时明确告警（不阻塞 GhostLock 链路）。
+        if (dfEngineEnabled) {
+            val dfReport = DfDeviceCheck.collect(android.os.Build.MODEL, System.getProperty("os.version").orEmpty())
+            appendLog(dfReport.render().trimEnd())
+            if (!dfReport.allOk) {
+                appendLog("⚠ DirtyFrag 自检未通过，本次不走 DirtyFrag 引擎")
+            }
+        }
 
         // 3. 触发 exploit
         appendLog(app.getString(R.string.log_trigger))

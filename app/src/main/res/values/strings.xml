@@ -73,6 +73,8 @@
     <string name="settings_adb_wireless_summary">Experimental. When enabled, the home screen shows wireless debugging controls (pairing / connect)</string>
     <string name="settings_untested_payloads">Untested payloads</string>
     <string name="settings_untested_payloads_summary">Show payloads ported from RootMyGalaxy that have not been verified on this app. Use at your own risk.</string>
+    <string name="settings_df_engine">DirtyFrag engine (alpha)</string>
+    <string name="settings_df_engine_summary">Experimental engine using the DirtyFrag page-cache bug (CVE-2026-43284). No Shizuku needed and root can be restored on boot, but it loads a permissive kernel module and pollutes the page cache. Runs a device self-check first and refuses to continue if anything is missing.</string>
     <string name="settings_section_about">About</string>
     <string name="settings_check_update">Check for updates</string>
     <string name="settings_check_update_summary">Open GitHub Releases for new versions</string>

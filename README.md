@@ -142,13 +142,23 @@
 versionName 追加一个后缀，方便把 beta 包与正式发布区分开（关于页/设置页显示、APK manifest、上传的运行日志里的 appVersion 都会带上）：
 
 ```sh
-./gradlew :app:assembleRelease -Prms24Channel=beta1    # → 3.3.0-beta1 (138)
-./gradlew :app:assembleRelease -Prms24Channel=beta2    # → 3.3.0-beta2 (138)
+./gradlew :app:assembleRelease -Prms24Channel=alpha1   # → 3.3.0-alpha1 (138)  引擎试验包
+./gradlew :app:assembleRelease -Prms24Channel=alpha2   # → 3.3.0-alpha2 (138)
+./gradlew :app:assembleRelease -Prms24Channel=beta1    # → 3.3.0-beta1  (138)  机型/固件适配预览
+./gradlew :app:assembleRelease -Prms24Channel=beta2    # → 3.3.0-beta2  (138)
 ./gradlew :app:assembleRelease -Prms24Channel=stable   # 正式版 → 3.3.0 (138)
 ```
 
-每个 beta 递增编号，产物按 `RootMyS24-v{版本}-{渠道}-build{versionCode}.apk` 命名（如
-`RootMyS24-v3.3.0-beta2-build138.apk`），这样一眼能看出某台机器装的是哪一版。
+渠道语义（别混用）：
+
+| 渠道 | 含义 | 典型内容 |
+| --- | --- | --- |
+| `alphaN` | **引擎/框架试验**（内部 + 自愿测试者） | 换用新漏洞链（如 DirtyFrag 引擎）、重做注入流程 |
+| `betaN` | **机型/固件适配预览** | 新增固件载荷、某机型 ksud 适配 |
+| `stable` | 正式发布 | 只收已实测通过的改动 |
+
+产物按 `RootMyS24-v{版本}-{渠道}-build{versionCode}.apk` 命名（如
+`RootMyS24-v3.3.0-alpha1-build138.apk`），一眼能看出某台机器装的是哪一版、属于哪条线。
 渠道后缀**不改变版本号本身**（versionCode 与 tag 推导出的基础版本都不动）。
 
 载荷（exploit / root helper / ksud）已内置在 `app/src/main/assets/`。载荷构建链属开发者职责，不在本仓库范围。
