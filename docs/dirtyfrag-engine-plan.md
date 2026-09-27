@@ -1,7 +1,35 @@
 # DirtyFrag 引擎接入方案（alpha 线）
 
-> 状态：方案定稿，待实现。目标渠道 `alphaN`（引擎试验），与 `betaN`（机型适配）区分。
+> 状态：**已真机证伪 —— S9280 全系不可用（2026-09-27）**。
+> 结论与完整证据链见
+> `~/项目/samsung_root_research/02_exploit工程/dirtyfrag-s9280/FEASIBILITY_VERDICT.md`。
+> 目标渠道 `alphaN`（引擎试验），与 `betaN`（机型适配）区分。
 > 关联参考：`~/项目/samsung_root_research/03_参考研究/dirtyfrag/`（**只读参考**）
+
+## 0x00-1 实测结论（先看这个）
+
+**DirtyFrag 的 xfrm-ESP 页缓存写原语在 S9280 上结构性不可达，不是调参问题。**
+
+- 判据一（ESP 侧全对）：内核 trailer 规则 `padlen + 2 + alen >= elen` 推出的
+  "`desired[14] >= 14` 的块必报 ProtoError"预测为 **31**，实测 `XfrmInStateProtoError`
+  增量正好 **31**；无声通过预测 62、实测 62。⇒ HMAC/密钥/IV/布局/authsize=16 全部正确，
+  包确实被解密，解密出的就是我们的明文 —— 但页缓存 md5 不变。
+- 判据二（发送路径）：剥离 IPsec 后的六种发送形态（splice 16B / splice 整页 /
+  sendfile / vmsplice / MSG_ZEROCOPY ×2）**全部是拷贝**。
+- 判据三（设备内核反汇编）：`udp_sendpage` 走 `iov_iter_bvec` + `udp_sendmsg`（不是
+  `ip_append_page`）；`__ip_append_data` **没有 MSG_SPLICE_PAGES(BIT27) 判定、
+ 完全不调用 `skb_append_pagefrags`**，只会 `sk_alloc_send_pskb` + `sk_page_frag_refill`
+  自己分配 frag 页再拷贝。⇒ 页缓存页永远进不了 skb。
+- 判据四（备选路）：`CONFIG_AF_RXRPC` 未编入（`nm | grep -c rxrpc` = 0），
+  CVE-2026-43500 那条路也不存在。CZB2（6.1.128）逐项相同。
+
+根因：**`MSG_SPLICE_PAGES` 语义是 Linux 6.5 才有的**；6.1 的 UDP 发送路径只会拷贝。
+参考实现自检串写的是 `SM-S938B / 6.6.98-android15-8-…`（**6.6**），与这个结论自洽。
+LKML 上内核开发者对 6.1 PoC 的质疑（"6.1 没有 MSG_SPLICE_PAGES，你确定不是走了
+RxRPC 那条路？"）说的正是这件事。
+
+⇒ 下面 0x01–0x08 的原方案保留作为**设计记录**；对 S9280 的落地方式改为
+**"运行时探针 + 明确拒绝执行"**（见 0x07）。
 
 ## 0x00 为什么再加一个引擎
 
@@ -95,17 +123,26 @@ SELinux      : 期望 Enforcing（干净基线）
 3. **只读分区保护**：不写 `/system`（EROFS），走 bind-mount 方式（参考实现的做法）
 4. **默认不给 adb shell 提权**：不传 `--allow-shell`（与参考实现一致，安全性优先）
 
-## 0x07 里程碑（alpha 线）
+## 0x07 里程碑（alpha 线，按实测结论修订）
 
 | 版本 | 内容 | 验收 |
 | --- | --- | --- |
-| `alpha1` | 设备自检页 + 引擎开关（不做实际注入） | App 能正确报告 0x04 逐项结果 |
-| `alpha2` | DirtyFrag 引擎接入（手动触发） | 手动点一次走完全链 → KernelSU 起来 |
-| `alpha3` | 开机自动恢复 + 失败回落 GhostLock | 重启后自动恢复；DirtyFrag 不可用时自动走 GhostLock |
+| `alpha1` | 设备自检页 + 引擎开关（不做实际注入） | ✅ 已完成（commit `54591be`） |
+| `alpha2` | **运行时可行性探针** + 不支持时明确拒绝执行 | 探针在 6.1 机型上判定"不可达"并拒绝跑链，不污染 `/apex`、`/vendor`、`/system` 页缓存 |
+| `alpha3` | 仅当探针判定可达时（≥6.5 内核语义的机型）才提供引擎，失败回落 GhostLock | 探针放行时才走链；否则一律 GhostLock |
 
-## 0x08 待定
+**设计要点（alpha2 的探针）**：自研 `page_share_probe.c`
+（`~/项目/samsung_root_research/02_exploit工程/dirtyfrag-s9280/tools/`），
+用普通 UDP 在几百毫秒内判定"页缓存页能否进 skb"。
+再加一条自校准：对可控测试文件写入后 **pread 回读比对**，把"发包成功"和
+"真的写进去了"区分开（本次排查正是靠这两点才定位到根因）。
 
-1. 内核补丁状态最终判定：`esp_input` 缺 `SKBFL_SHARED_FRAG` 位测试（指向未修），
-   `ip_output`/`ip6_output` 侧因 `+lto` 符号内部化无法静态判定 → **以真机实测为准**
-2. ksud 三个新参数是自己实现，还是改走参考的 ksud（后者有许可证问题 → 倾向自己实现）
-3. 是否把 GhostLock 也保留为独立可选项（预计保留，作为回退）
+## 0x08 已解决 / 待定
+
+1. ~~内核补丁状态最终判定~~ → **已定论**：设备内核确实未修补
+   （`esp_input` 无 shared-frag 检查、`ip_append_page` 无 `SKBFL_SHARED_FRAG` 写入），
+   但**这没有意义**——发送路径根本不产生共享 frag，原语不可达。
+2. ksud 三个新参数（`--stage-from` / `--soft-reboot` / `--ro-partitions`）倾向自己实现
+   （许可证问题）。**该工作已被本次结论冻结**：DirtyFrag 引擎不上 S9280，
+   相关 ksud 补丁与 LKM 只作为研究留档。
+3. GhostLock 保留为 S9280 的**唯一引擎**（原"回退"定位升级为"主引擎"）。
