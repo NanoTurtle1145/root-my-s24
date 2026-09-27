@@ -20,8 +20,19 @@
   `ip_append_page`）；`__ip_append_data` **没有 MSG_SPLICE_PAGES(BIT27) 判定、
  完全不调用 `skb_append_pagefrags`**，只会 `sk_alloc_send_pskb` + `sk_page_frag_refill`
   自己分配 frag 页再拷贝。⇒ 页缓存页永远进不了 skb。
-- 判据四（备选路）：`CONFIG_AF_RXRPC` 未编入（`nm | grep -c rxrpc` = 0），
-  CVE-2026-43500 那条路也不存在。CZB2（6.1.128）逐项相同。
+- 判据四（备选路全关）：设备内核自报配置（`zcat /proc/config.gz`，7694 行完整 config）
+  ```
+  # CONFIG_AF_RXRPC is not set                    ← CVE-2026-43500 无路
+  # CONFIG_CRYPTO_USER is not set
+  # CONFIG_CRYPTO_USER_API_AEAD is not set        ← Copy Fail(AF_ALG) 无路
+  ```
+  `nm vmlinux_dzh3.elf | grep -iE 'af_alg|algif|rxrpc'` = 0；
+  `/vendor/lib/modules` 无 `af_alg.ko`/`algif_aead.ko`；
+  真机 `socket(AF_ALG, SOCK_SEQPACKET, 0)` → `EACCES`（SELinux 在家族查找前就拦）。
+  CZB2（6.1.128）逐项相同。
+
+**⇒ 三扇门全关**（ESP 页共享 ❌ / RxRPC ❌ / AF_ALG ❌）——"就地加密写页缓存"
+这一整类漏洞在本机被「内核配置 + 6.1 半截回移」双重封死，换写法也绕不开。
 
 根因：**`MSG_SPLICE_PAGES` 语义是 Linux 6.5 才有的**；6.1 的 UDP 发送路径只会拷贝。
 参考实现自检串写的是 `SM-S938B / 6.6.98-android15-8-…`（**6.6**），与这个结论自洽。
