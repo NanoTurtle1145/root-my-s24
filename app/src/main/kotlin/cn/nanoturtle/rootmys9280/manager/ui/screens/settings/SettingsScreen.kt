@@ -42,6 +42,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -124,6 +125,26 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
     val downloadingMsg = stringResource(R.string.update_downloading)
     // 点击回调里要拼文案，用配置感知的 Resources，避免 lint 的 LocalContextGetResourceValueCall
     val resources = androidx.compose.ui.platform.LocalResources.current
+    val scope = rememberCoroutineScope()
+
+    // 结算上一次下载：查真实状态 → 校验 sha256 → 通过才拉起安装器。
+    // IO 放后台线程，安装回主线程（startActivity 必须在主线程）。
+    suspend fun settleDownload(ctx: android.content.Context): String? {
+        val done = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            UpdateChecker.consumeIfFinished(ctx)
+        }
+        return when (done) {
+            is UpdateChecker.Completion.None -> null
+            is UpdateChecker.Completion.Ready -> {
+                UpdateChecker.install(ctx, done.id)
+                ctx.getString(R.string.update_install_ready)
+            }
+            is UpdateChecker.Completion.ShaMismatch -> ctx.getString(R.string.update_sha_mismatch)
+            is UpdateChecker.Completion.Failed ->
+                ctx.getString(R.string.update_download_failed, done.code, done.hint)
+        }
+    }
+
     // 下载完成回调：系统下载器发 ACTION_DOWNLOAD_COMPLETE，拿到完成的那条就拉起安装
     DisposableEffect(downloadId) {
         val id = downloadId
@@ -135,7 +156,8 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                     override fun onReceive(ctx: android.content.Context, intent: android.content.Intent) {
                         val done = intent.getLongExtra(android.app.DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
                         if (done == id) {
-                            UpdateChecker.installIntent(ctx, id)?.let { ctx.startActivity(it) }
+                            // 不再"收到广播就直接安装"：统一走结算（查真实状态 → 校验 sha256 → 再决定）
+                            scope.launch { updateError = settleDownload(context) }
                         }
                     }
                 }
@@ -149,10 +171,17 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
         }
     }
 
+    // 回到设置页先结算一次：完成广播只在页面存活时收得到（离开页面/挂后台就丢），
+    // 而下载其实早就结束了 —— 这里补上"回来就查状态"的路径。
+    LaunchedEffect(Unit) {
+        val msg = settleDownload(context)
+        if (msg != null) updateError = msg
+        if (!UpdateChecker.hasPending(context)) downloadId = null
+    }
+
     // 调试模式：点版本号七下开启（与 Android 开发者选项同一套习惯）
     var debugMode by remember { mutableStateOf(prefs.getBoolean(KEY_DEBUG_MODE, false)) }
     var versionTaps by remember { mutableIntStateOf(0) }
-    val scope = rememberCoroutineScope()
     val vm = ServiceLocator.rootViewModel
     // 文案在组合作用域取好，避免在点击回调里用 context.getString（配置变更时会拿到旧值）
     val rerunGuideMsg = stringResource(R.string.settings_debug_rerun_onboarding)
@@ -198,11 +227,25 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                         // 优先自建服务器，失败再退 GitHub 镜像
                         val url = latest.url.ifBlank { latest.mirror }
                         val fileName = "RootMyS24-v${latest.versionName}-build${latest.versionCode}.apk"
-                        downloadId =
-                            runCatching { UpdateChecker.startDownload(context, url, fileName) }
-                                .getOrElse { -1L }
-                        pendingRelease = null
-                        updateError = downloadingMsg
+                        runCatching {
+                                // 目标文件名唯一化在 startDownload 内部做（固定名会撞
+                                // ERROR_FILE_ALREADY_EXISTS，这是第二个 bug 的根因）
+                                UpdateChecker.startDownload(context, url, fileName, latest.sha256)
+                            }
+                            .onSuccess {
+                                downloadId = it
+                                pendingRelease = null
+                                updateError = downloadingMsg
+                            }
+                            .onFailure {
+                                // 以前这里是 getOrElse { -1L }：入队失败被静默吞掉，
+                                // 界面永远停在"下载中"，用户只能看到"点了没反应"
+                                pendingRelease = null
+                                updateError = resources.getString(
+                                    R.string.update_download_failed_start,
+                                    friendlyMessage(it),
+                                )
+                            }
                     },
                 ) {
                     Text(stringResource(R.string.update_download_install))

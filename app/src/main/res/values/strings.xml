@@ -341,4 +341,8 @@
     <string name="update_latest">Already up to date (%1$s)</string>
     <string name="update_check_failed">Update check failed: %1$s</string>
     <string name="update_downloading">Downloading - you will be asked to install when it finishes</string>
+    <string name="update_download_failed">Download failed (code %1$d, %2$s).</string>
+    <string name="update_download_failed_start">Could not start the download: %1$s</string>
+    <string name="update_sha_mismatch">The downloaded file failed its checksum check, so it was not installed. Please try again.</string>
+    <string name="update_install_ready">Download verified — opening the installer…</string>
 </resources>

@@ -31,6 +31,10 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import cn.nanoturtle.rootmys9280.manager.rootmy.Announcer
+import cn.nanoturtle.rootmys9280.manager.ui.components.AnnouncerCard
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -90,6 +94,14 @@ private fun RootFlowContent(
     onGoAbout: (() -> Unit)? = null,
     onOpenFirmwareSelect: (() -> Unit)? = null,
 ) {
+    // 公告（announcer）：服务端下发文案，客户端只渲染白名单动作 —— 见 Announcer 顶部约束。
+    // 拉取失败/无公告都当成"没有"，绝不阻塞主页。
+    val announcerContext = LocalContext.current
+    var announcements by remember { mutableStateOf<List<Announcer.Item>>(emptyList()) }
+    LaunchedEffect(Unit) {
+        announcements = withContext(Dispatchers.IO) { Announcer.visible(announcerContext) }
+    }
+
     var brief by remember { mutableStateOf(false) }
     var exportResult by remember { mutableStateOf<String?>(null) }
     var showAppearance by remember { mutableStateOf(false) }
@@ -284,6 +296,41 @@ private fun RootFlowContent(
                 languageLabel = stringResource(R.string.language_title),
                 onOpenLanguage = { showLanguage = true },
             )
+        }
+
+        if (announcements.isNotEmpty()) {
+            item {
+                AnnouncerCard(
+                    items = announcements,
+                    onDismiss = { item ->
+                        announcements = announcements.filterNot { it.id == item.id }
+                        Announcer.dismiss(announcerContext, item.id)
+                    },
+                    onOpenLink = { url ->
+                        // url 已在 Announcer.safeLink 里过了一遍 http/https 白名单，
+                        // 这里再包 runCatching：设备上没有浏览器也不该崩。
+                        runCatching {
+                            announcerContext.startActivity(
+                                android.content.Intent(
+                                    android.content.Intent.ACTION_VIEW,
+                                    android.net.Uri.parse(url),
+                                )
+                            )
+                        }
+                    },
+                    onAction = { item ->
+                        when (item.action) {
+                            // 白名单动作：只认这里列出的，未知动作什么都不做
+                            Announcer.Action.OPEN_ABOUT -> onGoAbout?.invoke()
+                            Announcer.Action.DISMISS -> {
+                                announcements = announcements.filterNot { it.id == item.id }
+                                Announcer.dismiss(announcerContext, item.id)
+                            }
+                            else -> Unit
+                        }
+                    },
+                )
+            }
         }
 
         item {

@@ -1,0 +1,35 @@
+{
+  "_comment": "RootMyS24 公告数据。按数组顺序展示（越靠前越优先）。字段说明见 announce.php 头部注释。上线/下线只需增删条目，App 无需更新。",
+  "items": [
+    {
+      "id": "2026-09-27-update-download-fix",
+      "level": "update",
+      "title": "更新下载修好了",
+      "body": "之前「点下载没反应」的问题已修复：\n· 目标文件名会带唯一后缀，不再撞上「同名文件已存在」；\n· 下载完成即使你离开了设置页，回到 App 也会自动弹出安装器；\n· 安装前会校验文件 sha256，不匹配会拒绝安装。",
+      "link": "https://github.com/NanoTurtle1145/root-my-s24/releases",
+      "linkText": "查看版本历史",
+      "from": "2026-09-27",
+      "until": ""
+    },
+    {
+      "id": "2026-09-27-run-notes",
+      "level": "warn",
+      "title": "运行前请先重启一次手机",
+      "body": "GhostLock 走的是内核竞态：设备跑过一轮之后内核状态会变脏，成功率明显下降（云端数据显示失败大多集中在「跑满 30 次仍不成功」上）。\n建议：跑之前重启一次、跑完立刻重启一次；运行期间让屏幕保持熄灭。",
+      "action": "open_about",
+      "actionText": "去设置",
+      "from": "2026-09-27",
+      "until": ""
+    },
+    {
+      "id": "2026-09-27-dirtyfrag-s24",
+      "level": "info",
+      "title": "为什么 S24 用不了 DirtyFrag",
+      "body": "结论：结构性问题，不是调参。6.1 的 UDP 发送路径不会把页缓存页共享进 skb（缺少 6.5 才有的 MSG_SPLICE_PAGES 语义），而 6.1.y 的「半截回移」让这条能力只到一半；RxRPC 与 AF_ALG 两条备选路在本内核里都没编译。详见研究仓库里的论文。",
+      "link": "https://blog.nanoturtle.cn/",
+      "linkText": "阅读技术分析",
+      "from": "2026-09-27",
+      "until": ""
+    }
+  ]
+}

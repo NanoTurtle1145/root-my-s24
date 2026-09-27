@@ -302,4 +302,8 @@
     <string name="update_latest">已是最新版本（%1$s）</string>
     <string name="update_check_failed">检查更新失败：%1$s</string>
     <string name="update_downloading">正在下载，完成后会提示安装</string>
+    <string name="update_download_failed">下载失败（错误码 %1$d，%2$s）</string>
+    <string name="update_download_failed_start">无法开始下载：%1$s</string>
+    <string name="update_sha_mismatch">下载文件的校验值与版本清单不符，已放弃安装。请重试。</string>
+    <string name="update_install_ready">下载已校验通过，正在打开安装器…</string>
 </resources>

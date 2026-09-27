@@ -9,10 +9,14 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import cn.nanoturtle.rootmys9280.manager.data.repository.LaunchShortcut
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
 import cn.nanoturtle.rootmys9280.manager.rootmy.AdbPairingFlow
+import cn.nanoturtle.rootmys9280.manager.rootmy.UpdateChecker
 import cn.nanoturtle.rootmys9280.manager.ui.navigation.DeepLink
 import cn.nanoturtle.rootmys9280.manager.ui.screens.splash.SplashGate
 import cn.nanoturtle.rootmys9280.manager.ui.theme.LocalizedContent
 import cn.nanoturtle.rootmys9280.manager.ui.theme.VectorTheme
+import androidx.lifecycle.lifecycleScope
+import cn.nanoturtle.rootmys9280.manager.R
+import kotlinx.coroutines.launch
 
 /**
  * The only activity.
@@ -114,5 +118,33 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         if (isFinishing) DeepLink.forget()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // 更新下载的收尾：完成广播可能发生在离开设置页、甚至 app 被关掉之后，
+        // 所以每次回到前台都查一次真实状态补上（两处 bug 的兜底路径）。
+        // 查状态 + 校验 sha256 放 IO 线程；拉起安装器必须回主线程。
+        if (!UpdateChecker.hasPending(this)) return
+        lifecycleScope.launch {
+            val done = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                UpdateChecker.consumeIfFinished(this@MainActivity)
+            }
+            when (done) {
+                is UpdateChecker.Completion.Ready -> UpdateChecker.install(this@MainActivity, done.id)
+                is UpdateChecker.Completion.ShaMismatch ->
+                    android.widget.Toast.makeText(
+                        this@MainActivity, getString(R.string.update_sha_mismatch),
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                is UpdateChecker.Completion.Failed ->
+                    android.widget.Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.update_download_failed, done.code, done.hint),
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                else -> {}
+            }
+        }
     }
 }
