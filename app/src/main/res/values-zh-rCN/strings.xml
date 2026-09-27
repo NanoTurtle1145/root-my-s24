@@ -243,6 +243,15 @@
     <string name="settings_log_sharing">共享运行日志</string>
     <string name="settings_log_sharing_summary">用于诊断新固件上的失败问题，随时可以修改。</string>
     <string name="about_section_guide">指南</string>
+    <string name="about_section_forum">社区</string>
+    <string name="about_forum">讨论区</string>
+    <string name="about_forum_summary">需要口令，由服务端校验</string>
+    <string name="about_forum_opening">正在打开…</string>
+    <string name="about_forum_dialog_title">输入讨论区口令</string>
+    <string name="about_forum_dialog_body">口令由服务端校验，App 只保存你自己输入的内容，源码里没有任何秘密。</string>
+    <string name="about_forum_token_label">口令</string>
+    <string name="about_forum_confirm">进入</string>
+    <string name="about_forum_cancel">取消</string>
     <string name="about_view_wiki">必读指南</string>
     <string name="about_view_wiki_summary">临时 Root 原理、警告与使用步骤</string>
     <string name="logs_upload">上传</string>
@@ -307,6 +316,7 @@
     <string name="announce_screen_title">公告</string>
     <string name="announce_back">返回</string>
     <string name="announce_empty">暂无公告</string>
+    <string name="announce_restore">全部恢复</string>
     <string name="update_download_failed">下载失败（错误码 %1$d，%2$s）</string>
     <string name="update_download_failed_start">无法开始下载：%1$s</string>
     <string name="update_sha_mismatch">下载文件的校验值与版本清单不符，已放弃安装。请重试。</string>

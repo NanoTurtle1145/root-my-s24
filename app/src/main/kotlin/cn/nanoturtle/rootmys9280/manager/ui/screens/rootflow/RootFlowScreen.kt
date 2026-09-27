@@ -103,8 +103,12 @@ private fun RootFlowContent(
     // 拉取失败/无公告都当成"没有"，绝不阻塞主页。
     val announcerContext = LocalContext.current
     var announcements by remember { mutableStateOf<List<Announcer.Item>>(emptyList()) }
+    // 入口按"服务端还有没有公告"显示，卡片按"未关闭"显示 → 全关掉也不丢入口
+    var hasAnyAnnouncement by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        announcements = withContext(Dispatchers.IO) { Announcer.visible(announcerContext) }
+        val feed = withContext(Dispatchers.IO) { Announcer.feed(announcerContext) }
+        announcements = feed.fresh
+        hasAnyAnnouncement = feed.all.isNotEmpty()
     }
 
     // 一开始跑就直接跳到日志页：主页不再放日志，进度统一在日志页看
@@ -304,15 +308,13 @@ private fun RootFlowContent(
             )
         }
 
-        if (announcements.isNotEmpty()) {
+        if (hasAnyAnnouncement || announcements.isNotEmpty()) {
             item {
                 AnnouncerCard(
                     items = announcements,
                     onOpenAll = onOpenAnnouncements,
-                    onDismiss = { item ->
-                        announcements = announcements.filterNot { it.id == item.id }
-                        Announcer.dismiss(announcerContext, item.id)
-                    },
+                    // 主页持久显示；点任意一条 → 进公告详情页看全文
+                    onOpenItem = { onOpenAnnouncements?.invoke() },
                     onOpenLink = { url ->
                         // url 已在 Announcer.safeLink 里过了一遍 http/https 白名单，
                         // 这里再包 runCatching：设备上没有浏览器也不该崩。
@@ -782,7 +784,13 @@ private fun SettingsCard(
         modifier = modifier
             .padding(top = 8.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(4.dp),
+        // 日志区从主页移走后，设置卡成为卡片序列的最后一张 → 下角恢复大圆角
+        shape = RoundedCornerShape(
+            topStart = 4.dp,
+            topEnd = 4.dp,
+            bottomStart = 20.dp,
+            bottomEnd = 20.dp,
+        ),
     ) {
         Column(Modifier.padding(horizontal = 16.dp)) {
             Row(

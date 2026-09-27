@@ -24,6 +24,7 @@ import org.json.JSONObject
  */
 object Announcer {
 
+    private const val TAG = "Announcer"
     private const val ENDPOINT = "https://blog.nanoturtle.cn/rms24_api/announce.php"
     private const val PREFS = "announcer"
     private const val KEY_DISMISSED = "dismissed_ids"
@@ -144,8 +145,30 @@ object Announcer {
      * 任何异常都吞掉并返回空列表——公告是锦上添花，绝不能因为它影响主页。
      * 调用方请放在 IO 线程。
      */
-    fun visible(context: Context): List<Item> = runCatching {
+    /**
+     * 一次拉取的两种视图。
+     *
+     * 之所以要分开：主页只显示"未关闭"的条目，但**入口本身要按"服务端是否还有公告"来决定**
+     * —— 否则用户把公告逐条关掉之后，连"查看全部"都一起消失，公告就再也找不回来了
+     * （2026-09-27 实测踩到：fetched=3 dismissed=3 → 主页整块空白）。
+     */
+    data class Feed(val all: List<Item>, val fresh: List<Item>)
+
+    fun feed(context: Context): Feed = runCatching {
         val dismissed = dismissedIds(context)
-        fetch().filterNot { it.id in dismissed }
-    }.getOrDefault(emptyList())
+        val all = fetch()
+        android.util.Log.i(TAG, "fetched=${all.size} dismissed=${dismissed.size}")
+        Feed(all = all, fresh = all.filterNot { it.id in dismissed })
+    }.getOrElse {
+        android.util.Log.w(TAG, "fetch failed: ${it}")
+        Feed(emptyList(), emptyList())
+    }
+
+    /** 兼容旧调用：只要未关闭的那些。 */
+    fun visible(context: Context): List<Item> = feed(context).fresh
+
+    /** 清掉本地"已关闭"记录，让所有公告重新出现（列表页的「全部恢复」）。 */
+    fun clearDismissed(context: Context) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().clear().apply()
+    }
 }

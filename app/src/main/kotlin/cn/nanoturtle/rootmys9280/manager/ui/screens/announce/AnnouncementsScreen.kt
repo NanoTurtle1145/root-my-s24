@@ -32,6 +32,9 @@ import androidx.compose.ui.unit.dp
 import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.rootmy.Announcer
 import cn.nanoturtle.rootmys9280.manager.ui.components.AnnouncerCard
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -47,9 +50,12 @@ fun AnnouncementsScreen(onNavigateBack: () -> Unit) {
     val context = LocalContext.current
     var items by remember { mutableStateOf<List<Announcer.Item>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
+    val scope = rememberCoroutineScope()
 
+    // 列表页显示**全部**公告（含已在主页关闭的），它是"归档"而不是"未读列表" ——
+    // 这样任何一条公告都不会因为误触关闭而彻底消失。
     LaunchedEffect(Unit) {
-        items = withContext(Dispatchers.IO) { Announcer.visible(context) }
+        items = withContext(Dispatchers.IO) { Announcer.feed(context).all }
         loading = false
     }
 
@@ -94,10 +100,7 @@ fun AnnouncementsScreen(onNavigateBack: () -> Unit) {
                 else -> AnnouncerCard(
                     items = items,
                     maxVisible = items.size,
-                    onDismiss = { item ->
-                        items = items.filterNot { it.id == item.id }
-                        Announcer.dismiss(context, item.id)
-                    },
+                    onOpenItem = { /* 已在详情页 */ },
                     onOpenLink = { url ->
                         runCatching {
                             context.startActivity(
@@ -108,11 +111,8 @@ fun AnnouncementsScreen(onNavigateBack: () -> Unit) {
                             )
                         }
                     },
-                    // 列表页里没有可去的主页导航，动作里只保留"关闭"
-                    onAction = { item ->
-                        items = items.filterNot { it.id == item.id }
-                        Announcer.dismiss(context, item.id)
-                    },
+                    // 详情页里动作只保留可执行的（未知动作由白名单挡掉）
+                    onAction = { /* no-op：本页不消费动作 */ },
                 )
             }
             Spacer(Modifier.height(24.dp))

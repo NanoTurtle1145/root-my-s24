@@ -20,6 +20,7 @@ import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Forum
 import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material.icons.rounded.VolunteerActivism
@@ -30,6 +31,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import cn.nanoturtle.rootmys9280.manager.rootmy.Forum
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -107,6 +114,7 @@ fun AboutScreen(
     onOpenUrl: (String) -> Unit,
     onOpenDonate: () -> Unit = {},
     onOpenWiki: () -> Unit = {},
+    onOpenForumUrl: (String) -> Unit = {},
 ) {
     val context = LocalContext.current
     var showLicense by remember { mutableStateOf(false) }
@@ -130,6 +138,72 @@ fun AboutScreen(
             title = stringResource(R.string.about_license_title),
             text = licenseText,
             onDismiss = { showLicense = false },
+        )
+    }
+
+    // 讨论区：口令换票据（客户端不留任何秘密，见 Forum 注释）
+    val forumContext = LocalContext.current
+    val forumScope = rememberCoroutineScope()
+    var showForumDialog by remember { mutableStateOf(false) }
+    var forumToken by remember { mutableStateOf("") }
+    var forumBusy by remember { mutableStateOf(false) }
+    var forumError by remember { mutableStateOf<String?>(null) }
+
+    if (showForumDialog) {
+        AlertDialog(
+            onDismissRequest = { if (!forumBusy) showForumDialog = false },
+            title = { Text(stringResource(R.string.about_forum_dialog_title)) },
+            text = {
+                Column {
+                    Text(stringResource(R.string.about_forum_dialog_body))
+                    Spacer(Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = forumToken,
+                        onValueChange = { forumToken = it },
+                        singleLine = true,
+                        label = { Text(stringResource(R.string.about_forum_token_label)) },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    forumError?.let {
+                        Spacer(Modifier.height(6.dp))
+                        Text(it, color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = !forumBusy && forumToken.isNotBlank(),
+                    onClick = {
+                        forumBusy = true
+                        forumError = null
+                        forumScope.launch {
+                            runCatching {
+                                withContext(Dispatchers.IO) {
+                                    Forum.requestTicket(
+                                        forumContext, forumToken,
+                                        cn.nanoturtle.rootmys9280.manager.rootmy.LogUploader
+                                            .installId(forumContext),
+                                    )
+                                }
+                            }.onSuccess { url ->
+                                Forum.saveToken(forumContext, forumToken)
+                                forumBusy = false
+                                showForumDialog = false
+                                forumToken = ""
+                                onOpenForumUrl(url)
+                            }.onFailure {
+                                forumBusy = false
+                                forumError = Forum.describe(it.message.orEmpty())
+                            }
+                        }
+                    },
+                ) { Text(stringResource(R.string.about_forum_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showForumDialog = false }) {
+                    Text(stringResource(R.string.about_forum_cancel))
+                }
+            },
         )
     }
 
@@ -249,6 +323,61 @@ fun AboutScreen(
                         onOpenLicense = { showLicense = true },
                     )
                 }
+            }
+        }
+
+        item {
+            SectionLabel(stringResource(R.string.about_section_forum))
+            GroupedRow(index = 0, count = 1) {
+                ListItem(
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        // 有存过的口令就直接换票据；没有才弹输入框
+                        val saved = Forum.savedToken(forumContext)
+                        if (saved.isNotBlank()) {
+                            forumBusy = true
+                            forumError = null
+                            forumScope.launch {
+                                runCatching {
+                                    withContext(Dispatchers.IO) {
+                                        Forum.requestTicket(
+                                            forumContext, saved,
+                                            cn.nanoturtle.rootmys9280.manager.rootmy.LogUploader
+                                                .installId(forumContext),
+                                        )
+                                    }
+                                }.onSuccess { url ->
+                                    forumBusy = false
+                                    onOpenForumUrl(url)
+                                }.onFailure {
+                                    forumBusy = false
+                                    // 口令失效/被轮换是常态，直接让用户重输
+                                    showForumDialog = true
+                                    forumError = Forum.describe(it.message.orEmpty())
+                                }
+                            }
+                        } else {
+                            showForumDialog = true
+                        }
+                    },
+                    leadingContent = {
+                        Icon(
+                            Icons.Rounded.Forum,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    },
+                    headlineContent = { Text(stringResource(R.string.about_forum)) },
+                    supportingContent = {
+                        Text(
+                            if (forumBusy) stringResource(R.string.about_forum_opening)
+                            else stringResource(R.string.about_forum_summary)
+                        )
+                    },
+                    trailingContent = {
+                        Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null)
+                    },
+                    colors = cardRowColors,
+                )
             }
         }
 

@@ -1,5 +1,6 @@
 package cn.nanoturtle.rootmys9280.manager.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,14 +43,16 @@ import cn.nanoturtle.rootmys9280.manager.rootmy.Announcer
 @Composable
 fun AnnouncerCard(
     items: List<Announcer.Item>,
-    onDismiss: (Announcer.Item) -> Unit,
+    onOpenItem: (Announcer.Item) -> Unit,
     onOpenLink: (String) -> Unit,
     onAction: (Announcer.Item) -> Unit,
     modifier: Modifier = Modifier,
     maxVisible: Int = 2,
     onOpenAll: (() -> Unit)? = null,
 ) {
-    if (items.isEmpty()) return
+    // 没有新条目但调用方要求显示"查看全部"入口时不能提前返回：
+    // 否则公告全被关掉后入口一起消失，用户再也找不回来。
+    if (items.isEmpty() && onOpenAll == null) return
 
     Column(
         modifier = modifier
@@ -77,7 +80,9 @@ fun AnnouncerCard(
         items.take(maxVisible).forEach { item ->
             val (icon, container, content) = styleOf(item.level)
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                // 整卡可点：公告在主页是持久显示，点内容进详情页；不再提供"关闭"
+                // （关掉之后入口会一起消失，用户就再也找不回来了）
+                modifier = Modifier.fillMaxWidth().clickable { onOpenItem(item) },
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = container),
             ) {
@@ -122,9 +127,6 @@ fun AnnouncerCard(
                                 }
                             }
                         }
-                    }
-                    IconButton(onClick = { onDismiss(item) }) {
-                        Icon(Icons.Rounded.Close, contentDescription = null, tint = content)
                     }
                 }
             }

@@ -164,6 +164,10 @@ private fun EntryProviderScope<NavKey>.registerRoutes(navigator: Navigator) {
     entry<TopLevelRoute.About> {
         AboutScreen(
             onOpenUrl = { url -> navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Web(url)) },
+            onOpenForumUrl = { url ->
+                // 带票据的讨论区地址；票据短期有效，过期后 App 会重新换一张
+                navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Web(url))
+            },
             onOpenDonate = { navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Donate) },
             onOpenWiki = { navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Wiki) },
         )
