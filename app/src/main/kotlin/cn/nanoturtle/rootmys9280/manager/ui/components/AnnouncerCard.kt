@@ -44,6 +44,8 @@ import cn.nanoturtle.rootmys9280.manager.rootmy.Announcer
 fun AnnouncerCard(
     items: List<Announcer.Item>,
     onOpenItem: (Announcer.Item) -> Unit,
+    /** 传 null 表示这张卡不给关闭按钮（例如详情页里所有公告都要能看到）。 */
+    onDismiss: ((Announcer.Item) -> Unit)? = null,
     onOpenLink: (String) -> Unit,
     onAction: (Announcer.Item) -> Unit,
     modifier: Modifier = Modifier,
@@ -126,6 +128,13 @@ fun AnnouncerCard(
                                     }
                                 }
                             }
+                        }
+                    }
+                    // 关闭：只关掉主页这一条，入口不会跟着消失
+                    // （Home 的区块是按"服务端还有没有公告"决定的）
+                    if (onDismiss != null) {
+                        IconButton(onClick = { onDismiss(item) }) {
+                            Icon(Icons.Rounded.Close, contentDescription = null, tint = content)
                         }
                     }
                 }

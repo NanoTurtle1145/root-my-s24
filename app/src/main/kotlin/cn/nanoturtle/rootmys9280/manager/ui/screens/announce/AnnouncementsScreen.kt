@@ -63,6 +63,20 @@ fun AnnouncementsScreen(onNavigateBack: () -> Unit) {
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(stringResource(R.string.announce_screen_title)) },
+                actions = {
+                    // 恢复入口：主页的叉叉会把公告逐条关掉，但服务端并不知道，
+                    // 所以必须留一条"让它们回来"的路（清本地已关闭记录即可）
+                    TextButton(
+                        onClick = {
+                            Announcer.clearDismissed(context)
+                            loading = true
+                            scope.launch {
+                                items = withContext(Dispatchers.IO) { Announcer.feed(context).all }
+                                loading = false
+                            }
+                        },
+                    ) { Text(stringResource(R.string.announce_restore)) }
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
@@ -101,6 +115,8 @@ fun AnnouncementsScreen(onNavigateBack: () -> Unit) {
                     items = items,
                     maxVisible = items.size,
                     onOpenItem = { /* 已在详情页 */ },
+                    // 详情页是"归档"：不提供关闭，否则关掉后本页反而看不到
+                    onDismiss = null,
                     onOpenLink = { url ->
                         runCatching {
                             context.startActivity(

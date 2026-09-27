@@ -315,6 +315,11 @@ private fun RootFlowContent(
                     onOpenAll = onOpenAnnouncements,
                     // 主页持久显示；点任意一条 → 进公告详情页看全文
                     onOpenItem = { onOpenAnnouncements?.invoke() },
+                    // 叉叉：关掉这一条（本地记住 id）。区块入口不随之为空而消失
+                    onDismiss = { item ->
+                        announcements = announcements.filterNot { it.id == item.id }
+                        Announcer.dismiss(announcerContext, item.id)
+                    },
                     onOpenLink = { url ->
                         // url 已在 Announcer.safeLink 里过了一遍 http/https 白名单，
                         // 这里再包 runCatching：设备上没有浏览器也不该崩。
