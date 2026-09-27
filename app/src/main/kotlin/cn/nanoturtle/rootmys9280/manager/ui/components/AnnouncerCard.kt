@@ -27,8 +27,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.rootmy.Announcer
 
 /**
@@ -45,6 +47,7 @@ fun AnnouncerCard(
     onAction: (Announcer.Item) -> Unit,
     modifier: Modifier = Modifier,
     maxVisible: Int = 2,
+    onOpenAll: (() -> Unit)? = null,
 ) {
     if (items.isEmpty()) return
 
@@ -54,6 +57,23 @@ fun AnnouncerCard(
             .padding(start = 16.dp, end = 16.dp, top = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
+        if (onOpenAll != null) {
+            // 条目被截断时才值得给"查看全部"入口 —— 否则点了也是同一批内容
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = stringResource(R.string.announce_section_title),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.weight(1f))
+                TextButton(onClick = onOpenAll) {
+                    Text(stringResource(R.string.announce_view_all))
+                }
+            }
+        }
         items.take(maxVisible).forEach { item ->
             val (icon, container, content) = styleOf(item.level)
             Card(

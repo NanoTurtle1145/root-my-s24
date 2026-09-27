@@ -31,6 +31,8 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import cn.nanoturtle.rootmys9280.manager.ui.navigation.LocalNavigator
+import cn.nanoturtle.rootmys9280.manager.ui.navigation.TopLevelRoute
 import cn.nanoturtle.rootmys9280.manager.rootmy.Announcer
 import cn.nanoturtle.rootmys9280.manager.ui.components.AnnouncerCard
 import kotlinx.coroutines.Dispatchers
@@ -74,6 +76,7 @@ fun RootFlowScreen(
     vm: RootViewModel = ServiceLocator.rootViewModel,
     onGoAbout: (() -> Unit)? = null,
     onOpenFirmwareSelect: (() -> Unit)? = null,
+    onOpenAnnouncements: (() -> Unit)? = null,
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     RootFlowContent(
@@ -82,6 +85,7 @@ fun RootFlowScreen(
         firmwareVersion = vm.firmwareVersionState.collectAsStateWithLifecycle().value,
         onGoAbout = onGoAbout,
         onOpenFirmwareSelect = onOpenFirmwareSelect,
+        onOpenAnnouncements = onOpenAnnouncements,
     )
 }
 
@@ -93,6 +97,7 @@ private fun RootFlowContent(
     modifier: Modifier = Modifier,
     onGoAbout: (() -> Unit)? = null,
     onOpenFirmwareSelect: (() -> Unit)? = null,
+    onOpenAnnouncements: (() -> Unit)? = null,
 ) {
     // 公告（announcer）：服务端下发文案，客户端只渲染白名单动作 —— 见 Announcer 顶部约束。
     // 拉取失败/无公告都当成"没有"，绝不阻塞主页。
@@ -102,7 +107,12 @@ private fun RootFlowContent(
         announcements = withContext(Dispatchers.IO) { Announcer.visible(announcerContext) }
     }
 
-    var brief by remember { mutableStateOf(false) }
+    // 一开始跑就直接跳到日志页：主页不再放日志，进度统一在日志页看
+    val navigator = LocalNavigator.current
+    LaunchedEffect(state.busy) {
+        if (state.busy) navigator.switchTo(TopLevelRoute.Logs)
+    }
+
     var exportResult by remember { mutableStateOf<String?>(null) }
     var showAppearance by remember { mutableStateOf(false) }
     var showLanguage by remember { mutableStateOf(false) }
@@ -135,10 +145,6 @@ private fun RootFlowContent(
         }
     }
 
-    val shown = if (brief) state.logLines.filter { it.summary } else state.logLines
-    LaunchedEffect(shown.size, brief) {
-        if (shown.isNotEmpty()) listState.scrollToItem(shown.lastIndex)
-    }
 
     if (showAppearance) {
         cn.nanoturtle.rootmys9280.manager.ui.components.HomeAppearanceSheet(
@@ -302,6 +308,7 @@ private fun RootFlowContent(
             item {
                 AnnouncerCard(
                     items = announcements,
+                    onOpenAll = onOpenAnnouncements,
                     onDismiss = { item ->
                         announcements = announcements.filterNot { it.id == item.id }
                         Announcer.dismiss(announcerContext, item.id)
@@ -474,74 +481,6 @@ private fun RootFlowContent(
             )
         }
 
-        item {
-            // 日志标题：序列倒数第二张 —— 上方设置卡 → 上圆角收小；
-            // 下方有日志行 → 下圆角收小；无日志行 → 下圆角恢复大（序列最后一张）
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-                shape = if (shown.isEmpty()) {
-                    RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
-                } else {
-                    RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
-                },
-                color = MaterialTheme.colorScheme.surfaceContainer,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 4.dp, top = 2.dp, bottom = 2.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        stringResource(R.string.rootflow_log_title),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(Modifier.weight(1f))
-                    TextButton(
-                        onClick = { brief = !brief },
-                    ) {
-                        Text(if (brief) stringResource(R.string.rootflow_detail) else stringResource(R.string.rootflow_brief))
-                    }
-                }
-            }
-        }
-
-        itemsIndexed(shown) { index, line ->
-            val isLast = index == shown.lastIndex
-            // 每行独立卡片：上方（标题卡/上行）→ 上圆角收小 4dp；下方无卡片（末行）→ 下圆角大 20dp
-            val shape = RoundedCornerShape(
-                topStart = 4.dp,
-                topEnd = 4.dp,
-                bottomStart = if (isLast) 20.dp else 4.dp,
-                bottomEnd = if (isLast) 20.dp else 4.dp,
-            )
-            val container = if (line.summary) {
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-            } else {
-                MaterialTheme.colorScheme.surfaceContainer
-            }
-            Surface(
-                color = container,
-                shape = shape,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 4.dp),
-            ) {
-                Text(
-                    text = line.text,
-                    fontSize = 13.sp,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = if (line.summary) FontWeight.Bold else FontWeight.Normal,
-                    color = if (line.summary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp, vertical = 4.dp),
-                )
-            }
-        }
         item {
             Spacer(Modifier.height(24.dp))
         }

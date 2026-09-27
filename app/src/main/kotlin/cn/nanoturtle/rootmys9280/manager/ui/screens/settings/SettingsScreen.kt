@@ -439,7 +439,14 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                                 checkingUpdate = true
                                 updateError = null
                                 scope.launch {
-                                    runCatching { UpdateChecker.fetchLatest() }
+                                    // rememberCoroutineScope 默认是主线程调度器，而 fetchLatest()
+                                    // 是阻塞式 OkHttp —— 不切 IO 就会抛 NetworkOnMainThreadException
+                                    // （这正是「检查更新」一直失败的根因）。
+                                    runCatching {
+                                        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                                            UpdateChecker.fetchLatest()
+                                        }
+                                    }
                                         .onSuccess { latest ->
                                             if (latest.versionCode >
                                                 UpdateChecker.currentVersionCode(context)

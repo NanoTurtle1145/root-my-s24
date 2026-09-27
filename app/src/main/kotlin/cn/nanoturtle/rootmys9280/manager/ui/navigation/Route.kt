@@ -43,6 +43,9 @@ sealed interface TopLevelRoute : Route {
     @Serializable data object About : TopLevelRoute
 }
 
+/** 公告列表页（主页「查看全部」入口进入） */
+@Serializable data object Announcements : Route
+
 @Serializable data object LogTrace : Route
 
 /** URL shown in the built-in viewer rather than handed to a browser. */

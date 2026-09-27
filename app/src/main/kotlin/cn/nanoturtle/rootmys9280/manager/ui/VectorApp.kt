@@ -133,6 +133,9 @@ private fun EntryProviderScope<NavKey>.registerRoutes(navigator: Navigator) {
         val ctx = androidx.compose.ui.platform.LocalContext.current
         RootFlowScreen(
             onGoAbout = { navigator.switchTo(TopLevelRoute.About) },
+            onOpenAnnouncements = {
+                navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Announcements)
+            },
             onOpenFirmwareSelect = {
                 // 启动独立版本选择 Activity
                 ctx.startActivity(
@@ -142,6 +145,11 @@ private fun EntryProviderScope<NavKey>.registerRoutes(navigator: Navigator) {
                     ),
                 )
             },
+        )
+    }
+    entry<cn.nanoturtle.rootmys9280.manager.ui.navigation.Announcements> {
+        cn.nanoturtle.rootmys9280.manager.ui.screens.announce.AnnouncementsScreen(
+            onNavigateBack = { navigator.back() },
         )
     }
     entry<TopLevelRoute.Logs> {
