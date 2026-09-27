@@ -435,7 +435,26 @@ object AdbWirelessController : ShellExecutor {
             if (process.isAlive) process.destroy()
         }
         check(exitCode == 0) {
-            "Failed to stage $remotePath (exit $exitCode)${if (err.isNotBlank()) ": $err" else ""}"
+            "Failed to stage $remotePath (exit $exitCode)${if (err.isNotBlank()) ": $err" else ""}" +
+                stagingDiagnostics(remotePath)
+        }
+    }
+
+    /**
+     * 暂存失败时的现场取证。
+     *
+     * 线上曾出现「卡在 [2/5] 推送」但日志里只有一句
+     * `sh: can't create ...: Permission denied`，无法判断是目录不可写、还是旧文件
+     * 属主/标签不对（后者的 `rm -f` 会静默失败，因为 rm 的 stderr 被 2>/dev/null 吞了）。
+     * 这里把 uid/selinux 上下文、目录权限、目标文件属主一并带回云端日志。
+     */
+    private fun stagingDiagnostics(remotePath: String): String {
+        return try {
+            val dir = remotePath.substringBeforeLast('/')
+            val (_, out) = shell("id 2>&1; ls -ld '$dir' 2>&1; ls -l '$remotePath' 2>&1")
+            if (out.isBlank()) "" else " | 现场: " + out.trim().replace('\n', ';')
+        } catch (_: Throwable) {
+            ""
         }
     }
 

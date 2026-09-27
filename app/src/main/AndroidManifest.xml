@@ -14,6 +14,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Required from API 33 for the framework's status notification toggle to do anything. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 运行期持有 partial wakelock：显示照样关掉（压内核竞态），但不让系统进 Doze ——
+         否则 adb 拉起的 Shizuku 这类后台进程会在跑的过程中被系统回收（用户实测反馈）。 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!-- Installing a module downloaded from the store. -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- The module and scope lists have to see every installed package, not just launchable ones. -->

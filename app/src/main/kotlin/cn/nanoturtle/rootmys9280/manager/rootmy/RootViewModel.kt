@@ -456,9 +456,47 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         _uploadPrompt.value = false
     }
 
-    private val tmpPayload: String get() = "/data/local/tmp/$payloadName"
-    private val tmpRootHelper = "/data/local/tmp/$rootHelperName"
-    private val tmpKsud = "/data/local/tmp/$ksudName"
+    /**
+     * 载荷暂存目录（本次运行一个新建子目录）。
+     *
+     * 为什么不直接用 `/data/local/tmp` 顶层：成功 root 过一次之后，落在顶层的那几个
+     * 载荷文件会被 root 侧重写成 `root:root 0644`；而部分机型上 `/data/local/tmp`
+     * 带 sticky 位、文件标签也变了，shell 既覆写不了也 unlink 不掉 —— 于是每次运行
+     * 都卡在 `[2/5] 推送载荷` 并报
+     *   `sh: can't create /data/local/tmp/cve-2026-43499: Permission denied`
+     * 线上 809 个 run 里 50 个死在这里，且同一个 install 会连续失败、无法自愈
+     * （2026-09-27 排查）。新建一个属主为 shell 的子目录即可完全绕开这些残留。
+     *
+     * 探测顺序：每 run 子目录 → 顶层目录 → 兜底顶层（让 writeFile 带现场诊断报错）。
+     */
+    private var stagingBaseCache: String? = null
+
+    private fun stagingBase(): String = stagingBaseCache ?: run {
+        val scoped = "/data/local/tmp/rootmys24-" + System.currentTimeMillis().toString(36)
+        val resolved = if (writableDir("mkdir -p '$scoped'", scoped)) {
+            scoped
+        } else {
+            "/data/local/tmp"
+        }
+        stagingBaseCache = resolved
+        resolved
+    }
+
+    /** 在 dir 里做一次「建-写-删」往返，全部成功才算可写。 */
+    private fun writableDir(prepare: String, dir: String): Boolean = try {
+        val probe = "$dir/.rms24-write-probe"
+        val (code, out) = shellExecutor.shell(
+            "$prepare 2>&1; rm -f '$probe' 2>/dev/null; " +
+                "echo x > '$probe' && rm -f '$probe' && echo RMS24_WRITABLE"
+        )
+        code == 0 && out.contains("RMS24_WRITABLE")
+    } catch (_: Throwable) {
+        false
+    }
+
+    private val tmpPayload: String get() = "${stagingBase()}/$payloadName"
+    private val tmpRootHelper: String get() = "${stagingBase()}/$rootHelperName"
+    private val tmpKsud: String get() = "${stagingBase()}/$ksudName"
 
     fun start() = startInternal(force = false)
 
@@ -491,11 +529,13 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         appendLog("RUN-ID: $currentRunId")
         _state.value = _state.value.copy(busy = true, rooted = false, currentStage = 0)
         viewModelScope.launch {
+            acquireRunWakeLock()
             try {
                 runRootFlow()
             } catch (t: Throwable) {
                 appendLog("✗ " + app.getString(R.string.log_failed, friendlyError(t)))
             } finally {
+                releaseRunWakeLock()
                 // 唤醒屏幕（如果运行期间自动熄屏了）。shell 通道可能中途断开，
                 // 这里必须兜底：finally 里的异常会覆盖上面的 catch，导致 app 崩溃。
                 if (autoScreenOff) {
@@ -507,6 +547,25 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                     appendLog("◆ " + app.getString(R.string.log_woken))
                 }
                 _state.value = _state.value.copy(busy = false)
+
+                // 跑完立刻复检 Shizuku：运行期间的熄屏（压内核竞态的必要手段）会让
+                // adb 拉起的 Shizuku 作为后台进程被 Doze 回收，GhostLock 跑完的脆弱态
+                // 也可能顺手带走它。以前要等用户下次运行时才发现，现在当场告知，
+                // 并弹出已有的「一键改用无线调试直连」对话框。
+                if (authMethod == AuthMethod.SHIZUKU) {
+                    runCatching {
+                        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                            if (!ShizukuController.isRunning()) {
+                                appendLog(
+                                    "⚠ Shizuku 已被系统回收（运行期熄屏 / 跑完的脆弱态所致，属预期现象）。" +
+                                        "下次运行前请重新启动 Shizuku，或在首页授权卡改用「无线调试直连」" +
+                                        "——那条通道不依赖 Shizuku，熄屏也不会掉。"
+                                )
+                                _shizukuLost.value = true
+                            }
+                        }
+                    }
+                }
                 // 一次运行结束后的日志处理：始终提供则直接上报；每次询问则弹一次提示；
                 // 不提供什么都不做。上传失败不影响运行结果，也不会打断 UI。
                 when (OnboardingPrefs.logSharing(app)) {
@@ -529,6 +588,34 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     val autoScreenOff: Boolean
         get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
             .getBoolean("auto_screen_off", true)
+
+    /**
+     * 运行期持有的 partial wakelock。
+     *
+     * 为什么需要：运行期间会自动熄屏（压内核竞态），而一次失败运行可能带着熄屏状态跑满
+     * 最多 15 分钟（30 次尝试 × 45~120 秒超时）。这段时间里系统很容易进 Doze，把
+     * **adb 拉起的 Shizuku 这类后台进程**收走 —— 用户反馈的"跑一次 Shizuku 就没了"就是这个。
+     * 拿一个 partial wakelock 可以既保持显示关闭（竞态友好的那一半），又不让系统进 Doze。
+     */
+    private var runWakeLock: android.os.PowerManager.WakeLock? = null
+
+    private fun acquireRunWakeLock() {
+        runCatching {
+            val pm = app.getSystemService(android.content.Context.POWER_SERVICE)
+                as android.os.PowerManager
+            runWakeLock = pm.newWakeLock(
+                android.os.PowerManager.PARTIAL_WAKE_LOCK, "RootMyS24:run"
+            ).apply {
+                setReferenceCounted(false)
+                acquire(20 * 60_000L) // 上限 20 分钟，与 app 侧 15 分钟运行超时对齐
+            }
+        }
+    }
+
+    private fun releaseRunWakeLock() {
+        runCatching { runWakeLock?.let { if (it.isHeld) it.release() } }
+        runWakeLock = null
+    }
 
     /** 设置页的"DirtyFrag 引擎（alpha）"开关；读 prefs 实时生效。 */
     fun setDfEngineEnabled(enabled: Boolean) {
@@ -702,6 +789,49 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         _state.value = _state.value.copy(ksuLoaded = loaded, rooted = loaded)
     }
 
+    /**
+     * Shizuku 不在运行时尝试把本次运行救回来。
+     *
+     * 云端 809 条 run 里有 240 条（30%）死在 stage1「Shizuku 未就绪」，根本没进 exploit；
+     * 而熄屏后 Shizuku 被系统回收是常态。两条恢复路径：
+     *
+     *  1. 老版本 Shizuku（11.x/12.x）自带 start.sh —— 顺着试着拉一下。
+     *  2. **本 App 自带、且此刻已连接的无线调试通道** —— 直接改用它继续本次运行。
+     *     两条通道都是 uid 2000 的 shell，流程早已被 `ShellExecutor` 抽象掉差异，
+     *     所以这一步是纯切换、零副作用，能把本该失败的一次运行救回来。
+     *
+     * 注：Shizuku 13.x 已移除 start.sh，且实测用 `app_process` 直启会被系统 Killed
+     * （它依赖自己的 native starter + 应用内配对流程），所以外部无法替用户拉起 Shizuku 服务 ——
+     * 不要在这里做无用功，走第 2 条路。
+     *
+     * @return true 表示已恢复（调用方可继续跑）。
+     */
+    private suspend fun recoverMissingShizuku(): Boolean {
+        // 1) 老版本 Shizuku 的启动脚本（新版没有，只是一次很便宜的尝试）
+        try {
+            val script = "/storage/emulated/0/Android/data/moe.shizuku.privileged.api/start.sh"
+            if (AdbWirelessController.isConnected()) {
+                AdbWirelessController.shell(
+                    "if [ -f $script ]; then sh $script >/dev/null 2>&1 && echo RMS24_TRIED; fi"
+                )
+                if (ShizukuController.pingUntilRunning(3_000)) {
+                    appendLog("✔ Shizuku 已由本 App 自动拉起")
+                    return true
+                }
+            }
+        } catch (_: Throwable) {
+            // 锦上添花的步骤，失败不影响下面的主路径
+        }
+
+        // 2) 主路径：本 App 的无线调试通道已经连着，就改用它继续
+        if (AdbWirelessController.isConnected()) {
+            appendLog("ℹ Shizuku 未在运行，改用已连接的无线调试通道继续本次运行")
+            switchToAdbWireless()
+            return true
+        }
+        return false
+    }
+
     private suspend fun runRootFlow() = withContext(Dispatchers.IO) {
         appendLog("◆ " + app.getString(R.string.log_starting))
         appendLog("◆ " + app.getString(R.string.log_payload, payloadName))
@@ -711,16 +841,26 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         when (authMethod) {
             AuthMethod.SHIZUKU -> {
                 if (!ShizukuController.pingUntilRunning()) {
-                    // 熄屏后 Shizuku 常被系统回收（或它依附的 ADB 会话被回收），
-                    // 这时给出可执行的出路：改用本 App 自带的无线调试直连
-                    appendLog("ℹ " + app.getString(R.string.log_shizuku_lost_hint))
-                    _shizukuLost.value = true
-                    throw IllegalStateException(app.getString(R.string.log_shizuku_not_running))
+                    // 熄屏后 Shizuku 常被系统回收。云端 809 条 run 里 240 条（30%）死在
+                    // stage1 这一步、根本没进 exploit。先尝试自动恢复（详见 recoverMissingShizuku）。
+                    appendLog("ℹ Shizuku 未在运行，尝试自动恢复…")
+                    if (recoverMissingShizuku()) {
+                        // 已恢复：要么 Shizuku 起来了，要么改用无线调试通道继续
+                    } else {
+                        // 两条路都不通，才给出引导（对话框里可一键切到无线调试）
+                        appendLog("ℹ " + app.getString(R.string.log_shizuku_lost_hint))
+                        _shizukuLost.value = true
+                        throw IllegalStateException(app.getString(R.string.log_shizuku_not_running))
+                    }
                 }
-                if (!ShizukuController.requestPermission()) {
-                    throw IllegalStateException(app.getString(R.string.log_shizuku_denied))
+                if (authMethod == AuthMethod.SHIZUKU) {
+                    if (!ShizukuController.requestPermission()) {
+                        throw IllegalStateException(app.getString(R.string.log_shizuku_denied))
+                    }
+                    appendLog("✔ " + app.getString(R.string.log_shizuku_ready))
+                } else {
+                    appendLog("✔ " + app.getString(R.string.log_adb_ready))
                 }
-                appendLog("✔ " + app.getString(R.string.log_shizuku_ready))
             }
             AuthMethod.ADB_WIRELESS -> {
                 if (!AdbWirelessController.isConnected()) {
@@ -755,6 +895,31 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         ).trim()
         appendLog("◆ " + app.getString(R.string.log_diag, pipeMax.ifBlank { "?" }, pipeUser.ifBlank { "?" }))
         appendLog("◆ " + app.getString(R.string.log_diag_version, uname.ifBlank { "?" }))
+
+        // 运行环境画像：GhostLock 打的是内核竞态，成功率和「内核有多闲」强相关
+        // （app 自己就靠运行期自动熄屏来降负载）。云端日志此前只记了管道限制和
+        // /proc/version，没法回答「什么样的状态该跑、什么状态该劝用户重启」。
+        // 这里把负载/D 状态任务数/可用内存一起采下来上云，后续用真实数据定阈值。
+        val loadAvg = shellExecutor.capture(
+            arrayOf("/system/bin/sh", "-c", "cat /proc/loadavg 2>&1")
+        ).trim()
+        val dStateCount = shellExecutor.capture(
+            arrayOf("/system/bin/sh", "-c", "ps -A -o STAT 2>/dev/null | grep -c '^D'")
+        ).trim()
+        val memInfo = shellExecutor.capture(
+            arrayOf(
+                "/system/bin/sh", "-c",
+                "grep -E 'MemAvailable|SwapTotal|SwapFree' /proc/meminfo 2>&1 | tr '\\n' ' '"
+            )
+        ).trim()
+        appendLog("◆ 环境: load=[$loadAvg] D态任务=[$dStateCount] $memInfo")
+        val load1 = loadAvg.substringBefore(' ').toDoubleOrNull() ?: 0.0
+        val dCount = dStateCount.toIntOrNull() ?: 0
+        val cores = Runtime.getRuntime().availableProcessors()
+        if (load1 > cores * 1.5 || dCount > 50) {
+            appendLog("⚠ 当前内核负载偏高（load1=$load1, 核数=$cores, D态任务=$dCount）：" +
+                "竞态成功率会明显下降。建议重启后再跑，或稍等片刻重试。")
+        }
         if (pipeMax.isNotBlank()) {
             val maxKb = pipeMax.toLongOrNull() ?: 0
             if (maxKb > 0 && maxKb < 131072) {
@@ -777,9 +942,18 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 2.6 清理残留：上次失败的 exploit 子进程/守护进程会残留并污染 uid 2000 的
         //     pipe_bufs 配额，导致 F_SETPIPE_SZ EPERM（16/16 失败根因之一）
         appendLog(app.getString(R.string.log_cleanup))
+        // 顺带清掉 /data/local/tmp 顶层的旧载荷：它们正是「成功 root 过一次」留下的
+        // root 属主残留（也是卡 [2/5] 的根源）。shell 有权删就顺手自愈；若本 run 已
+        // 退化到顶层目录，则不能删自己刚推上去的载荷。
+        val legacyResidue = if (stagingBase() == "/data/local/tmp") {
+            ""
+        } else {
+            "rm -f /data/local/tmp/$payloadName /data/local/tmp/$rootHelperName 2>/dev/null; "
+        }
         val cleanup = shellExecutor.shell(
             "pkill -9 -f 'cve-2026-43499' 2>/dev/null; " +
                 "pkill -9 -f 'cve43499' 2>/dev/null; " +
+                legacyResidue +
                 "rm -f /data/local/tmp/temp_su.sock /data/local/tmp/ksud-s25u-kdp /data/local/tmp/.ksud-stage; echo ok"
         )
         appendLog("✔ " + app.getString(R.string.log_cleanup_done, cleanup.first))
@@ -800,6 +974,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         if (autoScreenOff) {
             shellExecutor.shell("input keyevent 26")
             appendLog("◆ " + app.getString(R.string.log_screen_off))
+            // 提前把副作用讲清楚：熄屏是压竞态的必要手段，但 Shizuku 是 adb 拉起的
+            // 后台进程，熄屏后常被系统回收 —— 很多用户会以为"工具把 Shizuku 弄坏了"。
+            if (authMethod == AuthMethod.SHIZUKU) {
+                appendLog("ℹ 本次运行会熄屏，Shizuku 可能因此在跑完后被系统回收；" +
+                    "若不想受影响，可在首页授权卡改用「无线调试直连」。")
+            }
         }
         val env = arrayOf(
             "EXPLOIT_ATTEMPTS=30",
@@ -836,13 +1016,35 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         if (finalLog.contains("retval=0 socket=1") || finalLog.contains("done=1 root=1")) {
             rootObtained = true
         }
+        val exitCode = try { process.exitValue() } catch (_: Throwable) { -1 }
         if (!exploitCompleted) {
+            // 静默死亡（线上 27/809 条）：payload 一次结论都没留下就结束了，
+            // 日志停在 "fresh physrw pipe page=..." 之后（P0 oracle 已经跑过）。
+            // 以前只报一句「未知错误」：既定位不了，也没给出路。
+            // 这里把退出码/疑似信号写进日志（会随日志上云，后续可定量统计），
+            // 并说明为什么建议重启 —— payload 自己的保护逻辑就是「P0 会话被消耗后必须重启」，
+            // 我们不能替它赌一把盲重试（内核状态未知时盲重跑反而更危险）。
+            val killedBy = if (exitCode >= 128) exitCode - 128 else 0
+            appendLog(
+                if (killedBy > 0) "⚠ 载荷未给出结论就被终止：exit=$exitCode（疑似信号 $killedBy）"
+                else "⚠ 载荷未给出结论就结束：exit=$exitCode"
+            )
+            appendLog("◆ 这次没拿到 exploit 结论，内核侧状态可能已脏（P0 oracle / 管道页）。" +
+                "建议重启后再试：重启能一并清掉页缓存污染与残留状态，成功率也最高。")
             throw IllegalStateException(app.getString(R.string.log_exploit_incomplete))
         }
         if (!rootObtained) {
             throw IllegalStateException(app.getString(R.string.log_no_root))
         }
         appendLog("✔ " + app.getString(R.string.log_temp_root))
+
+        // 竞态阶段已经结束 —— 后面（ksud late-load / 验证）不再需要熄屏来压内核 work，
+        // 所以这里立刻唤屏：一次失败运行可能熄屏跑满 15 分钟，那正是 Shizuku 被
+        // 系统回收的高发窗口。早点亮屏能显著缩短这个窗口。
+        if (autoScreenOff) {
+            runCatching { shellExecutor.shell("input keyevent 26") }
+            appendLog("◆ 已唤醒屏幕（竞态阶段结束，不再需要熄屏）")
+        }
 
         // 4. KernelSU late-load（经 root 守护进程 temp_su.sock 以 root 执行）
         appendLog(app.getString(R.string.log_lateload))
