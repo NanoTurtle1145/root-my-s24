@@ -53,6 +53,15 @@
     <string name="rootflow_firmware_filter_all">全部</string>
     <string name="rootflow_firmware_no_match">未找到匹配的固件</string>
     <string name="rootflow_firmware_tested">已实测</string>
+    <!-- KSU 驱动版本选择与载荷在线状态（服务端 payloads.php 下发） -->
+    <string name="rootflow_ksu_label">KSU 版本</string>
+    <string name="rootflow_ksu_using">KSU: %1$s</string>
+    <string name="rootflow_ksu_tab_title">KernelSU 驱动版本</string>
+    <string name="rootflow_ksu_tab_hint">当前使用 %1$s · 仅对提供该版本的固件生效</string>
+    <string name="rootflow_ksu_unavailable">当前所选固件没有 KSU %1$s 驱动，已用默认版本</string>
+    <string name="rootflow_status_online">载荷状态：在线获取</string>
+    <string name="rootflow_status_bundled">载荷状态：使用内置默认值</string>
+    <string name="rootflow_firmware_stats">近期成功：%1$s</string>
     <string name="rootflow_start">开始 Root</string>
     <string name="rootflow_running">运行中...</string>
     <string name="rootflow_done">root 完成</string>

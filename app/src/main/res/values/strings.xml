@@ -92,6 +92,15 @@
     <string name="rootflow_firmware_filter_all">All</string>
     <string name="rootflow_firmware_no_match">No matching firmware found</string>
     <string name="rootflow_firmware_tested">tested</string>
+    <!-- KSU 驱动版本选择与载荷在线状态（服务端 payloads.php 下发） -->
+    <string name="rootflow_ksu_label">KSU version</string>
+    <string name="rootflow_ksu_using">KSU: %1$s</string>
+    <string name="rootflow_ksu_tab_title">KernelSU driver version</string>
+    <string name="rootflow_ksu_tab_hint">In use: %1$s · applies to firmware with a matching build</string>
+    <string name="rootflow_ksu_unavailable">This firmware has no KSU %1$s build; using the default</string>
+    <string name="rootflow_status_online">Payload status: fetched online</string>
+    <string name="rootflow_status_bundled">Payload status: built-in defaults</string>
+    <string name="rootflow_firmware_stats">Recent success: %1$s</string>
     <string name="rootflow_start">Start Root</string>
     <string name="rootflow_running">Running...</string>
     <string name="rootflow_done">root complete</string>

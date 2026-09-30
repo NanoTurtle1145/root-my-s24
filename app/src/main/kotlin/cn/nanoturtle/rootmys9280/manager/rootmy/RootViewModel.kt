@@ -1,6 +1,7 @@
 package cn.nanoturtle.rootmys9280.manager.rootmy
 
 import android.app.Application
+import cn.nanoturtle.rootmys9280.manager.logI
 import cn.nanoturtle.rootmys9280.manager.rootmy.dirtyfrag.DfDeviceCheck
 import android.content.ContentValues
 import android.os.Build
@@ -93,10 +94,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // —— 国行 S24 Ultra One UI 8.0（kernel 6.1.128，构建号 2755301）——
         // 与港版 CZA1 同内核版本但不同构建号，代码段符号相同，数据段偏移 +0x10000
         CZA1_CHC("cve-2026-43499-cza1-chc", "One UI 8.0", "S24 全系 · 国行", "CHC CZA1", Region.CHINA, "ksud-selected"),
-        // —— 测试入口（需在设置里启用「未经测试的载荷」才显示）——
-        // DZH3 + 新构建的 ksud 3.3.0（versionCode 32601，内嵌 DZH3 模块）；
-        // 载荷用当前源码重编的 DZF2 家族那份（DZF2 与 DZH3 符号布局 99.99% 相同）
-        DZH3_KSU330("cve-2026-43499", "One UI 8.5", "S24 全系 · 国行", "DZH3 · KSU 3.3.0 测试", Region.CHINA, "ksud-dzh3-32601", tested = false),
+        // 注：原先这里有一条重复的「DZH3 · KSU 3.3.0」条目，与 DZF2 用同一份载荷、只换 ksud。
+        // KSU 驱动版本已改为机型页的**独立选项卡**（服务端可远端改推荐版本），
+        // 同一个固件再出现两张卡片只会让人分不清，故删除。
         // CHC CZB2：独立定标载荷（kernel 6.1.128，构建号 2755301）+ 32525 ksud
         CZB2_CHC("cve-2026-43499-czb2", "One UI 8.0", "S24 全系 · 国行", "CHC CZB2", Region.CHINA, "ksud-czb2-32525", tested = false),
         // —— 港版/台版（实测稳定）—— 港台同构建号可共用载荷，台版直接选用港版条目
@@ -282,7 +282,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val payloadName: String get() = firmwareVersion.assetName
     private val rootHelperName = "cve-2026-43499-root"
     /** KernelSU 内核驱动：按所选固件的内核系列选择（5.15/6.1/6.6/6.12 各对应一个资产） */
-    private val ksudName: String get() = firmwareVersion.ksud
+    private val ksudName: String get() = ksuAssetFor(firmwareVersion)
     private val PREFS_SETTINGS = "settings"
     private val PREFS_FIRMWARE = "firmware_version"
     private val KEY_AUTH_METHOD = "auth_method"
@@ -373,6 +373,17 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             prefs.edit().putString(KEY_AUTH_METHOD, AuthMethod.SHIZUKU.name).apply()
         }
         restorePersistedLog()
+        // 载荷在线状态：先发布本地缓存，超过 TTL 就在后台刷新。
+        // 失败只是没有在线结论，机型页照常用内置默认值。
+        viewModelScope.launch(Dispatchers.IO) {
+            PayloadStatus.load(app)
+            // 一行自检日志：当前条目能用哪些 KSU 版本、最终用哪个。
+            // 排查"版本选择行是空的"这类问题时，看这一行就够了。
+            logI(
+                "ksu: ${firmwareVersion.name} versions=${ksuVersionsFor(firmwareVersion)}" +
+                    " → ${ksuVersionEffective(firmwareVersion)} (${ksuAssetFor(firmwareVersion)})"
+            )
+        }
     }
 
     /** 设置页开关：启用/禁用无线调试授权。禁用时若当前是无线调试则回退 Shizuku 并断开。 */
@@ -391,7 +402,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val prefs = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
         prefs.edit().putBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, enabled).apply()
         _untestedPayloadsEnabled.value = enabled
-        if (!enabled && !firmwareVersion.tested) {
+        if (!enabled && !isTested(firmwareVersion)) {
             firmwareVersion = FirmwareVersion.DZF2
         }
     }
@@ -434,8 +445,13 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             val prefs = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
             val name = prefs.getString(PREFS_FIRMWARE, FirmwareVersion.DZF2.name)
             val restored = FirmwareVersion.entries.firstOrNull { it.name == name } ?: FirmwareVersion.DZF2
+            // 服务端缓存里可能已经把这个条目标成「已实测」——构造期只能读本地缓存（不联网）
+            val cachedTested = PayloadStatus.cached(app).entries[restored.name]?.tested
             // 未经测试的载荷开关已关且上次选中了 untested 条目：回退到已实测的 DZF2
-            if (!prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false) && !restored.tested) {
+            if (!prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false) &&
+                cachedTested != true &&
+                !restored.tested
+            ) {
                 prefs.edit().putString(PREFS_FIRMWARE, FirmwareVersion.DZF2.name).apply()
                 FirmwareVersion.DZF2
             } else {
@@ -446,6 +462,152 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     /** 供独立选择页收集的版本状态流（进程级单例 VM，跨 Activity 同步） */
     val firmwareVersionState: StateFlow<FirmwareVersion> = _firmwareVersion
+
+    // ── 载荷在线状态与 KSU 版本选择 ────────────────────────────────
+    //
+    // 「已实测」与「该固件能用哪些 KSU 驱动」都由服务端 payloads.php 下发（见 [PayloadStatus]）：
+    // 实测结论、KSU 版本清单都是运维事实，改服务端 JSON 即刻生效，不必发版。
+    // 拉不到就退回 APK 内置的 tested 与条目默认 ksud —— 在线状态只做增强，不做依赖。
+
+    private val KEY_KSU_VERSION = "ksu_version"
+
+    /**
+     * 全局 KSU 版本偏好（`3.2.5` / `3.3.0`）；null = 跟随条目默认。
+     *
+     * 做成**全局一个开关**而不是逐条目选资产：逐条目的芯片嵌在"点一下即返回"的机型卡片里，
+     * 既难按（父级点击会抢事件，真机上是"点不动"），选完也看不出到底生效没有。
+     * 版本清单仍按条目过滤——没有对应内核模块的固件不会出现那个版本。
+     */
+    private val _ksuVersion: MutableStateFlow<String?> = MutableStateFlow(
+        app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getString(KEY_KSU_VERSION, null)
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+    )
+    val ksuVersionState: StateFlow<String?> = _ksuVersion
+
+    /** 服务端下发的载荷状态；拉取失败时为空 map（此时一切按内置默认工作）。 */
+    val payloadStatus: StateFlow<PayloadStatus.Snapshot> = PayloadStatus.snapshot
+
+    fun payloadEntry(v: FirmwareVersion): PayloadStatus.Entry? = payloadStatus.value.entries[v.name]
+
+    /** 「已实测」判定：**服务端结论优先**，其次 APK 内置值。 */
+    fun isTested(v: FirmwareVersion): Boolean = payloadEntry(v)?.tested ?: v.tested
+
+    /**
+     * 该条目可用、且与本机匹配的 KSU 版本；服务端清单在前，内置默认兜底。
+     *
+     * 兜底项拿不到版本号时（6.6/5.15/6.12 那几份没核对过版本常量）保持空白，
+     * 这样它不会冒充 3.2.5/3.3.0 混进版本选择行。
+     */
+    fun ksuOptions(v: FirmwareVersion): List<PayloadStatus.KsuOption> {
+        val online = payloadEntry(v)?.ksu.orEmpty().filter { it.appliesTo(deviceBuildTag) }
+        val fallback =
+            PayloadStatus.KsuOption(
+                asset = v.ksud,
+                label = defaultKsuLabel(v.ksud),
+                state = "stable",
+                version = defaultKsuVersion(v.ksud),
+            )
+        return (online + fallback).distinctBy { it.version.ifBlank { it.asset } }
+    }
+
+    /** 该条目能选的版本号（给顶部选择行用）。 */
+    fun ksuVersionsFor(v: FirmwareVersion): List<String> =
+        ksuOptions(v).map { it.version }.filter { it.isNotEmpty() }.distinct()
+
+    /**
+     * 实际生效的版本号：偏好可用就用它，否则退回条目默认。
+     *
+     * [pref] 由调用方传入**它自己订阅到的那份状态**（Compose 里就是 `collectAsState` 的结果）。
+     * 直接读 `_ksuVersion.value` 在 Compose 里是**不会触发重组**的 ——
+     * 真机症状就是"点了 3.3.0 没反应，随便再点一下别的才突然变过去"。
+     */
+    fun ksuVersionEffective(v: FirmwareVersion, pref: String? = _ksuVersion.value): String {
+        if (pref != null && ksuOptions(v).any { it.version == pref }) return pref
+        return ksuOptions(v).firstOrNull()?.version.orEmpty()
+    }
+
+    /** 偏好存在但当前固件不支持：顶部给一行提示，避免"选了却没生效"。 */
+    fun ksuPreferenceUnavailable(v: FirmwareVersion, pref: String? = _ksuVersion.value): Boolean {
+        if (pref == null) return false
+        return ksuOptions(v).none { it.version == pref }
+    }
+
+    /** 实际使用的 KSU 资产。 */
+    fun ksuAssetFor(v: FirmwareVersion): String {
+        val version = ksuVersionEffective(v)
+        return ksuOptions(v).firstOrNull { it.version == version }?.asset ?: v.ksud
+    }
+
+    fun ksuLabelFor(v: FirmwareVersion): String {
+        val version = ksuVersionEffective(v)
+        val option = ksuOptions(v).firstOrNull { it.version == version }
+        return option?.label?.takeIf { it.isNotBlank() } ?: defaultKsuLabel(ksuAssetFor(v))
+    }
+
+    fun setKsuVersion(version: String?) {
+        _ksuVersion.value = version?.trim()?.takeIf { it.isNotEmpty() }
+        // 一行日志：点击有没有生效，看这里最直接（界面不刷新时也能量出状态确实变了）
+        logI("ksu: preference → ${_ksuVersion.value ?: "默认"}")
+        app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .edit()
+            .apply {
+                val v = _ksuVersion.value
+                if (v == null) remove(KEY_KSU_VERSION) else putString(KEY_KSU_VERSION, v)
+            }
+            .apply()
+    }
+
+    /**
+     * 内置资产名 → 展示名（服务端没给清单时的兜底文案）。
+     *
+     * 只写版本号、不重复 "KSU" 前缀：调用处文案本身是 `KSU: %1$s`，
+     * 写成 "KSU 3.2.5" 会渲染成 "KSU: KSU 3.2.5"（真机 dump 里踩到过）。
+     */
+    private fun defaultKsuLabel(asset: String): String = when {
+        asset.contains("dzh3-32601") -> "3.3.0"
+        isKsu325(asset) -> "3.2.5"
+        else -> asset.removePrefix("ksud-")
+    }
+
+    /**
+     * 内置资产名 → 版本号（决定它是否出现在版本选择行里）。
+     *
+     * 只对**核对过二进制版本常量**的资产给号：ksud-selected 与 ksud-czb2-32525 内嵌
+     * `32525 + 3.2.5`，ksud-dzh3-32601 内嵌 `32601 + 3.3.0`。其余留空，不进选择行。
+     */
+    private fun defaultKsuVersion(asset: String): String = when {
+        asset.contains("dzh3-32601") -> "3.3.0"
+        isKsu325(asset) -> "3.2.5"
+        else -> ""
+    }
+
+    /**
+     * 是否属于 KSU 3.2.5 那一档的驱动。
+     *
+     * 判断依据是**二进制里的版本常量**（`build.rs` 会把 versionCode/versionName 编进去），
+     * 不是文件名：
+     *   ksud-selected        → 32525 + 3.2.5
+     *   ksud-czb2-32525      → 32525 + 3.2.5
+     *   ksud-android13-5.15  → 32525 + 3.2.5
+     *   ksud-android15-6.6   → 30001 + 3.2.5（版本号来自深度 1 的浅克隆，名称是对的）
+     *   ksud-android16-6.12  → 32527（= 3.2.5 之后 2 个提交，未嵌版本名串）
+     */
+    private fun isKsu325(asset: String): Boolean = when {
+        asset.contains("dzh3-32601") -> false
+        asset == "ksud-selected" -> true
+        asset.contains("czb2-32525") -> true
+        asset.contains("android13-5.15") -> true
+        asset.contains("android15-6.6") -> true
+        asset.contains("android16-6.12") -> true
+        else -> false
+    }
+
+    /** 主动刷新载荷状态（固件选择页下拉/进入时调用）。 */
+    fun refreshPayloadStatus(force: Boolean = true) {
+        viewModelScope.launch(Dispatchers.IO) { PayloadStatus.load(app, force) }
+    }
 
     /** 「每次询问」模式下运行结束后的上传提示（true=应弹窗）。 */
     private val _uploadPrompt = MutableStateFlow(false)
@@ -527,6 +689,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 每轮开头写一行运行编号，供服务端精确去重（见 currentRunId 注释）
         currentRunId = newRunId()
         appendLog("RUN-ID: $currentRunId")
+        // 记下本轮用的载荷与 KSU 驱动版本：服务端据此把成功率按 KSU 版本拆开统计
+        appendLog(
+            "载荷: ${firmwareVersion.assetName} · KSU: ${ksuLabelFor(firmwareVersion)}" +
+                " (${ksuAssetFor(firmwareVersion)})"
+        )
         _state.value = _state.value.copy(busy = true, rooted = false, currentStage = 0)
         viewModelScope.launch {
             acquireRunWakeLock()
@@ -1073,7 +1240,20 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             arrayOf("/system/bin/sh", "-c", "ls -la /data/local/tmp/temp_su.sock 2>&1")
         )
         appendLog(app.getString(R.string.log_daemon_check, daemonCheck.trim()))
-        appendLog("✔ " + app.getString(R.string.log_install_manager))
+        // 管理器状态：报**实际装了什么**，不再写死 "v3.2.5 / versionCode 32525"。
+        // （写死的那句会让人以为必须装 32525，而我们自己的 32601 管理器同样可用。）
+        runCatching {
+            val pm = app.packageManager
+            val info = pm.getPackageInfo("me.weishu.kernelsu", 0)
+            @Suppress("DEPRECATION")
+            val code = info.versionCode
+            appendLog(
+                "✔ KernelSU 管理器已就绪：" + info.versionName + " (" + code + ")" +
+                    if (code >= 32601) "" else "；建议更新到 32601（3.3.0）以匹配 3.3.0 驱动"
+            )
+        }.onFailure {
+            appendLog("⚠ 未检测到 KernelSU 管理器（me.weishu.kernelsu）：装它才能管理 root / 模块")
+        }
 
         _state.value = _state.value.copy(rooted = true)
         appendLog("🎉 " + app.getString(R.string.log_flow_done))

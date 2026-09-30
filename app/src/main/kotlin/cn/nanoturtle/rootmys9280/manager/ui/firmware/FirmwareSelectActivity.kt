@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,10 +37,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
+import cn.nanoturtle.rootmys9280.manager.logI
 import cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel
 import cn.nanoturtle.rootmys9280.manager.ui.theme.LocalizedContent
 import cn.nanoturtle.rootmys9280.manager.ui.theme.VectorTheme
@@ -91,6 +97,10 @@ private fun FirmwareSelectContent(
 ) {
     val firmwareVersion by vm.firmwareVersionState.collectAsStateWithLifecycle()
     val untestedEnabled by vm.untestedPayloadsEnabled.collectAsStateWithLifecycle()
+    // 在线载荷状态（「已实测」结论 + KSU 版本清单 + 近期成功率）；拉不到就为空，一切走内置默认
+    val payload by vm.payloadStatus.collectAsStateWithLifecycle()
+    // 进入页面时按 TTL 决定是否刷新（force=false：缓存新鲜就不打扰服务端）
+    LaunchedEffect(Unit) { vm.refreshPayloadStatus(force = false) }
     var query by rememberSaveable { mutableStateOf("") }
     // null = 全部地区；否则只显示该地区
     var filterRegion by remember { mutableStateOf<RootViewModel.Region?>(null) }
@@ -183,13 +193,81 @@ private fun FirmwareSelectContent(
                     )
                 }
             }
+            // KSU 驱动版本：**独立选项卡**，与上面的地区/机型筛选分开。
+            //
+            // 之前把它混进筛选芯片里、又在每张卡片上写一行「KSU: x」，看起来像三套机制
+            // （重复的 DZH3·KSU 条目 + 筛选芯片 + 卡片行），所以这里收成一处：
+            // 选项卡决定"用哪个驱动"，卡片只负责选固件。
+            val ksuVersions =
+                RootViewModel.FirmwareVersion.entries
+                    .flatMap { vm.ksuVersionsFor(it) }
+                    .distinct()
+                    .sortedDescending()
+            val ksuPref by vm.ksuVersionState.collectAsStateWithLifecycle()
+            val ksuEffective = vm.ksuVersionEffective(firmwareVersion, ksuPref)
+            if (ksuVersions.size > 1) {
+                Surface(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainer,
+                ) {
+                    Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+                        Text(
+                            text = stringResource(R.string.rootflow_ksu_tab_title),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                            ksuVersions.forEachIndexed { index, version ->
+                                SegmentedButton(
+                                    selected = version == ksuEffective,
+                                    onClick = { vm.setKsuVersion(version) },
+                                    shape = SegmentedButtonDefaults.itemShape(index, ksuVersions.size),
+                                    label = { Text(version) },
+                                )
+                            }
+                        }
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            text =
+                                stringResource(
+                                    R.string.rootflow_ksu_tab_hint,
+                                    ksuEffective.ifEmpty { "—" },
+                                ),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+            LaunchedEffect(ksuVersions, ksuEffective) {
+                // 自检：选项卡里有哪些版本、当前生效哪个（排查"看不到某版本"直接看这行）
+                logI("ksu tab: options=$ksuVersions effective=$ksuEffective")
+            }
+            // 状态来源提示：改了服务端 payloads.json 就能远端改「已实测」与 KSU 清单
+            Text(
+                text =
+                    stringResource(
+                        if (payload.entries.isEmpty()) R.string.rootflow_status_bundled
+                        else R.string.rootflow_status_online,
+                    ),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp),
+            )
             Spacer(Modifier.height(4.dp))
 
-            // 过滤逻辑：地区 + 机型系列 + 搜索关键词（匹配机型/系统版本/固件范围）
+            // 过滤逻辑：地区 + 机型系列 + KSU 版本 + 搜索关键词（匹配机型/系统版本/固件范围）
             // 未经测试的载荷仅在设置里启用后才显示
             val normalizedQuery = query.trim().lowercase()
             val allVersions = RootViewModel.FirmwareVersion.entries
-                .filter { untestedEnabled || it.tested }
+                // 「已实测」= 服务端结论优先，其次内置值（在线状态可远端上下线）
+                // 用订阅到的快照判断「已实测」：vm.isTested() 内部读的是 .value
+                .filter { untestedEnabled || (payload.entries[it.name]?.tested ?: it.tested) }
                 .filter { filterRegion == null || it.region == filterRegion }
                 .filter { filterSeries == null || it.series == filterSeries }
                 .filter { version ->
@@ -207,7 +285,9 @@ private fun FirmwareSelectContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(16.dp),
                 )
-            } else if (normalizedQuery.isEmpty() && filterRegion == null && filterSeries == null) {
+            } else if (normalizedQuery.isEmpty() && filterRegion == null && filterSeries == null &&
+                true
+            ) {
                 // 无搜索词、无筛选 → 按地区分组展示
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
@@ -244,6 +324,7 @@ private fun FirmwareSelectContent(
                         }
                         item {
                             FirmwareVersionCard(
+                                vm = vm,
                                 versions = versions,
                                 selected = firmwareVersion,
                                 onSelect = {
@@ -264,6 +345,7 @@ private fun FirmwareSelectContent(
                 ) {
                     item {
                         FirmwareVersionCard(
+                            vm = vm,
                             versions = allVersions,
                             selected = firmwareVersion,
                             onSelect = {
@@ -284,10 +366,15 @@ private fun FirmwareSelectContent(
 /** 固件版本列表：每行 系统版本 + 适配机型 + 适配系统范围，大小圆角分组。 */
 @Composable
 private fun FirmwareVersionCard(
+    vm: RootViewModel,
     versions: List<RootViewModel.FirmwareVersion>,
     selected: RootViewModel.FirmwareVersion,
     onSelect: (RootViewModel.FirmwareVersion) -> Unit,
 ) {
+    // 卡片**自己订阅**所依赖的状态。
+    // 父级重组时 Compose 有可能跳过参数未变的子组件，所以在这里读 vm 的 `.value`
+    // 是不可靠的：会出现"服务端改了已实测标记、界面却不刷新"这类假象。
+    val payloadInCard by vm.payloadStatus.collectAsStateWithLifecycle()
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -332,7 +419,7 @@ private fun FirmwareVersionCard(
                                 text = version.label,
                                 style = MaterialTheme.typography.bodyLarge,
                             )
-                            if (version.tested) {
+                            if (payloadInCard.entries[version.name]?.tested ?: version.tested) {
                                 Spacer(Modifier.width(6.dp))
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
@@ -365,6 +452,24 @@ private fun FirmwareVersionCard(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
+                        // 服务端补充说明与近期成功率（来自真实运行日志）
+                        val entry = payloadInCard.entries[version.name]
+                        val note = entry?.note.orEmpty()
+                        if (note.isNotEmpty()) {
+                            Text(
+                                text = note,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        val stats = entry?.rateText.orEmpty()
+                        if (stats.isNotEmpty()) {
+                            Text(
+                                text = stringResource(R.string.rootflow_firmware_stats, stats),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 }
             }

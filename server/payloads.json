@@ -1,0 +1,109 @@
+{
+  "updated": "2026-09-30T16:40:00+08:00",
+  "window_days": 60,
+  "entries": {
+    "DZH3_KSU330": {
+      "tested": true,
+      "builds": [
+        "*DZH3"
+      ],
+      "note": "KSU 3.3.0（32601）· 内嵌内核模块已核对为 android14-6.1_kernelsu-dzh3-DZH3npt.ko，vermagic 与真机 6.1.145-android14-11-3254743-abS9280ZCS6DZH3 逐字节一致；真机验证中，异常可切回 3.2.5",
+      "ksu": [
+        {
+          "asset": "ksud-dzh3-32601",
+          "label": "3.3.0",
+          "version": "3.3.0",
+          "state": "stable",
+          "devices": [
+            "*DZH3"
+          ]
+        },
+        {
+          "asset": "ksud-selected",
+          "label": "3.2.5",
+          "version": "3.2.5",
+          "state": "stable"
+        }
+      ]
+    },
+    "DZF2": {
+      "builds": [
+        "*DZF2",
+        "*DZE2",
+        "*DZG1",
+        "*DZH3"
+      ],
+      "ksu": [
+        {
+          "asset": "ksud-dzh3-32601",
+          "label": "3.3.0",
+          "version": "3.3.0",
+          "state": "stable",
+          "devices": [
+            "*DZH3"
+          ]
+        },
+        {
+          "asset": "ksud-selected",
+          "label": "3.2.5",
+          "version": "3.2.5",
+          "state": "stable"
+        }
+      ]
+    },
+    "CZB2_CHC": {
+      "builds": [
+        "*CZB2"
+      ],
+      "ksu": [
+        {
+          "asset": "ksud-czb2-32525",
+          "label": "3.2.5",
+          "version": "3.2.5",
+          "state": "stable"
+        }
+      ]
+    },
+    "CZA1_CHC": {
+      "builds": [
+        "*CZA1"
+      ],
+      "ksu": [
+        {
+          "asset": "ksud-selected",
+          "label": "3.2.5",
+          "version": "3.2.5",
+          "state": "stable"
+        }
+      ]
+    },
+    "CZG1": {
+      "builds": [
+        "*CZG1"
+      ],
+      "ksu": [
+        {
+          "asset": "ksud-android15-6.6",
+          "label": "3.2.5",
+          "version": "3.2.5",
+          "state": "stable"
+        }
+      ],
+      "note": "6.6 内核线的 KSU 驱动（版本常量 30001 + 3.2.5）"
+    },
+    "DZE2": {
+      "builds": [
+        "*DZE2",
+        "*DZG1"
+      ],
+      "ksu": [
+        {
+          "asset": "ksud-selected",
+          "label": "3.2.5",
+          "version": "3.2.5",
+          "state": "stable"
+        }
+      ]
+    }
+  }
+}

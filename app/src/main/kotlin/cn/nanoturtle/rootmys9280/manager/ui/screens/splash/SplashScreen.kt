@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import android.app.Application
+import android.os.Build
+import android.os.SystemClock
+import java.io.File
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,45 +27,93 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
 import kotlinx.coroutines.flow.first
+import cn.nanoturtle.rootmys9280.manager.logI
 import cn.nanoturtle.rootmys9280.manager.logW
 
-/** How long the animation itself needs, so the statue is never cut off mid-fade. */
-private const val ANIMATION_MS = 800L
+/** 图案淡入/缩放时长。放行闸门时图案必须已经画完，否则会出现"半张图"闪一下。 */
+private const val ART_MS = 320L
 
-/** The longest we wait on the daemon before showing the UI anyway, in its "not activated" state. */
-private const val DAEMON_TIMEOUT_MS = 2_500L
+/** 最短停留：与 daemon 握手**并行**计时，不再串行相加。 */
+private const val MIN_SPLASH_MS = 320L
+
+/**
+ * 寄生模式（被注入到 com.android.shell）下等 daemon binder 的上限。
+ *
+ * 那种模式确实有 daemon 会来握手，值得等一段；但仍然从原来的 2500ms 压到 1200ms。
+ */
+private const val DAEMON_TIMEOUT_MS = 1_200L
+
+/**
+ * 独立进程（用户点图标启动，免解锁流程走 Shizuku/无线调试）下的等待窗口。
+ *
+ * 实测：这种启动**根本不会有 daemon binder 到来**，闸门却每次都等满上限——
+ * 真机日志 `splash: handoff after 1202ms` 就是撞在 1200ms 上限上的结果，
+ * 这才是"开 App 慢"的主因。binder 是 StateFlow，真晚到了顶栏也会自己更新，
+ * 所以这里只留一个很短的窗口，够 KernelSU 挂钩子用即可。
+ */
+private const val BINDER_WINDOW_MS = 400L
+
+/**
+ * 当前是否运行在寄生进程里（被注入 com.android.shell）而不是独立进程。
+ *
+ * 两种模式的握手预期完全不同，所以不能用同一个等待窗口。
+ */
+private fun isParasiticProcess(): Boolean = runCatching {
+    val pkg = ServiceLocator.context.packageName
+    val name =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            Application.getProcessName()
+        } else {
+            File("/proc/self/cmdline").readText().trim('\u0000', ' ', '\n')
+        }
+    name != pkg
+}.getOrDefault(false)
+
+/** 闸门放行时的交叉淡出时长。 */
+private const val CROSSFADE_MS = 220
 
 /**
  * The Winged Victory, fading and scaling in — Vector, from *Victoria*.
  *
- * The handover is gated on the daemon rather than on a fixed timer, because arriving at Home before
- * the binder is up shows "Not Activated" on a device that is activated. [DAEMON_TIMEOUT_MS] is the
- * ceiling, so a daemon that never answers costs that much and no more.
+ * 交棒条件 = 「图案至少完整显示一次」**且**「binder 已就绪（或等满上限）」。
  *
- * [ANIMATION_MS] is then spent after the handshake rather than overlapped with it, so a binder that
- * resolves instantly still leaves the fade its full length instead of a flash of half-drawn artwork.
+ * 两者**并行**计时：以前是握手完再 delay(800)，每次开 App 都固定多付 800ms，
+ * 叠加 2.5s 的上限后最坏要 3.3 秒才见到界面（用户反馈"splash 太慢"就是这个）。
+ * 图案时长压到 [ART_MS] 后，放行那一刻图案已经画完，不会露出半张图。
+ *
+ * binder 晚到不会导致状态错乱：顶栏订阅的是 StateFlow，binder 到达后自己会更新。
  */
 @Composable
 fun SplashGate(content: @Composable () -> Unit) {
     var ready by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        // The handshake first, under a ceiling; then the artwork's own duration.
-        val bound =
-            withTimeoutOrNull(DAEMON_TIMEOUT_MS) { ServiceLocator.service.first { it != null } }
-        if (bound == null) {
-            logW("splash: no daemon binder after ${DAEMON_TIMEOUT_MS}ms, continuing unactivated")
+        val startAt = SystemClock.elapsedRealtime()
+        coroutineScope {
+            // 图案至少完整显示一次
+            launch { delay(MIN_SPLASH_MS) }
+            // 与图案并行地等 binder，等不到就先放行。
+            // 窗口按进程模式取：寄生模式有 daemon 会来；独立进程基本等不到，短窗即可。
+            val window = if (isParasiticProcess()) DAEMON_TIMEOUT_MS else BINDER_WINDOW_MS
+            launch {
+                val bound = withTimeoutOrNull(window) { ServiceLocator.service.first { it != null } }
+                if (bound == null) {
+                    logI("splash: no daemon binder within ${window}ms, continuing unactivated")
+                }
+            }
         }
-        delay(ANIMATION_MS)
         ready = true
+        logI("splash: handoff after ${SystemClock.elapsedRealtime() - startAt}ms")
     }
 
-    Crossfade(targetState = ready, animationSpec = tween(320), label = "splashHandoff") { done ->
+    Crossfade(targetState = ready, animationSpec = tween(CROSSFADE_MS), label = "splashHandoff") { done ->
         if (done) content() else WingedVictory()
     }
 }
@@ -73,13 +125,13 @@ fun WingedVictory() {
     val alpha by
         animateFloatAsState(
             targetValue = if (started) 1f else 0f,
-            animationSpec = tween(durationMillis = ANIMATION_MS.toInt()),
+            animationSpec = tween(durationMillis = ART_MS.toInt()),
             label = "splashAlpha",
         )
     val scale by
         animateFloatAsState(
             targetValue = if (started) 1f else 0.8f,
-            animationSpec = tween(durationMillis = ANIMATION_MS.toInt()),
+            animationSpec = tween(durationMillis = ART_MS.toInt()),
             label = "splashScale",
         )
 
