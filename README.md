@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <b>简体中文</b> · <a href="README.en.md">English</a>
+  <b>简体中文</b> · <a href="README.zh-TW.md">繁體中文</a> · <a href="README.en.md">English</a>
 </p>
 
 > 安全研究声明：本项目仅用于安全研究与自有设备维护。使用内核漏洞提权存在导致系统崩溃、数据丢失、设备变砖的风险，使用者需自行承担一切后果。请勿用于非法用途。
