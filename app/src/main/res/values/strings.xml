@@ -67,7 +67,10 @@
     <string name="settings_auto_screen_off_summary">Turns the screen off during the run to reduce kernel race probability</string>
     <string name="settings_brief_log">Brief log mode</string>
     <string name="settings_brief_log_summary">Show only summary lines in the run log to reduce clutter</string>
-    <string name="settings_auto_save_log">Auto-save log</string>
+    <string name="settings_raw_log">Upload full raw log</string>
+    <string name="settings_raw_log_summary">Do not truncate late-load output (for diagnosis)</string>
+    <string name="settings_auto_save_log">
+Auto-save log</string>
     <string name="settings_auto_save_log_summary">Persist run logs to disk so they survive a crash or reboot (debug option)</string>
     <string name="settings_adb_wireless">Wireless debugging auth</string>
     <string name="settings_adb_wireless_summary">Experimental. When enabled, the home screen shows wireless debugging controls (pairing / connect)</string>

@@ -426,6 +426,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     /** 调试选项：自动保存日志到磁盘 */
     private val KEY_AUTO_SAVE_LOG = "auto_save_log"
 
+    /** 调试选项：上传完整 raw 日志（不截断 late-load 中间输出） */
+    private val KEY_RAW_LOG = "raw_log"
+
     /** 机型/固件标识（供导出文件名使用） */
     private val KEY_DEVICE_BUILD_TAG = "device_build_tag"
 
@@ -804,6 +807,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     val autoSaveLog: Boolean
         get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
             .getBoolean(KEY_AUTO_SAVE_LOG, true)
+
+    /** 调试选项：上传完整 raw 日志（不截断 late-load 等中间输出）。默认关闭。 */
+    fun setRawLog(enabled: Boolean) {
+        app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .edit().putBoolean(KEY_RAW_LOG, enabled).apply()
+    }
+
+    val rawLog: Boolean
+        get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getBoolean(KEY_RAW_LOG, false)
 
     fun clearLog() {
         captured.clear()
@@ -1228,11 +1241,24 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 以 su 客户端模式连接 root 守护进程，守护进程 fork root 子进程执行:
         //   ksud late-load --ephemeral --package-name me.weishu.kernelsu
         val ksu = shellExecutor.shell("$tmpRootHelper --late-load 2>&1")
-        appendLog("ksud late-load: exit=${ksu.first}\n${ksu.second.trim().takeLast(300)}")
+        // raw 开关打开时保留完整输出：`loaded successfully` / `already loaded, skip` 这句
+        // 分叉点通常落在输出中间，takeLast(300) 会把它裁掉，服务端根本看不到。
+        val lateLoadOut = if (rawLog) ksu.second.trim() else ksu.second.trim().takeLast(300)
+        appendLog("ksud late-load: exit=${ksu.first}\n$lateLoadOut")
         if (ksu.first != 0) {
             throw IllegalStateException(app.getString(R.string.log_lateload_fail, ksu.first))
         }
         appendLog("✔ " + app.getString(R.string.log_driver_loaded))
+
+        // 4.5 诊断：趁 root 窗口还在，抓内核侧 insmod/late-load 的判定日志。
+        // 真机现象是「exit=0 但 /proc/modules 有僵尸记录、/sys/module/kernelsu 不存在、
+        // Manager 不认」——只有内核 dmesg 能说出第一次 finit_module 到底是被
+        // vermagic / 签名 / KDP 哪一道拦下。root 通道是同一个 $tmpRootHelper。
+        val diag = shellExecutor.shell(
+            "$tmpRootHelper sh -c 'dmesg 2>/dev/null | grep -iE " +
+            "\"kernelsu|finit_module|insmod|vermagic|module|cfi|defex|kdp|rkp|denied|unauthorized|signature\" | tail -60' 2>&1"
+        )
+        appendLog("◆ dmesg(内核判定): exit=${diag.first}\n${diag.second.trim().takeLast(2500)}")
 
         // 5. 验证（late-load 内部已做 KSU 驱动 ioctl 校验；root 由 KernelSU 管理器提供）
         appendLog(app.getString(R.string.log_verify))

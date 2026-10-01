@@ -71,6 +71,7 @@ private const val PREFS_SETTINGS = "settings"
 private const val KEY_AUTO_SCREEN_OFF = "auto_screen_off"
 private const val KEY_BRIEF_LOG = "brief_log"
 private const val KEY_AUTO_SAVE_LOG = "auto_save_log"
+private const val KEY_RAW_LOG = "raw_log"
 private const val KEY_ADB_WIRELESS_ENABLED = "adb_wireless_enabled"
 private const val KEY_UNTESTED_PAYLOADS_ENABLED = "untested_payloads_enabled"
 private const val KEY_DF_ENGINE_ENABLED = "df_engine_enabled"
@@ -102,6 +103,9 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
     }
     var autoSaveLog by remember {
         mutableStateOf(prefs.getBoolean(KEY_AUTO_SAVE_LOG, true))
+    }
+    var rawLog by remember {
+        mutableStateOf(prefs.getBoolean(KEY_RAW_LOG, false))
     }
     var adbWirelessEnabled by remember {
         mutableStateOf(prefs.getBoolean(KEY_ADB_WIRELESS_ENABLED, false))
@@ -323,7 +327,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                 }
                 GroupedRow(
                     index = 2,
-                    count = 5,
+                    count = 6,
                 ) {
                     ListItem(
                         modifier =
@@ -345,7 +349,29 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                 }
                 GroupedRow(
                     index = 3,
-                    count = 5,
+                    count = 6,
+                ) {
+                    ListItem(
+                        modifier =
+                            Modifier.toggleable(
+                                value = rawLog,
+                                role = Role.Switch,
+                                onValueChange = { enabled ->
+                                    rawLog = enabled
+                                    prefs.edit().putBoolean(KEY_RAW_LOG, enabled).apply()
+                                },
+                            ),
+                        leadingContent = {
+                            Icon(Icons.AutoMirrored.Rounded.Notes, contentDescription = null)
+                        },
+                        supportingContent = { Text(stringResource(R.string.settings_raw_log_summary)) },
+                        trailingContent = { Switch(checked = rawLog, onCheckedChange = null) },
+                        colors = cardRowColors,
+                    ) { Text(stringResource(R.string.settings_raw_log)) }
+                }
+                GroupedRow(
+                    index = 4,
+                    count = 6,
                 ) {
                     ListItem(
                         modifier =
