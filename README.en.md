@@ -189,11 +189,13 @@ the KNOX e-fuse stays intact.
 - The exploit is probabilistic: retry a few times, reboot if needed
 - Running with the screen off is recommended (fewer kernel races → fewer crashes)
 - KernelSU must be re-loaded by running "Start Root" once after every reboot
-- **Treat the device as fragile after a run**: the exploit deliberately keeps a process holding
-  reclaimed kernel pages (`stability keeper`), leaving the kernel unstable. Whether it succeeded or
-  not, do what you need with root and then **reboot promptly** — do not keep using the phone in that
-  state. Waking the display starts a long chain of display/GPU work that can hit those leftover
-  structures and hard-reset the device.
+- **You can keep using the device afterwards, but do not linger**: the exploit leaves a process
+  holding a few reclaimed kernel pages (`stability keeper`). The kernel still accounts those pages as
+  free, so under heavy memory pressure they can occasionally be hit and the device may reset.
+  **Day-to-day use is normally fine** (the early "black screen on unlock" crash was fixed by forking
+  the keeper earlier), but it is best to finish what you need with root and reboot rather than
+  staying in heavy-load scenarios (games, many background tasks, repeated lock/unlock) for long.
+  This holds whether the run succeeded or failed — a failed run has already modified kernel memory too.
 - **Reboot before retrying**: running again without a reboot after a failed attempt usually just
   keeps failing (stale kernel state is not cleaned up)
 - **The manager must be the official KernelSU v3.3.0**: the driver only trusts the official signature;
