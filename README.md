@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.3.0-1E88E5?style=flat-square" alt="Version 3.3.0"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.5.0-1E88E5?style=flat-square" alt="Version 3.5.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24"><img src="https://img.shields.io/badge/platform-Android-1E88E5?style=flat-square" alt="Android"></a>
 </p>
@@ -46,6 +46,9 @@
 - 不熔断 KNOX：e-fuse 状态保持原样（可搭配 KnoxPatch 恢复 Secure Folder 等 KNOX 功能）
 - 半持久化：每次重启后运行一次 App 即可重新加载 KernelSU 驱动
 - 支持 KernelSU 生态：Zygisk-Next / LSPosed / KnoxPatch 等模块
+- **KernelSU 驱动版本可选**（机型页独立选项卡）：**3.3.0（推荐）** 或 3.2.5；版本清单由服务端在线下发，不适用的固件自动回退默认驱动
+- **SELinux 隐藏（3.3.0 独有）**：管理器「SELinux 状态」显示**强制执行**，而内核实际处于宽容模式，相关修改更难被检测（3.2.5 无此能力，会显示「宽容模式」）
+- 「已实测」标记**在线获取**：机型卡片的实测状态由服务端下发，无需等 App 更新即可调整
 - 现代 Material 3 界面：动态 ambience 头部、悬浮导航、多语言
 - 首次启动必读指南：说明临时 root 不解锁 bootloader、重启即恢复，并警告不要用 KernelSU 永久安装（锁定 BL 上重启可能变砖）；关于页可随时再看
 - 运行日志共享（可选）：始终提供 / 每次询问 / 不提供，设置里随时可改，用于诊断新固件上的失败
@@ -56,24 +59,41 @@
 | 机型 | 固件 | 内核 | 状态 |
 |---|---|---|---|
 | SM-S9280（国行 DZF2） | S9280ZCS6DZF2 | 6.1.145 | 已实测成功（基线） |
+| **SM-S9280（国行 DZH3）** | **S9280ZCS6DZH3** | **6.1.145** | **已实测成功（KernelSU 3.3.0 适配完成）** |
 | SM-F9580（国行 Z Fold6） | 共用 DZF2 载荷 | 同 GKI 构建号 | 酷安用户实测成功 |
 | SM-S9280（港版/台版 DZE2） | S9280ZHS6DZE2 | 6.1.145 | 已实测成功（港台同构建号共用载荷） |
 | SM-S9280（国行 DZG1） | S9280ZCS6DZG1 | 6.1.145 | 并入 DZF2 载荷（v2.5.6 起） |
+| SM-S9280（港版/台版 DZH3） | S9280ZHS6DZH3 | 6.1.145 | 并入 DZE2 载荷（与外版共用） |
 | SM-S9280（港版/台版 CZA1） | S9280ZHS4CZA1 | 6.1.128 | 已定标（港台共用） |
 | SM-S9260（台版 DZG1） | S9260ZHS6DZG1 | 6.1.145 | 单设备实测成功（港台 DZE2 载荷，见 issue #3） |
 | SM-S9210（国行 BYH7，One UI 7） | S9210ZCU4BYH7 | 6.1.99 | 已定标，待真机验证 |
 | SM-S9310/S9360/S9380（国行 S25，One UI 8.5） | S9310ZCSCCZG1 | 6.6.98 | 已定标（Android 15 内核，独立载荷） |
 
 > 同平台（e3q/e1q）同构建号固件内核符号一致，可直接通用；港版与台版同构建号共用同一载荷。跨构建号需逐符号对比修正；跨平台/跨大版本需完整重新定标，且漏洞可能已被修复。适配方法与各目标定标报告见[文档导航](#文档导航)。
+>
+> **国行 DZF2 载荷自 v3.5.0 起覆盖 DZE2–DZH3**（同一条 6.1.145 内核线）；外版 DZE2 载荷覆盖 DZE2–DZG1。
+
+## KernelSU 驱动版本
+
+机型页有独立的「KernelSU 驱动版本」选项卡，切换它只决定**加载哪个 KernelSU 驱动**，exploit 载荷本身与版本无关。
+
+| 版本 | 说明 |
+|---|---|
+| **3.3.0（32601）** | **推荐**。支持 SELinux 隐藏——管理器「SELinux 状态」显示**强制执行**，内核实际处于宽容模式 |
+| 3.2.5（32525） | 回退用。Root 功能正常，但**无法隐藏 SELinux 修改**，管理器会显示「宽容模式」 |
+
+版本清单由服务端在线下发（第一项即当前推荐），且只对**提供该驱动的固件**生效——不适用的固件会自动回退到自身默认驱动，并在选项卡下方提示。
+
+> 驱动只认可**官方签名**的 KernelSU Manager。请安装官方 v3.3.0；装其它签名的版本会显示「未安装」，此时首页只提供「越狱」按钮而非「工作中 [越狱模式]」。
 
 ## 使用流程
 
 1. 安装 App，授权方式（v2.5.5 起无线调试为实验性开关，默认关闭）：
    - **Shizuku**（默认）：安装并启动 Shizuku（无线/有线 ADB 授权）
    - **无线调试**（实验性）：设置页开启「无线调试授权」后，主页支持通知配对 / 配对码 / 直连
-2. 选择目标固件版本（按地区分组：国行 / 港版台版），点击「开始 Root」（建议熄屏运行，降低内核竞态概率）
+2. 选择目标固件版本（按地区分组：国行 / 港版台版），并在「**KernelSU 驱动版本**」选项卡里选好版本（默认 3.3.0），点击「开始 Root」（建议熄屏运行，降低内核竞态概率）
 3. 等待 exploit 完成，自动执行 KernelSU late-load
-4. 安装 KernelSU Manager（v3.2.5），强制停止后重开，显示「工作中 <LKM> [越狱模式]」
+4. 安装 **官方 KernelSU Manager v3.3.0**，跑完后首页显示「**工作中 [越狱模式] · 版本 32601-2**」
 
 > exploit 是概率性的，失败/重启后重试即可（成功率随尝试累加）。成功标记：`exploit completed` + `retval=0 socket=1`。
 
@@ -85,7 +105,9 @@
 
 ### 入门与使用
 
-- [docs/release-v2.5.6.md](docs/release-v2.5.6.md) —— 最新发布说明（下载 / SHA256 / 系统要求 / 已知问题 / 更新日志）
+- [docs/release-v3.5.0.md](docs/release-v3.5.0.md) —— 最新发布说明（KernelSU 3.3.0 适配 / 完整改动清单）
+- [docs/release-v3.4.0.md](docs/release-v3.4.0.md) —— v3.4.0 发布说明
+- [docs/forum-and-admin.md](docs/forum-and-admin.md) —— 讨论区与管理端说明
 - [docs/auth-plan.md](docs/auth-plan.md) —— 授权方案规划（Shizuku / 无线调试各方案状态）
 - [docs/release-v2.5.5.md](docs/release-v2.5.5.md) —— v2.5.5 发布说明（无线调试收敛为实验性开关）
 - [docs/release-v2.2.md](docs/release-v2.2.md) —— v2.2 发布说明（历史）
@@ -130,6 +152,8 @@
 - 每次重启手机后需要重新运行一次「开始 Root」以加载 KernelSU 驱动
 - **跑完就当机器处于脆弱状态**：exploit 会故意留一个进程占住已回收的内核页（`stability keeper`），内核处于不稳定态。不管成功失败，拿到 root 后要做的事赶紧做，然后**立刻重启**，不要在这个状态下正常使用手机——解锁屏幕会唤醒显示/GPU 一大串 work，撞上这堆残留结构就会卡死重启。
 - **跑之前先重启**：上一次失败后不重启就接着跑，往往只会一直失败（残留状态未清理）。
+- **管理器必须用官方 KernelSU v3.3.0**：内核驱动只认官方签名的管理器，装其它签名的版本会显示「未安装」。
+- **系统负载高时成功率骤降**：刚开机、后台在跑重活（下载/游戏/录屏）时内核竞态更容易失败甚至崩溃，建议等 `load` 降到个位数再跑。
 
 ## 构建
 
@@ -142,11 +166,11 @@
 versionName 追加一个后缀，方便把 beta 包与正式发布区分开（关于页/设置页显示、APK manifest、上传的运行日志里的 appVersion 都会带上）：
 
 ```sh
-./gradlew :app:assembleRelease -Prms24Channel=alpha1   # → 3.3.0-alpha1 (138)  引擎试验包
-./gradlew :app:assembleRelease -Prms24Channel=alpha2   # → 3.3.0-alpha2 (138)
-./gradlew :app:assembleRelease -Prms24Channel=beta1    # → 3.3.0-beta1  (138)  机型/固件适配预览
-./gradlew :app:assembleRelease -Prms24Channel=beta2    # → 3.3.0-beta2  (138)
-./gradlew :app:assembleRelease -Prms24Channel=stable   # 正式版 → 3.3.0 (138)
+./gradlew :app:assembleRelease -Prms24Channel=alpha1   # → 3.5.0-alpha1 (157)  引擎试验包
+./gradlew :app:assembleRelease -Prms24Channel=alpha2   # → 3.5.0-alpha2 (157)
+./gradlew :app:assembleRelease -Prms24Channel=beta1    # → 3.5.0-beta1  (157)  机型/固件适配预览
+./gradlew :app:assembleRelease -Prms24Channel=beta2    # → 3.5.0-beta2  (157)
+./gradlew :app:assembleRelease -Prms24Channel=stable   # 正式版 → 3.5.0 (157)
 ```
 
 渠道语义（别混用）：
@@ -158,7 +182,7 @@ versionName 追加一个后缀，方便把 beta 包与正式发布区分开（�
 | `stable` | 正式发布 | 只收已实测通过的改动 |
 
 产物按 `RootMyS24-v{版本}-{渠道}-build{versionCode}.apk` 命名（如
-`RootMyS24-v3.3.0-alpha1-build138.apk`），一眼能看出某台机器装的是哪一版、属于哪条线。
+`RootMyS24-v3.5.0-alpha1-build157.apk`），一眼能看出某台机器装的是哪一版、属于哪条线。
 渠道后缀**不改变版本号本身**（versionCode 与 tag 推导出的基础版本都不动）。
 
 载荷（exploit / root helper / ksud）已内置在 `app/src/main/assets/`。载荷构建链属开发者职责，不在本仓库范围。
