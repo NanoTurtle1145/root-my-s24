@@ -155,6 +155,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         F9660BZDP("cve-2026-43499-F9660ZCU9BZDP", "One UI 8.5", "SM-F9660 国行 Z Fold7", "BZDP", Region.CHINA, "ksud-android15-6.6", tested = false),
         F966BBZG3("cve-2026-43499-F966BXXSBBZG3", "One UI 8.5", "SM-F966B 欧版 Z Fold7", "BZG3", Region.HONGKONG_TAIWAN, "ksud-android15-6.6"),
         // —— 心系天下 ——
+        // W23（SM-W9023N，Fold4 国行 W 系）：cape/SM8450，Android 12，内核 5.10.236。
+        // 与 S24 是完全不同的平台与内核世代，独立定标；KSU 用 android12-5.10 线。
+        W9023AIZF1("cve-2026-43499-W9023ZCSAIZF1", "Android 12", "W9023N 国行 心系天下 W23", "AIZF1", Region.CHINA, "ksud-android12-5.10", tested = false),
         W9025DZF2("cve-2026-43499-W9025ZCS4DZF2", "One UI 8.5", "W9025 国行 心系天下 W25", "DZF2", Region.CHINA, "ksud-selected", tested = false),
         W9025DZG3("cve-2026-43499-W9025ZCS4DZG3", "One UI 8.5", "W9025 国行 心系天下 W25", "DZG3", Region.CHINA, "ksud-selected", tested = false),
         W9026BZG3("cve-2026-43499-W9026ZCS8BZG3", "One UI 8.5", "W9026 国行 心系天下 W26", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
@@ -569,7 +572,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * 写成 "KSU 3.2.5" 会渲染成 "KSU: KSU 3.2.5"（真机 dump 里踩到过）。
      */
     private fun defaultKsuLabel(asset: String): String = when {
-        asset.contains("dzh3-32601") -> "3.3.0"
+        asset.endsWith("-32601") -> "3.3.0"
         isKsu325(asset) -> "3.2.5"
         else -> asset.removePrefix("ksud-")
     }
@@ -581,7 +584,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * `32525 + 3.2.5`，ksud-dzh3-32601 内嵌 `32601 + 3.3.0`。其余留空，不进选择行。
      */
     private fun defaultKsuVersion(asset: String): String = when {
-        asset.contains("dzh3-32601") -> "3.3.0"
+        asset.endsWith("-32601") -> "3.3.0"
         isKsu325(asset) -> "3.2.5"
         else -> ""
     }
@@ -598,7 +601,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      *   ksud-android16-6.12  → 32527（= 3.2.5 之后 2 个提交，未嵌版本名串）
      */
     private fun isKsu325(asset: String): Boolean = when {
-        asset.contains("dzh3-32601") -> false
+        asset.endsWith("-32601") -> false
         asset == "ksud-selected" -> true
         asset.contains("czb2-32525") -> true
         asset.contains("android13-5.15") -> true
