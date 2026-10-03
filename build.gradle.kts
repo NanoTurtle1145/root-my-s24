@@ -219,21 +219,22 @@ val versionHashProvider =
 val versionNameProvider = providers.of(GitLatestTagValueSource::class.java) {}
 
 /**
- * Pre-release channel tag appended to the reported version name, e.g. `3.3.0-beta`.
+ * Pre-release channel tag appended to the reported version name, e.g. `3.5.0-beta.166`.
  *
- * This never touches the version number itself: the version code still comes from the commit
- * count and the base version still comes from the nearest tag. It only marks the build as a
- * pre-release so beta APKs are told apart from the stable release on the About/Settings screen,
- * in the APK manifest, and in the run logs uploaded for diagnostics.
+ * 命名规则：预发布版本 = `<基版本>-<渠道>.<versionCode>`。
+ *   versionCode = git 提交数，天然单调递增且唯一：
+ *     - 每次提交 +1，不会重名、不会跳号，无需手工维护计数器；
+ *     - 看到 `beta.166` 就能和 git 的某个提交一一对应、精确回溯；
+ *     - 正式版仍是裸 tag（`3.5.0`），不带后缀。
+ * 渠道语义不变：alpha=引擎试验，beta=机型/固件适配预览，stable=正式发布。
  *
- * `-Prms24Channel=beta` is the default while 3.3.x is in beta; pass `-Prms24Channel=stable`
- * (or an empty value) to get the bare tag version.
+ * `-Prms24Channel=beta` 是默认值；传 `-Prms24Channel=stable`（或空值）得到裸 tag 版本。
  */
 val appChannel = providers.gradleProperty("rms24Channel").orElse("beta").get().trim().lowercase()
 
 val reportedVersionName =
     versionNameProvider.get().let { base ->
-        if (appChannel.isEmpty() || appChannel == "stable") base else "$base-$appChannel"
+        if (appChannel.isEmpty() || appChannel == "stable") base else "$base-$appChannel.${versionCodeProvider.get()}"
     }
 
 val injectedPackageName = "com.android.shell"

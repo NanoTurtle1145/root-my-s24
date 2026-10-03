@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Forum
@@ -298,31 +301,15 @@ fun AboutScreen(
 
         item {
             SectionLabel(stringResource(R.string.about_section_source))
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                GroupedRow(index = 0, count = 3) {
-                    LicenseRow(
-                        title = "RootMyS24 (GPL-3.0)",
-                        url = "https://github.com/NanoTurtle1145/root-my-s24",
-                        onOpenUrl = onOpenUrl,
-                        onOpenLicense = { showLicense = true },
-                    )
-                }
-                GroupedRow(index = 1, count = 3) {
-                    LicenseRow(
-                        title = "KernelSU (GPL-3.0)",
-                        url = "https://github.com/tiann/KernelSU",
-                        onOpenUrl = onOpenUrl,
-                        onOpenLicense = { showLicense = true },
-                    )
-                }
-                GroupedRow(index = 2, count = 3) {
-                    LicenseRow(
-                        title = "LSPosed (GPL-3.0)",
-                        url = "https://github.com/LSPosed/LSPosed",
-                        onOpenUrl = onOpenUrl,
-                        onOpenLicense = { showLicense = true },
-                    )
-                }
+            GroupedRow(index = 0, count = 1) {
+                ListItem(
+                    modifier = Modifier.fillMaxWidth().clickable { showLicense = true },
+                    leadingContent = { Icon(Icons.Rounded.Code, contentDescription = null) },
+                    headlineContent = { Text(stringResource(R.string.about_open_source_title)) },
+                    supportingContent = { Text(stringResource(R.string.about_open_source_summary)) },
+                    trailingContent = { Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null) },
+                    colors = cardRowColors,
+                )
             }
         }
 
@@ -409,19 +396,7 @@ fun AboutScreen(
                 val faqs = faqList()
                 faqs.forEachIndexed { index, faq ->
                     GroupedRow(index = index, count = faqs.size) {
-                        Column(Modifier.padding(16.dp)) {
-                            Text(
-                                text = "Q: ${faq.question}",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                text = "A: ${faq.answer}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
+                        FaqRow(faq = faq)
                     }
                 }
             }
@@ -458,6 +433,41 @@ fun AboutScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 16.dp, bottom = 24.dp),
+            )
+        }
+    }
+}
+
+/** 单条 FAQ：默认折叠，点标题展开答案。 */
+@Composable
+private fun FaqRow(faq: Faq) {
+    var expanded by remember { mutableStateOf(false) }
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable { expanded = !expanded }
+                .padding(16.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Q: ${faq.question}",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f),
+            )
+            Icon(
+                imageVector = if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        if (expanded) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "A: ${faq.answer}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

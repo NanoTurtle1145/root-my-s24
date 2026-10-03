@@ -279,12 +279,8 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
 
         item {
             SectionLabel(stringResource(R.string.settings_section_run))
-            // 大小圆角分组：第一行上大圆角、中间收小、最后一行下大圆角；行间保留间距不粘连
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                GroupedRow(
-                    index = 0,
-                    count = 5,
-                ) {
+                GroupedRow(index = 0, count = 2) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -296,17 +292,38 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                                 },
                             ),
                         leadingContent = { Icon(Icons.Rounded.Bedtime, contentDescription = null) },
-                        supportingContent = {
-                            Text(stringResource(R.string.settings_auto_screen_off_summary))
-                        },
+                        supportingContent = { Text(stringResource(R.string.settings_auto_screen_off_summary)) },
                         trailingContent = { Switch(checked = autoScreenOff, onCheckedChange = null) },
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_auto_screen_off)) }
                 }
-                GroupedRow(
-                    index = 1,
-                    count = 5,
-                ) {
+                GroupedRow(index = 1, count = 2) {
+                    ListItem(
+                        modifier =
+                            Modifier.toggleable(
+                                value = adbWirelessEnabled,
+                                role = Role.Switch,
+                                onValueChange = { enabled ->
+                                    adbWirelessEnabled = enabled
+                                    prefs.edit().putBoolean(KEY_ADB_WIRELESS_ENABLED, enabled).apply()
+                                    runCatching {
+                                        ServiceLocator.rootViewModel.setAdbWirelessEnabled(enabled)
+                                    }
+                                },
+                            ),
+                        leadingContent = { Icon(Icons.Rounded.SettingsRemote, contentDescription = null) },
+                        supportingContent = { Text(stringResource(R.string.settings_adb_wireless_summary)) },
+                        trailingContent = { Switch(checked = adbWirelessEnabled, onCheckedChange = null) },
+                        colors = cardRowColors,
+                    ) { Text(stringResource(R.string.settings_adb_wireless)) }
+                }
+            }
+        }
+
+        item {
+            SectionLabel(stringResource(R.string.settings_section_log))
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                GroupedRow(index = 0, count = 3) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -317,18 +334,13 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                                     prefs.edit().putBoolean(KEY_BRIEF_LOG, enabled).apply()
                                 },
                             ),
-                        leadingContent = {
-                            Icon(Icons.AutoMirrored.Rounded.Notes, contentDescription = null)
-                        },
+                        leadingContent = { Icon(Icons.AutoMirrored.Rounded.Notes, contentDescription = null) },
                         supportingContent = { Text(stringResource(R.string.settings_brief_log_summary)) },
                         trailingContent = { Switch(checked = briefLog, onCheckedChange = null) },
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_brief_log)) }
                 }
-                GroupedRow(
-                    index = 2,
-                    count = 6,
-                ) {
+                GroupedRow(index = 1, count = 3) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -339,18 +351,13 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                                     prefs.edit().putBoolean(KEY_AUTO_SAVE_LOG, enabled).apply()
                                 },
                             ),
-                        leadingContent = {
-                            Icon(Icons.Rounded.Save, contentDescription = null)
-                        },
+                        leadingContent = { Icon(Icons.Rounded.Save, contentDescription = null) },
                         supportingContent = { Text(stringResource(R.string.settings_auto_save_log_summary)) },
                         trailingContent = { Switch(checked = autoSaveLog, onCheckedChange = null) },
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_auto_save_log)) }
                 }
-                GroupedRow(
-                    index = 3,
-                    count = 6,
-                ) {
+                GroupedRow(index = 2, count = 3) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -361,44 +368,19 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                                     prefs.edit().putBoolean(KEY_RAW_LOG, enabled).apply()
                                 },
                             ),
-                        leadingContent = {
-                            Icon(Icons.AutoMirrored.Rounded.Notes, contentDescription = null)
-                        },
+                        leadingContent = { Icon(Icons.AutoMirrored.Rounded.Notes, contentDescription = null) },
                         supportingContent = { Text(stringResource(R.string.settings_raw_log_summary)) },
                         trailingContent = { Switch(checked = rawLog, onCheckedChange = null) },
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_raw_log)) }
                 }
-                GroupedRow(
-                    index = 4,
-                    count = 6,
-                ) {
-                    ListItem(
-                        modifier =
-                            Modifier.toggleable(
-                                value = adbWirelessEnabled,
-                                role = Role.Switch,
-                                onValueChange = { enabled ->
-                                    adbWirelessEnabled = enabled
-                                    prefs.edit().putBoolean(KEY_ADB_WIRELESS_ENABLED, enabled).apply()
-                                    // 同步进程级单例 VM 的 StateFlow，主页据此显示/隐藏无线调试控件
-                                    runCatching {
-                                        ServiceLocator.rootViewModel.setAdbWirelessEnabled(enabled)
-                                    }
-                                },
-                            ),
-                        leadingContent = {
-                            Icon(Icons.Rounded.SettingsRemote, contentDescription = null)
-                        },
-                        supportingContent = { Text(stringResource(R.string.settings_adb_wireless_summary)) },
-                        trailingContent = { Switch(checked = adbWirelessEnabled, onCheckedChange = null) },
-                        colors = cardRowColors,
-                    ) { Text(stringResource(R.string.settings_adb_wireless)) }
-                }
-                GroupedRow(
-                    index = 4,
-                    count = 6,
-                ) {
+            }
+        }
+
+        item {
+            SectionLabel(stringResource(R.string.settings_section_experimental))
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                GroupedRow(index = 0, count = 2) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -407,24 +389,18 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                                 onValueChange = { enabled ->
                                     untestedPayloadsEnabled = enabled
                                     prefs.edit().putBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, enabled).apply()
-                                    // 同步进程级单例 VM 的 StateFlow，固件选择页据此过滤 untested 条目
                                     runCatching {
                                         ServiceLocator.rootViewModel.setUntestedPayloadsEnabled(enabled)
                                     }
                                 },
                             ),
-                        leadingContent = {
-                            Icon(Icons.Rounded.WarningAmber, contentDescription = null)
-                        },
+                        leadingContent = { Icon(Icons.Rounded.WarningAmber, contentDescription = null) },
                         supportingContent = { Text(stringResource(R.string.settings_untested_payloads_summary)) },
                         trailingContent = { Switch(checked = untestedPayloadsEnabled, onCheckedChange = null) },
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_untested_payloads)) }
                 }
-                GroupedRow(
-                    index = 5,
-                    count = 6,
-                ) {
+                GroupedRow(index = 1, count = 2) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -438,9 +414,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                                     }
                                 },
                             ),
-                        leadingContent = {
-                            Icon(Icons.Rounded.Code, contentDescription = null)
-                        },
+                        leadingContent = { Icon(Icons.Rounded.Code, contentDescription = null) },
                         supportingContent = { Text(stringResource(R.string.settings_df_engine_summary)) },
                         trailingContent = { Switch(checked = dfEngineEnabled, onCheckedChange = null) },
                         colors = cardRowColors,

@@ -292,6 +292,13 @@
     <string name="feedback_submit">送出回報</string>
     <string name="feedback_ok">回報已送出，感謝！</string>
     <string name="feedback_fail">送出失敗：%1$s</string>
+    <string name="feedback_token_saved_hint">回報已提交，你可以在下方「我的回報」查看開發者回覆。</string>
+    <string name="feedback_mine_label">我的回報</string>
+    <string name="feedback_mine_item">回報 %1$s…</string>
+    <string name="feedback_mine_loading">正在查詢回覆…</string>
+    <string name="feedback_mine_no_reply">暫無回覆。</string>
+    <string name="feedback_mine_expand">查看回覆</string>
+    <string name="feedback_mine_collapse">收合</string>
     <string name="rootflow_series_hint">S24 全系列通用（S9210 / S9260 / S9280）：同一個構建號即可，不分機型。國行與外版不可混用，港台與歐美外版之間可互串。</string>
     <string name="update_new_title">發現新版本 %1$s</string>
     <string name="update_new_body">目前 %1$s（build %2$d），最新 %3$s（build %4$d）。</string>
@@ -301,4 +308,10 @@
     <string name="update_latest">已是最新版本（%1$s）</string>
     <string name="update_check_failed">檢查更新失敗：%1$s</string>
     <string name="update_downloading">正在下載，完成後會提示安裝</string>
+    <string name="log_asset_download_fail">載荷下載失敗：HTTP %1$s</string>
+    <string name="log_asset_sha_mismatch">載荷校驗失敗：期望 %1$s，實際 %2$s</string>
+    <string name="settings_section_log">日誌</string>
+    <string name="settings_section_experimental">實驗功能</string>
+    <string name="about_open_source_title">開源授權</string>
+    <string name="about_open_source_summary">RootMyS24、KernelSU、LSPosed — 均為 GPL-3.0</string>
 </resources>
