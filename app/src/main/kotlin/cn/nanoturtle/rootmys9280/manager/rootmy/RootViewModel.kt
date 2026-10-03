@@ -435,6 +435,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     /** 机型/固件标识（供导出文件名使用） */
     private val KEY_DEVICE_BUILD_TAG = "device_build_tag"
 
+    /** 反馈查询凭据（token）列表，逗号分隔；用于「我的反馈」查开发者回复 */
+    private val KEY_FEEDBACK_TOKENS = "feedback_tokens"
+
     /** 目标固件版本（持久化；切换后立即生效并触发 Compose 重组） */
     var firmwareVersion: FirmwareVersion
         get() = _firmwareVersion.value
@@ -1339,12 +1342,87 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /**
+     * 把资产落到 filesDir，必要时从远端下载并做 sha256 校验。
+     *
+     * 顺序：本地 filesDir 已有且 sha256 匹配 → 直接用；否则看该资产是否带在线下载地址
+     * （url）→ 下载到临时文件 → 校验 sha256（有值才校验）→ 原子改名到目标位置。
+     * APK 内置 assets 里的资产（无 url）仍走 extractAsset 直接解包。
+     */
     private fun extractAsset(name: String): File {
         val out = File(app.filesDir, name)
+        val remote = remoteAsset(name)
+
+        // 1) 本地已有且（若有 sha256）校验通过 → 直接复用
+        if (out.exists() && out.length() > 0) {
+            if (remote == null || remote.sha256.isBlank() || sha256Hex(out) == remote.sha256) {
+                return out
+            }
+            // 校验不过就删掉重下
+            out.delete()
+        }
+
+        // 2) 有在线地址 → 下载 + 校验
+        if (remote != null && remote.url.isNotBlank()) {
+            downloadAsset(remote.url, out, remote.sha256)
+            return out
+        }
+
+        // 3) 内置 assets 兜底
         app.assets.open(name).use { input ->
             out.outputStream().use { output -> input.copyTo(output) }
         }
         return out
+    }
+
+    /** 该资产名是否带在线下载信息（url/sha256）。来自服务端 KSU 清单。 */
+    private fun remoteAsset(name: String): PayloadStatus.KsuOption? =
+        payloadStatus.value.entries.values
+            .flatMap { it.ksu }
+            .firstOrNull { it.asset == name && it.url.isNotBlank() }
+
+    private fun sha256Hex(f: File): String {
+        val md = java.security.MessageDigest.getInstance("SHA-256")
+        f.inputStream().use { input ->
+            val buf = ByteArray(1 shl 16)
+            while (true) {
+                val n = input.read(buf)
+                if (n <= 0) break
+                md.update(buf, 0, n)
+            }
+        }
+        return md.digest().joinToString("") { "%02x".format(it) }
+    }
+
+    private fun downloadAsset(url: String, out: File, expectedSha: String) {
+        val tmp = File(app.filesDir, out.name + ".dl")
+        val client = okhttp3.OkHttpClient.Builder()
+            .connectTimeout(20, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(120, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
+        val req = okhttp3.Request.Builder().url(url).build()
+        appendLog("◆ 在线下载载荷: ${out.name} …")
+        client.newCall(req).execute().use { resp ->
+            if (!resp.isSuccessful) {
+                throw IllegalStateException(app.getString(R.string.log_asset_download_fail, resp.code))
+            }
+            val body = resp.body ?: throw IllegalStateException("empty body")
+            tmp.outputStream().use { os -> body.byteStream().use { it.copyTo(os) } }
+        }
+        if (expectedSha.isNotBlank()) {
+            val got = sha256Hex(tmp)
+            if (!got.equals(expectedSha, ignoreCase = true)) {
+                tmp.delete()
+                throw IllegalStateException(
+                    app.getString(R.string.log_asset_sha_mismatch, expectedSha.take(16), got.take(16))
+                )
+            }
+        }
+        if (!tmp.renameTo(out)) {
+            tmp.copyTo(out, overwrite = true)
+            tmp.delete()
+        }
+        appendLog("✔ 载荷就绪: ${out.name} (${out.length()} B)")
     }
 
     /**
@@ -1793,15 +1871,18 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * @param includeLog 是否附带当前运行日志（由用户在界面上显式勾选）。
      * @return 可直接展示的结果文案。
      */
+    /** 反馈提交结果：成功时带查询凭据 token，失败时带原因。 */
+    data class FeedbackSubmitResult(val message: String, val token: String?)
+
     suspend fun submitFeedback(
         kind: FeedbackKind,
         note: String,
         includeLog: Boolean,
-    ): String = withContext(Dispatchers.IO) {
+    ): FeedbackSubmitResult = withContext(Dispatchers.IO) {
         if (!LogUploader.isConfigured(app)) {
-            return@withContext app.getString(R.string.log_upload_not_configured)
+            return@withContext FeedbackSubmitResult(app.getString(R.string.log_upload_not_configured), null)
         }
-        val error =
+        val r =
             LogUploader.sendFeedback(
                 context = app,
                 kind = kind.name,
@@ -1809,9 +1890,34 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 info = feedbackInfo(),
                 log = if (includeLog) buildLogText() else null,
             )
-        if (error == null) app.getString(R.string.feedback_ok)
-        else app.getString(R.string.feedback_fail, error)
+        if (r.error != null) {
+            FeedbackSubmitResult(app.getString(R.string.feedback_fail, r.error), null)
+        } else {
+            // 本地保存凭据，用户日后能查这条反馈的开发者回复
+            r.token?.let { saveFeedbackToken(it) }
+            FeedbackSubmitResult(app.getString(R.string.feedback_ok), r.token)
+        }
     }
+
+    /** 已保存的反馈凭据（token）。用于「我的反馈」查看回复。 */
+    val savedFeedbackTokens: List<String>
+        get() =
+            app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+                .getString(KEY_FEEDBACK_TOKENS, null)
+                ?.split(',')
+                ?.filter { it.isNotBlank() }
+                ?: emptyList()
+
+    private fun saveFeedbackToken(token: String) {
+        val prefs = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+        val cur = savedFeedbackTokens.toMutableSet()
+        cur.add(token.trim())
+        prefs.edit().putString(KEY_FEEDBACK_TOKENS, cur.joinToString(",")).apply()
+    }
+
+    /** 凭据查回复；找不到返回 null。 */
+    suspend fun fetchFeedbackReply(token: String): String? =
+        LogUploader.fetchFeedbackReply(app, token)
 
     /**
      * 调试项：测试日志收集端是否可达。服务端只做数据库连通性自检、不写入日志，

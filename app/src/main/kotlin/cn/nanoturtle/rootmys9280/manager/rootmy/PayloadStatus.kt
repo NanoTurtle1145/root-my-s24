@@ -63,6 +63,13 @@ object PayloadStatus {
          * 所以这个限制由服务端下发而不是写死在 App 里。
          */
         val devices: List<String> = emptyList(),
+        /**
+         * 在线下载地址。非空表示该资产**不在 APK 里**，需按需从远端下载（如未测试资产
+         * 放在 GitHub Release）；为空表示沿用 APK 内置 assets。
+         */
+        val url: String = "",
+        /** 下载后的 sha256 校验值（十六进制，小写，无前缀）。空 = 不校验。 */
+        val sha256: String = "",
     ) {
         val isStable: Boolean get() = state.equals("stable", ignoreCase = true)
 
@@ -163,6 +170,8 @@ object PayloadStatus {
                         state = item.optString("state").trim().ifBlank { "candidate" },
                         version = item.optString("version").trim(),
                         devices = devices,
+                        url = item.optString("url").trim(),
+                        sha256 = item.optString("sha256").trim().lowercase(),
                     )
                 }
             }

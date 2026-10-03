@@ -119,22 +119,48 @@ object LogUploader {
      * @param log 附带的运行日志；用户没勾选时传 null。
      * @return 成功返回 null，失败返回可直接展示的原因。
      */
+    /** 反馈提交结果：成功时携带 id + token（查询凭据），失败时携带 error。 */
+    data class FeedbackResult(val error: String?, val id: Int?, val token: String?) {
+        companion object {
+            fun ok(id: Int, token: String) = FeedbackResult(null, id, token)
+            fun err(e: String) = FeedbackResult(e, null, null)
+        }
+    }
+
+    /**
+     * 提交问题反馈，返回 [FeedbackResult]。
+     *
+     * 服务端成功时返回 `{ok, id, token}` —— token 是用户日后查询这条反馈
+     * 是否有开发者回复的凭据，只在此刻返回一次，App 必须本地保存。
+     */
     suspend fun sendFeedback(
         context: Context,
         kind: String,
         note: String,
         info: Map<String, String>,
         log: String?,
-    ): String? {
+    ): FeedbackResult {
         val url = endpoint(context)
-        if (url.isBlank()) return "not-configured"
+        if (url.isBlank()) return FeedbackResult.err("not-configured")
         val payload = basePayload(context)
             .put("action", "feedback")
             .put("kind", kind)
             .put("note", note)
             .put("info", JSONObject(info as Map<*, *>))
         if (log != null) payload.put("log", log)
-        return post(url, payload.toString())
+        return postBody(url, payload.toString())
+    }
+
+    /** 凭据查询反馈回复：返回可展示的回复文本，null 表示未找到。 */
+    suspend fun fetchFeedbackReply(context: Context, token: String): String? {
+        val url = endpoint(context)
+        if (url.isBlank()) return null
+        val payload = basePayload(context)
+            .put("action", "feedback_get")
+            .put("fb_token", token)
+        val body = postBodyRaw(url, payload.toString()) ?: return null
+        return runCatching { JSONObject(body).optString("reply").takeIf { it.isNotBlank() } }
+            .getOrNull()
     }
 
     /**
@@ -185,6 +211,48 @@ object LogUploader {
                 }
             }
             .getOrElse { it.message ?: it.javaClass.simpleName }
+
+    /** 发 POST，成功返回原始响应体（字符串），失败返回 null。 */
+    private fun postBodyRaw(url: String, payload: String): String? =
+        runCatching {
+            val request =
+                Request.Builder()
+                    .url(url)
+                    .post(payload.toRequestBody(JSON))
+                    .header("User-Agent", "RootMyS24-log-uploader")
+                    .build()
+            client.newCall(request).execute().use { response ->
+                if (response.isSuccessful) response.body?.string().orEmpty() else null
+            }
+        }.getOrNull()
+
+    /** 发 POST 并解析反馈结果（{ok,id,token} 或 {ok:false,error}）。 */
+    private fun postBody(url: String, payload: String): FeedbackResult =
+        runCatching {
+            val request =
+                Request.Builder()
+                    .url(url)
+                    .post(payload.toRequestBody(JSON))
+                    .header("User-Agent", "RootMyS24-log-uploader")
+                    .build()
+            client.newCall(request).execute().use { response ->
+                val body = runCatching { response.body?.string().orEmpty() }.getOrDefault("")
+                if (response.isSuccessful) {
+                    val o = runCatching { JSONObject(body) }.getOrNull()
+                    if (o != null && o.optBoolean("ok", false)) {
+                        FeedbackResult.ok(o.optInt("id"), o.optString("token"))
+                    } else {
+                        FeedbackResult.err("HTTP ${response.code}")
+                    }
+                } else {
+                    val reason =
+                        runCatching { JSONObject(body).optString("error") }
+                            .getOrNull()
+                            ?.takeIf { it.isNotBlank() }
+                    FeedbackResult.err("HTTP ${response.code}" + if (reason != null) " ($reason)" else "")
+                }
+            }
+        }.getOrElse { FeedbackResult.err(it.message ?: it.javaClass.simpleName) }
 
     private fun appVersion(context: Context): String =
         runCatching {

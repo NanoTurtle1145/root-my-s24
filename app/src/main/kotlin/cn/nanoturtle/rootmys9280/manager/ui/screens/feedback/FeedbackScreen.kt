@@ -11,11 +11,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,6 +74,8 @@ fun FeedbackScreen(onNavigateBack: () -> Unit) {
     }
     var result by remember { mutableStateOf<String?>(null) }
     var sending by remember { mutableStateOf(false) }
+    var lastToken by remember { mutableStateOf<String?>(null) }
+    val savedTokens = remember { vm.savedFeedbackTokens }
 
     val info = remember(state.logLines.size) { vm.feedbackInfo() }
     val kinds = RootViewModel.FeedbackKind.entries
@@ -216,7 +222,9 @@ fun FeedbackScreen(onNavigateBack: () -> Unit) {
                         sending = true
                         result = null
                         scope.launch {
-                            result = vm.submitFeedback(selected, note, attachLog)
+                            val r = vm.submitFeedback(selected, note, attachLog)
+                            result = r.message
+                            lastToken = r.token
                             sending = false
                         }
                     },
@@ -236,6 +244,84 @@ fun FeedbackScreen(onNavigateBack: () -> Unit) {
                         modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                     )
                 }
+            }
+            // 提交成功后：提示用户可在「我的反馈」里查看开发者回复
+            if (lastToken != null) {
+                item {
+                    Text(
+                        text = stringResource(R.string.feedback_token_saved_hint),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    )
+                }
+            }
+
+            // 6) 我的反馈：凭本地保存的凭据查开发者回复
+            if (savedTokens.isNotEmpty()) {
+                item { FeedbackSectionLabel(stringResource(R.string.feedback_mine_label)) }
+                items(savedTokens) { token ->
+                    FeedbackReplyCard(token = token, vm = vm)
+                }
+            }
+        }
+    }
+}
+
+/** 单条反馈回复卡：凭 token 查开发者回复，就地展示。 */
+@Composable
+private fun FeedbackReplyCard(token: String, vm: cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel) {
+    val scope = rememberCoroutineScope()
+    var reply by remember { mutableStateOf<String?>(null) }
+    var loading by remember { mutableStateOf(false) }
+    var opened by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+    ) {
+        Column(Modifier.padding(12.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = stringResource(R.string.feedback_mine_item, token.take(8)),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.weight(1f),
+                )
+                TextButton(
+                    onClick = {
+                        if (!opened) {
+                            opened = true
+                            loading = true
+                            scope.launch {
+                                reply = vm.fetchFeedbackReply(token)
+                                loading = false
+                            }
+                        } else {
+                            opened = false
+                            reply = null
+                        }
+                    },
+                ) {
+                    Text(if (opened) stringResource(R.string.feedback_mine_collapse) else stringResource(R.string.feedback_mine_expand))
+                }
+            }
+            if (loading) {
+                Text(
+                    text = stringResource(R.string.feedback_mine_loading),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            } else if (opened) {
+                Text(
+                    text = reply ?: stringResource(R.string.feedback_mine_no_reply),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
         }
     }
