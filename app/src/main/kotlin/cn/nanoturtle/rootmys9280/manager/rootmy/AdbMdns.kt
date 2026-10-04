@@ -66,6 +66,22 @@ class AdbMdns(
         onError = callback
     }
 
+    /**
+     * 诊断日志回调：由 AdbPairingFlow 注入，把发现/resolve/过滤决策写进 App 运行日志。
+     * 此前这些只走 logcat，用户上传的日志里看不到，导致「配对服务已发现但被跳过」
+     * 这类问题完全无从定位。
+     */
+    private var onDiag: ((String) -> Unit)? = null
+
+    fun setOnDiag(callback: (String) -> Unit) {
+        onDiag = callback
+    }
+
+    private fun diag(msg: String) {
+        Log.i(TAG, msg)
+        runCatching { onDiag?.invoke(msg) }
+    }
+
     private fun onDiscoveryError(message: String) {
         onError?.invoke(message)
     }
@@ -95,6 +111,7 @@ class AdbMdns(
         }
         resolvingService = name
         Log.i(TAG, "resolving: $name")
+        diag("mDNS 发现服务：$name（开始 resolve）")
         resolveWithRetry(info, retries = 0)
     }
 
@@ -103,6 +120,7 @@ class AdbMdns(
         if (!registered) return
         if (retries > MAX_RESOLVE_RETRIES) {
             Log.w(TAG, "resolve gave up: ${info.serviceName}")
+            diag("resolve 放弃（重试 $retries 次仍失败）：${info.serviceName}")
             resolvingService = null
             return
         }
@@ -167,10 +185,13 @@ class AdbMdns(
                 } ?: false
         }.getOrDefault(false)
 
-        // 端口有效性检查（关键）：adbd 的配对服务在 127.0.0.1 上真实监听。
-        // bind 127.0.0.1:port 失败 = 端口被占用 = adbd 在监听 = 有效；
-        // bind 成功 = 端口空闲 = mDNS 解析到的是过期缓存/已关闭的服务 → 必须跳过，
-        // 否则会给用户弹输入框、输入后 ECONNREFUSED。
+        // 端口占用探测（诊断用，**不再据此丢弃服务**）。
+        //
+        // 历史教训 893c275：这类"过滤过严"曾让第二条通知（输入配对码）完全不出现，
+        // 用户永远卡在「搜索中」，且没有任何可恢复路径。
+        // 而误接受一个过期服务的代价小得多：用户输入配对码后会 ECONNREFUSED，
+        // onPairCodeReceived 里有「提示 + 自动重启搜索」的兜底 —— 可恢复。
+        // 两害相权取可恢复的那个，所以这里只记录、不 return。
         val isPortBusy = try {
             ServerSocket().use { sock ->
                 sock.bind(InetSocketAddress("127.0.0.1", resolved.port), 1)
@@ -180,12 +201,10 @@ class AdbMdns(
             true
         }
         if (!isPortBusy) {
-            Log.w(TAG, "resolved port ${resolved.port} not listening, skip stale service: ${resolved.serviceName}")
-            resolvingService = null
-            return
+            diag("提示：127.0.0.1:${resolved.port} 可自由 bind（adbd 未在此接口监听或是时序竞态）；仍继续交给配对流程判定")
         }
 
-        Log.i(TAG, "resolved $serviceType: ${resolved.serviceName} host=$host port=${resolved.port} local=$isLocal portBusy=$isPortBusy")
+        diag("mDNS 解析成功：${resolved.serviceName} host=$host port=${resolved.port} 本机=$isLocal 端口占用=$isPortBusy")
         discoveredPort = resolved.port
         resolvingService = null
         onServiceDiscovered(host, resolved.port)

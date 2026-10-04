@@ -14,6 +14,15 @@
 -keep class cn.nanoturtle.rootmys9280.ipc.** { *; }
 -keep class rikka.parcelablelist.** { *; }
 
+# libadb.so（提取自 Shizuku 13.6.0）的 JNI_OnLoad 用**硬编码类名**
+# FindClass("moe/shizuku/manager/adb/PairingContext") 来 RegisterNatives。
+# Kotlin 侧虽有引用，但不足以让 R8 保住原始类名：一旦被重命名，
+# FindClass 返回 null，RegisterNatives 立刻触发
+#   JNI DETECTED ERROR IN APPLICATION: java_class == null
+# 进程直接 SIGABRT（tombstone 里可见），用户看到的是「输入配对码后 App 闪退」。
+# 凡「native 按字符串找类」的类都必须显式 keep 原名。
+-keep class moe.shizuku.manager.adb.** { *; }
+
 # kotlinx.serialization keeps generated serializers reachable from the companion.
 -keepclassmembers class **$$serializer { *** descriptor; }
 -keepclasseswithmembers class ** {

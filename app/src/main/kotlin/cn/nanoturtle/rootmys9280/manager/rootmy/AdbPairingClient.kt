@@ -4,6 +4,7 @@ import android.util.Log
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.DataOutputStream
+import java.net.InetSocketAddress
 import java.net.Socket
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -30,6 +31,12 @@ class AdbPairingClient(
     private val pairCode: String,
     private val key: AdbKey,
 ) : Closeable {
+
+    /** 单个候选地址的 TCP 连接超时：3 秒足够回环，且能让 ::1 / host 有机会被尝试。 */
+    private val CONNECT_TIMEOUT_MS = 3_000
+
+    /** TLS 握手与 SPAKE2 读写超时：adbd 异常时可能接受连接却不推进握手。 */
+    private val IO_TIMEOUT_MS = 10_000
 
     private enum class State {
         Ready, ExchangingMsgs, ExchangingPeerInfo, Stopped
@@ -78,6 +85,10 @@ class AdbPairingClient(
 
         val sslContext = key.sslContext
         val sslSocket = sslContext.socketFactory.createSocket(raw, host, port, true) as SSLSocket
+        // 握手与后续 SPAKE2 读都必须有超时：Android 上 adbd 配对服务在异常状态下
+        // 可能接受 TCP 连接却不推进 TLS 握手，无超时的话这里会永久阻塞，
+        // 表现为「卡在开始 SPAKE2 配对、没有下文」且没有任何错误日志。
+        sslSocket.soTimeout = IO_TIMEOUT_MS
         sslSocket.startHandshake()
 
         inputStream = DataInputStream(sslSocket.inputStream)
@@ -103,7 +114,12 @@ class AdbPairingClient(
         var lastError: Throwable? = null
         for (candidate in candidates) {
             try {
-                return Socket(candidate, port)
+                // 必须带 connect 超时：Socket(host, port) 的默认超时是 0（无限），
+                // 第一个候选地址不可达时会一直卡到内核 SYN 重试耗尽（约 2 分钟），
+                // 后面的 ::1 / host 根本没机会被尝试。
+                val sock = Socket()
+                sock.connect(InetSocketAddress(candidate, port), CONNECT_TIMEOUT_MS)
+                return sock
             } catch (t: Throwable) {
                 lastError = t
                 Log.w(TAG, "connect $candidate:$port failed: $t")

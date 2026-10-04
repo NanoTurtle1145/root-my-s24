@@ -56,12 +56,32 @@ object AdbPairingFlow {
     private const val REPLY_REQUEST = 102
     private const val STOP_REQUEST = 103
     private const val SEARCH_TIMEOUT_MS = 15_000L
+
+    /** 单次 SPAKE2 配对的整体超时：覆盖 TLS 握手 + 密钥交换 + PeerInfo 交换。 */
+    private const val PAIR_TIMEOUT_MS = 20_000L
     private const val KEY_REMOTE_INPUT = "pairing_code"
     private const val EXTRA_PORT = "adb_pair_port"
     private const val ACTION_PAIR_REPLY = "cn.nanoturtle.ADB_PAIR_REPLY"
     private const val ACTION_STOP_SEARCH = "cn.nanoturtle.ADB_PAIR_STOP"
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    /**
+     * 诊断日志出口：由 RootViewModel 注入，把配对流程的关键节点写进 App 运行日志。
+     * 此前只有 logcat（用户侧完全不可见），导致「输完配对码没反应」这类问题
+     * 在用户上传的日志里查不到任何痕迹。注入方负责切到主线程。
+     */
+    @Volatile
+    private var logger: ((String) -> Unit)? = null
+
+    fun setLogger(sink: (String) -> Unit) {
+        logger = sink
+    }
+
+    internal fun diag(msg: String) {
+        Log.i(TAG, msg)
+        runCatching { logger?.invoke(msg) }
+    }
 
     private var mdnsPair: AdbMdns? = null
     private var mdnsConnect: AdbMdns? = null
@@ -97,18 +117,27 @@ object AdbPairingFlow {
 
         createChannel(context)
         notifySearching(context)
+        diag("开始 mDNS 搜索配对端口（${AdbMdns.TLS_PAIRING}）")
 
         mdnsPair = AdbMdns(context, AdbMdns.TLS_PAIRING) { _, port ->
             if (port <= 0) return@AdbMdns
             pairPort = port
+            diag("mDNS 发现配对端口 $port → 弹出输入配对码通知")
             notifyInputCode(context, port)
-        }.also { it.setOnError { msg -> notifySearchError(context, msg) } }
+        }.also {
+            it.setOnError { msg ->
+                diag("mDNS 发现失败：$msg")
+                notifySearchError(context, msg)
+            }
+            it.setOnDiag { msg -> diag(msg) }
+        }
         mdnsPair?.start()
 
         // 兜底：长时间没发现服务时更新通知提示（可能是无线调试没开/不在同一网络）
         scope.launch {
             delay(SEARCH_TIMEOUT_MS)
             if (searching && pairPort <= 0) {
+                diag("mDNS 搜索超时（${SEARCH_TIMEOUT_MS / 1000}s 未发现配对服务）")
                 notifySearchTimeout(context)
             }
         }
@@ -134,10 +163,20 @@ object AdbPairingFlow {
      * MainActivity 读取后转发到这里。
      */
     fun onPairCodeReceived(context: Context, code: String, port: Int) {
-        if (!searching && port <= 0) return
+        // 注意：searching / pairPort 是 object 成员。App 进程一旦被回收重启，
+        // 这两个状态全部归零；此时如果 EXTRA_PORT 也没带过来，旧代码会静默 return，
+        // 用户看到的就是「输完配对码毫无反应」。所以这里把每个放弃分支都记进诊断日志，
+        // 且只要拿到任一个有效端口就继续走（不依赖 searching）。
         val actualPort = if (port > 0) port else pairPort
-        if (actualPort <= 0) return
-        if (code.isBlank()) return
+        diag("收到配对码：codeLen=${code.length} 携带端口=$port 回退端口=$pairPort 搜索中=$searching 实际端口=$actualPort")
+        if (actualPort <= 0) {
+            diag("放弃配对：没有可用端口（mDNS 未发现且 intent 未携带端口）")
+            return
+        }
+        if (code.isBlank()) {
+            diag("放弃配对：配对码为空")
+            return
+        }
 
         notifyWorking(context)
         searching = false
@@ -146,33 +185,48 @@ object AdbPairingFlow {
         scope.launch {
             val key = AdbWirelessController.getAdbKey()
             if (key == null) {
+                diag("配对失败：ADB 密钥未初始化")
                 notifyResult(context, false, "key not initialized")
                 return@launch
             }
+            diag("开始 SPAKE2 配对：127.0.0.1:$actualPort")
             val success = try {
-                // 配对固定连回环地址：adbd 的配对服务绑定 127.0.0.1（本机场景），
-                // mDNS 广播的局域网 IP 上并没有监听（会 ECONNREFUSED）。
-                // 与 Shizuku AdbPairingService.onInput 的 `host = "127.0.0.1"` 一致。
-                AdbPairingClient("127.0.0.1", actualPort, code.trim(), key).use { client ->
-                    client.start()
+                // 整体加超时兜底：SPAKE2/TLS 任一步骤静默卡住时也能给出失败反馈，
+                // 而不是让用户看到「没下文」。客户端内部另有 connect/IO 超时。
+                kotlinx.coroutines.withTimeout(PAIR_TIMEOUT_MS) {
+                    // 配对固定连回环地址：adbd 的配对服务绑定 127.0.0.1（本机场景），
+                    // mDNS 广播的局域网 IP 上并没有监听（会 ECONNREFUSED）。
+                    // 与 Shizuku AdbPairingService.onInput 的 `host = "127.0.0.1"` 一致。
+                    // 客户端内部会依次尝试 127.0.0.1 / ::1 / mDNS host。
+                    AdbPairingClient("127.0.0.1", actualPort, code.trim(), key).use { client ->
+                        client.start()
+                    }
                 }
             } catch (t: java.net.ConnectException) {
                 // 端口失效：配对窗口已过期，或用户重新点了「使用配对码配对设备」端口已变。
                 // 自动重启搜索，适配新端口，而不是让用户卡在「配对码错误」。
+                diag("配对端口已失效（ECONNREFUSED），自动重启搜索")
                 Log.w(TAG, "pair port expired (ECONNREFUSED), restarting search", t)
                 notifyPairingExpired(context)
                 beginSearch(context)
                 return@launch
+            } catch (t: kotlinx.coroutines.TimeoutCancellationException) {
+                diag("配对超时（${PAIR_TIMEOUT_MS / 1000}s 内未完成 SPAKE2 握手）")
+                notifyResult(context, false, "pair timeout")
+                return@launch
             } catch (t: Throwable) {
+                diag("配对异常：${t.javaClass.simpleName}: ${t.message}")
                 Log.w(TAG, "pair failed", t)
                 false
             }
             if (success) {
                 paired = true
+                diag("配对成功 → 开始发现连接端口")
                 notifyResult(context, true, null)
                 // 配对成功 → 自动发现连接端口并连接
                 findAndConnect(context)
             } else {
+                diag("配对失败：配对码错误或协议不匹配")
                 notifyResult(context, false, "pairing code is wrong")
             }
         }
@@ -206,6 +260,24 @@ object AdbPairingFlow {
         }
         context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
+
+    /**
+     * 前台服务通知：PairingReplyService 经 [PendingIntent.getForegroundService] 启动后
+     * 必须在 5 秒内 startForeground，否则系统抛 ANR/崩溃。复用配对通知 ID，
+     * 用户看到的仍是同一条通知，不会多出一条。
+     */
+    fun foregroundNotification(context: Context): android.app.Notification {
+        createChannel(context)
+        return NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_menu_edit)
+            .setContentTitle(context.getString(R.string.notification_adb_pairing_working_title))
+            .setContentText(context.getString(R.string.notification_adb_pairing_working_text))
+            .setOngoing(true)
+            .build()
+    }
+
+    /** 前台服务通知 ID（与配对通知共用，避免通知栏出现两条）。 */
+    const val FOREGROUND_ID = NOTIFICATION_ID
 
     private fun notifySearching(context: Context) {
         try {
@@ -280,16 +352,26 @@ object AdbPairingFlow {
                 .setLabel(context.getString(R.string.notification_adb_pairing_input_hint))
                 .build()
             // 用 Service 接收（而不是 Activity）：确认输入后不打断系统设置的配对码页面，
-            // 否则三星上该页面失焦关闭、配对服务停止。与 Shizuku 的 getForegroundService 同理。
+            // 否则三星上该页面失焦关闭、配对服务停止。
+            //
+            // 必须用 getForegroundService（与 Shizuku 的 AdbPairingService 一致）：
+            // Android 12+ 起，App 在后台时通过 PendingIntent 启动**普通** Service 会被
+            // 系统直接拒绝（BackgroundServiceStartNotAllowedException），表现为
+            // 「通知里输完配对码后毫无反应」——Service 根本没起来。
+            // 用前台服务通道即可豁免该限制，代价是 Service 必须在 5s 内 startForeground。
             val replyIntent = Intent(context, PairingReplyService::class.java)
                 .setAction(ACTION_PAIR_REPLY)
                 .putExtra(EXTRA_PORT, port)
-            val replyPi = PendingIntent.getService(
-                context, REPLY_REQUEST, replyIntent,
+            val piFlags =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                     PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 else PendingIntent.FLAG_UPDATE_CURRENT
-            )
+            val replyPi =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    PendingIntent.getForegroundService(context, REPLY_REQUEST, replyIntent, piFlags)
+                } else {
+                    PendingIntent.getService(context, REPLY_REQUEST, replyIntent, piFlags)
+                }
             val replyAction = NotificationCompat.Action.Builder(
                 android.R.drawable.ic_menu_edit,
                 context.getString(R.string.notification_adb_pairing_input_action),

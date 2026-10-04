@@ -22,6 +22,12 @@
     <!-- The module and scope lists have to see every installed package, not just launchable ones. -->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
+    <!-- 无线调试「通知配对」：配对码经通知 RemoteInput 回调时，App 必然在后台，
+         必须走前台服务通道才能让 Service 活到 SPAKE2 握手完成。
+         Android 12+ 缺这两个权限时 startForeground 会被 enforcePermission 直接拒绝
+         （日志表现为 RemoteException + 进程被杀 + 配对「没下文」）。 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <application
         android:allowBackup="false"
@@ -65,7 +71,14 @@
         -->
         <service
             android:name=".rootmy.PairingReplyService"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <!-- Android 14+ 要求 specialUse 前台服务说明具体用途（供应用市场审核，
+                 本地自签安装不影响）。 -->
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="adb_wireless_pairing" />
+        </service>
 
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
