@@ -207,9 +207,19 @@ object PayloadStatus {
 
     /** 阻塞拉取并写入缓存；失败抛异常，由 [load] 兜住。 */
     private fun fetchAndStore(context: Context): Snapshot {
+        // 带上本机 versionCode：服务端据此过滤「本 App 还没有的资产」。
+        // 没有这个参数时服务端无法分辨客户端新旧，曾因此把 ksud-dzf2-32601
+        // 这类新资产下发给旧版 App，旧版 assets 里没有它 → 推送失败。
+        val vc = runCatching {
+            val info = context.packageManager.getPackageInfo(context.packageName, 0)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P)
+                info.longVersionCode
+            else @Suppress("DEPRECATION") info.versionCode.toLong()
+        }.getOrDefault(0L)
+
         val request =
             Request.Builder()
-                .url(ENDPOINT)
+                .url("$ENDPOINT?vc=$vc")
                 .header("User-Agent", "RootMyS24-payloads")
                 .build()
         client.newCall(request).execute().use { response ->
