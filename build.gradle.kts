@@ -47,16 +47,26 @@ abstract class GitLatestTagValueSource : ValueSource<String, ValueSourceParamete
     override fun obtain(): String {
         val output = ByteArrayOutputStream()
         val result = execOperations.exec {
+            // 注意：git tag 没有 --exclude（那是 for-each-ref 的选项），
+            // 预发布 tag 的过滤在下面用 Kotlin 做。
             commandLine("git", "tag", "--list", "--sort=-v:refname")
             standardOutput = output
             isIgnoreExitValue = true
         }
-        // If successful, parse the first line. Provide a default if no tags are found.
-        return if (result.exitValue == 0 && output.toString().isNotBlank()) {
-            output.toString().lineSequence().first().removePrefix("v")
-        } else {
-            "1.0"
-        }
+        if (result.exitValue != 0 || output.toString().isBlank()) return "1.0"
+
+        // 只认**正式版 tag**（`v3.5.0` 这种裸版本号），跳过预发布 tag。
+        //
+        // 不跳过会踩一个真实的坑：预发布 tag 形如 `v3.5.0-alpha1.166`，
+        // 而 `--sort=-v:refname` 会把它排在 `v3.5.0` **前面**（实测确认），
+        // 于是下一次构建的 base 版本取到整串 `3.5.0-alpha1.166`，再拼上渠道后缀
+        // 就成了 `3.5.0-alpha1.166-alpha1.167` —— 版本号自我叠加。
+        // 预发布 tag 仍保留在仓库里（GitHub Release 需要它），只是不参与 base 取值。
+        return output.toString()
+            .lineSequence()
+            .map { it.trim().removePrefix("v") }
+            .firstOrNull { it.isNotEmpty() && !it.contains('-') }
+            ?: "1.0"
     }
 }
 
