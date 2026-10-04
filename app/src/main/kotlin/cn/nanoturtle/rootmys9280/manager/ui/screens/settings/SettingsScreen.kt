@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Notes
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Bedtime
+import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Feedback
@@ -197,6 +198,9 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
     // 调试项的测试结果就地显示（不弹 Toast），所以放在状态里而不是 Toast 里
     var debugResult by remember { mutableStateOf<String?>(null) }
     var testing by remember { mutableStateOf(false) }
+    // DirtyFrag 步骤 1（ESP 自收自发）的就地测试状态
+    var dfResult by remember { mutableStateOf<String?>(null) }
+    var dfTesting by remember { mutableStateOf(false) }
 
     pendingRelease?.let { latest ->
         androidx.compose.material3.AlertDialog(
@@ -557,7 +561,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
             item {
                 SectionLabel(stringResource(R.string.settings_section_debug))
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    GroupedRow(index = 0, count = 4) {
+                    GroupedRow(index = 0, count = 5) {
                         Column {
                             ListItem(
                                 modifier =
@@ -590,7 +594,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                             }
                         }
                     }
-                    GroupedRow(index = 1, count = 4) {
+                    GroupedRow(index = 1, count = 5) {
                         ListItem(
                             leadingContent = {
                                 Icon(Icons.Rounded.Fingerprint, contentDescription = null)
@@ -601,7 +605,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                             colors = cardRowColors,
                         ) { Text(stringResource(R.string.settings_debug_install_id)) }
                     }
-                    GroupedRow(index = 2, count = 4) {
+                    GroupedRow(index = 2, count = 5) {
                         ListItem(
                             modifier =
                                 Modifier.clickable {
@@ -614,7 +618,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                             colors = cardRowColors,
                         ) { Text(stringResource(R.string.settings_debug_rerun_onboarding)) }
                     }
-                    GroupedRow(index = 3, count = 4) {
+                    GroupedRow(index = 3, count = 5) {
                         ListItem(
                             modifier =
                                 Modifier.clickable {
@@ -626,6 +630,47 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                             },
                             colors = cardRowColors,
                         ) { Text(stringResource(R.string.settings_debug_off)) }
+                    }
+
+                    GroupedRow(index = 4, count = 5) {
+                        Column {
+                            ListItem(
+                                modifier =
+                                    Modifier.clickable {
+                                        if (dfTesting) return@clickable
+                                        dfTesting = true
+                                        dfResult = testingMsg
+                                        scope.launch {
+                                            val r =
+                                                kotlinx.coroutines.withContext(
+                                                    kotlinx.coroutines.Dispatchers.IO
+                                                ) {
+                                                    cn.nanoturtle.rootmys9280.manager.rootmy
+                                                        .dirtyfrag.DirtyFragEngine
+                                                        .verifyEspLoopback(context)
+                                                }
+                                            r.log.forEach { android.util.Log.i("DirtyFragEngine", it) }
+                                            dfResult = (if (r.ok) "\u2714 " else "\u2717 ") + r.detail
+                                            dfTesting = false
+                                        }
+                                    },
+                                leadingContent = {
+                                    Icon(Icons.Rounded.BugReport, contentDescription = null)
+                                },
+                                supportingContent = {
+                                    Text(stringResource(R.string.settings_debug_df_esp_summary))
+                                },
+                                colors = cardRowColors,
+                            ) { Text(stringResource(R.string.settings_debug_df_esp)) }
+                            dfResult?.let { result ->
+                                Text(
+                                    text = result,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                                )
+                            }
+                        }
                     }
                 }
             }

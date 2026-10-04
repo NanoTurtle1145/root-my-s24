@@ -3,6 +3,7 @@ package cn.nanoturtle.rootmys9280.manager.rootmy
 import android.app.Application
 import cn.nanoturtle.rootmys9280.manager.logI
 import cn.nanoturtle.rootmys9280.manager.rootmy.dirtyfrag.DfDeviceCheck
+import cn.nanoturtle.rootmys9280.manager.rootmy.dirtyfrag.DirtyFragEngine
 import cn.nanoturtle.rootmys9280.manager.rootmy.dirtyfrag.Kmi
 import android.content.ContentValues
 import android.os.Build
@@ -1166,6 +1167,26 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 " · 引擎 " + Kmi.engineFor(kmi)
         )
 
+        if (dfEngineEnabled) {
+            // 实现阶梯第 1 步（ESP 自收自发）：这一步与内核版本无关，纯 app 权限内完成，
+            // 失败也不伤系统，所以只要能跑就跑一次 —— 它验证的是 SA 参数、ESP 布局与
+            // ICV 覆盖范围是否正确。第 1 步不过，后面接 splice 没有任何意义。
+            val esp =
+                runCatching { DirtyFragEngine.verifyEspLoopback(app) }
+                    .getOrElse {
+                        DirtyFragEngine.Step1Result(
+                            false,
+                            "${it.javaClass.simpleName}: ${it.message}",
+                            listOf("✗ 异常：${it.javaClass.simpleName}: ${it.message}"),
+                        )
+                    }
+            esp.log.forEach { appendLog("  $it") }
+            appendLog(
+                (if (esp.ok) "✔ " else "✗ ") +
+                    "DirtyFrag 步骤1（ESP 回环）：${esp.detail}"
+            )
+        }
+
         if (dfEngineEnabled && dfReachable && kmi != null) {
             val lkmAsset = Kmi.dirtyFragLkmAsset(kmi)
             val lkmReady =
@@ -1180,9 +1201,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             appendLog(
                 DfDeviceCheck.collect(android.os.Build.MODEL, kernelRelease).render().trimEnd()
             )
-            appendLog("ℹ alpha 阶段仅完成 KMI 判定、载荷就绪与设备自检；注入阶段尚未实现，本次仍走 GhostLock 链路。")
+            appendLog("ℹ alpha 阶段已完成 KMI 判定、载荷就绪、设备自检与 ESP 回环；注入阶段（splice 挂页起）尚未实现，本次仍走 GhostLock 链路。")
         } else if (dfEngineEnabled && !dfReachable) {
-            appendLog("ℹ DirtyFrag 在该内核上原语不可达（6.1 系缺 MSG_SPLICE_PAGES），保持 GhostLock 链路。")
+            appendLog("ℹ DirtyFrag 在该内核上原语不可达（6.1 系缺 MSG_SPLICE_PAGES），保持 GhostLock 链路；ESP 回环结果仅作引擎自检参考。")
         }
 
         // 3. 触发 exploit

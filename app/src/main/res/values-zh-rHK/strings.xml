@@ -314,4 +314,6 @@
     <string name="settings_section_experimental">實驗功能</string>
     <string name="about_open_source_title">開源授權</string>
     <string name="about_open_source_summary">RootMyS24、KernelSU、LSPosed — 均為 GPL-3.0</string>
+    <string name="settings_debug_df_esp">測試 DirtyFrag ESP 回環</string>
+    <string name="settings_debug_df_esp_summary">實現階梯第 1 步：建 SA、自拼 ESP 包、驗證核心能解密</string>
 </resources>

@@ -385,4 +385,6 @@ Auto-save log</string>
     <string name="settings_section_experimental">Experimental</string>
     <string name="about_open_source_title">Open source licenses</string>
     <string name="about_open_source_summary">RootMyS24, KernelSU, LSPosed — all GPL-3.0</string>
+    <string name="settings_debug_df_esp">Test DirtyFrag ESP loopback</string>
+    <string name="settings_debug_df_esp_summary">Step 1: build SA, hand-craft ESP, verify the kernel decrypts it</string>
 </resources>
