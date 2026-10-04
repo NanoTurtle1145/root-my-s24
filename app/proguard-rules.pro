@@ -23,6 +23,15 @@
 # 凡「native 按字符串找类」的类都必须显式 keep 原名。
 -keep class moe.shizuku.manager.adb.** { *; }
 
+# JNI 按「类名 + 方法名」查找 native 实现（Java_<包>_<类>_<方法>），
+# 一旦这两个名字被 R8 改写，第一次调用 native 方法就抛 UnsatisfiedLinkError
+# —— 库本身其实 loadLibrary 成功了，报错信息会极具误导性。
+# 这类「按字符串跨语言解析」的符号必须保名。
+-keepclasseswithmembernames class cn.nanoturtle.rootmys9280.manager.rootmy.dirtyfrag.DirtyFragNative {
+    native <methods>;
+}
+-keepnames class cn.nanoturtle.rootmys9280.manager.rootmy.dirtyfrag.DirtyFragNative
+
 # kotlinx.serialization keeps generated serializers reachable from the companion.
 -keepclassmembers class **$$serializer { *** descriptor; }
 -keepclasseswithmembers class ** {

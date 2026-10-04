@@ -646,11 +646,14 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                                                     kotlinx.coroutines.Dispatchers.IO
                                                 ) {
                                                     cn.nanoturtle.rootmys9280.manager.rootmy
-                                                        .dirtyfrag.DirtyFragEngine
-                                                        .verifyEspLoopback(context)
+                                                        .dirtyfrag.NativeDirtyFrag
+                                                        .verifyPrimitive(context)
                                                 }
-                                            r.log.forEach { android.util.Log.i("DirtyFragEngine", it) }
-                                            dfResult = (if (r.ok) "\u2714 " else "\u2717 ") + r.detail
+                                            r.log.forEach { android.util.Log.i("NativeDirtyFrag", it) }
+                                            dfResult =
+                                                (if (r.ok) "\u2714 " else "\u2717 ") +
+                                                    r.detail +
+                                                    if (r.icvLen >= 0) " · ICV=${r.icvLen}B" else ""
                                             dfTesting = false
                                         }
                                     },

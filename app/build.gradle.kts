@@ -56,6 +56,18 @@ val versionHashProvider = rootProject.extra["versionHashProvider"] as Provider<S
 android {
     namespace = "cn.nanoturtle.rootmys9280.manager"
 
+    // DirtyFrag 引擎的 native 部分（netlink xfrm / splice / HMAC）。
+    // 这些能力没有公开的 Java API：SA 的 SPI、alg_trunc_len、UDP 封装端口
+    // 在 IpSecManager 里全被托管，而 splice(2)/vmsplice(2) 只能从 native 调。
+    ndkVersion = "29.0.14206865"
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
