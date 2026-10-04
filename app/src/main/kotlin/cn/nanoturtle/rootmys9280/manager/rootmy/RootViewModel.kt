@@ -3,6 +3,7 @@ package cn.nanoturtle.rootmys9280.manager.rootmy
 import android.app.Application
 import cn.nanoturtle.rootmys9280.manager.logI
 import cn.nanoturtle.rootmys9280.manager.rootmy.dirtyfrag.DfDeviceCheck
+import cn.nanoturtle.rootmys9280.manager.rootmy.dirtyfrag.Kmi
 import android.content.ContentValues
 import android.os.Build
 import android.os.Environment
@@ -362,6 +363,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     init {
         // 无线调试授权：注入 RSA 密钥存储目录（App 私有目录），恢复上次连接状态
         AdbWirelessController.init(File(app.filesDir, "adb"))
+        // 通知配对流程的诊断日志出口：配对发生在 Service/后台线程，必须切回主线程
+        // 再写 StateFlow，否则违反 appendLog 的单线程前提。
+        val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
+        AdbPairingFlow.setLogger { line ->
+            mainHandler.post { appendLog("◆ " + line) }
+        }
         // 恢复上次选择的授权方式（Shizuku 或无线调试）
         val prefs = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
         val saved = prefs.getString(KEY_AUTH_METHOD, AuthMethod.SHIZUKU.name)
@@ -1144,14 +1151,38 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         )
         appendLog("✔ " + app.getString(R.string.log_cleanup_done, cleanup.first))
 
-        // 2.7 DirtyFrag 引擎(alpha)设备自检：只读探测，全过才允许后续动手。
-        //     alpha1 阶段只输出报告，不执行注入；自检不过时明确告警（不阻塞 GhostLock 链路）。
-        if (dfEngineEnabled) {
-            val dfReport = DfDeviceCheck.collect(android.os.Build.MODEL, System.getProperty("os.version").orEmpty())
-            appendLog(dfReport.render().trimEnd())
-            if (!dfReport.allOk) {
-                appendLog("⚠ DirtyFrag 自检未通过，本次不走 DirtyFrag 引擎")
-            }
+        // 2.7 引擎分流：按内核 KMI 选择利用链。
+        //     同一个漏洞在不同内核线上"是否可达"是二值的（判据见 Kmi 的注释与
+        //     FEASIBILITY_VERDICT.md 的可达性矩阵），所以这里先定引擎再决定后续步骤。
+        //     在不可达的内核上硬跑不只是浪费：即使写不进页缓存，探针仍会发出真实 ESP
+        //     报文，把 /apex、/vendor 的页缓存搞脏。
+        val kernelRelease = System.getProperty("os.version").orEmpty()
+        val kmi = Kmi.fromKernelRelease(kernelRelease)
+        val dfReachable = Kmi.dirtyFragReachable(kmi)
+        appendLog(
+            "◆ 内核 $kernelRelease\n" +
+                "◆ KMI ${kmi ?: "未识别"} · DirtyFrag " +
+                (if (dfReachable) "可达 ✓" else "不可达 ✗") +
+                " · 引擎 " + Kmi.engineFor(kmi)
+        )
+
+        if (dfEngineEnabled && dfReachable && kmi != null) {
+            val lkmAsset = Kmi.dirtyFragLkmAsset(kmi)
+            val lkmReady =
+                runCatching {
+                    app.assets.open(lkmAsset).use { }
+                    true
+                }.getOrDefault(false)
+            appendLog(
+                "◆ DirtyFrag 引擎（alpha）：LKM $lkmAsset " +
+                    (if (lkmReady) "已就绪 ✓" else "缺失 ✗（该 KMI 尚未适配）")
+            )
+            appendLog(
+                DfDeviceCheck.collect(android.os.Build.MODEL, kernelRelease).render().trimEnd()
+            )
+            appendLog("ℹ alpha 阶段仅完成 KMI 判定、载荷就绪与设备自检；注入阶段尚未实现，本次仍走 GhostLock 链路。")
+        } else if (dfEngineEnabled && !dfReachable) {
+            appendLog("ℹ DirtyFrag 在该内核上原语不可达（6.1 系缺 MSG_SPLICE_PAGES），保持 GhostLock 链路。")
         }
 
         // 3. 触发 exploit
