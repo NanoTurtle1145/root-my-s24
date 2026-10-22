@@ -1376,7 +1376,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 val apk = copyToTmp("bakasu-manager.apk", "/data/local/tmp/bakasu-manager.apk", "644")
                 appendLog("◆ 安装 BakaSU 管理器（${apk.length() / 1024 / 1024} MB）…")
                 val r = shellExecutor.shell(
-                    "$tmpRootHelper sh -c 'pm install -r /data/local/tmp/bakasu-manager.apk' 2>&1"
+                    "$tmpRootHelper -c 'pm install -r /data/local/tmp/bakasu-manager.apk' 2>&1"
                 )
                 appendLog(
                     if (r.first == 0) "✔ BakaSU 管理器已安装"
@@ -1422,7 +1422,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // Manager 不认」——只有内核 dmesg 能说出第一次 finit_module 到底是被
         // vermagic / 签名 / KDP 哪一道拦下。root 通道是同一个 $tmpRootHelper。
         val diag = shellExecutor.shell(
-            "$tmpRootHelper sh -c 'dmesg 2>/dev/null | grep -iE " +
+            "$tmpRootHelper -c 'dmesg 2>/dev/null | grep -iE " +
             "\"kernelsu|finit_module|insmod|vermagic|module|cfi|defex|kdp|rkp|denied|unauthorized|signature\" | tail -60' 2>&1"
         )
         appendLog("◆ dmesg(内核判定): exit=${diag.first}\n${diag.second.trim().takeLast(2500)}")
