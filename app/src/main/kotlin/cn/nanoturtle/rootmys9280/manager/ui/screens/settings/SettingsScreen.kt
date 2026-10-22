@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Notes
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Bedtime
+import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material.icons.rounded.Download
@@ -76,6 +77,7 @@ private const val KEY_RAW_LOG = "raw_log"
 private const val KEY_ADB_WIRELESS_ENABLED = "adb_wireless_enabled"
 private const val KEY_UNTESTED_PAYLOADS_ENABLED = "untested_payloads_enabled"
 private const val KEY_DF_ENGINE_ENABLED = "df_engine_enabled"
+private const val KEY_DISABLE_KSU_MODULES = "disable_ksu_modules"
 private const val KEY_DEBUG_MODE = "debug_mode"
 
 /** 点版本号多少下开启调试模式 */
@@ -117,6 +119,10 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
     // DirtyFrag 引擎（alpha）：默认关闭，开启后跑 root 前会先做设备自检
     var dfEngineEnabled by remember {
         mutableStateOf(prefs.getBoolean(KEY_DF_ENGINE_ENABLED, false))
+    }
+    // late-load 前禁用已安装的 KernelSU 模块：默认关闭，用于规避冲突模块导致的自动重启
+    var disableKsuModules by remember {
+        mutableStateOf(prefs.getBoolean(KEY_DISABLE_KSU_MODULES, false))
     }
     // 日志共享方式：引导页写过一次，这里读出来并在改动时回写。
     var logSharing by remember {
@@ -384,7 +390,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
         item {
             SectionLabel(stringResource(R.string.settings_section_experimental))
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                GroupedRow(index = 0, count = 2) {
+                GroupedRow(index = 0, count = 3) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -404,7 +410,7 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_untested_payloads)) }
                 }
-                GroupedRow(index = 1, count = 2) {
+                GroupedRow(index = 1, count = 3) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -423,6 +429,26 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                         trailingContent = { Switch(checked = dfEngineEnabled, onCheckedChange = null) },
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_df_engine)) }
+                }
+                GroupedRow(index = 2, count = 3) {
+                    ListItem(
+                        modifier =
+                            Modifier.toggleable(
+                                value = disableKsuModules,
+                                role = Role.Switch,
+                                onValueChange = { enabled ->
+                                    disableKsuModules = enabled
+                                    prefs.edit().putBoolean(KEY_DISABLE_KSU_MODULES, enabled).apply()
+                                    runCatching {
+                                        ServiceLocator.rootViewModel.setDisableKsuModules(enabled)
+                                    }
+                                },
+                            ),
+                        leadingContent = { Icon(Icons.Rounded.Block, contentDescription = null) },
+                        supportingContent = { Text(stringResource(R.string.settings_disable_ksu_modules_summary)) },
+                        trailingContent = { Switch(checked = disableKsuModules, onCheckedChange = null) },
+                        colors = cardRowColors,
+                    ) { Text(stringResource(R.string.settings_disable_ksu_modules)) }
                 }
             }
         }

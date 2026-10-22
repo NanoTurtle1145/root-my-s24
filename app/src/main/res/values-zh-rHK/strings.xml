@@ -33,6 +33,8 @@
     <string name="settings_adb_wireless_summary">實驗性功能。開啟後首頁才顯示無線偵錯控制項（配對/連線）</string>
     <string name="settings_untested_payloads">未經測試的載荷</string>
     <string name="settings_untested_payloads_summary">顯示從 RootMyGalaxy 移植、未經本應用實測的載荷。風險自負。</string>
+    <string name="settings_disable_ksu_modules">停用 KSU 模組</string>
+    <string name="settings_disable_ksu_modules_summary">在 late-load 前暫時移走已安裝的 KernelSU 模組及待更新模組。若載入 KernelSU 時裝置自動重新開機，請開啟此項。</string>
     <string name="settings_section_about">關於</string>
     <string name="settings_check_update">檢查更新</string>
     <string name="settings_check_update_summary">開啟 GitHub Releases 查看新版本</string>
@@ -177,6 +179,9 @@
     <string name="log_screen_off_hint">提示: 執行期間請讓屏幕保持關閉 (可減少顯示工作, 降低核心競態概率)</string>
     <string name="log_stage_fail">ksud 暫存失敗 (exit=%1$d): %2$s</string>
     <string name="log_ksud_staged">已將 ksud 暫存至 ksud-s25u-kdp / .ksud-stage</string>
+    <string name="log_disable_ksu_modules_done">已停用 KernelSU 模組（已移至:%1$s）</string>
+    <string name="log_disable_ksu_modules_empty">未發現 KernelSU 模組目錄，無需停用</string>
+    <string name="log_disable_ksu_modules_fail">停用 KernelSU 模組失敗 (exit=%1$d): %2$s</string>
     <string name="log_lateload_fail">KernelSU 延遲載入失敗 (exit=%1$d)</string>
     <string name="log_driver_loaded">KernelSU 驅動程式已載入 (late-load exit=0)</string>
     <string name="log_verify">[5/5] 驗證中...</string>

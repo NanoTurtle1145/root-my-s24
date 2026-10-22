@@ -78,6 +78,8 @@ Auto-save log</string>
     <string name="settings_untested_payloads_summary">Show payloads ported from RootMyGalaxy that have not been verified on this app. Use at your own risk.</string>
     <string name="settings_df_engine">DirtyFrag engine (alpha)</string>
     <string name="settings_df_engine_summary">Experimental engine using the DirtyFrag page-cache bug (CVE-2026-43284). No Shizuku needed and root can be restored on boot, but it loads a permissive kernel module and pollutes the page cache. Runs a device self-check first and refuses to continue if anything is missing.</string>
+    <string name="settings_disable_ksu_modules">Disable KSU Modules</string>
+    <string name="settings_disable_ksu_modules_summary">Temporarily move KernelSU modules and pending module updates aside before late-load. Enable this if loading KernelSU reboots the device.</string>
     <string name="settings_section_about">About</string>
     <string name="settings_check_update">Check for updates</string>
     <string name="settings_check_update_summary">Open GitHub Releases for new versions</string>
@@ -234,6 +236,9 @@ Auto-save log</string>
     <string name="log_screen_off_hint">Hint: keep the screen off during the run (reduces display work, lowers kernel race probability)</string>
     <string name="log_stage_fail">ksud staging failed (exit=%1$d): %2$s</string>
     <string name="log_ksud_staged">ksud staged to ksud-s25u-kdp / .ksud-stage</string>
+    <string name="log_disable_ksu_modules_done">KernelSU modules disabled (moved to:%1$s)</string>
+    <string name="log_disable_ksu_modules_empty">No KernelSU module directory found; nothing to disable</string>
+    <string name="log_disable_ksu_modules_fail">Failed to disable KernelSU modules (exit=%1$d): %2$s</string>
     <string name="log_lateload_fail">KernelSU late-load failed (exit=%1$d)</string>
     <string name="log_driver_loaded">KernelSU driver loaded (late-load exit=0)</string>
     <string name="log_verify">[5/5] Verifying...</string>
