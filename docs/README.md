@@ -36,7 +36,7 @@
 | 25 | [research-index.md](research-index.md) | 研究资料全量索引 | 研究 |
 | 26 | [blog-s9280-root.md](blog-s9280-root.md) | 博客：S24 Ultra 国行免解锁 Root 实践 | 研究 |
 | 27 | [forum-and-admin.md](forum-and-admin.md) | 论坛与管理端说明 | 研究 |
-| 28 | [s928b-ezif-target-complete.md](s928b-ezif-target-complete.md) | S24 Ultra 欧版 S928B EZIF 定标报告（One UI 9.0，待真机验证） | 定标 |
+| 28 | [s928b-ezif-target-complete.md](s928b-ezif-target-complete.md) | S24 Ultra 欧版 S928B EZIF 定标报告（One UI 9.0，**真机实测通过**） | 定标 |
 
 ---
 
@@ -65,7 +65,7 @@
 | 港版 DZE2（已实测成功） | e3q-S9280ZHS6DZE2 | 6.1.145 | [dze2-target-complete.md](dze2-target-complete.md) |
 | 美版 S926U1 DZE2（XAA，未纳入 v3.5.1，待真机验证） | e2q-S926USQS6DZE2 | 6.1.145 | [dze2-xaa-target-complete.md](dze2-xaa-target-complete.md) |
 | 韩版 F741N DZE1（b6q，已实测成功，v3.5.1 起支持） | b6q-F741NKSS4DZE1 | 6.1.145 | [f741n-dze1-target-complete.md](f741n-dze1-target-complete.md) |
-| S24 Ultra 欧版 S928B EZIF（One UI 9.0，待真机验证） | e3q-S928BXXU6EZIF | 6.1.162 | [s928b-ezif-target-complete.md](s928b-ezif-target-complete.md) |
+| S24 Ultra 欧版 S928B EZIF（One UI 9.0，**真机实测通过**） | e3q-S928BXXU6EZIF | 6.1.162 | [s928b-ezif-target-complete.md](s928b-ezif-target-complete.md) |
 | 国行 DZG1（v2.5.6 起并入 DZF2 载荷） | e3q-S9280ZCS6DZG1 | 6.1.145 | [dzg1-target-complete.md](dzg1-target-complete.md) |
 | 港版 CZA1 | e3q-S9280ZHS4CZA1 | 6.1.128 | [cza1-target-complete.md](cza1-target-complete.md) |
 | 国行 BYH7（One UI 7，待真机验证） | e1q-S9210ZCU4BYH7 | 6.1.99 | [oneui7-adaptation-report.md](oneui7-adaptation-report.md) → [byh7-target-complete.md](byh7-target-complete.md) |

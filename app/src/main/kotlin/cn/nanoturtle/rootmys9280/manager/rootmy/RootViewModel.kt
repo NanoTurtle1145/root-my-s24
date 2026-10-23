@@ -163,8 +163,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         F741NDZE1("cve-2026-43499-F741NKSS4DZE1", "One UI 8.5", "SM-F741N 韩版 Z Flip6", "DZE1", Region.KOREA, "ksud-f741n-32601", tested = true),
         // —— 欧版（e3q 独立定标载荷 + 专属 32601 驱动）——
         // SM-S928B（EZIF）One UI 9.0 / kernel 6.1.162（构建号 34343818）：6.1.145 → 6.1.162
-        // 代际跃升，以港版 DZE2 为模板做全量符号迁移（25 项）+ P0 指纹重生成；2026-10-18 定标完成，待真机验证
-        S928BEZIF("cve-2026-43499-S928BXXU6EZIF", "One UI 9.0", "SM-S928B 欧版 S24 Ultra", "EZIF", Region.HONGKONG_TAIWAN, "ksud-ezif-32601", tested = false),
+        // 代际跃升，以港版 DZE2 为模板做全量符号迁移（25 项）+ P0 指纹重生成。
+        // 2026-10-23 真机实测通过 → 本版起按「已实测」发布（无需再开「未经测试的载荷」）
+        S928BEZIF("cve-2026-43499-S928BXXU6EZIF", "One UI 9.0", "SM-S928B 欧版 S24 Ultra", "EZIF", Region.HONGKONG_TAIWAN, "ksud-ezif-32601", tested = true),
         F7660BZG3("cve-2026-43499-F7660ZCSBBZG3", "One UI 8.5", "SM-F7660 国行 Z Flip7", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
         F9460GZF1("cve-2026-43499-F9460ZCS9GZF1", "One UI 7", "SM-F9460 国行 Z Fold5", "GZF1", Region.CHINA, "ksud-android13-5.15", tested = false),
         F9560DZG3("cve-2026-43499-F9560ZCS4DZG3", "One UI 8.5", "SM-F9560 国行 Z Fold6", "DZG3", Region.CHINA, "ksud-selected", tested = false),
