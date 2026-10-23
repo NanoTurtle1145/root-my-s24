@@ -163,8 +163,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         F741NDZE1("cve-2026-43499-F741NKSS4DZE1", "One UI 8.5", "SM-F741N 韩版 Z Flip6", "DZE1", Region.KOREA, "ksud-f741n-32601", tested = true),
         // —— 欧版（e3q 独立定标载荷 + 专属 32601 驱动）——
         // SM-S928B（EZIF）One UI 9.0 / kernel 6.1.162（构建号 34343818）：6.1.145 → 6.1.162
-        // 代际跃升，以港版 DZE2 为模板做全量符号迁移（25 项）+ P0 指纹重生成；2026-10-18 定标完成，待真机验证
-        S928BEZIF("cve-2026-43499-S928BXXU6EZIF", "One UI 9.0", "SM-S928B 欧版 S24 Ultra", "EZIF", Region.HONGKONG_TAIWAN, "ksud-ezif-32601", tested = false),
+        // 代际跃升，以港版 DZE2 为模板做全量符号迁移（25 项）+ P0 指纹重生成。
+        // 2026-10-23 真机实测通过 → 本版起按「已实测」发布（无需再开「未经测试的载荷」）
+        S928BEZIF("cve-2026-43499-S928BXXU6EZIF", "One UI 9.0", "SM-S928B 欧版 S24 Ultra", "EZIF", Region.HONGKONG_TAIWAN, "ksud-ezif-32601", tested = true),
         // SM-S928B（EUR）One UI 8.0 / kernel 6.1.128（构建号 31999054）：与港版 CZA1 同构建号但
         // **非同一机型**（欧版 S928B vs 港版 S9280），.rodata 差 8 字节（nfnetlink_log 0x0160b70d vs
         // 港版 0x0160b705），故独立定标、不可与港版 CZA1 载荷互换。

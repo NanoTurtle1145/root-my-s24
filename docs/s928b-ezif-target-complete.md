@@ -1,7 +1,7 @@
 # SM-S928B 欧版 S24 Ultra（e3q）EZIF 适配定标报告
 
 > 定标日期：2026-10-18
-> 状态：**定标完成，待真机验证**（随本次 3.5.1 beta 携带，`tested=false`）
+> 状态：**定标完成，2026-10-23 真机实测通过**（v3.5.2 alpha 起 `tested=true`，无需再开「未经测试的载荷」）
 > 目标：`fusion-s24u` → `src/targets/e3q-S928BXXU6EZIF/`
 > 素材：`devices_ports/ezif_unpacked/`（SM-S928B 欧版 S24 Ultra，S928BXXU6EZIF，One UI 9.0；boot.img sha256 `b98326455c825062e5350ae88b75488f4de4c7b1e587a47105fffdc41be37500`，Samsung 签名 `SM-S928B_EUR_XX_QKEY2`）
 > 触发：欧版 S24 Ultra 更新 One UI 9.0（内核 6.1.145 → 6.1.162 代际跃升），S24 全系现有载荷全部不适用
@@ -128,7 +128,7 @@ ANDROID_NDK_HOME=/home/nt/项目/samsung_root_research/06_工具链/android-ndk-
 - 载荷资产：`cve-2026-43499-S928BXXU6EZIF`（条目 `S928BEZIF`，分组「港版/台版（外版）」）
 - KSU 驱动资产：`ksud-ezif-32601`（32601 / 3.3.0；vermagic 唯一对应本内核，不可与其它机型混用）
 - root 守护进程沿用共享资产 `cve-2026-43499-root`（与机型无关，UMH 协议未变）
-- `tested=false`（需在设置中启用「未经测试的载荷」后可见）；服务端 `payloads.json` 条目同步配置（`tested=false`、minVc=202）
+- `tested=true`（2026-10-23 真机实测通过，本版起按已实测发布）；服务端 `payloads.json` 条目需同步翻转 `tested`
 
 ## 10. 验证清单
 
@@ -136,8 +136,8 @@ ANDROID_NDK_HOME=/home/nt/项目/samsung_root_research/06_工具链/android-ndk-
 - [x] p0 指纹生成（readback 256/256）
 - [x] 正式 target 构建（104,128 B；与草案逐字节一致）
 - [x] KernelSU 驱动构建 + 静态审计
-- [x] 服务端清单条目配置（`tested=false`、minVc=202）
-- [ ] **真机验证**（建议采集 `getprop ro.build.fingerprint` 与 `cat /sys/kernel/tracing/events/sched/sched_blocked_reason/id`，按 `ADAPTATION_GUIDE_FULL.md` §8 流程）
+- [ ] 服务端清单条目翻转 `tested=true`（随本版发布同步）
+- [x] **真机验证**（2026-10-23 通过；采集 `getprop ro.build.fingerprint` 与 `cat /sys/kernel/tracing/events/sched/sched_blocked_reason/id`，按 `ADAPTATION_GUIDE_FULL.md` §8 流程）
 
 ## 11. 未采纳项与备注
 
