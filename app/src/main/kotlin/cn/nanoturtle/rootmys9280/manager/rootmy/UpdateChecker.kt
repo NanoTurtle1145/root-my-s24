@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
+import cn.nanoturtle.rootmys9280.manager.BuildConfig
 import java.security.MessageDigest
 import java.util.concurrent.TimeUnit
 import okhttp3.OkHttpClient
@@ -47,6 +48,8 @@ object UpdateChecker {
         val notes: String,
         val url: String,
         val mirror: String,
+        /** 服务端实际按哪个系列返回的（`all` 表示回退到了全量包）。 */
+        val series: String = "",
     )
 
     /** 下载收尾的判定结果；由调用方决定怎么提示。 */
@@ -95,9 +98,12 @@ object UpdateChecker {
      * @return 最新版本信息；失败抛异常，由调用方决定提示方式。
      */
     fun fetchLatest(): Release {
+        // 分系列打包后必须告诉服务端自己是哪个系列，否则只会拿到全量包
+        // （见 docs/separate-builds.md）。服务端对未知/缺失的 series 回退到 all。
+        val series = BuildConfig.SERIES.lowercase()
         val request =
             Request.Builder()
-                .url(MANIFEST_URL)
+                .url("$MANIFEST_URL?series=$series")
                 .header("User-Agent", "RootMyS24-updater")
                 .build()
         client.newCall(request).execute().use { response ->
@@ -113,6 +119,7 @@ object UpdateChecker {
                 notes = json.optString("notes"),
                 url = json.optString("url"),
                 mirror = json.optString("mirror"),
+                series = json.optString("series"),
             )
         }
     }

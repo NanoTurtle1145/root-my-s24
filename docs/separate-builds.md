@@ -79,11 +79,28 @@ RootMyS24-v<版本>-build<code>-s24.apk
 …
 ```
 
-## 5. 还没做的（下一步）
+## 5. 更新通道（已按系列打通）
 
-1. **在线更新清单要按系列返回**：`update.php` 目前读 `dl/latest.json` 返回单个 APK URL，
-   拆包后需要客户端带上 `series` 参数（`GET update.php?series=s24`），服务端按系列返回对应
-   asset；全量包保持旧行为作为回退。
-2. **发布流程**：一次构建 7 个包 + 各自 SHA-256，逐条上传；发布脚本待补。
-3. **`series_assets_manifest.json` 校验**：CI 里加一步 `split_assets.py --check`，
-   防止新增载荷后忘了重新分发。
+- **客户端**：`UpdateChecker` 请求 `update.php?series=<BuildConfig.SERIES 小写>`，
+  响应里的 `series` 字段可看出服务端实际给了哪个（回退到 `all` 时也是 `all`）。
+- **服务端** `update.php`：清单支持 `channels` 映射
+  ```json
+  { "versionName": "...", "versionCode": 223,
+    "channels": { "all": {"file": "...-all.apk", "sha256": "..."},
+                  "s24": {"file": "...-s24.apk", "sha256": "..."} } }
+  ```
+  请求的系列不存在 → 回退 `all`；清单仍是旧格式（顶层 `file`）→ 任何系列都返回它（向后兼容）；
+  `series` 参数先做 `^[a-z0-9]{1,12}$` 清洗；`size` 由服务端实时算，不信清单。
+  （已在隔离环境实测：命中 / 回退 / 非法参数三条路径都正确。）
+- **发布脚本** `tools/release_flavors.py`：一次构建多个 flavor → 校验版本号与签名 →
+  上传到同一个 GitHub release 的多个 asset → 上传 APK 与 `latest.json` 到服务器 `dl/`。
+  ```sh
+  python3 tools/release_flavors.py --channel beta --dry-run   # 只构建+校验+生成清单
+  python3 tools/release_flavors.py --channel beta             # 正式发布（GitHub + 服务器）
+  python3 tools/release_flavors.py --channel beta --skip-build  # 复用已有产物
+  ```
+
+## 6. 还没做的
+
+1. **CI 校验**：加一步 `split_assets.py --check`，防止新增载荷后忘了重新分发。
+2. **服务器 dl/ 体积**：每个版本会多 7 个 APK（合计约 80MB），需要定期清理旧版本。
