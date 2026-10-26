@@ -402,4 +402,6 @@ Auto-save log</string>
     <string name="settings_debug_df_esp">Test DirtyFrag ESP loopback</string>
     <string name="settings_debug_df_esp_summary">Step 1: build SA, hand-craft ESP, verify the kernel decrypts it</string>
     <string name="status_driver_only">Driver loaded, su unavailable</string>
+    <string name="status_driver_only_lateload">Driver loaded (late-load), su not ready — grant root to apps in the KernelSU Manager</string>
+    <string name="status_driver_stale">Stale driver entry — KernelSU is not actually loaded</string>
 </resources>

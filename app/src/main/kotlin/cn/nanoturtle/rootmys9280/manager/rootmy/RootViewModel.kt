@@ -278,8 +278,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val currentStage: Int = 0,
         val busy: Boolean = false,
         val rooted: Boolean = false,
-        /** KSU 驱动是否已加载（由 refreshKsuStatus 检测，重启后仍准确） */
+        /** KSU 驱动是否已加载（由 refreshKsuStatus 检测，重启后仍准确；僵尸条目不算） */
         val ksuLoaded: Boolean = false,
+        /** 驱动是否为 late-load/越狱模式加载（来自 ksud debug info 的 late_load 字段） */
+        val ksuLateLoad: Boolean = false,
+        /** /proc/modules 有 kernelsu 残留但驱动实际不可用（late-load/insmod 失败留下的僵尸条目） */
+        val ksuZombie: Boolean = false,
         /** KNOX 状态展示文案（由 refreshKnox 填充） */
         val knoxState: String = "",
     )
@@ -1062,48 +1066,108 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /**
-     * 检测 KernelSU 驱动是否已加载（无需 root）：
-     * /proc/modules 列出已加载模块，或 /sys/module/kernelsu 存在即驱动在内核中。
-     * 重启后依然准确，不依赖本次会话是否跑过 root 流程。
+     * 检测 KernelSU 状态（无需 root），分三件事：
+     *   driverLive —— 内核里真有 KSU 驱动在跑（权威来源：`ksud debug info` 的 version/lkm）
+     *   lateLoad   —— 该驱动是 late-load/越狱模式加载的（debug info 的 late_load 字段）
+     *   suUsable   —— root 真的能用（su 能拿到 uid=0）
+     * 另外单独标记 zombie：/proc/modules 里有 kernelsu 残留、但驱动实际不工作
+     * （late-load 失败/insmod 被拒后会留下这种记录，旧实现会误报「已加载」）。
      *
-     * 注意：必须经 Shizuku（shell 权限）检测——app 进程直接读 /proc/modules 会被
+     * 旧实现只看 /proc/modules 或 /sys/module/kernelsu，两个来源各有坑：
+     *  - /proc/modules 会留僵尸条目 → 误报已加载；
+     *  - /sys/module/kernelsu 在 Samsung KDP/late-load 场景常不可见（隐藏/命名空间），
+     *    且 app 直接读会被 SELinux 拒 → 误报未加载。
+     * 所以驱动判定优先用 `ksud debug info`（shell 权限即可执行，输出 version/lkm/late_load），
+     * 只有 ksud 不可用时才回退到 /proc/modules + /sys/module 的旧判据。
+     *
+     * 必须经 Shizuku/无线调试（shell 权限）检测：app 进程直接读 /proc/modules 会被
      * SELinux / KSU 隐藏机制拒绝（Permission denied），而 shell 视角能看到 kernelsu。
      */
     suspend fun refreshKsuStatus() = withContext(Dispatchers.IO) {
-        // 两件事要分开看，混为一谈会误报：
-        //   modLoaded —— 驱动模块在内核里（/proc/modules 有 kernelsu）
-        //   suUsable  —— root 真的能用（su 能拿到 uid=0）
-        // 实测遇到过 modLoaded=true 而 suUsable=false 的半就绪状态：late-load 之后
-        // 模块是 Live 的，但 /system/bin/su 压根不存在，用户实际拿不到 root。
-        // 旧实现只看模块，于是首页显示「已取得root」，与用户体感完全相反。
-        val (modLoaded, suUsable) = runCatching {
+        val probe = runCatching {
             if (shellExecutor.isReady()) {
-                val mod = shellExecutor.shell(
-                    "grep -q 'kernelsu' /proc/modules 2>/dev/null || " +
-                        "ls /sys/module/kernelsu >/dev/null 2>&1"
-                ).first == 0
-                if (!mod) {
-                    false to false
-                } else {
-                    // 只有模块在时才值得再探一次 su；su 未授权/未挂载时这里为 false
-                    val su = shellExecutor
-                        .shell("su -c id 2>/dev/null")
-                        .second
-                        .contains("uid=0")
-                    true to su
-                }
+                probeKsuViaShell()
             } else {
-                // 执行器不可用时的兜底（部分环境 app 可直接读）
-                val p = ProcessBuilder(
-                    "/system/bin/sh", "-c",
-                    "grep -q 'kernelsu' /proc/modules 2>/dev/null || " +
-                        "ls /sys/module/kernelsu >/dev/null 2>&1"
-                ).start()
-                (p.waitFor() == 0) to false
+                probeKsuInProcess()
             }
-        }.getOrDefault(false to false)
+        }.getOrDefault(KsuProbe())
 
-        _state.value = _state.value.copy(ksuLoaded = modLoaded, rooted = modLoaded && suUsable)
+        _state.value = _state.value.copy(
+            ksuLoaded = probe.driverLive,
+            ksuLateLoad = probe.lateLoad,
+            ksuZombie = probe.zombie,
+            rooted = probe.driverLive && probe.suUsable,
+        )
+    }
+
+    /** KSU 探测结果。[driverLive] 与 [zombie] 互斥：僵尸条目不算已加载。 */
+    private data class KsuProbe(
+        val driverLive: Boolean = false,
+        val lateLoad: Boolean = false,
+        val zombie: Boolean = false,
+        val suUsable: Boolean = false,
+    )
+
+    /** `ksud debug info` 解析结果。[known]=false 表示没拿到可用输出，不能下结论。 */
+    private data class KsudInfo(
+        val known: Boolean = false,
+        val driverLive: Boolean = false,
+        val lateLoad: Boolean = false,
+    )
+
+    /** 经 shell（Shizuku/无线调试）探测；唯一能拿到准确结论的路径。 */
+    private suspend fun probeKsuViaShell(): KsuProbe {
+        val ksud = shellExecutor.shell(
+            "for k in /data/local/tmp/ksud-s25u-kdp /data/local/tmp/ksud; do " +
+                "if [ -x \"\$k\" ]; then \"\$k\" debug info 2>/dev/null; exit 0; fi; done; " +
+                "echo __KSUD_MISSING__"
+        ).second
+        val info = parseKsudDebugInfo(ksud)
+
+        val modEntry = shellExecutor.shell(
+            "grep -q '^kernelsu ' /proc/modules 2>/dev/null"
+        ).first == 0
+        val sysEntry = shellExecutor.shell("[ -d /sys/module/kernelsu ]").first == 0
+        // 有残留记录但驱动不工作 → 僵尸条目（只有 ksud 能下结论时才敢这么判）
+        val zombie = info.known && !info.driverLive && (modEntry || sysEntry)
+
+        val driverLive = if (info.known) info.driverLive else (sysEntry || modEntry)
+        val suUsable = if (driverLive) {
+            runCatching {
+                shellExecutor.shell("su -c id 2>/dev/null").second.contains("uid=0")
+            }.getOrDefault(false)
+        } else {
+            false
+        }
+        return KsuProbe(
+            driverLive = driverLive,
+            lateLoad = if (info.known) info.lateLoad else false,
+            zombie = zombie,
+            suUsable = suUsable,
+        )
+    }
+
+    /** 执行器不可用时的兜底：app 进程直接读（可能被 SELinux 拒，只能给粗结论）。 */
+    private fun probeKsuInProcess(): KsuProbe = runCatching {
+        val p = ProcessBuilder(
+            "/system/bin/sh", "-c",
+            "grep -q '^kernelsu ' /proc/modules 2>/dev/null || " +
+                "[ -d /sys/module/kernelsu ]"
+        ).start()
+        KsuProbe(driverLive = p.waitFor() == 0)
+    }.getOrDefault(KsuProbe())
+
+    /** 解析 `ksud debug info` 输出：version / lkm / late_load 三个字段。 */
+    private fun parseKsudDebugInfo(out: String): KsudInfo {
+        if (out.isBlank() || out.contains("__KSUD_MISSING__")) return KsudInfo()
+        val version = Regex("""(?m)^version:\s*(\d+)""")
+            .find(out)?.groupValues?.getOrNull(1)?.toIntOrNull()
+            ?: return KsudInfo()
+        val lkm = Regex("""(?m)^lkm:\s*(true|false)""")
+            .find(out)?.groupValues?.getOrNull(1)?.toBooleanStrictOrNull() ?: false
+        val lateLoad = Regex("""(?m)^late_load:\s*(true|false)""")
+            .find(out)?.groupValues?.getOrNull(1)?.toBooleanStrictOrNull() ?: false
+        return KsudInfo(known = true, driverLive = version > 0 && lkm, lateLoad = lateLoad)
     }
 
     /**
