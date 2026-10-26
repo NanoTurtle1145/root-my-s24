@@ -298,4 +298,26 @@
     <string name="update_latest">Sudah versi terbaru (%1$s)</string>
     <string name="update_check_failed">Gagal memeriksa pembaruan: %1$s</string>
     <string name="update_downloading">Mengunduh — akan diminta memasang setelah selesai</string>
+    <string name="status_active_lateload">Aktif (late-load)</string>
+    <string name="status_driver_stale">Entri driver usang — KernelSU sebenarnya tidak dimuat</string>
+    <string name="ksu_detail_title">Detail status KernelSU</string>
+    <string name="ksu_detail_unknown">Belum ada detail — status masih diperiksa.</string>
+    <string name="ksu_detail_close">Tutup</string>
+    <string name="ksu_detail_driver">Driver: %1$s</string>
+    <string name="ksu_detail_driver_stale">entri usang (driver sebenarnya tidak berjalan)</string>
+    <string name="ksu_detail_driver_lateload">dimuat · late-load (mode jailbreak)</string>
+    <string name="ksu_detail_driver_normal">dimuat (LKM biasa)</string>
+    <string name="ksu_detail_driver_none">tidak dimuat</string>
+    <string name="ksu_detail_ksud_found">ksud: versi %1$d (info debug dapat dibaca)</string>
+    <string name="ksu_detail_ksud_missing">ksud: tidak ditemukan (/data/local/tmp/ksud-s25u-kdp dan /data/local/tmp/ksud tidak dapat dieksekusi)</string>
+    <string name="ksu_detail_proc_has">/proc/modules: entri kernelsu ada</string>
+    <string name="ksu_detail_proc_none">/proc/modules: tidak ada entri kernelsu</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: ada</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: tidak ada (umum pada late-load Samsung)</string>
+    <string name="ksu_detail_su_usable">shell su: dapat dipakai (uid=0)</string>
+    <string name="ksu_detail_su_unusable">shell su: tidak tersedia (belum diberi izin / belum terpasang)</string>
+    <string name="ksu_detail_channel_shell">kanal pemeriksaan: Shizuku / ADB nirkabel (shell)</string>
+    <string name="ksu_detail_channel_inprocess">kanal pemeriksaan: cadangan dalam aplikasi (mungkin diblokir SELinux)</string>
+    <string name="ksu_detail_lateload_note">Pada mode late-load (jailbreak), root diberikan per aplikasi oleh KernelSU Manager, jadi tidak adanya shell su adalah hal yang wajar.\nLencana menampilkan Aktif karena driver dimuat. Apakah root berfungsi untuk aplikasi tertentu bergantung pada daftar superuser Manager.</string>
+    <string name="ksu_detail_zombie_note">Entri kernelsu di /proc/modules adalah sisa dari late-load/insmod yang gagal; driver sebenarnya tidak berjalan. Jalankan lagi alur root.</string>
 </resources>

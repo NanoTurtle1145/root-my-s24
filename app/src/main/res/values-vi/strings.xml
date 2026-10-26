@@ -298,4 +298,26 @@
     <string name="update_latest">Đã là bản mới nhất (%1$s)</string>
     <string name="update_check_failed">Kiểm tra cập nhật thất bại: %1$s</string>
     <string name="update_downloading">Đang tải — sẽ hỏi cài đặt khi xong</string>
+    <string name="status_active_lateload">Đang hoạt động (late-load)</string>
+    <string name="status_driver_stale">Mục driver cũ — KernelSU thực tế chưa được nạp</string>
+    <string name="ksu_detail_title">Chi tiết trạng thái KernelSU</string>
+    <string name="ksu_detail_unknown">Chưa có chi tiết — trạng thái vẫn đang được kiểm tra.</string>
+    <string name="ksu_detail_close">Đóng</string>
+    <string name="ksu_detail_driver">Driver: %1$s</string>
+    <string name="ksu_detail_driver_stale">mục cũ (driver thực tế không chạy)</string>
+    <string name="ksu_detail_driver_lateload">đã nạp · late-load (chế độ jailbreak)</string>
+    <string name="ksu_detail_driver_normal">đã nạp (LKM thông thường)</string>
+    <string name="ksu_detail_driver_none">chưa nạp</string>
+    <string name="ksu_detail_ksud_found">ksud: phiên bản %1$d (đọc được thông tin gỡ lỗi)</string>
+    <string name="ksu_detail_ksud_missing">ksud: không tìm thấy (/data/local/tmp/ksud-s25u-kdp và /data/local/tmp/ksud không thể thực thi)</string>
+    <string name="ksu_detail_proc_has">/proc/modules: có mục kernelsu</string>
+    <string name="ksu_detail_proc_none">/proc/modules: không có mục kernelsu</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: có tồn tại</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: không tồn tại (thường gặp ở late-load của Samsung)</string>
+    <string name="ksu_detail_su_usable">shell su: dùng được (uid=0)</string>
+    <string name="ksu_detail_su_unusable">shell su: không dùng được (chưa cấp quyền / chưa cài)</string>
+    <string name="ksu_detail_channel_shell">kênh kiểm tra: Shizuku / ADB không dây (shell)</string>
+    <string name="ksu_detail_channel_inprocess">kênh kiểm tra: dự phòng trong ứng dụng (có thể bị SELinux chặn)</string>
+    <string name="ksu_detail_lateload_note">Ở chế độ late-load (jailbreak), root được KernelSU Manager cấp theo từng ứng dụng, nên việc không có shell su là điều bình thường.\nHuy hiệu hiển thị Đang hoạt động vì driver đã được nạp. Root có dùng được cho một ứng dụng cụ thể hay không phụ thuộc vào danh sách superuser của Manager.</string>
+    <string name="ksu_detail_zombie_note">Mục kernelsu trong /proc/modules là tàn dư của một lần late-load/insmod thất bại; driver thực tế không chạy. Hãy chạy lại quy trình root.</string>
 </resources>

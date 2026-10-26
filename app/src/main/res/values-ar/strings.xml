@@ -301,4 +301,26 @@
     <string name="update_latest">لديك أحدث إصدار (%1$s)</string>
     <string name="update_check_failed">فشل التحقق من التحديث: %1$s</string>
     <string name="update_downloading">جارٍ التنزيل — سيُطلب التثبيت عند الانتهاء</string>
+    <string name="status_active_lateload">نشط (late-load)</string>
+    <string name="status_driver_stale">إدخال برنامج تشغيل قديم — KernelSU غير محمَّل فعليًا</string>
+    <string name="ksu_detail_title">تفاصيل حالة KernelSU</string>
+    <string name="ksu_detail_unknown">لا تفاصيل بعد — لا يزال فحص الحالة جاريًا.</string>
+    <string name="ksu_detail_close">إغلاق</string>
+    <string name="ksu_detail_driver">برنامج التشغيل: %1$s</string>
+    <string name="ksu_detail_driver_stale">إدخال قديم (برنامج التشغيل لا يعمل فعليًا)</string>
+    <string name="ksu_detail_driver_lateload">محمَّل · late-load (وضع كسر الحماية)</string>
+    <string name="ksu_detail_driver_normal">محمَّل (LKM عادي)</string>
+    <string name="ksu_detail_driver_none">غير محمَّل</string>
+    <string name="ksu_detail_ksud_found">ksud: الإصدار %1$d (معلومات التصحيح قابلة للقراءة)</string>
+    <string name="ksu_detail_ksud_missing">ksud: غير موجود (/data/local/tmp/ksud-s25u-kdp و /data/local/tmp/ksud غير قابلين للتنفيذ)</string>
+    <string name="ksu_detail_proc_has">/proc/modules: إدخال kernelsu موجود</string>
+    <string name="ksu_detail_proc_none">/proc/modules: لا يوجد إدخال kernelsu</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: موجود</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: غير موجود (شائع مع late-load في أجهزة سامسونج)</string>
+    <string name="ksu_detail_su_usable">shell su: قابل للاستخدام (uid=0)</string>
+    <string name="ksu_detail_su_unusable">shell su: غير متاح (لم يُمنح / غير مثبَّت)</string>
+    <string name="ksu_detail_channel_shell">قناة الفحص: Shizuku / ADB لاسلكي (shell)</string>
+    <string name="ksu_detail_channel_inprocess">قناة الفحص: بديل داخل التطبيق (قد يحجبه SELinux)</string>
+    <string name="ksu_detail_lateload_note">في وضع late-load (كسر الحماية) يمنح KernelSU Manager صلاحية root لكل تطبيق على حدة، لذا فإن غياب shell su أمر متوقع.\nتُظهر الشارة «نشط» لأن برنامج التشغيل محمَّل. أما نجاح root لتطبيق معيّن فيعتمد على قائمة المستخدمين المتميزين لدى Manager.</string>
+    <string name="ksu_detail_zombie_note">إدخال kernelsu في /proc/modules هو بقايا محاولة late-load/insmod فاشلة؛ برنامج التشغيل لا يعمل فعليًا. أعد تشغيل مسار الروت.</string>
 </resources>

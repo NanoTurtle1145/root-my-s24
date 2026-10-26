@@ -298,4 +298,26 @@
     <string name="update_latest">最新版です（%1$s）</string>
     <string name="update_check_failed">更新の確認に失敗しました: %1$s</string>
     <string name="update_downloading">ダウンロード中 — 完了後にインストールを確認します</string>
+    <string name="status_active_lateload">有効（late-load）</string>
+    <string name="status_driver_stale">ドライバーの登録が古い — KernelSU は実際にはロードされていません</string>
+    <string name="ksu_detail_title">KernelSU の状態詳細</string>
+    <string name="ksu_detail_unknown">詳細はまだありません — 状態を確認しています。</string>
+    <string name="ksu_detail_close">閉じる</string>
+    <string name="ksu_detail_driver">ドライバー: %1$s</string>
+    <string name="ksu_detail_driver_stale">古い登録（ドライバーは実際には動作していません）</string>
+    <string name="ksu_detail_driver_lateload">ロード済み · late-load（jailbreak モード）</string>
+    <string name="ksu_detail_driver_normal">ロード済み（通常の LKM）</string>
+    <string name="ksu_detail_driver_none">未ロード</string>
+    <string name="ksu_detail_ksud_found">ksud: バージョン %1$d（デバッグ情報を読み取り可能）</string>
+    <string name="ksu_detail_ksud_missing">ksud: 見つかりません（/data/local/tmp/ksud-s25u-kdp と /data/local/tmp/ksud は実行できません）</string>
+    <string name="ksu_detail_proc_has">/proc/modules: kernelsu のエントリがあります</string>
+    <string name="ksu_detail_proc_none">/proc/modules: kernelsu のエントリはありません</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: 存在します</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: 存在しません（Samsung の late-load ではよくあります）</string>
+    <string name="ksu_detail_su_usable">shell su: 使用可能（uid=0）</string>
+    <string name="ksu_detail_su_unusable">shell su: 使用不可（未許可 / 未インストール）</string>
+    <string name="ksu_detail_channel_shell">確認経路: Shizuku / ワイヤレス ADB（shell）</string>
+    <string name="ksu_detail_channel_inprocess">確認経路: アプリ内フォールバック（SELinux によりブロックされる場合があります）</string>
+    <string name="ksu_detail_lateload_note">late-load（jailbreak）モードでは、root は KernelSU Manager がアプリごとに許可するため、shell su が存在しないのは想定どおりです。\nバッジが「有効」と表示されるのはドライバーがロードされているためです。特定のアプリで root が機能するかは、Manager のスーパーユーザーリストによって決まります。</string>
+    <string name="ksu_detail_zombie_note">/proc/modules の kernelsu エントリは、失敗した late-load/insmod の残骸です。ドライバーは実際には動作していません。root フローを再実行してください。</string>
 </resources>

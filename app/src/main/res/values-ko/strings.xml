@@ -298,4 +298,26 @@
     <string name="update_latest">이미 최신 버전입니다(%1$s)</string>
     <string name="update_check_failed">업데이트 확인 실패: %1$s</string>
     <string name="update_downloading">다운로드 중 — 완료되면 설치를 묻습니다</string>
+    <string name="status_active_lateload">활성(late-load)</string>
+    <string name="status_driver_stale">오래된 드라이버 항목 — KernelSU가 실제로 로드되지 않았습니다</string>
+    <string name="ksu_detail_title">KernelSU 상태 세부 정보</string>
+    <string name="ksu_detail_unknown">아직 세부 정보가 없습니다 — 상태를 확인하는 중입니다.</string>
+    <string name="ksu_detail_close">닫기</string>
+    <string name="ksu_detail_driver">드라이버: %1$s</string>
+    <string name="ksu_detail_driver_stale">오래된 항목(드라이버가 실제로 실행 중이 아님)</string>
+    <string name="ksu_detail_driver_lateload">로드됨 · late-load(탈옥 모드)</string>
+    <string name="ksu_detail_driver_normal">로드됨(일반 LKM)</string>
+    <string name="ksu_detail_driver_none">로드되지 않음</string>
+    <string name="ksu_detail_ksud_found">ksud: 버전 %1$d(디버그 정보 읽기 가능)</string>
+    <string name="ksu_detail_ksud_missing">ksud: 찾을 수 없음(/data/local/tmp/ksud-s25u-kdp 및 /data/local/tmp/ksud를 실행할 수 없음)</string>
+    <string name="ksu_detail_proc_has">/proc/modules: kernelsu 항목 있음</string>
+    <string name="ksu_detail_proc_none">/proc/modules: kernelsu 항목 없음</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: 있음</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: 없음(Samsung late-load에서 흔함)</string>
+    <string name="ksu_detail_su_usable">shell su: 사용 가능(uid=0)</string>
+    <string name="ksu_detail_su_unusable">shell su: 사용 불가(권한 없음 / 설치되지 않음)</string>
+    <string name="ksu_detail_channel_shell">확인 경로: Shizuku / 무선 ADB(shell)</string>
+    <string name="ksu_detail_channel_inprocess">확인 경로: 앱 내부 대체 경로(SELinux에 의해 차단될 수 있음)</string>
+    <string name="ksu_detail_lateload_note">late-load(탈옥) 모드에서는 KernelSU Manager가 앱별로 root를 부여하므로 shell su가 없는 것은 정상입니다.\n배지가 활성으로 표시되는 것은 드라이버가 로드되었기 때문입니다. 특정 앱에서 root가 동작하는지는 Manager의 슈퍼유저 목록에 따라 달라집니다.</string>
+    <string name="ksu_detail_zombie_note">/proc/modules의 kernelsu 항목은 실패한 late-load/insmod의 잔여물입니다. 드라이버가 실제로 실행 중이 아닙니다. root 흐름을 다시 실행하세요.</string>
 </resources>
