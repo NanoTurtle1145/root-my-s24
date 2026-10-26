@@ -298,4 +298,26 @@
     <string name="update_latest">Уже найновіша версія (%1$s)</string>
     <string name="update_check_failed">Не вдалося перевірити оновлення: %1$s</string>
     <string name="update_downloading">Триває завантаження — після завершення буде запропоновано встановлення</string>
+    <string name="status_active_lateload">Активний (late-load)</string>
+    <string name="status_driver_stale">Застарілий запис драйвера — KernelSU фактично не завантажено</string>
+    <string name="ksu_detail_title">Подробиці статусу KernelSU</string>
+    <string name="ksu_detail_unknown">Подробиць ще немає — статус ще перевіряється.</string>
+    <string name="ksu_detail_close">Закрити</string>
+    <string name="ksu_detail_driver">Драйвер: %1$s</string>
+    <string name="ksu_detail_driver_stale">застарілий запис (драйвер фактично не працює)</string>
+    <string name="ksu_detail_driver_lateload">завантажено · late-load (режим jailbreak)</string>
+    <string name="ksu_detail_driver_normal">завантажено (звичайний LKM)</string>
+    <string name="ksu_detail_driver_none">не завантажено</string>
+    <string name="ksu_detail_ksud_found">ksud: версія %1$d (налагоджувальна інформація читається)</string>
+    <string name="ksu_detail_ksud_missing">ksud: не знайдено (/data/local/tmp/ksud-s25u-kdp і /data/local/tmp/ksud не є виконуваними)</string>
+    <string name="ksu_detail_proc_has">/proc/modules: запис kernelsu присутній</string>
+    <string name="ksu_detail_proc_none">/proc/modules: запису kernelsu немає</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: присутній</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: відсутній (типово для late-load на Samsung)</string>
+    <string name="ksu_detail_su_usable">shell su: доступний (uid=0)</string>
+    <string name="ksu_detail_su_unusable">shell su: недоступний (не надано / не встановлено)</string>
+    <string name="ksu_detail_channel_shell">канал перевірки: Shizuku / бездротовий ADB (shell)</string>
+    <string name="ksu_detail_channel_inprocess">канал перевірки: резервний спосіб у застосунку (може блокуватися SELinux)</string>
+    <string name="ksu_detail_lateload_note">У режимі late-load (jailbreak) менеджер KernelSU надає root окремим застосункам, тому відсутність shell su очікувана.\nЗначок показує «Активний», бо драйвер завантажено. Чи працює root для конкретного застосунку, залежить від списку суперкористувачів у менеджері.</string>
+    <string name="ksu_detail_zombie_note">Запис kernelsu у /proc/modules — залишок невдалого late-load/insmod; драйвер фактично не працює. Запустіть процес отримання root ще раз.</string>
 </resources>

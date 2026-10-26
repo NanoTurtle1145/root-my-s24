@@ -298,4 +298,28 @@
     <string name="update_latest">Bereits aktuell (%1$s)</string>
     <string name="update_check_failed">Updateprüfung fehlgeschlagen: %1$s</string>
     <string name="update_downloading">Wird geladen - nach Abschluss wirst du zur Installation gefragt</string>
+
+    <!-- KSU status details -->
+    <string name="status_active_lateload">Aktiv (late-load)</string>
+    <string name="status_driver_stale">Veralteter Treibereintrag — KernelSU ist nicht wirklich geladen</string>
+    <string name="ksu_detail_title">KernelSU-Statusdetails</string>
+    <string name="ksu_detail_unknown">Noch keine Details — der Status wird noch geprüft.</string>
+    <string name="ksu_detail_close">Schließen</string>
+    <string name="ksu_detail_driver">Treiber: %1$s</string>
+    <string name="ksu_detail_driver_stale">veralteter Eintrag (Treiber läuft nicht wirklich)</string>
+    <string name="ksu_detail_driver_lateload">geladen · late-load (Jailbreak-Modus)</string>
+    <string name="ksu_detail_driver_normal">geladen (reguläres LKM)</string>
+    <string name="ksu_detail_driver_none">nicht geladen</string>
+    <string name="ksu_detail_ksud_found">ksud: Version %1$d (Debug-Infos lesbar)</string>
+    <string name="ksu_detail_ksud_missing">ksud: nicht gefunden (/data/local/tmp/ksud-s25u-kdp und /data/local/tmp/ksud sind nicht ausführbar)</string>
+    <string name="ksu_detail_proc_has">/proc/modules: kernelsu-Eintrag vorhanden</string>
+    <string name="ksu_detail_proc_none">/proc/modules: kein kernelsu-Eintrag</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: vorhanden</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: nicht vorhanden (typisch bei Samsung late-load)</string>
+    <string name="ksu_detail_su_usable">shell su: nutzbar (uid=0)</string>
+    <string name="ksu_detail_su_unusable">shell su: nicht verfügbar (nicht erteilt / nicht installiert)</string>
+    <string name="ksu_detail_channel_shell">Prüfkanal: Shizuku / kabelloses ADB (shell)</string>
+    <string name="ksu_detail_channel_inprocess">Prüfkanal: In-App-Fallback (kann von SELinux blockiert werden)</string>
+    <string name="ksu_detail_lateload_note">Im late-load-Modus (Jailbreak) vergibt der KernelSU-Manager root pro App, daher ist das Fehlen von shell su zu erwarten.\nDas Badge zeigt Aktiv, weil der Treiber geladen ist. Ob root für eine bestimmte App funktioniert, hängt von der Superuser-Liste des Managers ab.</string>
+    <string name="ksu_detail_zombie_note">Der kernelsu-Eintrag in /proc/modules ist ein Überbleibsel eines fehlgeschlagenen late-load/insmod; der Treiber läuft nicht wirklich. Führe den Root-Vorgang erneut aus.</string>
 </resources>

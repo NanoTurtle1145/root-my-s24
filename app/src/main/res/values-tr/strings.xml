@@ -298,4 +298,26 @@
     <string name="update_latest">Zaten güncel (%1$s)</string>
     <string name="update_check_failed">Güncelleme denetimi başarısız: %1$s</string>
     <string name="update_downloading">İndiriliyor — bitince kurulum sorulacak</string>
+    <string name="status_active_lateload">Etkin (late-load)</string>
+    <string name="status_driver_stale">Eski sürücü girdisi — KernelSU aslında yüklü değil</string>
+    <string name="ksu_detail_title">KernelSU durum ayrıntıları</string>
+    <string name="ksu_detail_unknown">Henüz ayrıntı yok — durum hâlâ sorgulanıyor.</string>
+    <string name="ksu_detail_close">Kapat</string>
+    <string name="ksu_detail_driver">Sürücü: %1$s</string>
+    <string name="ksu_detail_driver_stale">eski girdi (sürücü aslında çalışmıyor)</string>
+    <string name="ksu_detail_driver_lateload">yüklü · late-load (jailbreak modu)</string>
+    <string name="ksu_detail_driver_normal">yüklü (normal LKM)</string>
+    <string name="ksu_detail_driver_none">yüklü değil</string>
+    <string name="ksu_detail_ksud_found">ksud: sürüm %1$d (hata ayıklama bilgisi okunabilir)</string>
+    <string name="ksu_detail_ksud_missing">ksud: bulunamadı (/data/local/tmp/ksud-s25u-kdp ve /data/local/tmp/ksud çalıştırılabilir değil)</string>
+    <string name="ksu_detail_proc_has">/proc/modules: kernelsu girdisi var</string>
+    <string name="ksu_detail_proc_none">/proc/modules: kernelsu girdisi yok</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: mevcut</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: yok (Samsung late-load altında yaygın)</string>
+    <string name="ksu_detail_su_usable">shell su: kullanılabilir (uid=0)</string>
+    <string name="ksu_detail_su_unusable">shell su: kullanılamıyor (verilmedi / kurulu değil)</string>
+    <string name="ksu_detail_channel_shell">sorgu kanalı: Shizuku / kablosuz ADB (shell)</string>
+    <string name="ksu_detail_channel_inprocess">sorgu kanalı: uygulama içi yedek yol (SELinux tarafından engellenebilir)</string>
+    <string name="ksu_detail_lateload_note">late-load (jailbreak) modunda root, KernelSU Manager tarafından her uygulamaya ayrı ayrı verilir; bu yüzden shell su olmaması beklenir.\nRozet, sürücü yüklü olduğu için Etkin gösterir. Root\'un belirli bir uygulama için çalışıp çalışmadığı Manager\'ın süper kullanıcı listesine bağlıdır.</string>
+    <string name="ksu_detail_zombie_note">/proc/modules içindeki kernelsu girdisi, başarısız bir late-load/insmod işleminden kalan artıktır; sürücü aslında çalışmıyor. Root akışını yeniden çalıştırın.</string>
 </resources>

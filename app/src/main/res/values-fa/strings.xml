@@ -298,4 +298,26 @@
     <string name="update_latest">همین حالا به‌روز است (%1$s)</string>
     <string name="update_check_failed">بررسی به‌روزرسانی ناموفق: %1$s</string>
     <string name="update_downloading">در حال دانلود — پس از پایان نصب پیشنهاد می‌شود</string>
+    <string name="status_active_lateload">فعال (late-load)</string>
+    <string name="status_driver_stale">ورودی درایور کهنه — KernelSU در واقع بارگذاری نشده است</string>
+    <string name="ksu_detail_title">جزئیات وضعیت KernelSU</string>
+    <string name="ksu_detail_unknown">هنوز جزئیاتی نیست — وضعیت در حال بررسی است.</string>
+    <string name="ksu_detail_close">بستن</string>
+    <string name="ksu_detail_driver">درایور: %1$s</string>
+    <string name="ksu_detail_driver_stale">ورودی کهنه (درایور در واقع اجرا نمی‌شود)</string>
+    <string name="ksu_detail_driver_lateload">بارگذاری‌شده · late-load (حالت جیلبریک)</string>
+    <string name="ksu_detail_driver_normal">بارگذاری‌شده (LKM معمولی)</string>
+    <string name="ksu_detail_driver_none">بارگذاری نشده</string>
+    <string name="ksu_detail_ksud_found">ksud: نسخه %1$d (اطلاعات اشکال‌زدایی قابل خواندن است)</string>
+    <string name="ksu_detail_ksud_missing">ksud: یافت نشد (/data/local/tmp/ksud-s25u-kdp و /data/local/tmp/ksud قابل اجرا نیستند)</string>
+    <string name="ksu_detail_proc_has">/proc/modules: ورودی kernelsu موجود است</string>
+    <string name="ksu_detail_proc_none">/proc/modules: ورودی kernelsu وجود ندارد</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: موجود است</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: موجود نیست (در حالت late-load سامسونگ رایج است)</string>
+    <string name="ksu_detail_su_usable">shell su: قابل استفاده (uid=0)</string>
+    <string name="ksu_detail_su_unusable">shell su: در دسترس نیست (داده نشده / نصب نشده)</string>
+    <string name="ksu_detail_channel_shell">کانال بررسی: Shizuku / ADB بی‌سیم (shell)</string>
+    <string name="ksu_detail_channel_inprocess">کانال بررسی: جایگزین درون‌برنامه‌ای (ممکن است توسط SELinux مسدود شود)</string>
+    <string name="ksu_detail_lateload_note">در حالت late-load (جیلبریک) دسترسی root توسط KernelSU Manager به‌صورت جداگانه برای هر برنامه داده می‌شود، بنابراین نبود shell su طبیعی است.\nنشان «فعال» است چون درایور بارگذاری شده است. اینکه root برای برنامه‌ای خاص کار می‌کند یا نه به فهرست کاربران ویژه Manager بستگی دارد.</string>
+    <string name="ksu_detail_zombie_note">ورودی kernelsu در /proc/modules باقی‌ماندهٔ یک late-load/insmod ناموفق است؛ درایور در واقع اجرا نمی‌شود. جریان روت را دوباره اجرا کنید.</string>
 </resources>

@@ -298,4 +298,28 @@
     <string name="update_latest">Ya está actualizado (%1$s)</string>
     <string name="update_check_failed">Error al buscar actualizaciones: %1$s</string>
     <string name="update_downloading">Descargando: se pedirá instalar al terminar</string>
+
+    <!-- KSU status details -->
+    <string name="status_active_lateload">Activo (late-load)</string>
+    <string name="status_driver_stale">Entrada de controlador obsoleta — KernelSU no está cargado realmente</string>
+    <string name="ksu_detail_title">Detalles del estado de KernelSU</string>
+    <string name="ksu_detail_unknown">Aún sin detalles — el estado se está comprobando.</string>
+    <string name="ksu_detail_close">Cerrar</string>
+    <string name="ksu_detail_driver">Controlador: %1$s</string>
+    <string name="ksu_detail_driver_stale">entrada obsoleta (el controlador no se está ejecutando realmente)</string>
+    <string name="ksu_detail_driver_lateload">cargado · late-load (modo jailbreak)</string>
+    <string name="ksu_detail_driver_normal">cargado (LKM normal)</string>
+    <string name="ksu_detail_driver_none">no cargado</string>
+    <string name="ksu_detail_ksud_found">ksud: versión %1$d (información de depuración legible)</string>
+    <string name="ksu_detail_ksud_missing">ksud: no encontrado (/data/local/tmp/ksud-s25u-kdp y /data/local/tmp/ksud no son ejecutables)</string>
+    <string name="ksu_detail_proc_has">/proc/modules: entrada kernelsu presente</string>
+    <string name="ksu_detail_proc_none">/proc/modules: sin entrada kernelsu</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: presente</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: ausente (habitual con late-load de Samsung)</string>
+    <string name="ksu_detail_su_usable">shell su: utilizable (uid=0)</string>
+    <string name="ksu_detail_su_unusable">shell su: no disponible (no concedido / no instalado)</string>
+    <string name="ksu_detail_channel_shell">canal de sondeo: Shizuku / ADB inalámbrico (shell)</string>
+    <string name="ksu_detail_channel_inprocess">canal de sondeo: alternativa interna (puede estar bloqueada por SELinux)</string>
+    <string name="ksu_detail_lateload_note">En modo late-load (jailbreak) el Manager de KernelSU concede root aplicación por aplicación, así que la ausencia de shell su es normal.\nEl indicador muestra Activo porque el controlador está cargado. Que root funcione en una app concreta depende de la lista de superusuarios del Manager.</string>
+    <string name="ksu_detail_zombie_note">La entrada kernelsu en /proc/modules es un resto de un late-load/insmod fallido; el controlador no se está ejecutando realmente. Vuelve a ejecutar el proceso de root.</string>
 </resources>

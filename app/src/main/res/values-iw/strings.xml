@@ -298,4 +298,26 @@
     <string name="update_latest">כבר מעודכן (%1$s)</string>
     <string name="update_check_failed">בדיקת העדכון נכשלה: %1$s</string>
     <string name="update_downloading">מוריד — בסיום תתבקש להתקין</string>
+    <string name="status_active_lateload">פעיל (late-load)</string>
+    <string name="status_driver_stale">רשומת מנהל התקן מיושנת — KernelSU למעשה אינו נטען</string>
+    <string name="ksu_detail_title">פרטי מצב KernelSU</string>
+    <string name="ksu_detail_unknown">אין עדיין פרטים — המצב עדיין נבדק.</string>
+    <string name="ksu_detail_close">סגירה</string>
+    <string name="ksu_detail_driver">מנהל התקן: %1$s</string>
+    <string name="ksu_detail_driver_stale">רשומה מיושנת (מנהל ההתקן למעשה אינו פועל)</string>
+    <string name="ksu_detail_driver_lateload">נטען · late-load (מצב פריצה)</string>
+    <string name="ksu_detail_driver_normal">נטען (LKM רגיל)</string>
+    <string name="ksu_detail_driver_none">לא נטען</string>
+    <string name="ksu_detail_ksud_found">ksud: גרסה %1$d (מידע אבחון קריא)</string>
+    <string name="ksu_detail_ksud_missing">ksud: לא נמצא (/data/local/tmp/ksud-s25u-kdp ו-/data/local/tmp/ksud אינם ניתנים להרצה)</string>
+    <string name="ksu_detail_proc_has">/proc/modules: רשומת kernelsu קיימת</string>
+    <string name="ksu_detail_proc_none">/proc/modules: אין רשומת kernelsu</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: קיים</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: חסר (נפוץ ב-late-load של סמסונג)</string>
+    <string name="ksu_detail_su_usable">shell su: שמיש (uid=0)</string>
+    <string name="ksu_detail_su_unusable">shell su: לא זמין (לא ניתן הרשאה / לא מותקן)</string>
+    <string name="ksu_detail_channel_shell">ערוץ בדיקה: Shizuku / ADB אלחוטי (shell)</string>
+    <string name="ksu_detail_channel_inprocess">ערוץ בדיקה: חלופה בתוך האפליקציה (עשויה להיחסם על ידי SELinux)</string>
+    <string name="ksu_detail_lateload_note">במצב late-load (פריצה) ה-root ניתן לכל אפליקציה בנפרד על ידי KernelSU Manager, ולכן היעדר shell su הוא צפוי.\nהתג מציג «פעיל» משום שמנהל ההתקן נטען. האם ה-root עובד לאפליקציה מסוימת תלוי ברשימת משתמשי-העל של Manager.</string>
+    <string name="ksu_detail_zombie_note">הרשומה kernelsu ב-/proc/modules היא שארית מ-late-load/insmod שנכשל; מנהל ההתקן למעשה אינו פועל. הריצו שוב את תהליך ה-root.</string>
 </resources>
