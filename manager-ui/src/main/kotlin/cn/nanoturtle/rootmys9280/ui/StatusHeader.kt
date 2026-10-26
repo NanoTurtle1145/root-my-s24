@@ -202,11 +202,21 @@ fun StatusHeader(
                                 modifier = brandModifier,
                             )
                             Spacer(Modifier.width(10.dp))
+                            // 状态文字也做成可点：与左侧徽章同一个回调（用户直觉上会去点「已激活」这几个字）。
+                            val statusTextModifier =
+                                if (onOpenStatus == null) Modifier
+                                else
+                                    Modifier.clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null,
+                                        onClick = onOpenStatus,
+                                    )
                             Text(
                                 text = statusWord,
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.SemiBold,
                                 color = onContainer,
+                                modifier = statusTextModifier,
                             )
                         }
                         // Neither is a gear. What they open governs how the app presents itself —
