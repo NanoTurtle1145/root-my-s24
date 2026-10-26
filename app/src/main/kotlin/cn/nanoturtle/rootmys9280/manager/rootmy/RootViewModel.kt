@@ -1201,47 +1201,55 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         )
     }
 
-    /** 生成「KSU 状态详情」文案（点击状态徽章弹出）。 */
+    /** 生成「KSU 状态详情」文案（点击状态徽章弹出；全部走 string resource 以支持多语言）。 */
     private fun buildKsuDetail(probe: KsuProbe, channel: ProbeChannel): String {
         val sb = StringBuilder()
-        sb.appendLine(
-            "驱动: " +
-                when {
-                    probe.zombie -> "残留记录（驱动实际未工作）"
-                    probe.driverLive && probe.lateLoad -> "已加载 · late-load（越狱模式）"
-                    probe.driverLive -> "已加载（常规 LKM）"
-                    else -> "未加载"
-                }
-        )
+        val driverState =
+            when {
+                probe.zombie -> app.getString(R.string.ksu_detail_driver_stale)
+                probe.driverLive && probe.lateLoad -> app.getString(R.string.ksu_detail_driver_lateload)
+                probe.driverLive -> app.getString(R.string.ksu_detail_driver_normal)
+                else -> app.getString(R.string.ksu_detail_driver_none)
+            }
+        sb.appendLine(app.getString(R.string.ksu_detail_driver, driverState))
         sb.appendLine(
             if (probe.ksudFound) {
-                "ksud: 版本 ${probe.ksudVersion}（debug info 可读）"
+                app.getString(R.string.ksu_detail_ksud_found, probe.ksudVersion)
             } else {
-                "ksud: 未找到（/data/local/tmp/ksud-s25u-kdp、/data/local/tmp/ksud 均不可执行）"
+                app.getString(R.string.ksu_detail_ksud_missing)
             }
         )
-        sb.appendLine("/proc/modules: " + if (probe.procEntry) "有 kernelsu 条目" else "无")
         sb.appendLine(
-            "/sys/module/kernelsu: " +
-                if (probe.sysEntry) "存在" else "不存在（Samsung late-load 下常见）"
+            app.getString(
+                if (probe.procEntry) R.string.ksu_detail_proc_has else R.string.ksu_detail_proc_none
+            )
         )
-        sb.appendLine("shell su: " + if (probe.suUsable) "可用（uid=0）" else "不可用（未授权/未安装）")
         sb.appendLine(
-            "探测通道: " +
-                when (channel) {
-                    ProbeChannel.SHELL -> "Shizuku / 无线调试（shell）"
-                    ProbeChannel.IN_PROCESS -> "App 进程内兜底（可能被 SELinux 拒绝）"
+            app.getString(
+                if (probe.sysEntry) R.string.ksu_detail_sys_present else R.string.ksu_detail_sys_absent
+            )
+        )
+        sb.appendLine(
+            app.getString(
+                if (probe.suUsable) R.string.ksu_detail_su_usable else R.string.ksu_detail_su_unusable
+            )
+        )
+        sb.appendLine(
+            app.getString(
+                if (channel == ProbeChannel.SHELL) {
+                    R.string.ksu_detail_channel_shell
+                } else {
+                    R.string.ksu_detail_channel_inprocess
                 }
+            )
         )
         if (probe.driverLive && probe.lateLoad) {
             sb.appendLine()
-            sb.appendLine("说明: 越狱模式的 root 由 KernelSU 管理器按 App 授权，shell 里没有 su 属正常现象；")
-            sb.appendLine("徽章按「驱动已加载」显示为已激活。root 是否对某个 App 生效，请以管理器超级用户列表为准。")
+            sb.appendLine(app.getString(R.string.ksu_detail_lateload_note))
         }
         if (probe.zombie) {
             sb.appendLine()
-            sb.appendLine("说明: /proc/modules 里的 kernelsu 条目是上次 late-load/insmod 失败留下的残留，")
-            sb.appendLine("驱动并未真正工作，重新跑一次 root 流程即可。")
+            sb.appendLine(app.getString(R.string.ksu_detail_zombie_note))
         }
         return sb.toString().trimEnd()
     }

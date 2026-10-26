@@ -363,4 +363,27 @@
     <string name="settings_debug_df_esp">测试 DirtyFrag ESP 回环</string>
     <string name="settings_debug_df_esp_summary">实现阶梯第 1 步：建 SA、自拼 ESP 包、验证内核能解密</string>
     <string name="status_driver_only">驱动已加载，su 未就绪</string>
+
+    <string name="status_active_lateload">已激活（越狱模式）</string>
+    <string name="status_driver_stale">驱动残留记录 —— KernelSU 实际未加载</string>
+    <string name="ksu_detail_title">KernelSU 状态详情</string>
+    <string name="ksu_detail_unknown">暂无详情，状态还在检测中。</string>
+    <string name="ksu_detail_close">关闭</string>
+    <string name="ksu_detail_driver">驱动: %1$s</string>
+    <string name="ksu_detail_driver_stale">残留记录（驱动实际未工作）</string>
+    <string name="ksu_detail_driver_lateload">已加载 · late-load（越狱模式）</string>
+    <string name="ksu_detail_driver_normal">已加载（常规 LKM）</string>
+    <string name="ksu_detail_driver_none">未加载</string>
+    <string name="ksu_detail_ksud_found">ksud: 版本 %1$d（debug info 可读）</string>
+    <string name="ksu_detail_ksud_missing">ksud: 未找到（/data/local/tmp/ksud-s25u-kdp、/data/local/tmp/ksud 均不可执行）</string>
+    <string name="ksu_detail_proc_has">/proc/modules: 有 kernelsu 条目</string>
+    <string name="ksu_detail_proc_none">/proc/modules: 无 kernelsu 条目</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: 存在</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: 不存在（三星 late-load 下常见）</string>
+    <string name="ksu_detail_su_usable">shell su: 可用（uid=0）</string>
+    <string name="ksu_detail_su_unusable">shell su: 不可用（未授权/未安装）</string>
+    <string name="ksu_detail_channel_shell">探测通道: Shizuku / 无线调试（shell）</string>
+    <string name="ksu_detail_channel_inprocess">探测通道: App 进程内兜底（可能被 SELinux 拒绝）</string>
+    <string name="ksu_detail_lateload_note">说明: 越狱模式的 root 由 KernelSU 管理器按 App 授权，shell 里没有 su 属正常现象。\n徽章按「驱动已加载」显示为已激活。root 是否对某个 App 生效，请以管理器超级用户列表为准。</string>
+    <string name="ksu_detail_zombie_note">说明: /proc/modules 里的 kernelsu 条目是上次 late-load/insmod 失败留下的残留，驱动并未真正工作，重新跑一次 root 流程即可。</string>
 </resources>

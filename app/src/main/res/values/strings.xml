@@ -403,9 +403,28 @@ Auto-save log</string>
     <string name="settings_debug_df_esp_summary">Step 1: build SA, hand-craft ESP, verify the kernel decrypts it</string>
     <string name="status_driver_only">Driver loaded, su unavailable</string>
     <string name="status_driver_only_lateload">Driver loaded (late-load), su not ready — grant root to apps in the KernelSU Manager</string>
-    <string name="status_driver_stale">Stale driver entry — KernelSU is not actually loaded</string>
+
+    <!-- KSU 状态详情（点状态徽章弹出） -->
     <string name="status_active_lateload">Active (late-load)</string>
+    <string name="status_driver_stale">Stale driver entry — KernelSU is not actually loaded</string>
     <string name="ksu_detail_title">KernelSU status details</string>
     <string name="ksu_detail_unknown">No details yet — the status is still being probed.</string>
     <string name="ksu_detail_close">Close</string>
+    <string name="ksu_detail_driver">Driver: %1$s</string>
+    <string name="ksu_detail_driver_stale">stale entry (driver is not actually running)</string>
+    <string name="ksu_detail_driver_lateload">loaded · late-load (jailbreak mode)</string>
+    <string name="ksu_detail_driver_normal">loaded (regular LKM)</string>
+    <string name="ksu_detail_driver_none">not loaded</string>
+    <string name="ksu_detail_ksud_found">ksud: version %1$d (debug info readable)</string>
+    <string name="ksu_detail_ksud_missing">ksud: not found (/data/local/tmp/ksud-s25u-kdp and /data/local/tmp/ksud are not executable)</string>
+    <string name="ksu_detail_proc_has">/proc/modules: kernelsu entry present</string>
+    <string name="ksu_detail_proc_none">/proc/modules: no kernelsu entry</string>
+    <string name="ksu_detail_sys_present">/sys/module/kernelsu: present</string>
+    <string name="ksu_detail_sys_absent">/sys/module/kernelsu: absent (common under Samsung late-load)</string>
+    <string name="ksu_detail_su_usable">shell su: usable (uid=0)</string>
+    <string name="ksu_detail_su_unusable">shell su: unavailable (not granted / not installed)</string>
+    <string name="ksu_detail_channel_shell">probe channel: Shizuku / wireless ADB (shell)</string>
+    <string name="ksu_detail_channel_inprocess">probe channel: in-app fallback (may be blocked by SELinux)</string>
+    <string name="ksu_detail_lateload_note">In late-load (jailbreak) mode root is granted per-app by the KernelSU Manager, so the absence of shell su is expected.\nThe badge shows Active because the driver is loaded. Whether root works for a specific app depends on the Manager\'s superuser list.</string>
+    <string name="ksu_detail_zombie_note">The kernelsu entry in /proc/modules is a leftover from a failed late-load/insmod; the driver is not actually running. Run the root flow again.</string>
 </resources>
