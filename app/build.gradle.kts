@@ -73,6 +73,53 @@ android {
         buildConfig = true
     }
 
+    // —— 按机型系列拆包（separate 版本）——
+    //
+    // 单包约 50MB，其中 58.7MB 是 KSU 驱动、5.7MB 是 cve 载荷，而任一台设备只用得到
+    // 其中一个驱动 + 若干载荷。按 RootViewModel.Series 的 6 个系列各出一个包：
+    //   all  全量（= 原完整包，无版本后缀，作为更新通道的回退/旧设备入口）
+    //   s24 / s25 / s23 / s26 / fold / w  只装该系列的载荷与驱动
+    // 资产由 tools/split_assets.py 分发到 src/<flavor>/assets/，main 只留全系列共用的
+    // 文件（root helper / 许可证）。versionCode 与 applicationId 全系列一致、签名相同，
+    // 因此不同系列的包可以互相覆盖安装。
+    flavorDimensions += "series"
+    productFlavors {
+        create("all") {
+            dimension = "series"
+            buildConfigField("String", "SERIES", "\"ALL\"")
+        }
+        create("s24") {
+            dimension = "series"
+            versionNameSuffix = "-s24"
+            buildConfigField("String", "SERIES", "\"S24\"")
+        }
+        create("s25") {
+            dimension = "series"
+            versionNameSuffix = "-s25"
+            buildConfigField("String", "SERIES", "\"S25\"")
+        }
+        create("s23") {
+            dimension = "series"
+            versionNameSuffix = "-s23"
+            buildConfigField("String", "SERIES", "\"S23\"")
+        }
+        create("s26") {
+            dimension = "series"
+            versionNameSuffix = "-s26"
+            buildConfigField("String", "SERIES", "\"S26\"")
+        }
+        create("fold") {
+            dimension = "series"
+            versionNameSuffix = "-fold"
+            buildConfigField("String", "SERIES", "\"FOLD\"")
+        }
+        create("w") {
+            dimension = "series"
+            versionNameSuffix = "-w"
+            buildConfigField("String", "SERIES", "\"W\"")
+        }
+    }
+
     defaultConfig {
         applicationId = "cn.nanoturtle.rootmys9280"
         // Which build this manager is: the repository on CI, the machine when built locally from

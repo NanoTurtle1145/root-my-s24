@@ -352,4 +352,5 @@
     <string name="ksu_detail_channel_inprocess">探測通道: App 程序內備援（可能被 SELinux 拒絕）</string>
     <string name="ksu_detail_lateload_note">說明: 越獄模式的 root 由 KernelSU 管理器按 App 授權，shell 裡沒有 su 屬正常現象。\n徽章按「驅動已載入」顯示為已啟用。root 是否對某個 App 生效，請以管理器超級使用者列表為準。</string>
     <string name="ksu_detail_zombie_note">說明: /proc/modules 裡的 kernelsu 條目是上次 late-load/insmod 失敗留下的殘留，驅動並未真正運作，重新跑一次 root 流程即可。</string>
+    <string name="firmware_wrong_series_pack">目前裝置屬於 %1$s 系列，但此安裝包只包含 %2$s 系列的載荷。請下載與你機型對應的系列包（或全量包）。</string>
 </resources>

@@ -1,5 +1,6 @@
 package cn.nanoturtle.rootmys9280.manager.ui.firmware
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -172,25 +173,53 @@ private fun FirmwareSelectContent(
                 }
             }
             // 机型系列筛选（横向滚动）
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
-            ) {
-                item {
-                    FilterChip(
-                        selected = filterSeries == null,
-                        onClick = { filterSeries = null },
-                        label = { Text(stringResource(R.string.rootflow_firmware_filter_all)) },
-                    )
+            //
+            // 分系列包（flavor != all）里只有一个系列，这一行没有意义，隐藏掉；
+            // 同时若当前设备机型与包内系列不一致，给一条明确提示，避免用户以为"不支持"。
+            val packagedSeries = vm.packagedSeries
+            if (packagedSeries != null) {
+                val deviceSeries = RootViewModel.Series.fromModel(Build.MODEL)
+                if (deviceSeries != null && deviceSeries != packagedSeries) {
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.errorContainer,
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.firmware_wrong_series_pack,
+                                deviceSeries.label,
+                                packagedSeries.label,
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.padding(12.dp),
+                        )
+                    }
                 }
-                items(RootViewModel.Series.entries.toList()) { series ->
-                    FilterChip(
-                        selected = filterSeries == series,
-                        onClick = { filterSeries = if (filterSeries == series) null else series },
-                        label = { Text(series.label) },
-                    )
+            } else {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
+                ) {
+                    item {
+                        FilterChip(
+                            selected = filterSeries == null,
+                            onClick = { filterSeries = null },
+                            label = { Text(stringResource(R.string.rootflow_firmware_filter_all)) },
+                        )
+                    }
+                    items(RootViewModel.Series.entries.toList()) { series ->
+                        FilterChip(
+                            selected = filterSeries == series,
+                            onClick = { filterSeries = if (filterSeries == series) null else series },
+                            label = { Text(series.label) },
+                        )
+                    }
                 }
             }
             // KSU 驱动版本：**独立选项卡**，与上面的地区/机型筛选分开。
@@ -199,7 +228,7 @@ private fun FirmwareSelectContent(
             // （重复的 DZH3·KSU 条目 + 筛选芯片 + 卡片行），所以这里收成一处：
             // 选项卡决定"用哪个驱动"，卡片只负责选固件。
             val ksuVersions =
-                RootViewModel.FirmwareVersion.entries
+                vm.availableFirmwareVersions
                     .flatMap { vm.ksuVersionsFor(it) }
                     .distinct()
                     .sortedDescending()
@@ -264,7 +293,7 @@ private fun FirmwareSelectContent(
             // 过滤逻辑：地区 + 机型系列 + KSU 版本 + 搜索关键词（匹配机型/系统版本/固件范围）
             // 未经测试的载荷仅在设置里启用后才显示
             val normalizedQuery = query.trim().lowercase()
-            val allVersions = RootViewModel.FirmwareVersion.entries
+            val allVersions = vm.availableFirmwareVersions
                 // 「已实测」= 服务端结论优先，其次内置值（在线状态可远端上下线）
                 // 用订阅到的快照判断「已实测」：vm.isTested() 内部读的是 .value
                 .filter { untestedEnabled || (payload.entries[it.name]?.tested ?: it.tested) }

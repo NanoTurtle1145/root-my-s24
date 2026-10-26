@@ -427,4 +427,5 @@ Auto-save log</string>
     <string name="ksu_detail_channel_inprocess">probe channel: in-app fallback (may be blocked by SELinux)</string>
     <string name="ksu_detail_lateload_note">In late-load (jailbreak) mode root is granted per-app by the KernelSU Manager, so the absence of shell su is expected.\nThe badge shows Active because the driver is loaded. Whether root works for a specific app depends on the Manager\'s superuser list.</string>
     <string name="ksu_detail_zombie_note">The kernelsu entry in /proc/modules is a leftover from a failed late-load/insmod; the driver is not actually running. Run the root flow again.</string>
+    <string name="firmware_wrong_series_pack">This device is the %1$s series, but this package only ships %2$s payloads. Install the package for your series (or the full build).</string>
 </resources>

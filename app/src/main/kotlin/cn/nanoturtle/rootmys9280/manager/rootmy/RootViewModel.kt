@@ -1,6 +1,7 @@
 package cn.nanoturtle.rootmys9280.manager.rootmy
 
 import android.app.Application
+import cn.nanoturtle.rootmys9280.manager.BuildConfig
 import cn.nanoturtle.rootmys9280.manager.logI
 import cn.nanoturtle.rootmys9280.manager.rootmy.dirtyfrag.DfDeviceCheck
 import cn.nanoturtle.rootmys9280.manager.rootmy.dirtyfrag.DirtyFragEngine
@@ -267,7 +268,46 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         S26("S26"),
         FOLD("折叠屏"),
         W("心系天下"),
+        ;
+
+        companion object {
+            /** 由 Build.MODEL / 构建标签推断系列（分系列包用来提示“装错包了”）。 */
+            fun fromModel(model: String): Series? {
+                val m = model.uppercase()
+                return when {
+                    m.startsWith("SM-F") -> FOLD
+                    m.startsWith("SM-W9") -> W
+                    m.contains("S91") -> S23
+                    m.contains("S92") -> S24
+                    m.contains("S93") -> S25
+                    m.contains("S94") -> S26
+                    else -> null
+                }
+            }
+        }
     }
+
+    /**
+     * 本安装包覆盖的机型系列；`null` 表示全量包（`all` flavor，不限系列）。
+     *
+     * 分系列拆包后每个 APK 只带该系列的载荷与 KSU 驱动（见 `tools/split_assets.py`），
+     * 所以固件列表必须只列本系列，否则用户会选到一个包里根本不存在的载荷。
+     */
+    val packagedSeries: Series? =
+        when (BuildConfig.SERIES) {
+            "S23" -> Series.S23
+            "S24" -> Series.S24
+            "S25" -> Series.S25
+            "S26" -> Series.S26
+            "FOLD" -> Series.FOLD
+            "W" -> Series.W
+            else -> null
+        }
+
+    /** 本包内可选的固件条目（全量包 = 全部；分系列包 = 仅本系列）。 */
+    val availableFirmwareVersions: List<FirmwareVersion>
+        get() = FirmwareVersion.entries.filter { packagedSeries == null || it.series == packagedSeries }
+
 
     /** 授权方式：Shizuku（需装 Shizuku App）或无线调试（Android 11+ 直连） */
     enum class AuthMethod { SHIZUKU, ADB_WIRELESS }
