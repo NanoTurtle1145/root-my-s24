@@ -120,6 +120,8 @@ private fun RootFlowContent(
     var exportResult by remember { mutableStateOf<String?>(null) }
     var showAppearance by remember { mutableStateOf(false) }
     var showLanguage by remember { mutableStateOf(false) }
+    // 点状态徽章 → 查看 KernelSU 状态详情（驱动/late-load/ksud/proc/sys/su 探针结果）
+    var showKsuDetail by remember { mutableStateOf(false) }
     var donationMilestone by remember { mutableIntStateOf(0) }
     // 「每次询问」模式下运行结束后是否弹上传提示
     val uploadPrompt by vm.uploadPrompt.collectAsStateWithLifecycle()
@@ -159,6 +161,23 @@ private fun RootFlowContent(
         cn.nanoturtle.rootmys9280.ui.locale.LanguageSheet(
             controller = cn.nanoturtle.rootmys9280.manager.di.VectorLocaleController,
             onDismiss = { showLanguage = false },
+        )
+    }
+    if (showKsuDetail) {
+        AlertDialog(
+            onDismissRequest = { showKsuDetail = false },
+            title = { Text(stringResource(R.string.ksu_detail_title)) },
+            text = {
+                Text(
+                    state.ksuDetail.ifBlank { stringResource(R.string.ksu_detail_unknown) },
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { showKsuDetail = false }) {
+                    Text(stringResource(R.string.ksu_detail_close))
+                }
+            },
         )
     }
 
@@ -274,28 +293,29 @@ private fun RootFlowContent(
             // Vector 同款完整状态 banner：动态背景 + 品牌 + 状态徽章（呼吸动画）+ 详情行。
             // 全出血：延伸到屏幕两端，无水平内边距。
             val ambienceKey by ServiceLocator.settings.headerAmbience.collectAsStateWithLifecycle()
-            // 状态分四档，不能用「模块加载」直接代表「已 root」：
-            //   rooted      —— su 能拿到 uid=0，root 真的可用 → 已激活
+            // 状态分四档（2026-10 口径）：
+            //   rooted      —— 驱动可用：late-load（越狱）模式下驱动 live 即视为可用，
+            //                  root 由 KernelSU 管理器按 App 授权，不要求 shell su；
+            //                  常规 LKM 下仍要求 su 能拿到 uid=0
             //   ksuZombie   —— /proc/modules 有 kernelsu 残留但驱动实际不工作（late-load 失败）
-            //                  → 必须和「已加载」区分，否则会误报已 root
-            //   ksuLoaded   —— 驱动在内核里但 su 不可用（late-load 半就绪态；late_load=true 时单独文案）
+            //   ksuLoaded   —— 驱动在内核里但不满足 rooted 条件（常规 LKM 且 su 不可用）
             //   都不是      —— 未激活
-            // 各值都在 refreshKsuStatus() 里实测得出，不依赖本次会话是否跑过流程。
+            // 各值都在 refreshKsuStatus() 里实测得出；点徽章可看详情。
             val tone: StatusTone =
                 when {
                     state.busy -> StatusTone.Neutral
-                    state.rooted -> StatusTone.Active
                     state.ksuZombie -> StatusTone.Error
+                    state.rooted -> StatusTone.Active
                     state.ksuLoaded -> StatusTone.Neutral
                     else -> StatusTone.Error
                 }
             val statusWord =
                 when {
                     state.busy -> stringResource(R.string.status_checking)
-                    state.rooted -> stringResource(R.string.status_active)
                     state.ksuZombie -> stringResource(R.string.status_driver_stale)
-                    state.ksuLoaded && state.ksuLateLoad ->
-                        stringResource(R.string.status_driver_only_lateload)
+                    state.rooted && state.ksuLateLoad ->
+                        stringResource(R.string.status_active_lateload)
+                    state.rooted -> stringResource(R.string.status_active)
                     state.ksuLoaded -> stringResource(R.string.status_driver_only)
                     else -> stringResource(R.string.status_inactive)
                 }
@@ -305,6 +325,7 @@ private fun RootFlowContent(
                 tone = tone,
                 ambience = AmbienceKind.from(ambienceKey),
                 ambienceSettings = VectorAmbienceSettings,
+                onOpenStatus = { showKsuDetail = true },
                 detail = { contentColor ->
                     Text(
                         text = state.knoxState.ifBlank { stringResource(R.string.rootflow_detail_fallback) },

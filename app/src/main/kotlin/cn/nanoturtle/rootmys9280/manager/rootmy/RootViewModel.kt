@@ -284,6 +284,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val ksuLateLoad: Boolean = false,
         /** /proc/modules 有 kernelsu 残留但驱动实际不可用（late-load/insmod 失败留下的僵尸条目） */
         val ksuZombie: Boolean = false,
+        /** KSU 状态详情（点击状态徽章弹出；refreshKsuStatus 填充） */
+        val ksuDetail: String = "",
         /** KNOX 状态展示文案（由 refreshKnox 填充） */
         val knoxState: String = "",
     )
@@ -1084,20 +1086,30 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * SELinux / KSU 隐藏机制拒绝（Permission denied），而 shell 视角能看到 kernelsu。
      */
     suspend fun refreshKsuStatus() = withContext(Dispatchers.IO) {
+        val channel = if (shellExecutor.isReady()) ProbeChannel.SHELL else ProbeChannel.IN_PROCESS
         val probe = runCatching {
-            if (shellExecutor.isReady()) {
-                probeKsuViaShell()
-            } else {
-                probeKsuInProcess()
-            }
+            if (channel == ProbeChannel.SHELL) probeKsuViaShell() else probeKsuInProcess()
         }.getOrDefault(KsuProbe())
+
+        // 口径（2026-10 调整）：late-load（越狱）模式下 shell 的 su 天然不可用
+        // （加载时 allow_shell=false，且不把 su 安装进系统），root 由 KernelSU 管理器
+        // 按 App 逐个授权。因此「驱动 live 且为 late-load」即视为 root 可用，
+        // 不再要求 shell su —— 否则授予权限后仍会永远显示未就绪。
+        val rootAvailable = probe.driverLive && (probe.suUsable || probe.lateLoad)
 
         _state.value = _state.value.copy(
             ksuLoaded = probe.driverLive,
             ksuLateLoad = probe.lateLoad,
             ksuZombie = probe.zombie,
-            rooted = probe.driverLive && probe.suUsable,
+            rooted = rootAvailable,
+            ksuDetail = buildKsuDetail(probe, channel),
         )
+    }
+
+    /** 探测通道：真正能下结论的只有 shell（Shizuku / 无线调试）。 */
+    private enum class ProbeChannel {
+        SHELL,
+        IN_PROCESS,
     }
 
     /** KSU 探测结果。[driverLive] 与 [zombie] 互斥：僵尸条目不算已加载。 */
@@ -1106,6 +1118,10 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val lateLoad: Boolean = false,
         val zombie: Boolean = false,
         val suUsable: Boolean = false,
+        val ksudFound: Boolean = false,
+        val ksudVersion: Int = 0,
+        val procEntry: Boolean = false,
+        val sysEntry: Boolean = false,
     )
 
     /** `ksud debug info` 解析结果。[known]=false 表示没拿到可用输出，不能下结论。 */
@@ -1113,6 +1129,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val known: Boolean = false,
         val driverLive: Boolean = false,
         val lateLoad: Boolean = false,
+        val version: Int = 0,
     )
 
     /** 经 shell（Shizuku/无线调试）探测；唯一能拿到准确结论的路径。 */
@@ -1144,17 +1161,26 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             lateLoad = if (info.known) info.lateLoad else false,
             zombie = zombie,
             suUsable = suUsable,
+            ksudFound = info.known,
+            ksudVersion = info.version,
+            procEntry = modEntry,
+            sysEntry = sysEntry,
         )
     }
 
     /** 执行器不可用时的兜底：app 进程直接读（可能被 SELinux 拒，只能给粗结论）。 */
     private fun probeKsuInProcess(): KsuProbe = runCatching {
-        val p = ProcessBuilder(
-            "/system/bin/sh", "-c",
-            "grep -q '^kernelsu ' /proc/modules 2>/dev/null || " +
-                "[ -d /sys/module/kernelsu ]"
-        ).start()
-        KsuProbe(driverLive = p.waitFor() == 0)
+        fun run(cmd: String): Boolean =
+            runCatching {
+                ProcessBuilder("/system/bin/sh", "-c", cmd).start().waitFor() == 0
+            }.getOrDefault(false)
+        val procEntry = run("grep -q '^kernelsu ' /proc/modules 2>/dev/null")
+        val sysEntry = run("[ -d /sys/module/kernelsu ]")
+        KsuProbe(
+            driverLive = procEntry || sysEntry,
+            procEntry = procEntry,
+            sysEntry = sysEntry,
+        )
     }.getOrDefault(KsuProbe())
 
     /** 解析 `ksud debug info` 输出：version / lkm / late_load 三个字段。 */
@@ -1167,7 +1193,57 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             .find(out)?.groupValues?.getOrNull(1)?.toBooleanStrictOrNull() ?: false
         val lateLoad = Regex("""(?m)^late_load:\s*(true|false)""")
             .find(out)?.groupValues?.getOrNull(1)?.toBooleanStrictOrNull() ?: false
-        return KsudInfo(known = true, driverLive = version > 0 && lkm, lateLoad = lateLoad)
+        return KsudInfo(
+            known = true,
+            driverLive = version > 0 && lkm,
+            lateLoad = lateLoad,
+            version = version,
+        )
+    }
+
+    /** 生成「KSU 状态详情」文案（点击状态徽章弹出）。 */
+    private fun buildKsuDetail(probe: KsuProbe, channel: ProbeChannel): String {
+        val sb = StringBuilder()
+        sb.appendLine(
+            "驱动: " +
+                when {
+                    probe.zombie -> "残留记录（驱动实际未工作）"
+                    probe.driverLive && probe.lateLoad -> "已加载 · late-load（越狱模式）"
+                    probe.driverLive -> "已加载（常规 LKM）"
+                    else -> "未加载"
+                }
+        )
+        sb.appendLine(
+            if (probe.ksudFound) {
+                "ksud: 版本 ${probe.ksudVersion}（debug info 可读）"
+            } else {
+                "ksud: 未找到（/data/local/tmp/ksud-s25u-kdp、/data/local/tmp/ksud 均不可执行）"
+            }
+        )
+        sb.appendLine("/proc/modules: " + if (probe.procEntry) "有 kernelsu 条目" else "无")
+        sb.appendLine(
+            "/sys/module/kernelsu: " +
+                if (probe.sysEntry) "存在" else "不存在（Samsung late-load 下常见）"
+        )
+        sb.appendLine("shell su: " + if (probe.suUsable) "可用（uid=0）" else "不可用（未授权/未安装）")
+        sb.appendLine(
+            "探测通道: " +
+                when (channel) {
+                    ProbeChannel.SHELL -> "Shizuku / 无线调试（shell）"
+                    ProbeChannel.IN_PROCESS -> "App 进程内兜底（可能被 SELinux 拒绝）"
+                }
+        )
+        if (probe.driverLive && probe.lateLoad) {
+            sb.appendLine()
+            sb.appendLine("说明: 越狱模式的 root 由 KernelSU 管理器按 App 授权，shell 里没有 su 属正常现象；")
+            sb.appendLine("徽章按「驱动已加载」显示为已激活。root 是否对某个 App 生效，请以管理器超级用户列表为准。")
+        }
+        if (probe.zombie) {
+            sb.appendLine()
+            sb.appendLine("说明: /proc/modules 里的 kernelsu 条目是上次 late-load/insmod 失败留下的残留，")
+            sb.appendLine("驱动并未真正工作，重新跑一次 root 流程即可。")
+        }
+        return sb.toString().trimEnd()
     }
 
     /**

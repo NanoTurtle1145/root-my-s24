@@ -404,4 +404,8 @@ Auto-save log</string>
     <string name="status_driver_only">Driver loaded, su unavailable</string>
     <string name="status_driver_only_lateload">Driver loaded (late-load), su not ready — grant root to apps in the KernelSU Manager</string>
     <string name="status_driver_stale">Stale driver entry — KernelSU is not actually loaded</string>
+    <string name="status_active_lateload">Active (late-load)</string>
+    <string name="ksu_detail_title">KernelSU status details</string>
+    <string name="ksu_detail_unknown">No details yet — the status is still being probed.</string>
+    <string name="ksu_detail_close">Close</string>
 </resources>
