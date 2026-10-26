@@ -140,8 +140,11 @@ def main():
     ap.add_argument('--skip-github', action='store_true')
     ap.add_argument('--skip-server', action='store_true')
     ap.add_argument('--notes', default='')
+    ap.add_argument('--notes-file', default='', help='发布说明 Markdown 文件')
     args = ap.parse_args()
 
+    if args.notes_file:
+        args.notes = open(args.notes_file, encoding='utf-8').read()
     flavors = [f.strip() for f in args.flavors.split(',') if f.strip()]
     unknown = [f for f in flavors if f not in FLAVORS]
     if unknown:
@@ -217,6 +220,10 @@ def main():
             if a.get('state') != 'uploaded':
                 sys.exit('上传失败: %s' % json.dumps(a, ensure_ascii=False)[:300])
             manifest['channels'][f]['mirror'] = url
+        # 补了 mirror 之后要重写清单，否则传给服务器的还是没 mirror 的旧文件
+        with open(mpath, 'w', encoding='utf-8') as fh:
+            json.dump(manifest, fh, ensure_ascii=False, indent=2)
+            fh.write('\n')
 
     if not args.skip_server:
         for f, r in results.items():
