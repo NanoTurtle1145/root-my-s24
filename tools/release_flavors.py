@@ -34,7 +34,10 @@ GH_TOKEN = os.path.expanduser('~/.config/dsh/github.token')
 REMOTE_DL = '/www/wwwroot/ntblog_cn/rms24_api/dl'
 STAGE = '/tmp/rms24-release'
 
-FLAVORS = ['all', 's24', 's25', 's23', 's26', 'fold', 'w']
+FLAVORS = ['all', 's24', 's25', 's23', 's26', 'fold', 'w', 'exp']
+# 默认发布的集合：全量 + 有“已实测”载荷的系列 + 测试包。
+# s25/s23/s26/w 目前没有已实测载荷（包内无载荷），等有实测条目后再加。
+RELEASE_FLAVORS = ['all', 's24', 'fold', 'exp']
 JDK = '/usr/lib/jvm/java-21-openjdk'
 
 
@@ -131,7 +134,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--channel', default='beta', choices=['alpha', 'alpha1', 'alpha2',
                                                           'beta', 'beta1', 'beta2', 'stable'])
-    ap.add_argument('--flavors', default=','.join(FLAVORS))
+    ap.add_argument('--flavors', default=','.join(RELEASE_FLAVORS))
     ap.add_argument('--dry-run', action='store_true', help='只构建/校验并生成本地清单')
     ap.add_argument('--skip-build', action='store_true')
     ap.add_argument('--skip-github', action='store_true')

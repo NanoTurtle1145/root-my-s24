@@ -304,9 +304,25 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             else -> null
         }
 
-    /** 本包内可选的固件条目（全量包 = 全部；分系列包 = 仅本系列）。 */
+    /**
+     * 本安装包实际打包了哪些固件条目（由 tools/split_assets.py 写进 BuildConfig）。
+     * 空集合表示清单缺失（旧构建/未跑脚本），此时不过滤，退回全部条目。
+     */
+    private val packagedEntryNames: Set<String> =
+        BuildConfig.PACKAGED_ENTRIES.takeIf { it.isNotBlank() }?.split(',')?.toSet().orEmpty()
+
+    /**
+     * 本包内可选的固件条目。
+     *
+     * 以 [packagedEntryNames] 为准（"列表里有的，包里一定有载荷"）：
+     * 官方系列包只列该系列**已实测**条目；`all` / `exp` 列全部。
+     */
     val availableFirmwareVersions: List<FirmwareVersion>
-        get() = FirmwareVersion.entries.filter { packagedSeries == null || it.series == packagedSeries }
+        get() = if (packagedEntryNames.isEmpty()) {
+            FirmwareVersion.entries
+        } else {
+            FirmwareVersion.entries.filter { it.name in packagedEntryNames }
+        }
 
 
     /** 授权方式：Shizuku（需装 Shizuku App）或无线调试（Android 11+ 直连） */
@@ -475,7 +491,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val saved = prefs.getString(KEY_AUTH_METHOD, AuthMethod.SHIZUKU.name)
         val adbEnabled = prefs.getBoolean(KEY_ADB_WIRELESS_ENABLED, false)
         _adbWirelessEnabled.value = adbEnabled
-        _untestedPayloadsEnabled.value = prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false)
+        _untestedPayloadsEnabled.value = prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, untestedPayloadsDefault)
         _dfEngineEnabled.value = prefs.getBoolean(KEY_DF_ENGINE_ENABLED, false)
         _bakasuKernelEnabled.value = prefs.getBoolean(KEY_BAKASU_KERNEL, false)
         if (adbEnabled && saved == AuthMethod.ADB_WIRELESS.name) {
@@ -566,7 +582,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             // 服务端缓存里可能已经把这个条目标成「已实测」——构造期只能读本地缓存（不联网）
             val cachedTested = PayloadStatus.cached(app).entries[restored.name]?.tested
             // 未经测试的载荷开关已关且上次选中了 untested 条目：回退到已实测的 DZF2
-            if (!prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false) &&
+            if (!prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, untestedPayloadsDefault) &&
                 cachedTested != true &&
                 !restored.tested
             ) {
@@ -2388,6 +2404,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     companion object {
+
+        /**
+         * 「未经测试的载荷」开关的默认值：测试包（exp flavor）默认打开，
+         * 其余包默认关闭（用户要在设置里自己开）。
+         */
+        val untestedPayloadsDefault: Boolean = BuildConfig.SERIES == "EXP"
         /** 上传来源标记，与统计口径对应（manual 不计入成功率）。 */
         const val SOURCE_AUTO = "auto"
         const val SOURCE_PROMPT = "prompt"

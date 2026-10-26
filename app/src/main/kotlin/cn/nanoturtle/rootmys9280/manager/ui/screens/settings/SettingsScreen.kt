@@ -59,6 +59,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import cn.nanoturtle.rootmys9280.manager.rootmy.RootViewModel
 import cn.nanoturtle.rootmys9280.manager.BuildConfig
 import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.di.ServiceLocator
@@ -114,7 +115,10 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
         mutableStateOf(prefs.getBoolean(KEY_ADB_WIRELESS_ENABLED, false))
     }
     var untestedPayloadsEnabled by remember {
-        mutableStateOf(prefs.getBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, false))
+        mutableStateOf(prefs.getBoolean(
+                    KEY_UNTESTED_PAYLOADS_ENABLED,
+                    RootViewModel.untestedPayloadsDefault,
+                ))
     }
     // DirtyFrag 引擎（alpha）：默认关闭，开启后跑 root 前会先做设备自检
     var dfEngineEnabled by remember {

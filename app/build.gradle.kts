@@ -118,6 +118,31 @@ android {
             versionNameSuffix = "-w"
             buildConfigField("String", "SERIES", "\"W\"")
         }
+        // 测试通道：全量载荷 + 默认打开「未经测试的载荷」开关，给愿意帮忙验证的测试者。
+        // 官方系列包只装该系列**已实测**的载荷，未实测的都在这里。
+        create("exp") {
+            dimension = "series"
+            versionNameSuffix = "-exp"
+            buildConfigField("String", "SERIES", "\"EXP\"")
+        }
+    }
+
+    // 每个 flavor 实际打包了哪些固件条目（由 tools/split_assets.py 生成），
+    // 运行时据此过滤固件列表，保证"列表里有的，包里一定有对应载荷"。
+    val packagedEntriesByFlavor: Map<String, List<String>> = run {
+        val f = file("series_entries.json")
+        if (!f.exists()) {
+            emptyMap()
+        } else {
+            @Suppress("UNCHECKED_CAST")
+            val root = groovy.json.JsonSlurper().parse(f) as Map<String, Any?>
+            @Suppress("UNCHECKED_CAST")
+            (root["flavors"] as? Map<String, List<String>>) ?: emptyMap()
+        }
+    }
+    productFlavors.all {
+        val names = packagedEntriesByFlavor[name] ?: emptyList()
+        buildConfigField("String", "PACKAGED_ENTRIES", "\"${names.joinToString(",")}\"")
     }
 
     defaultConfig {
