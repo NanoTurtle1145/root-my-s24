@@ -799,6 +799,42 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      *
      * 探测顺序：每 run 子目录 → 顶层目录 → 兜底顶层（让 writeFile 带现场诊断报错）。
      */
+    /** 本次运行已推送的 (资产名, 设备路径, 期望字节数)，供两处校验复用。 */
+    private var stagedFiles: List<Triple<String, String, Long>> = emptyList()
+
+    /** 设备上某个文件的实际大小；取不到返回 null。 */
+    private fun remoteSizeOf(path: String): Long? =
+        shellExecutor.shell("wc -c < '$path' 2>/dev/null").second.trim().toLongOrNull()
+
+    /**
+     * 确认设备上的载荷 / root helper / ksud 大小与本地一致，不一致就自动重推一次。
+     *
+     * 之前把 **本地** 文件大小写进日志当成"推送成功"的证据，而线上有一类失败直到
+     * LD_PRELOAD 才暴露：
+     *     CANNOT LINK EXECUTABLE "/system/bin/sh": file offset for the library
+     *     ".../cve-2026-43499-xxx" >= file size: 0 >= 0
+     * —— 设备上那份是 0 字节。把这种静默损坏变成「可自愈（重推一次）/ 可诊断（明确报错）」。
+     */
+    private fun ensureStaged(files: List<Triple<String, String, Long>>) {
+        repeat(2) { attempt ->
+            val bad = files.filter { (_, path, want) -> remoteSizeOf(path) != want }
+            if (bad.isEmpty()) return
+            if (attempt == 0) {
+                appendLog(
+                    "⚠ 载荷在设备上大小不符，自动重推一次：" +
+                        bad.joinToString(",") { it.second.substringAfterLast('/') }
+                )
+                bad.forEach { (name, path, _) -> copyToTmp(name, path, "755") }
+            } else {
+                val detail = bad.joinToString("; ") { (_, path, want) ->
+                    "${path.substringAfterLast('/')}=${remoteSizeOf(path) ?: -1}/$want B"
+                }
+                appendLog("✗ 载荷推送校验失败（设备上大小不对）：$detail")
+                throw IllegalStateException("payload staging verification failed: $detail")
+            }
+        }
+    }
+
     private var stagingBaseCache: String? = null
 
     private fun stagingBase(): String = stagingBaseCache ?: run {
@@ -1408,8 +1444,20 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         extractAsset(ksudName)
         val stagedPayload = copyToTmp(payloadName, tmpPayload, "755")
         val stagedHelper = copyToTmp(rootHelperName, tmpRootHelper, "755")
-        copyToTmp(ksudName, tmpKsud, "755")
-        appendLog("✔ " + app.getString(R.string.log_push_done, payloadName, stagedPayload.length(), rootHelperName, stagedHelper.length()))
+        val stagedKsud = copyToTmp(ksudName, tmpKsud, "755")
+        // 记录「资产名 / 设备路径 / 期望字节数」，后面两次校验都用它
+        stagedFiles = listOf(
+            Triple(payloadName, tmpPayload, stagedPayload.length()),
+            Triple(rootHelperName, tmpRootHelper, stagedHelper.length()),
+            Triple(ksudName, tmpKsud, stagedKsud.length()),
+        )
+        ensureStaged(stagedFiles)
+        appendLog(
+            "✔ " + app.getString(
+                R.string.log_push_done,
+                payloadName, stagedPayload.length(), rootHelperName, stagedHelper.length(),
+            ) + "（设备侧已校验）"
+        )
 
         // 2.5 诊断：管道限制（F_SETPIPE_SZ EPERM 的根因排查）
         val pipeMax = shellExecutor.capture(
@@ -1553,6 +1601,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                     "若不想受影响，可在首页授权卡改用「无线调试直连」。")
             }
         }
+        // 触发前再校验一次：线上有日志显示推送时报了 104128B，但 LD_PRELOAD 时
+        // 设备上那份已经是 0 字节（CANNOT LINK ... >= file size: 0 >= 0）。
+        ensureStaged(stagedFiles)
         val env = arrayOf(
             "EXPLOIT_ATTEMPTS=30",
             "P0_ATTEMPT_TIMEOUT_SEC=45",
