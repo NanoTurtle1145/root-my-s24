@@ -23,6 +23,7 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 import sys
 import time
 import urllib.request
@@ -111,14 +112,29 @@ def gh_api(method, url, data=None):
 
 
 def upload_asset(upload_url, apk, name):
+    """上传一个 release asset。
+
+    ⚠️ 令牌**不能**放在 curl 的 -H 参数里：上传 48MB 要跑好几分钟，进程一直在
+    `ps` 里可见，本机任何用户都能读到 token。改用 600 权限的 curl 配置文件，
+    用完立刻删除（-K 从文件读 header，命令行里只剩路径）。
+    """
     tok = open(GH_TOKEN).read().strip()
-    cmd = ['curl', '-s', '-X', 'POST',
-           '-H', 'Authorization: Bearer ' + tok,
-           '-H', 'Content-Type: application/vnd.android.package-archive',
-           '-H', 'Accept: application/vnd.github+json',
-           '--data-binary', '@' + apk,
-           '%s?name=%s' % (upload_url, name)]
-    rc, out = sh(cmd, timeout=1800)
+    fd, cfg_path = tempfile.mkstemp(prefix='.gh-curl-', suffix='.cfg')
+    os.chmod(cfg_path, 0o600)
+    try:
+        with os.fdopen(fd, 'w', encoding='utf-8') as fh:
+            fh.write('header = "Authorization: Bearer %s"\n' % tok)
+            fh.write('header = "Content-Type: application/vnd.android.package-archive"\n')
+            fh.write('header = "Accept: application/vnd.github+json"\n')
+        cmd = ['curl', '-s', '-X', 'POST', '-K', cfg_path,
+               '--data-binary', '@' + apk,
+               '%s?name=%s' % (upload_url, name)]
+        rc, out = sh(cmd, timeout=1800)
+    finally:
+        try:
+            os.unlink(cfg_path)
+        except OSError:
+            pass
     try:
         return json.loads(out)
     except Exception:
