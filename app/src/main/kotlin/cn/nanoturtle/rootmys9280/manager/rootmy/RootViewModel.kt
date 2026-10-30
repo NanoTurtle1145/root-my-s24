@@ -171,6 +171,13 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 代际跃升，以港版 DZE2 为模板做全量符号迁移（25 项）+ P0 指纹重生成。
         // 2026-10-23 真机实测通过 → 本版起按「已实测」发布（无需再开「未经测试的载荷」）
         S928BEZIF("cve-2026-43499-S928BXXU6EZIF", "One UI 9.0", "SM-S928B 欧版 S24 Ultra", "EZIF", Region.HONGKONG_TAIWAN, "ksud-ezif-32601", tested = true),
+        // SM-S9280（港版 TGY S24 Ultra）One UI 9.0 / kernel 6.1.162（构建号 34343818）：
+        // 与 S928B EZIF 同内核构建，但本载荷**按本机 Image 重新生成 p0 指纹**
+        // （256 qword 中 6 个与 S928B 不同）并重推全部符号偏移（23 项与 S928B 一致）。
+        // 目标设备 S9280ZHU6EZIF 真机确认运行同内核，KASLR/tracefs 已验证；
+        // root 链路（fops）待本机实测确认，因此暂标记为未测试。
+        // 标定来源：Root-My-Galaxy-Payloads src/targets/e3q-S9280ZHU6EZIF（2026-10-25）。
+        S9280EZIF("cve-2026-43499-S9280ZHU6EZIF", "One UI 9.0", "SM-S9280 港版 S24 Ultra", "EZIF", Region.HONGKONG_TAIWAN, "ksud-ezif-32601", tested = false),
         // SM-S928B（EUR）One UI 8.0 / kernel 6.1.128（构建号 31999054）：与港版 CZA1 同构建号但
         // **非同一机型**（欧版 S928B vs 港版 S9280），.rodata 差 8 字节（nfnetlink_log 0x0160b70d vs
         // 港版 0x0160b705），故独立定标、不可与港版 CZA1 载荷互换。
