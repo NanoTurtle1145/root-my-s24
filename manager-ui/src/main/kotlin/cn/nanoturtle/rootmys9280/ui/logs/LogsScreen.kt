@@ -591,6 +591,7 @@ private fun LogSearch(
             onDismiss = { filterOpen = false },
             onToggleLevel = { viewModel.toggleLevel(tab, it) },
             onTag = { viewModel.setTag(tab, it) },
+            onWriter = { viewModel.setWriter(tab, it) },
             onClear = { viewModel.clearFilter(tab) },
         )
     }
@@ -942,9 +943,14 @@ private fun LogFilterSheet(
     onDismiss: () -> Unit,
     onToggleLevel: (LogLevel) -> Unit,
     onTag: (String?) -> Unit,
+    onWriter: (Int?) -> Unit,
     onClear: () -> Unit,
 ) {
     val sheetState = rememberBottomSheetState(initialValue = SheetValue.Hidden)
+    // The context is read as a composable and only *carried* into remember: `LocalContext.current`
+    // inside remember's lambda would be a composable call from a non-composable block.
+    val context = LocalContext.current
+    val labeler = remember(context) { WriterLabeler(context.packageManager) }
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         LocalDialogLocalizer.current {
             Column(
@@ -974,6 +980,43 @@ private fun LogFilterSheet(
                             enabled = state.facets == null || count > 0,
                             label = { Text(level.char.toString(), style = Mono) },
                         )
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    stringResource(R.string.logs_filter_writers),
+                    style = MaterialTheme.typography.titleSmall,
+                )
+                Spacer(Modifier.height(8.dp))
+                val writers = state.facets?.writers.orEmpty()
+                if (writers.isEmpty()) {
+                    Text(
+                        stringResource(R.string.logs_filter_scanning),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    // A log written by a handful of processes needs a handful of rows, so this is a
+                    // plain column: a lazy list nested in the sheet's scrolling column would fight
+                    // it for the same gesture.
+                    writers.forEach { (uid, count) ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            FilterChip(
+                                selected = state.query.writer == uid,
+                                onClick = { onWriter(uid) },
+                                label = { Text(labeler.label(uid) ?: uid.toString(), style = Mono) },
+                            )
+                            Spacer(Modifier.width(10.dp))
+                            Text(
+                                count.toString(),
+                                style = Mono,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                 }
 

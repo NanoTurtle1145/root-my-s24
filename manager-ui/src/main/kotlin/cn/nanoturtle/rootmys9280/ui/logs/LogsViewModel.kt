@@ -485,6 +485,10 @@ class LogsViewModel(private val source: LogSource) : ViewModel() {
     fun setTag(tab: LogTab, tag: String?) =
         updateQuery(tab, debounce = false) { it.copy(tag = if (it.tag == tag) null else tag) }
 
+    /** Keeps only the lines one process wrote; passing the uid already selected clears it again. */
+    fun setWriter(tab: LogTab, uid: Int?) =
+        updateQuery(tab, debounce = false) { it.copy(writer = if (it.writer == uid) null else uid) }
+
     fun clearFilter(tab: LogTab) = updateQuery(tab, debounce = false) { LogQuery() }
 
     /**

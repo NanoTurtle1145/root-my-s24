@@ -11,6 +11,7 @@
     <string name="logs_filter">依等級與標籤篩選</string>
     <string name="logs_filter_levels">等級</string>
     <string name="logs_filter_tags">標籤</string>
+    <string name="logs_filter_writers">行程</string>
     <string name="logs_filter_clear">清除篩選</string>
     <string name="logs_filter_scanning">正在讀取整個檔案，讓篩選能涵蓋畫面之外的內容。</string>
 

@@ -17,9 +17,10 @@
 
     <!-- Search and filter -->
     <string name="logs_search_hint">Search this log</string>
-    <string name="logs_filter">Filter by level and tag</string>
+    <string name="logs_filter">Filter by level, tag and writer</string>
     <string name="logs_filter_levels">Level</string>
     <string name="logs_filter_tags">Tag</string>
+    <string name="logs_filter_writers">Writer</string>
     <string name="logs_filter_clear">Clear filter</string>
     <string name="logs_filter_scanning">Reading the whole file so the filter can see past what is on screen.</string>
 

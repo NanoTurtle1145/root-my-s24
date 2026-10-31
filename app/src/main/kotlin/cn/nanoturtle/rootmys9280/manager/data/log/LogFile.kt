@@ -213,6 +213,7 @@ class LogFile(pfd: ParcelFileDescriptor) : LogContent {
         val matches = if (query.isActive) IntVec() else null
         val tags = HashMap<String, Int>()
         val levels = HashMap<LogLevel, Int>()
+        val writers = HashMap<Int, Int>()
         var previousMatched = false
         // The last row that was an entry, which is what lets a line be read as part of its message
         // here exactly as [readRows] reads it — both the unprefixed kind and the split-off tail.
@@ -237,8 +238,18 @@ class LogFile(pfd: ParcelFileDescriptor) : LogContent {
                 return@forEachLine
             }
             if (row is LogRow.Entry) {
-                tags[row.tag] = (tags[row.tag] ?: 0) + 1
-                levels[row.level] = (levels[row.level] ?: 0) + 1
+                // Counted under the *other* dimensions, never under its own: picking a writer and
+                // then opening the sheet must offer the tags that writer writes, and a chosen chip
+                // must stay listed — at the count it has under the rest of the query — or a second
+                // choice could never be added and a chip counted out of existence would leave the
+                // filter narrowing the log with no way to switch it off.
+                val level = query.matchesLevel(row)
+                val tag = query.matchesTag(row)
+                val writer = query.matchesWriter(row)
+                val text = query.matchesText(row)
+                if (writer && tag && text) levels[row.level] = (levels[row.level] ?: 0) + 1
+                if (level && tag && text && row.uid >= 0) writers[row.uid] = (writers[row.uid] ?: 0) + 1
+                if (level && writer && text) tags[row.tag] = (tags[row.tag] ?: 0) + 1
             }
             lastEntry = row as? LogRow.Entry
             previousMatched = query.matches(row)
@@ -251,6 +262,7 @@ class LogFile(pfd: ParcelFileDescriptor) : LogContent {
                 LogFacets(
                     tags = tags.entries.sortedByDescending { it.value }.map { it.key to it.value },
                     levels = levels,
+                    writers = writers.entries.sortedByDescending { it.value }.map { it.key to it.value },
                 ),
         )
     }

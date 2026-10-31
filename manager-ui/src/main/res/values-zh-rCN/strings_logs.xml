@@ -8,9 +8,10 @@
     <string name="logs_rotate">开始新的日志…</string>
 
     <string name="logs_search_hint">搜索此日志</string>
-    <string name="logs_filter">按级别和标签筛选</string>
+    <string name="logs_filter">按级别、标签和进程筛选</string>
     <string name="logs_filter_levels">级别</string>
     <string name="logs_filter_tags">标签</string>
+    <string name="logs_filter_writers">进程</string>
     <string name="logs_filter_clear">清除筛选</string>
     <string name="logs_filter_scanning">正在读取整个文件，以便筛选能覆盖屏幕之外的内容。</string>
 

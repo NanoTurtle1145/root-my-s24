@@ -115,35 +115,55 @@ class LogIndex(val bounds: LongArray, val droppedLeading: Int) {
 /** What [LogContent.scan] found: the filtered line numbers, and what the file contains. */
 class LogScanResult(val matches: IntArray?, val facets: LogFacets)
 
-/** The tags and levels actually present, with counts, so the filter sheet cannot go stale. */
+/**
+ * The tags, levels and writers actually present, with counts, so the filter sheet cannot go stale.
+ *
+ * A category is counted under the *other* categories, never under itself: choosing a writer and
+ * then opening the filter shows the tags *that writer* wrote, with the counts it wrote them, and
+ * the chosen chip stays listed — at the count it has under the rest of the query — so that a second
+ * choice can still be added and a chip counted out of existence cannot strand the filter with no
+ * way left to switch it off.
+ */
 data class LogFacets(
     val tags: List<Pair<String, Int>> = emptyList(),
     val levels: Map<LogLevel, Int> = emptyMap(),
+    /** uid to the number of lines it wrote under the rest of the query. */
+    val writers: List<Pair<Int, Int>> = emptyList(),
 )
 
 /** Everything that narrows the view. All of it is applied in one pass over the file. */
 data class LogQuery(
     val levels: Set<LogLevel> = emptySet(),
     val tag: String? = null,
+    /** uid of the process that wrote the line; `null` keeps every writer. */
+    val writer: Int? = null,
     val text: String = "",
 ) {
     val isActive: Boolean
-        get() = levels.isNotEmpty() || tag != null || text.isNotBlank()
+        get() = levels.isNotEmpty() || tag != null || writer != null || text.isNotBlank()
 
     fun matches(row: LogRow): Boolean =
         when (row) {
             is LogRow.Entry ->
-                (levels.isEmpty() || row.level in levels) &&
-                    (tag == null || row.tag == tag) &&
-                    (text.isBlank() ||
-                        row.message.contains(text, ignoreCase = true) ||
-                        row.tag.contains(text, ignoreCase = true))
-            // A rotation banner has neither level nor tag, so it survives only a plain text
+                matchesLevel(row) && matchesTag(row) && matchesWriter(row) && matchesText(row)
+            // A rotation banner has neither level, tag nor writer, so it survives only a plain text
             // search. It marks where a writer restarted, which is worth keeping when it can be.
             is LogRow.Marker ->
                 levels.isEmpty() &&
                     tag == null &&
+                    writer == null &&
                     (text.isBlank() || row.text.contains(text, ignoreCase = true))
             is LogRow.DayBreak -> false
         }
+
+    fun matchesLevel(row: LogRow.Entry): Boolean = levels.isEmpty() || row.level in levels
+
+    fun matchesTag(row: LogRow.Entry): Boolean = tag == null || row.tag == tag
+
+    fun matchesWriter(row: LogRow.Entry): Boolean = writer == null || row.uid == writer
+
+    fun matchesText(row: LogRow.Entry): Boolean =
+        text.isBlank() ||
+            row.message.contains(text, ignoreCase = true) ||
+            row.tag.contains(text, ignoreCase = true)
 }
