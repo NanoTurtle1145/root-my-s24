@@ -209,9 +209,17 @@ def main():
     manifest = {'generated_by': 'tools/split_assets.py',
                 'universal': sorted(universal),
                 'flavors': {f: sorted(plan[f]) for f in ALL_FLAVORS}}
+    # 保留手工维护的非托管 flavor（如一对一的 gamma），避免重跑分发时被抹掉
+    unmanaged = {}
+    if os.path.isfile(ENTRIES_JSON):
+        try:
+            prev = json.load(open(ENTRIES_JSON, encoding='utf-8')).get('flavors', {})
+            unmanaged = {k: v for k, v in prev.items() if k not in ALL_FLAVORS}
+        except Exception:
+            unmanaged = {}
     entries_doc = {'generated_by': 'tools/split_assets.py',
                    'tested_snapshot': os.path.relpath(TESTED_SNAPSHOT, ROOT),
-                   'flavors': {f: sorted(entries_of[f]) for f in ALL_FLAVORS}}
+                   'flavors': {**{f: sorted(entries_of[f]) for f in ALL_FLAVORS}, **unmanaged}}
     for path, data in ((MANIFEST_JSON, manifest), (ENTRIES_JSON, entries_doc)):
         with open(path, 'w', encoding='utf-8') as fh:
             json.dump(data, fh, ensure_ascii=False, indent=2)

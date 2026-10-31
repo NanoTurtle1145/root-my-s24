@@ -533,6 +533,23 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /** 设置页开关：启用/禁用未经测试的载荷。禁用时若当前选中了 untested 条目则回退 DZF2。 */
+    /**
+     * 通过 root daemon（temp_su.sock）切换 SELinux enforce 模式。
+     *
+     * 注意：socket 在 Enforcing 下对 shell 域不可连，所以：
+     *  - 切到 Permissive 需要当前已有 root 通道（root 流程刚跑完时）；
+     *  - 切回 Enforcing 也只能在通道仍可用（即 Permissive）时执行。
+     * 返回 (exitCode, 输出)，供界面提示。
+     */
+    suspend fun setSelinuxPermissive(permissive: Boolean): Pair<Int, String> {
+        return runCatching {
+            val helper = "${stagingBase()}/$rootHelperName"
+            val value = if (permissive) 0 else 1
+            shellExecutor.shell(
+                "$helper -c 'echo $value > /sys/fs/selinux/enforce; getenforce' 2>&1")
+        }.getOrElse { t: Throwable -> -1 to (t.message ?: t.toString()) }
+    }
+
     fun setUntestedPayloadsEnabled(enabled: Boolean) {
         val prefs = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
         prefs.edit().putBoolean(KEY_UNTESTED_PAYLOADS_ENABLED, enabled).apply()
@@ -1612,7 +1629,10 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 设备上那份已经是 0 字节（CANNOT LINK ... >= file size: 0 >= 0）。
         ensureStaged(stagedFiles)
         val env = arrayOf(
-            "EXPLOIT_ATTEMPTS=30",
+            // ⚠ 安全优先：CVE-2026-43499 失败尝试会残留损坏的内核状态，
+            // 连续 30 次叠加很容易在 panic_on_oops=1 的设备上直接 panic 重启。
+            // 因此每次「开始 Root」只尝试 1 次；失败由用户重启后再点，避免连刷把内核搞崩。
+            "EXPLOIT_ATTEMPTS=1",
             "P0_ATTEMPT_TIMEOUT_SEC=45",
             "EXPLOIT_ATTEMPT_TIMEOUT_SEC=120",
             "CVE43499_ROOT_HELPER=$tmpRootHelper",
@@ -1667,6 +1687,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             throw IllegalStateException(app.getString(R.string.log_no_root))
         }
         appendLog("✔ " + app.getString(R.string.log_temp_root))
+
+        // [S9280 本地调试] 临时 root 窗口刚建立：立刻用 root daemon 执行 info 脚本。
+        // 关键：此时 SELinux 通常仍处于 exploit 设置的 Permissive，晚一步就会被恢复成
+        // Enforcing，shell 域的 helper 客户端就再也连不上 temp_su.sock。
+        // 脚本会：置 Permissive、采集 kallsyms/slabinfo/trace id，并尝试停用 Knox Guard。
+        runCatching {
+            val info = shellExecutor.shell(
+                "$tmpRootHelper -c '/system/bin/sh /data/local/tmp/rootinfo.sh' 2>&1")
+            appendLog("◆ rootinfo(early): exit=${info.first}\n${info.second.trim().takeLast(300)}")
+        }.onFailure { appendLog("⚠ rootinfo(early) 异常: ${it.message}") }
 
         // BakaSU 模式：趁 root 通道还活着先装管理器（模块加载后 root 守护进程可能被 SELinux 收走）
         if (bakasuKernelEnabled) {
@@ -1732,6 +1762,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             "\"kernelsu|finit_module|insmod|vermagic|module|cfi|defex|kdp|rkp|denied|unauthorized|signature\" | tail -60' 2>&1"
         )
         appendLog("◆ dmesg(内核判定): exit=${diag.first}\n${diag.second.trim().takeLast(2500)}")
+
+        // [S9280 本地调试] root 窗口内执行 /data/local/tmp/rootinfo.sh：
+        //   1) 把 SELinux 置 Permissive —— root daemon 的 socket 在 Permissive 下
+        //      才允许 shell 域连接，之后普通 adb shell 可复用它执行 root 命令；
+        //   2) 采集 kallsyms / slabinfo / trace event id / perf 等研究信息。
+        runCatching {
+            val info = shellExecutor.shell(
+                "$tmpRootHelper -c '/system/bin/sh /data/local/tmp/rootinfo.sh' 2>&1")
+            appendLog("◆ rootinfo: exit=${info.first}\n${info.second.trim().takeLast(400)}")
+        }.onFailure { appendLog("⚠ rootinfo 执行异常: ${it.message}") }
 
         // 5. 验证（late-load 内部已做 KSU 驱动 ioctl 校验；root 由 KernelSU 管理器提供）
         appendLog(app.getString(R.string.log_verify))
@@ -2467,7 +2507,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
          * 「未经测试的载荷」开关的默认值：测试包（exp flavor）默认打开，
          * 其余包默认关闭（用户要在设置里自己开）。
          */
-        val untestedPayloadsDefault: Boolean = BuildConfig.SERIES == "EXP"
+        val untestedPayloadsDefault: Boolean =
+            BuildConfig.SERIES == "EXP" || BuildConfig.SERIES == "GAMMA"
         /** 上传来源标记，与统计口径对应（manual 不计入成功率）。 */
         const val SOURCE_AUTO = "auto"
         const val SOURCE_PROMPT = "prompt"

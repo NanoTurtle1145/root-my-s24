@@ -125,6 +125,12 @@ android {
             versionNameSuffix = "-exp"
             buildConfigField("String", "SERIES", "\"EXP\"")
         }
+        // 一对一适配渠道（channel=gamma，不是公开 alpha/beta）：
+        // 只装被适配的那一个载荷，直接发给特定用户验证。
+        create("gamma") {
+            dimension = "series"
+            buildConfigField("String", "SERIES", "\"GAMMA\"")
+        }
     }
 
     // 每个 flavor 实际打包了哪些固件条目（由 tools/split_assets.py 生成），
