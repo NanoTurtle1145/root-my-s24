@@ -826,34 +826,45 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     /** 本次运行已推送的 (资产名, 设备路径, 期望字节数)，供两处校验复用。 */
     private var stagedFiles: List<Triple<String, String, Long>> = emptyList()
 
+    /** `\x7fELF` 在 `od -An -tx1` 下的拼写，见 [ensureStaged]。 */
+    private val ELF_MAGIC = "7f454c46"
+
     /** 设备上某个文件的实际大小；取不到返回 null。 */
     private fun remoteSizeOf(path: String): Long? =
         shellExecutor.shell("wc -c < '$path' 2>/dev/null").second.trim().toLongOrNull()
 
+    /** 设备上某个文件的前 4 字节（`od` 的十六进制拼写）；取不到返回 null。 */
+    private fun remoteMagicOf(path: String): String? =
+        shellExecutor.shell("head -c 4 '$path' 2>/dev/null | od -An -tx1 2>/dev/null | tr -d ' \\n'")
+            .second.trim().lowercase().takeIf { it.length == 8 }
+
     /**
-     * 确认设备上的载荷 / root helper / ksud 大小与本地一致，不一致就自动重推一次。
+     * 确认设备上的载荷 / root helper / ksud 既**大小正确**、又**确实是 ELF**，不对就自动重推一次。
      *
-     * 之前把 **本地** 文件大小写进日志当成"推送成功"的证据，而线上有一类失败直到
-     * LD_PRELOAD 才暴露：
-     *     CANNOT LINK EXECUTABLE "/system/bin/sh": file offset for the library
-     *     ".../cve-2026-43499-xxx" >= file size: 0 >= 0
-     * —— 设备上那份是 0 字节。把这种静默损坏变成「可自愈（重推一次）/ 可诊断（明确报错）」。
+     * 之前只比大小，而线上有一类失败直到 LD_PRELOAD 才暴露：
+     *     CANNOT LINK EXECUTABLE "/system/bin/sh":
+     *     ".../cve-2026-43499-xxx" has bad ELF magic: 00000000
+     * —— 设备上那份**字节数是对的，内容却是全零**（2026-10 线上 S9260ZHU6EZIF 124 次运行全部撞上此招）。
+     * 只查 `wc -c` 会把它当成推送成功，所以这里连文件头一起验；仍不对就同时报出大小与文件头两项证据。
      */
     private fun ensureStaged(files: List<Triple<String, String, Long>>) {
         repeat(2) { attempt ->
-            val bad = files.filter { (_, path, want) -> remoteSizeOf(path) != want }
+            val bad = files.filter { (_, path, want) ->
+                remoteSizeOf(path) != want || remoteMagicOf(path) != ELF_MAGIC
+            }
             if (bad.isEmpty()) return
             if (attempt == 0) {
                 appendLog(
-                    "⚠ 载荷在设备上大小不符，自动重推一次：" +
+                    "⚠ 载荷在设备上校验不通过（大小或文件头），自动重推一次：" +
                         bad.joinToString(",") { it.second.substringAfterLast('/') }
                 )
                 bad.forEach { (name, path, _) -> copyToTmp(name, path, "755") }
             } else {
                 val detail = bad.joinToString("; ") { (_, path, want) ->
-                    "${path.substringAfterLast('/')}=${remoteSizeOf(path) ?: -1}/$want B"
+                    "${path.substringAfterLast('/')}=size ${remoteSizeOf(path) ?: -1}/$want" +
+                        " magic ${remoteMagicOf(path) ?: "?"}"
                 }
-                appendLog("✗ 载荷推送校验失败（设备上大小不对）：$detail")
+                appendLog("✗ 载荷推送校验失败：$detail")
                 throw IllegalStateException("payload staging verification failed: $detail")
             }
         }
@@ -1914,8 +1925,10 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val out = File(app.filesDir, name)
         val remote = remoteAsset(name)
 
-        // 1) 本地已有且（若有 sha256）校验通过 → 直接复用
-        if (out.exists() && out.length() > 0) {
+        // 1) 本地已有且（若有 sha256）校验通过、且确实是 ELF → 直接复用
+        //    线上出现过「本地缓存被写成全零但长度正确」：只查长度会一直复用它，
+        //    推给设备后表现为 `bad ELF magic: 00000000`。所以文件头也算复用条件之一。
+        if (out.exists() && out.length() > 0 && looksElf(out)) {
             if (remote == null || remote.sha256.isBlank() || sha256Hex(out) == remote.sha256) {
                 return out
             }
@@ -1923,9 +1936,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             out.delete()
         }
 
+        // 1b) 长度够但不是 ELF（被写成全零/被截断后又补齐）→ 删掉重取
+        if (out.exists() && !looksElf(out)) {
+            appendLog("⚠ 本地载荷缓存校验不通过，重新解包：${out.name}")
+            out.delete()
+        }
+
         // 2) 有在线地址 → 下载 + 校验
         if (remote != null && remote.url.isNotBlank()) {
             downloadAsset(remote.url, out, remote.sha256)
+            check(looksElf(out)) { "下载的载荷不是 ELF（${out.name}, ${out.length()} B）" }
             return out
         }
 
@@ -1933,8 +1953,21 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         app.assets.open(name).use { input ->
             out.outputStream().use { output -> input.copyTo(output) }
         }
+        check(looksElf(out)) { "解包出来的载荷不是 ELF（${out.name}, ${out.length()} B）" }
         return out
     }
+
+    /** 本地文件是不是 ELF（前 4 字节 `7f 45 4c 46`）。用来拒绝被写成全零的缓存副本。 */
+    private fun looksElf(file: File): Boolean = runCatching {
+        file.length() >= 64 && file.inputStream().use { input ->
+            val head = ByteArray(4)
+            input.read(head) == 4 &&
+                head[0] == 0x7f.toByte() &&
+                head[1] == 'E'.code.toByte() &&
+                head[2] == 'L'.code.toByte() &&
+                head[3] == 'F'.code.toByte()
+        }
+    }.getOrDefault(false)
 
     /** 该资产名是否带在线下载信息（url/sha256）。来自服务端 KSU 清单。 */
     private fun remoteAsset(name: String): PayloadStatus.KsuOption? =
