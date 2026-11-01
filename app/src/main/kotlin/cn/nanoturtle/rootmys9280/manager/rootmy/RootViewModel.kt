@@ -145,6 +145,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 与 e3q 的 CZA1 同内核构建号，但 e1q 是 Exynos 2400、e3q 是骁龙 8 Gen 3，
         // 90 个同名偏移里 25 个不同，**不可与 CZA1 载荷互换**，必须独立定标。
         S9210CZD2("cve-2026-43499-S9210ZHS5CZD2", "One UI 8.0", "SM-S9210 港版 Galaxy S24", "CZD2", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
+        // SM-S9260 港版 S24+ One UI 8.0（Android 16 / kernel 6.1.128 / **构建号 31999054**）——issue #6 适配。
+        // 与 S9210 港版 CZD2 内核 **100,754 个符号 100% 同址**（模板取 CZD2），唯一镜像差是 .rodata 串位移
+        // （nfnetlink_log 0x0161b7e3 → 0x0161b835，按本机 Image 重测）；remove_waiter 逐字节相同。
+        // 注意：同为 31999054 的港版 CZA1 与本镜像**不同址**，此前套 CZA1 只会 180/180 卡在 P0 泄漏。
+        // 首发走 gamma 一对一验证；PI 窗口取 125ms（EZIF 实测 300ms 会 panic）。
+        S9260CZC1("cve-2026-43499-S9260ZHS5CZC1", "One UI 8.0", "SM-S9260 港版 Galaxy S24+", "CZC1", Region.HONGKONG_TAIWAN, "ksud-selected", tested = false),
         // —— S25 系列（Android 15，kernel 6.6）——
         S9310CZG1("cve-2026-43499-S9310ZCSCCZG1", "One UI 8.5", "SM-S9310 国行 S25", "CZG1", Region.CHINA, "ksud-android15-6.6", tested = false),
         S9360CZG1("cve-2026-43499-S9360ZCSCCZG1", "One UI 8.5", "SM-S9360 国行 S25+", "CZG1", Region.CHINA, "ksud-android15-6.6", tested = false),
