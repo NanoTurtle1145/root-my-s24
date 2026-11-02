@@ -356,6 +356,11 @@
     <string name="update_install_ready">下载已校验通过，正在打开安装器…</string>
     <string name="log_asset_download_fail">载荷下载失败：HTTP %1$s</string>
     <string name="log_asset_sha_mismatch">载荷校验失败：期望 %1$s，实际 %2$s</string>
+    <string name="settings_section_root_channel">Root 通道（调试）</string>
+    <string name="settings_selinux_permissive">切换 SELinux 为 Permissive</string>
+    <string name="settings_selinux_permissive_summary">允许普通 shell 连接残留的 root daemon（temp_su.sock），即打开 root 通道。</string>
+    <string name="settings_selinux_enforcing">恢复 SELinux Enforcing</string>
+    <string name="settings_selinux_enforcing_summary">用完 root 通道后切回 Enforcing（需通道仍可用）。</string>
     <string name="settings_section_log">日志</string>
     <string name="settings_section_experimental">实验功能</string>
     <string name="about_open_source_title">开源许可</string>

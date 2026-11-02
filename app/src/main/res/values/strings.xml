@@ -395,6 +395,11 @@ Auto-save log</string>
     <string name="update_install_ready">Download verified — opening the installer…</string>
     <string name="log_asset_download_fail">Failed to download payload: HTTP %1$s</string>
     <string name="log_asset_sha_mismatch">Payload checksum mismatch: expected %1$s, got %2$s</string>
+    <string name="settings_section_root_channel">Root channel (debug)</string>
+    <string name="settings_selinux_permissive">Switch SELinux to Permissive</string>
+    <string name="settings_selinux_permissive_summary">Lets a normal shell connect to the leftover root daemon socket (opens the root channel).</string>
+    <string name="settings_selinux_enforcing">Restore SELinux Enforcing</string>
+    <string name="settings_selinux_enforcing_summary">Switch back to Enforcing when you are done; requires the root channel to still be open.</string>
     <string name="settings_section_log">Logs</string>
     <string name="settings_section_experimental">Experimental</string>
     <string name="about_open_source_title">Open source licenses</string>

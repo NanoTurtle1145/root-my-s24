@@ -540,19 +540,24 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     /** 设置页开关：启用/禁用未经测试的载荷。禁用时若当前选中了 untested 条目则回退 DZF2。 */
     /**
-     * 通过 root daemon（temp_su.sock）切换 SELinux enforce 模式。
+     * 切换 SELinux enforce 模式，返回 (exitCode, 输出)，供界面提示。
      *
-     * 注意：socket 在 Enforcing 下对 shell 域不可连，所以：
-     *  - 切到 Permissive 需要当前已有 root 通道（root 流程刚跑完时）；
-     *  - 切回 Enforcing 也只能在通道仍可用（即 Permissive）时执行。
-     * 返回 (exitCode, 输出)，供界面提示。
+     * 顺序：
+     *  1. App 进程内直接调 su（KernelSU / Magisk，见 RootShell），需已给本 App 授权 root；
+     *  2. 失败则回退到 43499 的 helper，经 ShellExecutor（Shizuku / ADB，uid 2000）执行。
+     *
+     * 回退通道在两种情况下会失败：43499 的 root daemon 已退出；或 KSU late-load 之后
+     * helper 转调 KSU 的 su 而 ksud daemon 未运行（su: connect daemon）—— 这正是设置页
+     * 开关以前「点了没反应」的原因。
      */
     suspend fun setSelinuxPermissive(permissive: Boolean): Pair<Int, String> {
+        val helper = stagingBase() + "/" + rootHelperName
+        val direct = withContext(Dispatchers.IO) { RootShell.setSelinux(permissive, helper) }
+        if (direct.first == 0) return direct
         return runCatching {
-            val helper = "${stagingBase()}/$rootHelperName"
             val value = if (permissive) 0 else 1
             shellExecutor.shell(
-                "$helper -c 'echo $value > /sys/fs/selinux/enforce; getenforce' 2>&1")
+                helper + " -c 'echo " + value + " > /sys/fs/selinux/enforce; getenforce' 2>&1")
         }.getOrElse { t: Throwable -> -1 to (t.message ?: t.toString()) }
     }
 

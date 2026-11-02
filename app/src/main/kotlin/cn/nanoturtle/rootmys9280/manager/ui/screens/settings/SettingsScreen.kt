@@ -1,6 +1,7 @@
 package cn.nanoturtle.rootmys9280.manager.ui.screens.settings
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,8 @@ import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Feedback
 import androidx.compose.material.icons.rounded.Fingerprint
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material.icons.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Save
@@ -330,6 +333,52 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                         trailingContent = { Switch(checked = adbWirelessEnabled, onCheckedChange = null) },
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_adb_wireless)) }
+                }
+            }
+        }
+
+        item {
+            SectionLabel(stringResource(R.string.settings_section_root_channel))
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                GroupedRow(index = 0, count = 2) {
+                    ListItem(
+                        modifier =
+                            Modifier.clickable {
+                                scope.launch {
+                                    val (code, out) =
+                                        ServiceLocator.rootViewModel.setSelinuxPermissive(true)
+                                    val msg =
+                                        if (code == 0) out.trim().ifEmpty { "Permissive" }
+                                        else "失败($code): " + out.trim().takeLast(120)
+                                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                                }
+                            },
+                        leadingContent = { Icon(Icons.Rounded.LockOpen, contentDescription = null) },
+                        supportingContent = {
+                            Text(stringResource(R.string.settings_selinux_permissive_summary))
+                        },
+                        colors = cardRowColors,
+                    ) { Text(stringResource(R.string.settings_selinux_permissive)) }
+                }
+                GroupedRow(index = 1, count = 2) {
+                    ListItem(
+                        modifier =
+                            Modifier.clickable {
+                                scope.launch {
+                                    val (code, out) =
+                                        ServiceLocator.rootViewModel.setSelinuxPermissive(false)
+                                    val msg =
+                                        if (code == 0) out.trim().ifEmpty { "Enforcing" }
+                                        else "失败($code): " + out.trim().takeLast(120)
+                                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                                }
+                            },
+                        leadingContent = { Icon(Icons.Rounded.Lock, contentDescription = null) },
+                        supportingContent = {
+                            Text(stringResource(R.string.settings_selinux_enforcing_summary))
+                        },
+                        colors = cardRowColors,
+                    ) { Text(stringResource(R.string.settings_selinux_enforcing)) }
                 }
             }
         }
