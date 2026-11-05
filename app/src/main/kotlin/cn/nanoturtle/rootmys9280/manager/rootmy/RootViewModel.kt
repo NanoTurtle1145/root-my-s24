@@ -1651,10 +1651,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 设备上那份已经是 0 字节（CANNOT LINK ... >= file size: 0 >= 0）。
         ensureStaged(stagedFiles)
         val env = arrayOf(
-            // ⚠ 安全优先：CVE-2026-43499 失败尝试会残留损坏的内核状态，
-            // 连续 30 次叠加很容易在 panic_on_oops=1 的设备上直接 panic 重启。
-            // 因此每次「开始 Root」只尝试 1 次；失败由用户重启后再点，避免连刷把内核搞崩。
-            "EXPLOIT_ATTEMPTS=1",
+            // ⚠ 线上数据（rms24 统计，2026-10）：attempts=30 的构建在 EZIF 上成功率
+            // 76–100%；2026-10-31 起误改成 1 的 232/233 掉到 0–20%。13499 的真实
+            // 成功率高度依赖内部重试（payload 常在 attempt 3–7 才命中），因此恢复 30。
+            // 安全兜底：App 侧总超时 15 分钟 + payload 自带 P0 会话保护；用户可随时取消。
+            "EXPLOIT_ATTEMPTS=30",
             "P0_ATTEMPT_TIMEOUT_SEC=45",
             "EXPLOIT_ATTEMPT_TIMEOUT_SEC=120",
             "CVE43499_ROOT_HELPER=$tmpRootHelper",
