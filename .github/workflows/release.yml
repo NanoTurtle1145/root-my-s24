@@ -1,0 +1,191 @@
+# RootMyS24 发布流水线：签名构建分系列 APK → 产物归档 → （可选）GitHub Release
+#
+# 触发：
+#   1) push tag v*        → 自动构建 + 发布 Release（正式 tag 用 stable，预发布 tag 用 beta）
+#   2) workflow_dispatch  → 手动指定渠道/flavor/是否发布
+#
+# 必需的仓库 Secrets（Settings → Secrets and variables → Actions）：
+#   ANDROID_KEYSTORE_BASE64   s9280.keystore 的 base64
+#   ANDROID_STORE_PASSWORD    密钥库密码
+#   ANDROID_KEY_ALIAS         密钥别名
+#   ANDROID_KEY_PASSWORD      密钥密码
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: '发布渠道（beta=预发布，stable=正式）'
+        type: choice
+        options: [beta, stable]
+        default: beta
+      flavors:
+        description: '要构建的 flavor（逗号分隔）'
+        default: 'all,s24,fold,exp'
+      publish:
+        description: '是否创建 GitHub Release'
+        type: boolean
+        default: false
+      tag:
+        description: '发布 tag（publish=true 时必填，如 v3.5.5）'
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout（含 tags 与完整历史；versionCode = 提交数）
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: 补齐 origin/main 引用（versionCode 取自 git rev-list --count origin/main）
+        run: |
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main || true
+          git rev-list --count refs/remotes/origin/main || true
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: 安装 Android SDK 组件
+        run: |
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-37.0" \
+            "build-tools;37.0.0" \
+            "ndk;29.0.14206865" || {
+              echo "::warning::platforms;android-37.0 或 cmake 包名不匹配，尝试回退 android-37"
+              sdkmanager --install "platforms;android-37" "build-tools;37.0.0" "ndk;29.0.14206865"
+            }
+          # 工程要求 CMake >= 3.29.8；用 pip 装较新的 cmake/ninja（AGP 会从 PATH 找到）
+          python3 -m pip install --quiet --upgrade cmake ninja
+          cmake --version | head -1
+
+      - name: 解码签名密钥
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "::error::缺少 ANDROID_KEYSTORE_BASE64 secret（见 docs/ci-release.md）"
+            exit 1
+          fi
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/s9280.keystore"
+          ls -l "$RUNNER_TEMP/s9280.keystore"
+
+      - name: 注入签名属性
+        env:
+          STORE_PASS: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          {
+            echo "androidStoreFile=$RUNNER_TEMP/s9280.keystore"
+            printf 'androidStorePassword=%s\n' "$STORE_PASS"
+            printf 'androidKeyAlias=%s\n' "$KEY_ALIAS"
+            printf 'androidKeyPassword=%s\n' "$KEY_PASS"
+          } >> gradle.properties
+          sed -i 's/^\(androidStorePassword=\).*/\1***/' /dev/null 2>/dev/null || true
+          grep -c '^androidStoreFile=' gradle.properties
+
+      - name: 解析渠道
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            CHANNEL="${{ inputs.channel }}"
+            FLAVORS="${{ inputs.flavors }}"
+          else
+            # tag：含 '-' 视为预发布 → beta；裸版本号 → stable
+            if echo "${GITHUB_REF_NAME}" | grep -q '-'; then CHANNEL=beta; else CHANNEL=stable; fi
+            FLAVORS="all,s24,fold,exp"
+          fi
+          echo "channel=$CHANNEL" >> "$GITHUB_OUTPUT"
+          echo "flavors=$FLAVORS" >> "$GITHUB_OUTPUT"
+          echo "渠道=$CHANNEL flavors=$FLAVORS"
+
+      - name: 构建分系列 APK
+        run: |
+          set -euo pipefail
+          CHANNEL="${{ steps.meta.outputs.channel }}"
+          IFS=',' read -ra FS <<< "${{ steps.meta.outputs.flavors }}"
+          TASKS=()
+          for f in "${FS[@]}"; do
+            f="$(echo "$f" | tr -d ' ')"
+            [ -z "$f" ] && continue
+            TASKS+=(":app:assemble${f^}Release")
+          done
+          echo "gradle tasks: ${TASKS[*]}"
+          ./gradlew "${TASKS[@]}" -Prms24Channel="$CHANNEL" --no-daemon --console=plain
+
+      - name: 收集 / 重命名 / 校验签名
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          AAPT="$ANDROID_HOME/build-tools/37.0.0/aapt"
+          APKSIGNER="$ANDROID_HOME/build-tools/37.0.0/apksigner"
+          CHANNEL="${{ steps.meta.outputs.channel }}"
+          IFS=',' read -ra FS <<< "${{ steps.meta.outputs.flavors }}"
+          for f in "${FS[@]}"; do
+            f="$(echo "$f" | tr -d ' ')"
+            [ -z "$f" ] && continue
+            APK="app/build/outputs/apk/$f/release/app-$f-release.apk"
+            [ -f "$APK" ] || { echo "::error::缺少产物 $APK"; exit 1; }
+            BADGING="$("$AAPT" dump badging "$APK" | head -1)"
+            CODE="$(echo "$BADGING" | sed -n "s/.*versionCode='\([0-9]*\)'.*/\1/p")"
+            VER="$(echo "$BADGING" | sed -n "s/.*versionName='\([^']*\)'.*/\1/p")"
+            SUFFIX=""; [ "$f" != "all" ] && SUFFIX="-$f"
+            OUT="dist/RootMyS24-v${VER}-build${CODE}${SUFFIX}.apk"
+            cp "$APK" "$OUT"
+            "$APKSIGNER" verify --print-certs "$OUT" | head -2
+            echo "$(sha256sum "$OUT" | cut -d' ' -f1)  $(basename "$OUT")" >> dist/SHA256SUMS.txt
+          done
+          cat dist/SHA256SUMS.txt
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: RootMyS24-${{ steps.meta.outputs.channel }}-${{ github.run_number }}
+          path: dist/*
+          retention-days: 14
+
+      - name: （可选）创建 GitHub Release
+        if: github.event_name == 'push' || inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "push" ]; then
+            TAG="${GITHUB_REF_NAME}"
+          else
+            TAG="${{ inputs.tag }}"
+            if [ -z "$TAG" ]; then echo "::error::publish=true 需要填写 tag"; exit 1; fi
+            git tag -f "$TAG"
+            git push origin "refs/tags/$TAG" --force
+          fi
+          NOTES="docs/release-${TAG}.md"
+          if [ -f "$NOTES" ]; then NOTES_ARGS=(--notes-file "$NOTES"); else NOTES_ARGS=(--generate-notes); fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/*.apk dist/SHA256SUMS.txt --clobber
+          else
+            gh release create "$TAG" dist/*.apk dist/SHA256SUMS.txt \
+              --title "RootMyS24 $TAG" "${NOTES_ARGS[@]}" \
+              $( [ "${{ github.event_name }}" = "workflow_dispatch" ] && echo "--prerelease" || true )
+          fi
