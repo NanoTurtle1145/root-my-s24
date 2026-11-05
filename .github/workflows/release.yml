@@ -161,7 +161,11 @@ jobs:
             BADGING="$("$AAPT" dump badging "$APK" | head -1)"
             CODE="$(echo "$BADGING" | sed -n "s/.*versionCode='\([0-9]*\)'.*/\1/p")"
             VER="$(echo "$BADGING" | sed -n "s/.*versionName='\([^']*\)'.*/\1/p")"
-            SUFFIX=""; [ "$f" != "all" ] && SUFFIX="-$f"
+            # versionName 已经带 flavor 后缀（-s24 等）时不要重复追加
+            SUFFIX=""
+            if [ "$f" != "all" ]; then
+              case "$VER" in *"-$f") ;; *) SUFFIX="-$f" ;; esac
+            fi
             OUT="dist/RootMyS24-v${VER}-build${CODE}${SUFFIX}.apk"
             cp "$APK" "$OUT"
             "$APKSIGNER" verify --print-certs "$OUT" | head -2

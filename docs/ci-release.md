@@ -36,6 +36,19 @@
 `dist/RootMyS24-v<ver>-build<code>[-<flavor>].apk` + `dist/SHA256SUMS.txt`，
 以 Actions Artifact 形式保留 14 天；发布时同时上传到 GitHub Release。
 
+## 交互脚本
+
+```sh
+python3 tools/ci_release.py            # 菜单：构建 / 构建+发布 / 打 tag / 刷新状态 / 下载产物
+python3 tools/ci_release.py --status   # 查看最近运行
+python3 tools/ci_release.py --build --channel beta --flavors s24
+python3 tools/ci_release.py --tag v3.5.5          # 打 tag 并推送（自动发布）
+python3 tools/ci_release.py --download latest      # 下载最近 run 产物到 dist/
+```
+
+令牌从 `~/.config/dsh/github.token` 读取，不落日志；artifact 下载会自动处理
+GitHub 的 302 签名跳转（跳转后的 blob 地址不能携带 Authorization）。
+
 ## 与本地发布脚本的关系
 
 `tools/release_flavors.py` 仍是**主发布路径**（会同时上传服务器 `dl/` 并写 `latest.json`，
