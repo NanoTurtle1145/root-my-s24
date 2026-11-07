@@ -87,6 +87,11 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
     }
 
     private fun log(callback: IRootCallback, line: String) {
+        // 先落盘再回调：late-load 阶段如果内核直接挂掉/重启，App 来不及上传日志，
+        // /data/local/tmp/w/service.log 是重启后唯一能拿到的现场（/data/local/tmp 不清）。
+        runCatching {
+            java.io.File(WORK_DIR, "service.log").appendText(line + "\n")
+        }
         runCatching { callback.onLog(line) }
     }
 

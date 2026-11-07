@@ -1589,7 +1589,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             return@withContext
         }
 
-        appendLog("◆ late-load 驱动：3.3.0 多 KMI KDP（会重启管理器）；想避免可切 KSU 版本到 3.2.5")
+        appendLog("◆ late-load 用 --ephemeral（同 43499）：不装 /data/adb、不跑 module stage、不重启管理器")
         // KSU 版本选项卡决定用哪份 ksud 做 late-load：
         //   3.3.0（32601 多 KMI）→ ksud 会自己重启管理器（上次"自动打开 KSU"就是它）
         //   3.2.5（原版 fork）→ 行为最稳，43499 那条链用的也是 3.2.5 档
