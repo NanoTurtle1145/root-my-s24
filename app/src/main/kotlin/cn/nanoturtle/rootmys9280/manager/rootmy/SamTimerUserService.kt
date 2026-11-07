@@ -156,25 +156,46 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
             log(callback, "warn: trace buffer write failed (${e.message})")
         }
 
-        log(callback, "starting exploit (umhpipe)...")
-        val proc = ProcessBuilder(timerBin.absolutePath, "umhpipe")
-            .directory(workDir)
-            .redirectErrorStream(true)
-            .start()
-
-        val tail = Thread({
-            try {
-                proc.inputStream.bufferedReader().useLines { lines ->
-                    for (line in lines) log(callback, line)
-                }
-            } catch (_: Exception) {
-            }
-        }, "samtimer-tail")
-        tail.isDaemon = true
-        tail.start()
+        log(callback, "starting exploit (umhpipe, detached)...")
+        // 关键：不要用 ProcessBuilder 直接当子进程。那样 libtimer 的父进程是 UserService，
+        // UserService 又挂在 Shizuku/adbd（init service）下面 —— 一次软重启（stop/start）
+        // 会把整条链杀掉，parked 页被释放，内核接着就硬重启。
+        //
+        // 这里用 setsid + sh 退出，让 libtimer 被 reparent 到 init(1)：init 不管它，
+        // 软重启（zygote/adbd 重启）也不会碰它 —— 实测有些运行里 parked 进程正是这样活下来的。
+        // 日志走 run.log，UserService 负责 tail；UserService 死了也没关系，exploit 还在。
+        val logFile = File(workDir, "run.log")
+        runCatching { logFile.delete() }
+        val launcher = ProcessBuilder(
+            "/system/bin/sh",
+            "-c",
+            "cd ${workDir.absolutePath} && setsid ./libtimer umhpipe > run.log 2>&1 < /dev/null & echo started",
+        ).redirectErrorStream(true).start()
+        runCatching { launcher.waitFor() }
+        log(callback, "exploit detached (reparented to init)")
 
         val deadline = System.currentTimeMillis() + WAIT_SEC * 1000
+        var tailed = 0L
         while (System.currentTimeMillis() < deadline) {
+            // 增量 tail run.log：把 libtimer 输出转给 App（UserService 自己死了不影响 exploit）
+            runCatching {
+                if (logFile.isFile) {
+                    val len = logFile.length()
+                    if (len > tailed) {
+                        java.io.RandomAccessFile(logFile, "r").use { rf ->
+                            rf.seek(tailed)
+                            val buf = ByteArray((len - tailed).toInt().coerceAtMost(64 * 1024))
+                            val n = rf.read(buf)
+                            if (n > 0) {
+                                tailed += n
+                                buf.copyOf(n).toString(Charsets.UTF_8)
+                                    .lineSequence().filter { it.isNotBlank() }
+                                    .forEach { log(callback, it) }
+                            }
+                        }
+                    }
+                }
+            }
             if (moduleLive()) {
                 log(callback, "KERNELSU_LIVE")
                 log(callback, "success; exploit left parked (do not force-stop)")
