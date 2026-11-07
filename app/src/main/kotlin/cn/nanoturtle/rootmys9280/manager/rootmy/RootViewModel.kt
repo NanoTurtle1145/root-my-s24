@@ -1535,14 +1535,24 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             return@withContext
         }
 
-        appendLog("◆ 启动 libtimer umhpipe …（成功后进程保持 parked，不要强杀）")
-        val process = shellExecutor.exec(arrayOf("/system/bin/sh", "-c", "cd $work && exec ./libtimer umhpipe"))
+        appendLog("◆ 启动 libtimer umhpipe …（setsid 脱离会话，成功后进程保持 parked，不要强杀）")
+        // setsid：把 libtimer 放进独立会话。App/Shizuku 会话被回收时，sh 包装层会死，
+        // 但 libtimer 不会跟着死 —— 它 parked 时拿着内核页，被一起杀掉就会把内核状态弄崩
+        // （真机表现：late-load 成功后过一会卡死/自动重启）。
+        val process = shellExecutor.exec(
+            arrayOf("/system/bin/sh", "-c", "cd $work && setsid ./libtimer umhpipe")
+        )
         val startedAt = SystemClock.elapsedRealtime()
         var live = false
+        var parked = false
         while (process.isAlive) {
             val delta = drainProcessOutput(process)
-            if (delta.isNotEmpty()) publishLog(delta)
+            if (delta.isNotEmpty()) {
+                publishLog(delta)
+                if (delta.contains("parking without reap") || delta.contains("zombie held")) parked = true
+            }
             if (ksuModuleLive()) { live = true; break }
+            if (parked) break
             if (SystemClock.elapsedRealtime() - startedAt > 6 * 60_000L) {
                 appendLog("✗ 等待 KSU 模块超时（6 分钟）")
                 break
@@ -1550,13 +1560,24 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             delay(1000)
         }
         val finalLog = drainProcessOutput(process)
-        if (finalLog.isNotEmpty()) publishLog(finalLog)
+        if (finalLog.isNotEmpty()) {
+            publishLog(finalLog)
+            if (finalLog.contains("parking without reap") || finalLog.contains("zombie held")) parked = true
+        }
         if (!live) live = ksuModuleLive()
 
         if (live) {
             appendLog("✔ KernelSU 模块已加载（32601 / 3.3.0 KDP）")
+            appendLog("◆ 先别切走/别清后台：parked 进程还拿着页，保持本 App 前台直到 root 确认稳定")
             _state.value = _state.value.copy(rooted = true)
             runCatching { refreshKsuStatus() }
+        } else if (parked) {
+            // 原版 SamTimer 的已知-good 流程：第一次经常停在 parking without reap，
+            // 这时杀掉 App 后台、重新打开再跑第二次就能成功且不卡死。
+            appendLog("◆ parking without reap (zombie held) —— 这是预期状态，不是失败")
+            appendLog("◆ 操作：把本 App 从最近任务里划掉 → 重新打开 → 再点一次「开始」")
+            appendLog("◆ （原版 SamTimer 验证过的流程；第二次通常成功，且成功后不要马上杀后台）")
+            throw IllegalStateException("SamTimer 已 parked：请划掉后台重开再跑一次")
         } else {
             appendLog("✗ 未检测到 kernelsu 模块；建议重启后用 3.2.5 驱动或重试")
             throw IllegalStateException("SamTimer 链路未在超时内加载 KSU 模块")
