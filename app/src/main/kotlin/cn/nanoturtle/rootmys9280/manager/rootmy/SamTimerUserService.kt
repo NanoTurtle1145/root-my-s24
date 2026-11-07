@@ -24,6 +24,9 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
 
     private val running = AtomicBoolean(false)
 
+    /** 用哪份 ksud 做 late-load：3.3.0(32601 多 KMI，会重启管理器) / 3.2.5(原版，行为最稳)。 */
+    @Volatile private var ksudAssetName: String = ASSET_KSUD_32601
+
     companion object {
         private const val WORK_DIR = "/data/local/tmp/w"
         private const val KSUD_STAGE_PATH = "/data/local/tmp/.ksud-stage"
@@ -34,7 +37,8 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
         private const val ASSET_LIBTIMER = ASSET_PREFIX + "libtimer"
         private const val ASSET_UHEXEC = ASSET_PREFIX + "uhexec"
         private const val ASSET_ACTION = ASSET_PREFIX + "umh_action.sh"
-        private const val ASSET_KSUD = ASSET_PREFIX + "ksud-32601"
+        private const val ASSET_KSUD_32601 = ASSET_PREFIX + "ksud-32601"
+        private const val ASSET_KSUD_32525 = ASSET_PREFIX + "ksud-32525"
     }
 
     override fun isReady(): Boolean {
@@ -45,6 +49,12 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
     override fun isRooted(): Boolean = moduleLive()
 
     override fun destroy() {}
+
+    override fun setKsudAsset(name: String) {
+        if (name == ASSET_KSUD_32601 || name == ASSET_KSUD_32525) {
+            ksudAssetName = name
+        }
+    }
 
     private fun moduleLive(): Boolean = try {
         File("/proc/modules").useLines { lines ->
@@ -120,8 +130,8 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
         if (!stageAsset(ASSET_LIBTIMER, timerBin) ||
             !stageAsset(ASSET_UHEXEC, uhexec) ||
             !stageAsset(ASSET_ACTION, action) ||
-            !stageAsset(ASSET_KSUD, ksud) ||
-            !stageAsset(ASSET_KSUD, stage)
+            !stageAsset(ksudAssetName, ksud) ||
+            !stageAsset(ksudAssetName, stage)
         ) {
             log(callback, "error: failed to stage embedded files")
             return 1

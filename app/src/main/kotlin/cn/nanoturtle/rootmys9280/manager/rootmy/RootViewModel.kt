@@ -195,7 +195,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
               "SM-S9280 港版 S24 Ultra",
               "EZIF",
               Region.HONGKONG_TAIWAN,
-              "ksud-32601",
+              // 默认 3.2.5 档：原版 SamTimer / 43499 用的就是它，late-load 不会重启管理器；
+              // 想要 32601 可在「KSU 驱动版本」里切到 3.3.0（ksud 会自己打开管理器，属预期）。
+              "ksud-32525",
               tested = true,
               engine = Engine.SAMTIMER_98260,
           ),
@@ -1572,6 +1574,15 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         }
 
         appendLog("◆ 提示：late-load 可能触发一次软重启（framework 重启、内核 uptime 不重置），无害；KSU 模块仍在")
+        // KSU 版本选项卡决定用哪份 ksud 做 late-load：
+        //   3.3.0（32601 多 KMI）→ ksud 会自己重启管理器（上次"自动打开 KSU"就是它）
+        //   3.2.5（原版 fork）→ 行为最稳，43499 那条链用的也是 3.2.5 档
+        val ksuVer = ksuVersionEffective(firmwareVersion)
+        val ksudAsset =
+            if (ksuVer == "3.3.0") "samtimer/ksud-32601" else "samtimer/ksud-32525"
+        appendLog("◆ late-load 驱动: $ksuVer ($ksudAsset)")
+        svc.setKsudAsset(ksudAsset)
+
         appendLog("◆ 启动 exploit（umhpipe，最多等 7 分钟）……")
         svc.runExploit(callback)
 
