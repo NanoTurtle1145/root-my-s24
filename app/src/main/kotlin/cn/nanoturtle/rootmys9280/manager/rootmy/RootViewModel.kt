@@ -69,6 +69,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 .edit().putString(KEY_DEVICE_BUILD_TAG, value).apply()
         }
 
+    /** 提权引擎：GhostLock(43499) 与 SamTimer(98260) 二选一。 */
+    enum class Engine { GHOSTLOCK_43499, SAMTIMER_98260 }
+
     /** 目标系统版本（决定使用哪份 exploit 载荷）。按地区分组：国行 / 港版台版 / 韩版。 */
     enum class FirmwareVersion(
         val assetName: String,
@@ -84,6 +87,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         /** 是否经实测验证（false=需在设置里启用「未经测试的载荷」才显示） */
         val tested: Boolean = true,
         val enabled: Boolean = true,
+        /** 使用哪条提权引擎；默认 GhostLock(43499)，SamTimer 走 98260 的 UMH pipe 链路。 */
+        val engine: Engine = Engine.GHOSTLOCK_43499,
     ) {
         // —— 国行（实测稳定）——
         // 覆盖范围按实测放宽到 DZH3：云端日志里 S9280/S9210 国行 DZH3 用本载荷均成功
@@ -183,7 +188,16 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 目标设备 S9280ZHU6EZIF 真机确认运行同内核，KASLR/tracefs 已验证；
         // root 链路（fops）待本机实测确认，因此暂标记为未测试。
         // 标定来源：Root-My-Galaxy-Payloads src/targets/e3q-S9280ZHU6EZIF（2026-10-25）。
-        S9280EZIF("cve-2026-43499-S9280ZHU6EZIF", "One UI 9.0", "SM-S9280 港版 S24 Ultra", "EZIF", Region.HONGKONG_TAIWAN, "ksud-ezif-32601", tested = false),
+        S9280EZIF(
+              "cve-2026-43499-S9280ZHU6EZIF",
+              "One UI 9.0",
+              "SM-S9280 港版 S24 Ultra",
+              "EZIF",
+              Region.HONGKONG_TAIWAN,
+              "ksud-32601",
+              tested = true,
+              engine = Engine.SAMTIMER_98260,
+          ),
         // SM-S928B（EUR）One UI 8.0 / kernel 6.1.128（构建号 31999054）：与港版 CZA1 同构建号但
         // **非同一机型**（欧版 S928B vs 港版 S9280），.rodata 差 8 字节（nfnetlink_log 0x0160b70d vs
         // 港版 0x0160b705），故独立定标、不可与港版 CZA1 载荷互换。
@@ -1439,6 +1453,88 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         return false
     }
 
+    /**
+     * SamTimer 引擎：CVE-2026-98260（posix-cpu-timers UAF）→ pipe 读写原语 → 伪造 workqueue
+     * → call_usermodehelper → uhexec → KSU 32601（3.3.0 KDP）late-load。
+     *
+     * 与 GhostLock(43499) 的区别：这条链路不写 cred、不走 KDP 凭据路径，内核态只做一次
+     * 控制流劫持把 uhexec 拉起来；root 由内核模块提供，所以对内核的保护机制更宽容。
+     * 载荷全部内置在 assets/samtimer/，成功后 exploit 进程要**保持 parked**（它拿着页），
+     * 不能强杀。
+     */
+    private suspend fun runSamTimer98260() = withContext(Dispatchers.IO) {
+        appendLog("◆ 引擎: SamTimer 98260（posix-cpu-timers UAF → UMH pipe → KSU 32601 late-load）")
+        val work = "/data/local/tmp/w"
+        shellExecutor.shell("mkdir -p $work 2>&1")
+
+        fun stage(asset: String, dest: String): Boolean = try {
+            app.assets.open(asset).use { shellExecutor.writeFile(dest, "755", it) }
+            appendLog("  · 暂存 $asset → $dest")
+            true
+        } catch (t: Throwable) {
+            appendLog("✗ 暂存 $asset 失败: ${t.message}")
+            false
+        }
+
+        val staged = stage("samtimer/libtimer", "$work/libtimer") &&
+            stage("samtimer/uhexec", "$work/uhexec") &&
+            stage("samtimer/umh_action.sh", "$work/umh_action.sh") &&
+            stage("samtimer/ksud-32601", "/data/local/tmp/ksud-s25u-kdp") &&
+            stage("samtimer/ksud-32601", "/data/local/tmp/.ksud-stage")
+        if (!staged) throw IllegalStateException("SamTimer 载荷暂存失败")
+        shellExecutor.shell(
+            "chmod 755 $work/* /data/local/tmp/ksud-s25u-kdp /data/local/tmp/.ksud-stage 2>&1"
+        )
+        appendLog("✔ 载荷已暂存（libtimer / uhexec / action / ksud-32601）")
+
+        val trace = shellExecutor.shell(
+            "echo 65536 > /sys/kernel/tracing/buffer_size_kb 2>&1; cat /sys/kernel/tracing/buffer_size_kb 2>&1"
+        )
+        appendLog("◆ trace buffer: ${trace.second.trim()}")
+
+        if (ksuModuleLive()) {
+            appendLog("✔ KSU 模块已是 live，跳过 exploit")
+            _state.value = _state.value.copy(rooted = true)
+            runCatching { refreshKsuStatus() }
+            return@withContext
+        }
+
+        appendLog("◆ 启动 libtimer umhpipe …（成功后进程保持 parked，不要强杀）")
+        val process = shellExecutor.exec(arrayOf("/system/bin/sh", "-c", "cd $work && exec ./libtimer umhpipe"))
+        val startedAt = SystemClock.elapsedRealtime()
+        var live = false
+        while (process.isAlive) {
+            val delta = drainProcessOutput(process)
+            if (delta.isNotEmpty()) publishLog(delta)
+            if (ksuModuleLive()) { live = true; break }
+            if (SystemClock.elapsedRealtime() - startedAt > 6 * 60_000L) {
+                appendLog("✗ 等待 KSU 模块超时（6 分钟）")
+                break
+            }
+            delay(1000)
+        }
+        val finalLog = drainProcessOutput(process)
+        if (finalLog.isNotEmpty()) publishLog(finalLog)
+        if (!live) live = ksuModuleLive()
+
+        if (live) {
+            appendLog("✔ KernelSU 模块已加载（32601 / 3.3.0 KDP）")
+            _state.value = _state.value.copy(rooted = true)
+            runCatching { refreshKsuStatus() }
+        } else {
+            appendLog("✗ 未检测到 kernelsu 模块；建议重启后用 3.2.5 驱动或重试")
+            throw IllegalStateException("SamTimer 链路未在超时内加载 KSU 模块")
+        }
+    }
+
+    /** 内核模块是否已加载（shell 通道即可读 /proc/modules）。 */
+    private fun ksuModuleLive(): Boolean =
+        try {
+            shellExecutor.shell("grep kernelsu /proc/modules 2>/dev/null").first == 0
+        } catch (_: Throwable) {
+            false
+        }
+
     private suspend fun runRootFlow() = withContext(Dispatchers.IO) {
         appendLog("◆ " + app.getString(R.string.log_starting))
         appendLog("◆ " + app.getString(R.string.log_payload, payloadName))
@@ -1481,6 +1577,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         collectDeviceInfo()
         if (bakasuKernelEnabled) {
             appendLog("◆ BakaSU 模式：模块仅对 DZH3（6.1.145）实测通过；其他构建内核差异可能导致加载失败或重启")
+        }
+
+        // 1.6 引擎分流：SamTimer(98260) 走独立的 UMH pipe 链路，不经过 GhostLock 的载荷/helper
+        if (firmwareVersion.engine == Engine.SAMTIMER_98260) {
+            runSamTimer98260()
+            return@withContext
         }
 
         // 2. 推送载荷
