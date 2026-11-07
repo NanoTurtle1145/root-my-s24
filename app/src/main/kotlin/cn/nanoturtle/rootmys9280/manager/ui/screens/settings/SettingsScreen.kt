@@ -24,6 +24,7 @@ import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.CloudUpload
+import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Feedback
 import androidx.compose.material.icons.rounded.Fingerprint
@@ -96,7 +97,11 @@ private val cardRowColors
  * 纯静态 UI，偏好直接读写 SharedPreferences("settings")，无需 ViewModel。
  */
 @Composable
-fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {}) {
+fun SettingsScreen(
+    onOpenUrl: (String) -> Unit,
+    onOpenFeedback: () -> Unit = {},
+    onOpenPrivacy: () -> Unit = {},
+) {
     val context = LocalContext.current
     val prefs =
         remember(context) {
@@ -632,6 +637,22 @@ fun SettingsScreen(onOpenUrl: (String) -> Unit, onOpenFeedback: () -> Unit = {})
                         }
                     }
                 }
+            }
+        }
+
+        // 隐私政策：渲染 assets 里的 privacy.md（与仓库 docs/PRIVACY.md 同一份）。
+        item {
+            GroupedRow(index = 0, count = 1) {
+                ListItem(
+                    modifier = Modifier.clickable { onOpenPrivacy() },
+                    leadingContent = {
+                        Icon(Icons.Rounded.Security, contentDescription = null)
+                    },
+                    supportingContent = {
+                        Text(stringResource(R.string.settings_privacy_policy_summary))
+                    },
+                    colors = cardRowColors,
+                ) { Text(stringResource(R.string.settings_privacy_policy)) }
             }
         }
 

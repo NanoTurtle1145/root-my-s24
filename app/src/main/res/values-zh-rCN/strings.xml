@@ -392,4 +392,7 @@
     <string name="ksu_detail_lateload_note">说明: 越狱模式的 root 由 KernelSU 管理器按 App 授权，shell 里没有 su 属正常现象。\n徽章按「驱动已加载」显示为已激活。root 是否对某个 App 生效，请以管理器超级用户列表为准。</string>
     <string name="ksu_detail_zombie_note">说明: /proc/modules 里的 kernelsu 条目是上次 late-load/insmod 失败留下的残留，驱动并未真正工作，重新跑一次 root 流程即可。</string>
     <string name="firmware_wrong_series_pack">当前设备属于 %1$s 系列，但此安装包只包含 %2$s 系列的载荷。请下载与你机型对应的系列包（或全量包）。</string>
+    <string name="privacy_screen_title">隐私政策</string>
+    <string name="settings_privacy_policy">隐私政策</string>
+    <string name="settings_privacy_policy_summary">运行日志、安装 ID、IP 地址怎么处理</string>
 </resources>

@@ -159,10 +159,18 @@ private fun EntryProviderScope<NavKey>.registerRoutes(navigator: Navigator) {
         SettingsScreen(
             onOpenUrl = { url -> navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Web(url)) },
             onOpenFeedback = { navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Feedback) },
+            onOpenPrivacy = { navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Privacy) },
+        )
+    }
+    entry<cn.nanoturtle.rootmys9280.manager.ui.navigation.Privacy> {
+        cn.nanoturtle.rootmys9280.manager.ui.screens.privacy.PrivacyScreen(
+            onNavigateBack = { navigator.back() },
+            onOpenUrl = { url -> navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Web(url)) },
         )
     }
     entry<TopLevelRoute.About> {
         AboutScreen(
+            onOpenPrivacy = { navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Privacy) },
             onOpenUrl = { url -> navigator.go(cn.nanoturtle.rootmys9280.manager.ui.navigation.Web(url)) },
             onOpenForumUrl = { url ->
                 // 带票据的讨论区地址；票据短期有效，过期后 App 会重新换一张

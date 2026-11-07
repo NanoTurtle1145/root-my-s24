@@ -54,6 +54,9 @@ sealed interface TopLevelRoute : Route {
 /** 捐赠页：展示收款二维码。 */
 @Serializable data object Donate : Route
 
+/** 隐私政策：渲染打包进 assets 的隐私政策 Markdown。 */
+@Serializable data object Privacy : Route
+
 /** 必读指南：临时 root 的原理与变砖警告，「关于」页可反复进入。 */
 @Serializable data object Wiki : Route
 

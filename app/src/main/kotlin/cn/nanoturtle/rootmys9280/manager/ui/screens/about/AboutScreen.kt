@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Android
+import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
@@ -117,6 +118,7 @@ fun AboutScreen(
     onOpenUrl: (String) -> Unit,
     onOpenDonate: () -> Unit = {},
     onOpenWiki: () -> Unit = {},
+    onOpenPrivacy: () -> Unit = {},
     onOpenForumUrl: (String) -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -370,7 +372,7 @@ fun AboutScreen(
 
         item {
             SectionLabel(stringResource(R.string.about_section_guide))
-            GroupedRow(index = 0, count = 1) {
+            GroupedRow(index = 0, count = 2) {
                 ListItem(
                     modifier = Modifier.fillMaxWidth().clickable { onOpenWiki() },
                     leadingContent = {
@@ -382,6 +384,25 @@ fun AboutScreen(
                     },
                     headlineContent = { Text(stringResource(R.string.about_view_wiki)) },
                     supportingContent = { Text(stringResource(R.string.about_view_wiki_summary)) },
+
+                    trailingContent = {
+                        Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null)
+                    },
+                    colors = cardRowColors,
+                )
+            }
+            GroupedRow(index = 1, count = 2) {
+                ListItem(
+                    modifier = Modifier.fillMaxWidth().clickable { onOpenPrivacy() },
+                    leadingContent = {
+                        Icon(
+                            Icons.Rounded.Security,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    },
+                    headlineContent = { Text(stringResource(R.string.settings_privacy_policy)) },
+                    supportingContent = { Text(stringResource(R.string.settings_privacy_policy_summary)) },
                     trailingContent = {
                         Icon(Icons.AutoMirrored.Rounded.OpenInNew, contentDescription = null)
                     },
