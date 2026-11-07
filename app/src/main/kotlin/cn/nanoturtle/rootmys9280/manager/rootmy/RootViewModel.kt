@@ -770,7 +770,22 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 state = "stable",
                 version = defaultKsuVersion(v.ksud),
             )
-        return (online + fallback).distinctBy { it.version.ifBlank { it.asset } }
+        val base = (online + fallback).distinctBy { it.version.ifBlank { it.asset } }
+        // SamTimer 引擎额外内置 3.2.5 档（fork 原版 ksud，无 Restart Manager），
+        // 方便和 3.3.0 对比自动打开管理器/软重启的行为；服务端清单里没有它也能选。
+        if (v.engine == Engine.SAMTIMER_98260) {
+            val extra325 =
+                PayloadStatus.KsuOption(
+                    asset = "ksud-32525",
+                    label = "3.2.5",
+                    state = "legacy",
+                    version = "3.2.5",
+                )
+            return (base + extra325)
+                .distinctBy { it.version.ifBlank { it.asset } }
+                .sortedByDescending { it.version }
+        }
+        return base
     }
 
     /** 该条目能选的版本号（给顶部选择行用）。 */
