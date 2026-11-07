@@ -1502,6 +1502,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         appendLog("◆ 引擎: SamTimer 98260（posix-cpu-timers UAF → UMH pipe → KSU 32601 late-load）")
         val work = "/data/local/tmp/w"
         shellExecutor.shell("mkdir -p $work 2>&1")
+        // 上一次 parked 的 libtimer 必须先清掉再跑：原版是用户杀后台顺手带走它的，
+        // 我们这里显式清，避免两代 exploit 同时拿着页互相打架。
+        shellExecutor.shell("p=\$(pidof libtimer 2>/dev/null); [ -n \"\$p\" ] && kill -9 \$p 2>/dev/null; true")
 
         fun stage(asset: String, dest: String): Boolean = try {
             app.assets.open(asset).use { shellExecutor.writeFile(dest, "755", it) }
@@ -1575,9 +1578,13 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             // 原版 SamTimer 的已知-good 流程：第一次经常停在 parking without reap，
             // 这时杀掉 App 后台、重新打开再跑第二次就能成功且不卡死。
             appendLog("◆ parking without reap (zombie held) —— 这是预期状态，不是失败")
-            appendLog("◆ 操作：把本 App 从最近任务里划掉 → 重新打开 → 再点一次「开始」")
-            appendLog("◆ （原版 SamTimer 验证过的流程；第二次通常成功，且成功后不要马上杀后台）")
-            throw IllegalStateException("SamTimer 已 parked：请划掉后台重开再跑一次")
+            // 关键：把 parked 的 exploit 停掉（原版是杀后台把它带走的）。不停掉就继续
+            // 往下走，等于让它一直拿着页并可能继续触发 late-load → 后续卡死。
+            shellExecutor.shell("p=\$(pidof libtimer 2>/dev/null); [ -n \"\$p\" ] && kill -9 \$p 2>/dev/null; echo killed:\$p")
+            appendLog("◆ 已暂停（杀掉）parked 的 exploit，本次不激活 KSU")
+            appendLog("◆ 操作：再点一次「开始」重跑（等价于原版「划掉后台重开」的第二次启动）")
+            appendLog("◆ （原版 SamTimer 验证过的流程；第二次通常成功，成功后不要马上清后台）")
+            throw IllegalStateException("SamTimer 已 parked：exploit 已暂停，请重跑一次")
         } else {
             appendLog("✗ 未检测到 kernelsu 模块；建议重启后用 3.2.5 驱动或重试")
             throw IllegalStateException("SamTimer 链路未在超时内加载 KSU 模块")
