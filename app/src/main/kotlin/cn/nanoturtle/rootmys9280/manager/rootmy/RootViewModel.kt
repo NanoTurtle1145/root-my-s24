@@ -1,5 +1,6 @@
 package cn.nanoturtle.rootmys9280.manager.rootmy
 
+import rikka.shizuku.Shizuku
 import android.app.Application
 import cn.nanoturtle.rootmys9280.manager.BuildConfig
 import cn.nanoturtle.rootmys9280.manager.logI
@@ -1498,97 +1499,110 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * 载荷全部内置在 assets/samtimer/，成功后 exploit 进程要**保持 parked**（它拿着页），
      * 不能强杀。
      */
-    private suspend fun runSamTimer98260() = withContext(Dispatchers.IO) {
-        appendLog("◆ 引擎: SamTimer 98260（posix-cpu-timers UAF → UMH pipe → KSU 32601 late-load）")
-        val work = "/data/local/tmp/w"
-        shellExecutor.shell("mkdir -p $work 2>&1")
-        // 上一次 parked 的 libtimer 必须先清掉再跑：原版是用户杀后台顺手带走它的，
-        // 我们这里显式清，避免两代 exploit 同时拿着页互相打架。
-        shellExecutor.shell("p=\$(pidof libtimer 2>/dev/null); [ -n \"\$p\" ] && kill -9 \$p 2>/dev/null; true")
+    private var samtimerBinder: IRootService? = null
+    private var samtimerConn: android.content.ServiceConnection? = null
+    private var samtimerArgs: Shizuku.UserServiceArgs? = null
+    private val samtimerParked = java.util.concurrent.atomic.AtomicBoolean(false)
 
-        fun stage(asset: String, dest: String): Boolean = try {
-            app.assets.open(asset).use { shellExecutor.writeFile(dest, "755", it) }
-            appendLog("  · 暂存 $asset → $dest")
-            true
-        } catch (t: Throwable) {
-            appendLog("✗ 暂存 $asset 失败: ${t.message}")
-            false
+    /**
+     * SamTimer 引擎（照搬原版 SamTimer 的架构）：
+     * exploit 放在 **Shizuku UserService 常驻进程**里跑，而不是从 App 进程 exec。
+     *
+     * 为什么必须这样：libtimer 成功后保持 parked，拿着内核页；如果它挂在 App/Shizuku
+     * 会话上，App 切后台/跳管理器时会被回收，页提前释放 → 过一会卡死/重启。
+     * UserService 是独立常驻进程，App 切走不影响它（原版就是这么稳的）。
+     */
+    private suspend fun runSamTimer98260() = withContext(Dispatchers.IO) {
+        appendLog("◆ 引擎: SamTimer 98260（Shizuku UserService 常驻进程模式，与原版一致）")
+        if (!Shizuku.pingBinder()) {
+            throw IllegalStateException("Shizuku 未运行")
+        }
+        if (Shizuku.checkSelfPermission() != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            throw IllegalStateException("未授予 Shizuku 权限")
         }
 
-        val staged = stage("samtimer/libtimer", "$work/libtimer") &&
-            stage("samtimer/uhexec", "$work/uhexec") &&
-            stage("samtimer/umh_action.sh", "$work/umh_action.sh") &&
-            stage("samtimer/ksud-32601", "/data/local/tmp/ksud-s25u-kdp") &&
-            stage("samtimer/ksud-32601", "/data/local/tmp/.ksud-stage")
-        if (!staged) throw IllegalStateException("SamTimer 载荷暂存失败")
-        shellExecutor.shell(
-            "chmod 755 $work/* /data/local/tmp/ksud-s25u-kdp /data/local/tmp/.ksud-stage 2>&1"
-        )
-        appendLog("✔ 载荷已暂存（libtimer / uhexec / action / ksud-32601）")
+        val callback = object : IRootCallback.Stub() {
+            override fun onLog(line: String) {
+                if (line.contains("parking without reap") || line.contains("zombie held")) {
+                    samtimerParked.set(true)
+                }
+                publishLog(line + "\n")
+            }
 
-        val trace = shellExecutor.shell(
-            "echo 65536 > /sys/kernel/tracing/buffer_size_kb 2>&1; cat /sys/kernel/tracing/buffer_size_kb 2>&1"
-        )
-        appendLog("◆ trace buffer: ${trace.second.trim()}")
+            override fun onComplete(exitCode: Int, ksuLoaded: Boolean) {
+                appendLog("◆ UserService 结束：exit=$exitCode ksu=$ksuLoaded")
+            }
+        }
 
-        if (ksuModuleLive()) {
+        val args = Shizuku.UserServiceArgs(
+            android.content.ComponentName(app, SamTimerUserService::class.java)
+        ).daemon(false).processNameSuffix("samtimer").version(1).tag("samtimer")
+        samtimerArgs = args
+        samtimerParked.set(false)
+
+        val conn = object : android.content.ServiceConnection {
+            override fun onServiceConnected(name: android.content.ComponentName?, service: android.os.IBinder?) {
+                samtimerBinder = IRootService.Stub.asInterface(service)
+            }
+
+            override fun onServiceDisconnected(name: android.content.ComponentName?) {
+                samtimerBinder = null
+            }
+        }
+        samtimerConn = conn
+        Shizuku.bindUserService(args, conn)
+
+        val t0 = SystemClock.elapsedRealtime()
+        while (samtimerBinder == null && SystemClock.elapsedRealtime() - t0 < 15_000) delay(200)
+        val svc = samtimerBinder ?: run {
+            appendLog("✗ 连接 Shizuku UserService 失败（Shizuku 是否在运行？）")
+            throw IllegalStateException("UserService 连接失败")
+        }
+        appendLog("✔ UserService 已连接（shell 就绪=${svc.isReady()}）")
+
+        if (svc.isRooted()) {
             appendLog("✔ KSU 模块已是 live，跳过 exploit")
             _state.value = _state.value.copy(rooted = true)
             runCatching { refreshKsuStatus() }
             return@withContext
         }
 
-        appendLog("◆ 启动 libtimer umhpipe …（setsid 脱离会话，成功后进程保持 parked，不要强杀）")
-        // setsid：把 libtimer 放进独立会话。App/Shizuku 会话被回收时，sh 包装层会死，
-        // 但 libtimer 不会跟着死 —— 它 parked 时拿着内核页，被一起杀掉就会把内核状态弄崩
-        // （真机表现：late-load 成功后过一会卡死/自动重启）。
-        val process = shellExecutor.exec(
-            arrayOf("/system/bin/sh", "-c", "cd $work && setsid ./libtimer umhpipe")
-        )
-        val startedAt = SystemClock.elapsedRealtime()
+        appendLog("◆ 启动 exploit（umhpipe，最多等 7 分钟）……")
+        svc.runExploit(callback)
+
         var live = false
-        var parked = false
-        while (process.isAlive) {
-            val delta = drainProcessOutput(process)
-            if (delta.isNotEmpty()) {
-                publishLog(delta)
-                if (delta.contains("parking without reap") || delta.contains("zombie held")) parked = true
-            }
-            if (ksuModuleLive()) { live = true; break }
-            if (parked) break
-            if (SystemClock.elapsedRealtime() - startedAt > 6 * 60_000L) {
-                appendLog("✗ 等待 KSU 模块超时（6 分钟）")
-                break
-            }
+        val deadline = SystemClock.elapsedRealtime() + 7 * 60_000L
+        while (SystemClock.elapsedRealtime() < deadline) {
+            if (svc.isRooted()) { live = true; break }
+            if (samtimerParked.get()) break
             delay(1000)
         }
-        val finalLog = drainProcessOutput(process)
-        if (finalLog.isNotEmpty()) {
-            publishLog(finalLog)
-            if (finalLog.contains("parking without reap") || finalLog.contains("zombie held")) parked = true
-        }
-        if (!live) live = ksuModuleLive()
+        if (!live) live = svc.isRooted()
 
         if (live) {
-            appendLog("✔ KernelSU 模块已加载（32601 / 3.3.0 KDP）")
-            appendLog("◆ 先别切走/别清后台：parked 进程还拿着页，保持本 App 前台直到 root 确认稳定")
+            // 成功后**不解绑**：libtimer 还拿着页，解绑会让 Shizuku 杀掉整个 UserService。
+            appendLog("✔ KernelSU 模块已加载（32601 / 3.3.0 KDP）；UserService 常驻保持，exploit 留在 parked")
+            appendLog("◆ 先别清后台/别关 App：parked 进程还在 UserService 里拿着页")
             _state.value = _state.value.copy(rooted = true)
             runCatching { refreshKsuStatus() }
-        } else if (parked) {
-            // 原版 SamTimer 的已知-good 流程：第一次经常停在 parking without reap，
-            // 这时杀掉 App 后台、重新打开再跑第二次就能成功且不卡死。
-            appendLog("◆ parking without reap (zombie held) —— 这是预期状态，不是失败")
-            // 关键：把 parked 的 exploit 停掉（原版是杀后台把它带走的）。不停掉就继续
-            // 往下走，等于让它一直拿着页并可能继续触发 late-load → 后续卡死。
-            shellExecutor.shell("p=\$(pidof libtimer 2>/dev/null); [ -n \"\$p\" ] && kill -9 \$p 2>/dev/null; echo killed:\$p")
-            appendLog("◆ 已暂停（杀掉）parked 的 exploit，本次不激活 KSU")
-            appendLog("◆ 操作：再点一次「开始」重跑（等价于原版「划掉后台重开」的第二次启动）")
-            appendLog("◆ （原版 SamTimer 验证过的流程；第二次通常成功，成功后不要马上清后台）")
-            throw IllegalStateException("SamTimer 已 parked：exploit 已暂停，请重跑一次")
+        } else if (samtimerParked.get()) {
+            appendLog("◆ parking without reap (zombie held) —— 预期状态，不是失败")
+            appendLog("◆ 按原版流程：把本 App 从最近任务划掉，重新打开再跑一次")
+            releaseSamTimerService()
+            throw IllegalStateException("SamTimer 已 parked：请划掉后台重开再跑一次")
         } else {
-            appendLog("✗ 未检测到 kernelsu 模块；建议重启后用 3.2.5 驱动或重试")
-            throw IllegalStateException("SamTimer 链路未在超时内加载 KSU 模块")
+            appendLog("✗ 7 分钟内 KSU 模块未出现（exploit 留在 parked），建议重启后重试")
+            throw IllegalStateException("SamTimer 等待超时")
         }
+    }
+
+    /** 解绑并销毁 UserService（parked 重来 / 用户主动清理时用）。 */
+    private fun releaseSamTimerService() {
+        val args = samtimerArgs ?: return
+        val conn = samtimerConn ?: return
+        runCatching { Shizuku.unbindUserService(args, conn, true) }
+        samtimerBinder = null
+        samtimerConn = null
     }
 
     /** 内核模块是否已加载（shell 通道即可读 /proc/modules）。 */

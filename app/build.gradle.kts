@@ -71,6 +71,8 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        // SamTimer 引擎的 Shizuku UserService 需要 AIDL（IRootService/IRootCallback）
+        aidl = true
     }
 
     // —— 按机型系列拆包（separate 版本）——

@@ -80,6 +80,13 @@
                 android:value="adb_wireless_pairing" />
         </service>
 
+        <!-- SamTimer(98260) 的 Shizuku UserService：exploit 挂在常驻进程上，
+             App 切后台/打开管理器不会把它带走（原版 SamTimer 同款做法）。 -->
+        <service
+            android:name=".rootmy.SamTimerUserService"
+            android:exported="false"
+            tools:ignore="Instantiatable" />
+
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
