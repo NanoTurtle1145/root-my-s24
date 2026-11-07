@@ -438,4 +438,8 @@ Auto-save log</string>
     <string name="settings_privacy_policy_summary">How run logs, install ID and IP addresses are handled</string>
     <string name="settings_privacy_install_id">Install ID</string>
     <string name="settings_privacy_install_id_summary">Send this to the developer if you want your logs deleted</string>
+    <string name="rootflow_engine_tab_title">Root engine</string>
+    <string name="rootflow_engine_ghostlock">GhostLock 43499</string>
+    <string name="rootflow_engine_samtimer">SamTimer 98260</string>
+    <string name="rootflow_engine_tab_hint">Current: %1$s. SamTimer runs the 98260 UMH chain (no cred writes, KDP does not interfere); GhostLock runs the 43499 payload.</string>
 </resources>

@@ -654,6 +654,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     private val KEY_KSU_VERSION = "ksu_version"
 
+    /** 提权引擎偏好；null = 跟随固件条目默认（EZIF 默认 SamTimer，其余 GhostLock）。 */
+    private val KEY_ENGINE = "engine_pref"
+
     /**
      * 全局 KSU 版本偏好（`3.2.5` / `3.3.0`）；null = 跟随条目默认。
      *
@@ -668,6 +671,39 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             ?.takeIf { it.isNotEmpty() }
     )
     val ksuVersionState: StateFlow<String?> = _ksuVersion
+
+    /** 提权引擎偏好（null=跟随固件默认）；Compose 订阅它触发重组。 */
+    private val _enginePref: MutableStateFlow<Engine?> = MutableStateFlow(
+        app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getString(KEY_ENGINE, null)
+            ?.let { name -> Engine.entries.firstOrNull { it.name == name } }
+    )
+    val engineState: StateFlow<Engine?> = _enginePref
+
+    /** 该固件条目可选的引擎：EZIF 这类 98260 画像可以二选一，其余只有 GhostLock。 */
+    fun engineOptionsFor(v: FirmwareVersion): List<Engine> =
+        if (v.engine == Engine.SAMTIMER_98260) {
+            listOf(Engine.GHOSTLOCK_43499, Engine.SAMTIMER_98260)
+        } else {
+            listOf(Engine.GHOSTLOCK_43499)
+        }
+
+    /** 实际生效的引擎：偏好可用就用它，否则退回固件条目默认。 */
+    fun engineEffective(v: FirmwareVersion, pref: Engine? = _enginePref.value): Engine {
+        val options = engineOptionsFor(v)
+        return pref?.takeIf { it in options } ?: if (v.engine in options) v.engine else options.first()
+    }
+
+    fun setEngine(engine: Engine?) {
+        _enginePref.value = engine
+        logI("engine: preference → ${engine?.name ?: "默认"}")
+        app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .edit()
+            .apply {
+                if (engine == null) remove(KEY_ENGINE) else putString(KEY_ENGINE, engine.name)
+            }
+            .apply()
+    }
 
     /** 服务端下发的载荷状态；拉取失败时为空 map（此时一切按内置默认工作）。 */
     val payloadStatus: StateFlow<PayloadStatus.Snapshot> = PayloadStatus.snapshot
@@ -1580,7 +1616,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         }
 
         // 1.6 引擎分流：SamTimer(98260) 走独立的 UMH pipe 链路，不经过 GhostLock 的载荷/helper
-        if (firmwareVersion.engine == Engine.SAMTIMER_98260) {
+        if (engineEffective(firmwareVersion) == Engine.SAMTIMER_98260) {
             runSamTimer98260()
             return@withContext
         }
