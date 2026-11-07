@@ -195,10 +195,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
               "SM-S9280 港版 S24 Ultra",
               "EZIF",
               Region.HONGKONG_TAIWAN,
-              // 默认 32601（KernelSU 3.3.0）的 **ephemeral 版 KDP ksud**：
-              // 和 43499 用的是同一种调用方式（--ephemeral），不会 Restart Manager、不跑
-              // module stage 脚本，因此不会自动打开管理器、也不会软重启。
-              "ksud-32601",
+              // 默认 3.2.5：EZIF 上实测可用（3.3.0 的几种 KDP ksud 在 EZIF 上
+              // 要么 late-load rc=0 但模块不加载，要么直接 panic，暂不作为默认）。
+              "ksud-32525",
               tested = true,
               engine = Engine.SAMTIMER_98260,
           ),
