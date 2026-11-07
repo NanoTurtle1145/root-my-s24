@@ -1,81 +1,117 @@
-# RootMyS24 隐私政策 / Privacy Policy
+# RootMyS24 隐私政策
 
-生效日期：2026-11-07　最后更新：2026-11-07
-适用对象：Android 应用 **RootMyS24**（包名 `cn.nanoturtle.rootmys9280`）
+更新：2026-11-07 · 作者：NanoTurtle · 适用：`cn.nanoturtle.rootmys9280`
 
 ---
 
-## 中文
+## 0x00 先说清楚
 
-### 1. 我们收集什么
+RootMyS24 是个临时 root 工具，不是来收你数据的。
 
-RootMyS24 是一个**临时 Root 工具**。为了排查失败原因、适配新机型、统计成功率以及防止滥用，应用会在**你允许的前提下**上报运行日志；同时，日志服务器会记录必要的网络元数据。
+我自己也是个学生，没那么多心思搞用户画像。写这份东西，主要是因为 App 会把运行日志传到我自己搭的服务器上，而且服务器会记到 IP，那就把这个事讲明白。
 
-| 数据项 | 具体内容 | 来源 | 用途 | 能否关闭 |
-|---|---|---|---|---|
-| 运行日志 | 一次 Root 运行的完整过程：固件版本、内核版本、载荷名称、各阶段状态、错误信息 | 应用本地生成 | 故障排查、适配分析 | ✅ 设置 → 隐私 → 日志共享 |
-| 设备环境信息 | 机型（`Build.MODEL`）、设备代号（`Build.DEVICE`）、Android 版本、SDK 等级、App 版本、包名、APK 签名证书哈希 | 应用读取 | 按机型/固件聚合分析 | ✅ 同上（随日志一起） |
-| 安装标识 | 随机生成的 UUID（首次启动时创建，保存在本机） | 应用生成 | 同一台机器多次日志的去重与限流 | ✅ 清除应用数据即重置 |
-| 网络元数据 | IP 地址、User-Agent、请求时间 | 服务器自动记录 | 限流、防滥用、地区聚合统计 | ❌（服务器运行必需） |
+---
 
-**我们不收集**：通讯录、短信、通话记录、照片/文件、精确位置、IMEI、序列号、Android ID、广告 ID、账号信息。应用没有接入任何广告或第三方统计 SDK。
+## 0x01 我会拿到什么
 
-### 2. 日志共享方式（默认：手动）
+只有在**你允许的前提下**，App 才会把这些发出去：
 
-首次启动时会询问你的选择，之后可在 **设置 → 隐私 → 日志共享** 随时修改：
+- **运行日志**：一次 root 的完整过程，包括固件、内核、用的 payload、每一步的状态和报错
+- **设备信息**：机型、设备代号、Android 版本、SDK、App 版本、包名、APK 签名证书哈希
+- **安装标识**：首次启动时随机生成的 UUID，存在本机。不是 IMEI、不是序列号、不是 Android ID，也跨不到别的 App
+- **网络元数据**：IP 地址、User-Agent、请求时间。这个是服务器自动记的
 
-- **始终**：每次运行结束后自动上传日志
-- **手动**（默认）：每次运行结束后询问你是否上传
-- **从不**：日志只保存在本机，绝不联网
+**不会碰的**：通讯录、短信、通话记录、照片文件、位置、IMEI、序列号、广告 ID、账号。App 里没有任何广告或统计 SDK。
 
-### 3. 数据用途
+---
 
-1. 定位 Root 失败原因（哪一步、哪个机型、哪个内核）
-2. 适配新的机型和固件
-3. 统计成功率，改进载荷和流程
-4. 服务器限流与防止恶意刷量
+## 0x02 日志怎么共享
 
-**我们不会**将上述数据用于广告、用户画像或任何商业转售。
+首次启动会问你一次，之后在 **设置 → 隐私 → 日志共享** 里随时改：
 
-### 4. 存储与保留
+- **始终**：每次跑完自动传
+- **手动**（默认）：每次跑完问你一下
+- **从不**：只留在本机，不联网
 
-- 日志保存于开发者自有的服务器（域名 `blog.nanoturtle.cn`），仅供开发者本人排查使用。
-- 公开页面（如统计图、成功率）只展示**聚合数据**（次数、机型分布、成功率等），不包含 IP、城市、安装标识或日志原文。
-- 日志原则上保留不超过 **12 个月**，我们会定期清理；你也可随时联系我们提前删除（见第 7 节）。
+默认是「手动」，不会偷偷传。
 
-### 5. 第三方
+---
 
-- **GitHub**：检查更新、下载 Release（受 GitHub 自身隐私政策约束）
-- **Shizuku**：使用其授权接口执行 shell 命令（本地进行，不上传数据）
-- 除上述情况与法律要求外，我们不会向任何第三方提供你的数据。
+## 0x03 拿这些干什么
 
-### 6. 权限说明
+1. 看你 root 失败在哪一步、哪个机型、哪个内核
+2. 适配新机型和固件
+3. 算成功率，看看 payload 和流程要不要改
+4. 服务器限流，防止被刷
 
-| 权限 | 用途 |
+就这些，没了。不卖、不打广告、不做画像。
+
+---
+
+## 0x04 不会干的事
+
+- 不会用这些数据做广告
+- 不会卖给第三方
+- 不会把日志原文、IP、城市、安装标识放到公开页面上
+
+公开的统计图只放聚合数据：次数、机型分布、成功率这些。
+
+---
+
+## 0x05 IP 地址
+
+服务器会记录请求的 IP，这是任何网站都会做的事。用途只有两个：限流（防止有人刷接口）和地区聚合统计（比如「哪个国家的用户多」）。
+
+IP 不会公开，也不会拿去做别的事。
+
+---
+
+## 0x06 保存和删除
+
+日志存在我自己搭的服务器（`blog.nanoturtle.cn`），**目前没有自动清理机制**，会一直留着用于排查和统计。
+
+如果你想让自己的日志被删掉：
+
+- 打开 设置 → 隐私，那里能看到你的安装标识
+- 到 [GitHub Issues](https://github.com/NanoTurtle1145/root-my-s24/issues) 找我，把安装标识发我
+- 我会手动删掉对应记录
+
+清除应用数据会重置安装标识，之前的日志就关联不到你的手机了。
+
+---
+
+## 0x07 权限是干嘛的
+
+| 权限 | 干嘛用 |
 |---|---|
-| `INTERNET` / `ACCESS_NETWORK_STATE` | 检查更新、上传日志（在你允许时） |
-| `POST_NOTIFICATIONS` | 显示 Root 流程进度通知 |
-| `WAKE_LOCK` | 运行期间保持唤醒，避免中途休眠导致失败 |
-| `REQUEST_INSTALL_PACKAGES` | 安装 KernelSU 管理器 / 更新 APK |
-| `QUERY_ALL_PACKAGES` | 检测已安装的 KernelSU、Shizuku 等组件 |
-| `FOREGROUND_SERVICE` | Root 流程期间运行前台服务 |
+| `INTERNET` / `ACCESS_NETWORK_STATE` | 检查更新、在你允许时传日志 |
+| `POST_NOTIFICATIONS` | 显示 root 流程的进度 |
+| `WAKE_LOCK` | 跑的时候保持唤醒，别中途睡着 |
+| `REQUEST_INSTALL_PACKAGES` | 装 KernelSU 管理器、装更新 |
+| `QUERY_ALL_PACKAGES` | 查有没有装 KernelSU、Shizuku 这些组件 |
+| `FOREGROUND_SERVICE` | root 流程跑在前台服务里 |
 
-### 7. 你的权利
+---
 
-- 在应用内关闭日志上传、清除本地日志
-- 清除应用数据会重置安装标识（此前的日志将无法再关联到本机）
-- 请求删除服务器上的日志：通过 [GitHub Issues](https://github.com/NanoTurtle1145/root-my-s24/issues) 联系，并提供你的安装标识（设置 → 隐私 页面可查看）
-- 删除请求会在合理时间内处理
+## 0x08 第三方
 
-### 8. 未成年人
+- **GitHub**：检查更新、下载 Release，受 GitHub 自己的隐私政策管
+- **Shizuku**：本地授权执行 shell，不上传数据
+- 除了上面这些和法律要求，不会给任何第三方
 
-本应用涉及系统级操作，面向具备相应技术能力的用户。未满 14 周岁的未成年人应在监护人指导下使用，并由监护人代为决定是否共享日志。
+---
 
-### 9. 政策变更
+## 0x09 你的权利
 
-本政策如有更新，会发布在 GitHub 仓库与博客页面，并在应用内提示。继续使用即表示接受更新后的政策。
+- 关掉日志上传、清本地日志
+- 清应用数据重置安装标识
+- 找我删服务器上的日志
 
-### 10. 联系方式
+---
+
+## 0x0A 变更和联系方式
+
+政策改了会发在 GitHub 和博客，App 里也会提示。继续用就是接受新版。
 
 - GitHub：<https://github.com/NanoTurtle1145/root-my-s24/issues>
 - 博客：<https://blog.nanoturtle.cn>
@@ -84,71 +120,91 @@ RootMyS24 是一个**临时 Root 工具**。为了排查失败原因、适配新
 
 ## English
 
-**Effective date:** 2026-11-07　**Last updated:** 2026-11-07
-**Applies to:** the Android app **RootMyS24** (package `cn.nanoturtle.rootmys9280`)
+### 0x00 First of all
 
-### 1. What we collect
+RootMyS24 is a temporary root tool. It is not here to collect your data.
 
-RootMyS24 is a **temporary root tool**. To diagnose failures, support new devices, measure success rates and prevent abuse, the app may upload run logs **only when you allow it**. The log server also records basic network metadata.
+I am a student, not a company. I wrote this because the app uploads run logs to my own server, and the server sees your IP. So I should explain it clearly.
 
-| Data | Details | Source | Purpose | Can be disabled |
-|---|---|---|---|---|
-| Run log | Full process of one root attempt: firmware, kernel, payload name, stage status, errors | Generated on device | Diagnostics, device support | ✅ Settings → Privacy → Log sharing |
-| Device info | `Build.MODEL`, `Build.DEVICE`, Android version, SDK level, app version, package name, APK signing certificate hash | Read from device | Aggregate analysis by device/firmware | ✅ Same as above |
-| Installation ID | Random UUID created on first launch and stored locally | Generated by app | De-duplication and rate limiting | ✅ Clearing app data resets it |
-| Network metadata | IP address, User-Agent, request time | Recorded by server | Rate limiting, abuse prevention, aggregate region stats | ❌ (required for server operation) |
+### 0x01 What I get
 
-**We do not collect**: contacts, SMS, call logs, photos/files, precise location, IMEI, serial number, Android ID, advertising ID, or account information. The app contains no advertising or third-party analytics SDKs.
+Only **if you allow it**:
 
-### 2. Log sharing (default: manual)
+- **Run log**: the whole process of one root attempt — firmware, kernel, payload, each step, errors
+- **Device info**: model, device codename, Android version, SDK, app version, package name, APK signing certificate hash
+- **Install ID**: a random UUID made on first launch and stored on your phone. Not IMEI, not serial number, not Android ID. It cannot follow you to other apps
+- **Network metadata**: IP address, User-Agent, request time. The server records these automatically
 
-You are asked on first launch and can change it anytime in **Settings → Privacy → Log sharing**:
+**What I never touch**: contacts, SMS, call logs, photos/files, location, IMEI, serial number, advertising ID, accounts. There is no ad or analytics SDK in the app.
 
-- **Always** — upload automatically after every run
-- **Manual** (default) — ask you after each run
-- **Never** — logs stay on the device and are never uploaded
+### 0x02 Log sharing
 
-### 3. How we use data
+You are asked once on first launch. Change it anytime in **Settings → Privacy → Log sharing**:
 
-1. Diagnose root failures (which step, device, kernel)
-2. Add support for new devices and firmware
-3. Measure success rates to improve payloads and flow
-4. Rate limiting and abuse prevention
+- **Always**: upload after every run
+- **Manual** (default): ask you after every run
+- **Never**: keep it on your phone, no network
 
-**We never** use this data for advertising, profiling, or resale.
+The default is manual. Nothing is uploaded silently.
 
-### 4. Storage and retention
+### 0x03 What I use it for
 
-- Logs are stored on the developer's own server (`blog.nanoturtle.cn`) and used only by the developer for diagnostics.
-- Public pages (e.g. statistics charts) show **aggregated data only** (counts, device distribution, success rate) — never IPs, cities, installation IDs or raw logs.
-- Logs are retained for no more than **12 months** and are cleaned up periodically. You may also request earlier deletion (see section 7).
+1. See where your root failed, on which device and kernel
+2. Support new devices and firmware
+3. Measure success rate and improve payloads
+4. Rate limiting on the server, to stop abuse
 
-### 5. Third parties
+That is all. No selling, no ads, no profiling.
 
-- **GitHub** — update checks and Release downloads (subject to GitHub's own privacy policy)
-- **Shizuku** — used locally to execute shell commands; no data is uploaded
-- Apart from the above and legal requirements, we do not share your data with anyone.
+### 0x04 What I never do
 
-### 6. Permissions
+- No ads with this data
+- No selling to third parties
+- No raw logs, IPs, cities or install IDs on public pages
 
-`INTERNET`, `ACCESS_NETWORK_STATE` (update checks and log upload), `POST_NOTIFICATIONS` (progress notifications), `WAKE_LOCK` (keep awake during the run), `REQUEST_INSTALL_PACKAGES` (install KernelSU manager / updates), `QUERY_ALL_PACKAGES` (detect installed KernelSU/Shizuku components), `FOREGROUND_SERVICE` (run the root flow in the foreground).
+Public charts show aggregate numbers only: counts, device distribution, success rate.
 
-### 7. Your rights
+### 0x05 IP address
 
-- Disable log upload and clear local logs in the app
-- Clearing app data resets the installation ID (previous logs can no longer be linked to your device)
-- Request deletion of server-side logs via [GitHub Issues](https://github.com/NanoTurtle1145/root-my-s24/issues) with your installation ID (visible in Settings → Privacy)
-- Deletion requests are handled within a reasonable time
+The server records the request IP, like any website does. It is used for two things only: rate limiting and aggregate region stats (for example, how many users per country).
 
-### 8. Minors
+The IP is not public and not used for anything else.
 
-This app performs system-level operations and targets technically capable users. Users under 14 should use it under guardian supervision, and the guardian should decide whether to share logs.
+### 0x06 Storage and deletion
 
-### 9. Changes
+Logs live on my own server (`blog.nanoturtle.cn`). **There is no automatic cleanup right now** — they stay for diagnostics and statistics.
 
-Updates to this policy will be published on the GitHub repository and the blog, with an in-app notice. Continued use means acceptance of the updated policy.
+If you want your logs deleted:
 
-### 10. Contact
+- Open Settings → Privacy to see your install ID
+- Open a [GitHub Issue](https://github.com/NanoTurtle1145/root-my-s24/issues) and send me the ID
+- I will delete the matching records by hand
+
+Clearing app data resets the install ID, so old logs can no longer be linked to your phone.
+
+### 0x07 Permissions
+
+`INTERNET` / `ACCESS_NETWORK_STATE` (update checks, log upload when allowed), `POST_NOTIFICATIONS` (progress), `WAKE_LOCK` (stay awake during a run), `REQUEST_INSTALL_PACKAGES` (install KernelSU manager and updates), `QUERY_ALL_PACKAGES` (detect installed KernelSU/Shizuku components), `FOREGROUND_SERVICE` (run the root flow).
+
+### 0x08 Third parties
+
+- **GitHub**: update checks and Release downloads, under GitHub's own privacy policy
+- **Shizuku**: local authorization for shell commands, nothing uploaded
+- Apart from these and legal requirements, nothing goes anywhere
+
+### 0x09 Your rights
+
+- Turn off log upload and clear local logs
+- Clear app data to reset the install ID
+- Ask me to delete server-side logs
+
+### 0x0A Changes and contact
+
+Updates go to GitHub and the blog, with an in-app notice. Continued use means you accept the new version.
 
 - GitHub: <https://github.com/NanoTurtle1145/root-my-s24/issues>
 - Blog: <https://blog.nanoturtle.cn>
+
+---
+
+NanoTurtle,2026/11/07
