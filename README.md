@@ -38,6 +38,36 @@
 - 详细说明见 [`docs/bakasu-kernel-mode.md`](docs/bakasu-kernel-mode.md)，
   构建与脚本仓库：<https://github.com/NanoTurtle1145/BakaSU-S9280>。
 
+## 98260 UAF 引擎（v3.6.0 新增）
+
+除了原来的 GhostLock（CVE-2026-43499），v3.6.0 起内置第二个提权引擎：
+**CVE-2026-98260（`exec: Cleanup POSIX timers right after de_thread()`，posix-cpu-timers UAF）**。
+实现参考公开项目 [SamTimer v1.3](https://github.com/RiosWesley/SamTimer)（fork 自 yoro1836/SamTimer），
+我们做了参数化、驱动适配与 UI 集成。
+
+- 机型选择页 →「提权引擎」可切换：`GhostLock 43499` / `98260 UAF`
+- **SM-S9280 `S9280ZHU6EZIF`（One UI 9.0 / 6.1.162）** 默认走 98260 UAF，并已实测拿到 root
+- 链路：timer UAF → pipe 读写原语 → 伪造 workqueue → `call_usermodehelper` → uhexec → 私有 mount ns 里
+  bind-mount KDP ksud → `late-load` 加载驱动。**不写 cred**，所以不撞 KDP/RKP/DEFEX 的凭据保护
+- exploit 跑在 **Shizuku UserService 常驻进程**里，App 切后台不会被回收
+
+### 98260 UAF 的注意事项
+
+- 失败时会 `parking without reap (zombie held)`：这是 payload 的保护动作，让 victim 永远 zombie、内核走不到
+  那条会 panic 的清理路径。**parked 进程不能强杀**，失败就重启重来
+- **一次开机尽量只跑一次**：98260 的 stale timer 节点只能靠重启清掉，同一开机反复尝试会叠加残留
+- 驱动选择（机型页 →「KernelSU 驱动版本」）：
+
+  | 版本 | late-load 行为 | 结果 |
+  |---|---|---|
+  | **3.2.5**（默认） | 带 `--ephemeral`：只加载模块，不写 /data/adb、不跑 module stage | 不会自动打开 KSU 管理器，也不会软重启 |
+  | 3.3.0（实验） | stock 多 KMI KDP，不支持 ephemeral，走完整 late-load | 可用，但会 `am start` 管理器并软重启一次（framework 重启，无害） |
+
+  > 为什么 3.3.0 不默认：`--ephemeral` 是我们给 3.2.5 那套 ksud 打的补丁；3.3.0 的现成构建没有这个分支，
+  > 选它就会有"自动打开管理器 + 一次软重启"的副作用。两种模式在界面上都有提示。
+  >
+  > 另外 3.3.0 的 DDK 构建（`ksud-v3.3.0-...-ddk`）内嵌 DZH3 模块，在 EZIF 上加载即 panic，不要用。
+
 ## 使用情况
 
 > 以下为**匿名聚合**统计（数据来自 App 内可选的运行日志共享）：不含 IP、城市或任何设备标识。
@@ -109,6 +139,7 @@
 | SM-F741N（韩版 Z Flip6） | F741NKSS4DZE1 | 6.1.145 | `cve-2026-43499-F741NKSS4DZE1` | 已实测（beta.191，issue #16） |
 | SM-F9580（国行 Z Fold6） | 共用 DZF2 | 6.1.145 | 同 DZF2 | 酷安用户实测成功 |
 | SM-S928B（欧版 S24 Ultra，One UI 9.0） | S928BXXU6EZIF | 6.1.162 | `cve-2026-43499-S928BXXU6EZIF` | 已实测（2026-10-23） |
+| **SM-S9280（港版/国行 EZIF，One UI 9.0）** | S9280ZHU6EZIF | 6.1.162 | 引擎：**98260 UAF**（实现参考 SamTimer v1.3） | **已实测（2026-11-07）**，KSU 3.2.5 驱动 |
 
 ### 已定标，待真机验证
 
