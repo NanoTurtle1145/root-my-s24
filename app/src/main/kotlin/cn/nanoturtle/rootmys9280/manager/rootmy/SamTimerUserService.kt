@@ -36,7 +36,8 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
         private const val ASSET_PREFIX = "samtimer/"
         private const val ASSET_LIBTIMER = ASSET_PREFIX + "libtimer"
         private const val ASSET_UHEXEC = ASSET_PREFIX + "uhexec"
-        private const val ASSET_ACTION = ASSET_PREFIX + "umh_action.sh"
+        private const val ASSET_ACTION = ASSET_PREFIX + "umh_action.sh"           // 3.2.5: --ephemeral
+        private const val ASSET_ACTION_STOCK = ASSET_PREFIX + "umh_action-stock.sh" // 3.3.0: stock late-load
         private const val ASSET_KSUD_32601 = ASSET_PREFIX + "ksud-32601"
         private const val ASSET_KSUD_32525 = ASSET_PREFIX + "ksud-32525"
     }
@@ -132,9 +133,13 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
         val ksud = File("/data/local/tmp/ksud-s25u-kdp")
         val stage = File(KSUD_STAGE_PATH)
 
+        // 3.3.0 的 stock ksud 不认 --ephemeral（会当成未知参数/或跑完整流程），
+        // 所以按选择的驱动切换 action 脚本：3.2.5 用 ephemeral 版，3.3.0 用原版。
+        val actionAsset =
+            if (ksudAssetName.endsWith("32601")) ASSET_ACTION_STOCK else ASSET_ACTION
         if (!stageAsset(ASSET_LIBTIMER, timerBin) ||
             !stageAsset(ASSET_UHEXEC, uhexec) ||
-            !stageAsset(ASSET_ACTION, action) ||
+            !stageAsset(actionAsset, action) ||
             !stageAsset(ksudAssetName, ksud) ||
             !stageAsset(ksudAssetName, stage)
         ) {

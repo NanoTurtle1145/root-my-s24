@@ -442,5 +442,5 @@ Auto-save log</string>
     <string name="rootflow_engine_ghostlock">GhostLock 43499</string>
     <string name="rootflow_engine_samtimer">98260 UAF</string>
     <string name="rootflow_engine_tab_hint">Current: %1$s. 98260 runs the posix-cpu-timers UAF chain (UMH pipe, no cred writes, KDP does not interfere); GhostLock runs the 43499 payload.</string>
-    <string name="rootflow_ksu330_warning">3.3.0 drivers do not work on this build (EZIF): the KDP ksud either fails to load the module or panics the kernel. Use 3.2.5 (works, and does not auto-open the manager).</string>
+    <string name="rootflow_ksu330_warning">3.3.0 works but cannot run ephemeral late-load: it will restart the KernelSU manager (auto-open) and perform one soft reboot (framework restart, harmless). Use 3.2.5 if you want neither.</string>
 </resources>

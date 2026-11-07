@@ -773,16 +773,25 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // SamTimer 引擎额外内置 3.2.5 档（fork 原版 ksud，无 Restart Manager），
         // 方便和 3.3.0 对比自动打开管理器/软重启的行为；服务端清单里没有它也能选。
         if (v.engine == Engine.SAMTIMER_98260) {
-            val extra325 =
-                PayloadStatus.KsuOption(
-                    asset = "ksud-32525",
-                    label = "3.2.5",
-                    state = "legacy",
-                    version = "3.2.5",
+            val extras =
+                listOf(
+                    PayloadStatus.KsuOption(
+                        asset = "ksud-32601",
+                        label = "3.3.0",
+                        state = "experimental",
+                        version = "3.3.0",
+                    ),
+                    PayloadStatus.KsuOption(
+                        asset = "ksud-32525",
+                        label = "3.2.5",
+                        state = "stable",
+                        version = "3.2.5",
+                    ),
                 )
-            return (base + extra325)
+            return (base + extras)
                 .distinctBy { it.version.ifBlank { it.asset } }
-                .sortedByDescending { it.version }
+                // 升序：3.2.5 在前（EZIF 默认），3.3.0 在后（实验档）
+                .sortedBy { it.version }
         }
         return base
     }
