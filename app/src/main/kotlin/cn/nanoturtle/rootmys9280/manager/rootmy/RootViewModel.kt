@@ -201,6 +201,20 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
               tested = true,
               engine = Engine.SAMTIMER_98260,
           ),
+        // SM-S921E（国际版 S24，e1q / Exynos 2400）One UI 9.0 / kernel 6.1.162（构建号 34343818）：
+        // 与 EZIF 同内核构建；issue #33 实测（v3.6.0 build 263）98260 UAF 引擎 + 3.2.5 驱动
+        // 直接可用（日志里 engine=SAMTIMER_98260、ksud-32525），KNOX 完好。
+        S921EDZIF(
+            "cve-2026-43499-S9280ZHU6EZIF",
+            "One UI 9.0",
+            "SM-S921E 国际版 S24",
+            "DZIF",
+            Region.HONGKONG_TAIWAN,
+            "ksud-32525",
+            tested = true,
+            engine = Engine.SAMTIMER_98260,
+        ),
+
         // SM-S928B（EUR）One UI 8.0 / kernel 6.1.128（构建号 31999054）：与港版 CZA1 同构建号但
         // **非同一机型**（欧版 S928B vs 港版 S9280），.rodata 差 8 字节（nfnetlink_log 0x0160b70d vs
         // 港版 0x0160b705），故独立定标、不可与港版 CZA1 载荷互换。
