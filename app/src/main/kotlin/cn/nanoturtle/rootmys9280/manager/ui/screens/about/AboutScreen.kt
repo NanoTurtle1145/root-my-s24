@@ -372,6 +372,7 @@ fun AboutScreen(
 
         item {
             SectionLabel(stringResource(R.string.about_section_guide))
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             GroupedRow(index = 0, count = 2) {
                 ListItem(
                     modifier = Modifier.fillMaxWidth().clickable { onOpenWiki() },
@@ -408,6 +409,7 @@ fun AboutScreen(
                     },
                     colors = cardRowColors,
                 )
+            }
             }
         }
 

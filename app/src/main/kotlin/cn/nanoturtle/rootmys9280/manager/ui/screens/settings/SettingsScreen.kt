@@ -614,7 +614,7 @@ fun SettingsScreen(
             SectionLabel(stringResource(R.string.settings_section_privacy))
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 // 首次启动问过一次的选择，之后在这里随时能改。
-                GroupedRow(index = 0, count = 1) {
+                GroupedRow(index = 0, count = 3) {
                     Column(Modifier.padding(vertical = 12.dp)) {
                         ListItem(
                             leadingContent = {
@@ -637,24 +637,45 @@ fun SettingsScreen(
                         }
                     }
                 }
+                // 隐私政策：渲染 assets 里的 privacy.md（与仓库 docs/PRIVACY.md 同一份）。
+                GroupedRow(index = 1, count = 3) {
+                    ListItem(
+                        modifier = Modifier.clickable { onOpenPrivacy() },
+                        leadingContent = {
+                            Icon(Icons.Rounded.Security, contentDescription = null)
+                        },
+                        supportingContent = {
+                            Text(stringResource(R.string.settings_privacy_policy_summary))
+                        },
+                        colors = cardRowColors,
+                    ) { Text(stringResource(R.string.settings_privacy_policy)) }
+                }
+
+                // 安装标识：隐私政策里说「设置 → 隐私 能看到」，那它就得在这里，
+                // 不能只藏在点版本号七下才出现的调试分区。
+                GroupedRow(index = 2, count = 3) {
+                    Column {
+                        ListItem(
+                            leadingContent = {
+                                Icon(Icons.Rounded.Fingerprint, contentDescription = null)
+                            },
+                            supportingContent = {
+                                Text(stringResource(R.string.settings_privacy_install_id_summary))
+                            },
+                            colors = cardRowColors,
+                        ) { Text(stringResource(R.string.settings_privacy_install_id)) }
+                        Text(
+                            text = LogUploader.installId(context),
+                            style = VectorMono,
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                        )
+                    }
+                }
+
             }
         }
 
         // 隐私政策：渲染 assets 里的 privacy.md（与仓库 docs/PRIVACY.md 同一份）。
-        item {
-            GroupedRow(index = 0, count = 1) {
-                ListItem(
-                    modifier = Modifier.clickable { onOpenPrivacy() },
-                    leadingContent = {
-                        Icon(Icons.Rounded.Security, contentDescription = null)
-                    },
-                    supportingContent = {
-                        Text(stringResource(R.string.settings_privacy_policy_summary))
-                    },
-                    colors = cardRowColors,
-                ) { Text(stringResource(R.string.settings_privacy_policy)) }
-            }
-        }
 
         // 调试分区只在「点版本号七下」之后出现，普通用户看不到这些危险/诊断入口。
         if (debugMode) {

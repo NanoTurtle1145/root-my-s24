@@ -395,4 +395,6 @@
     <string name="privacy_screen_title">隐私政策</string>
     <string name="settings_privacy_policy">隐私政策</string>
     <string name="settings_privacy_policy_summary">运行日志、安装 ID、IP 地址怎么处理</string>
+    <string name="settings_privacy_install_id">安装标识</string>
+    <string name="settings_privacy_install_id_summary">要删除日志时把这个发给开发者</string>
 </resources>
