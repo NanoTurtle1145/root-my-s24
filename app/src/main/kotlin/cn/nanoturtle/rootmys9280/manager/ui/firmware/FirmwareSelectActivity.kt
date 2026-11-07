@@ -222,121 +222,6 @@ private fun FirmwareSelectContent(
                     }
                 }
             }
-            // KSU 驱动版本：**独立选项卡**，与上面的地区/机型筛选分开。
-            //
-            // 之前把它混进筛选芯片里、又在每张卡片上写一行「KSU: x」，看起来像三套机制
-            // （重复的 DZH3·KSU 条目 + 筛选芯片 + 卡片行），所以这里收成一处：
-            // 选项卡决定"用哪个驱动"，卡片只负责选固件。
-            val ksuVersions =
-                vm.availableFirmwareVersions
-                    .flatMap { vm.ksuVersionsFor(it) }
-                    .distinct()
-                    .sortedDescending()
-            val ksuPref by vm.ksuVersionState.collectAsStateWithLifecycle()
-            val ksuEffective = vm.ksuVersionEffective(firmwareVersion, ksuPref)
-            if (ksuVersions.size > 1) {
-                Surface(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 6.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.surfaceContainer,
-                ) {
-                    Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-                        Text(
-                            text = stringResource(R.string.rootflow_ksu_tab_title),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-                            ksuVersions.forEachIndexed { index, version ->
-                                SegmentedButton(
-                                    selected = version == ksuEffective,
-                                    onClick = { vm.setKsuVersion(version) },
-                                    shape = SegmentedButtonDefaults.itemShape(index, ksuVersions.size),
-                                    label = { Text(version) },
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(6.dp))
-                        Text(
-                            text =
-                                stringResource(
-                                    R.string.rootflow_ksu_tab_hint,
-                                    ksuEffective.ifEmpty { "—" },
-                                ),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
-            // 提权引擎：和 KSU 版本一样做成独立选项卡（默认跟随固件条目，EZIF 可选 SamTimer）
-            val engineOptions = vm.engineOptionsFor(firmwareVersion)
-            val enginePref by vm.engineState.collectAsStateWithLifecycle()
-            val engineEffective = vm.engineEffective(firmwareVersion, enginePref)
-            if (engineOptions.size > 1) {
-                Surface(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 6.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.surfaceContainer,
-                ) {
-                    Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
-                        Text(
-                            text = stringResource(R.string.rootflow_engine_tab_title),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-                            engineOptions.forEachIndexed { index, engine ->
-                                SegmentedButton(
-                                    selected = engine == engineEffective,
-                                    onClick = { vm.setEngine(engine) },
-                                    shape = SegmentedButtonDefaults.itemShape(index, engineOptions.size),
-                                    label = {
-                                        Text(
-                                            stringResource(
-                                                if (engine == RootViewModel.Engine.SAMTIMER_98260) {
-                                                    R.string.rootflow_engine_samtimer
-                                                } else {
-                                                    R.string.rootflow_engine_ghostlock
-                                                }
-                                            )
-                                        )
-                                    },
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(6.dp))
-                        Text(
-                            text =
-                                stringResource(
-                                    R.string.rootflow_engine_tab_hint,
-                                    stringResource(
-                                        if (engineEffective == RootViewModel.Engine.SAMTIMER_98260) {
-                                            R.string.rootflow_engine_samtimer
-                                        } else {
-                                            R.string.rootflow_engine_ghostlock
-                                        }
-                                    ),
-                                ),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
-
-            LaunchedEffect(ksuVersions, ksuEffective) {
-                // 自检：选项卡里有哪些版本、当前生效哪个（排查"看不到某版本"直接看这行）
-                logI("ksu tab: options=$ksuVersions effective=$ksuEffective")
-            }
             // 状态来源提示：改了服务端 payloads.json 就能远端改「已实测」与 KSU 清单
             Text(
                 text =
@@ -381,6 +266,7 @@ private fun FirmwareSelectContent(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                 ) {
+                    item { SelectionTabs(vm = vm, firmwareVersion = firmwareVersion) }
                     // 兼容范围提示：载荷按构建定标、S24 全系通用，这条最容易被误解，
                     // 所以放在列表最上面，看条目之前先看到它
                     item {
@@ -432,6 +318,7 @@ private fun FirmwareSelectContent(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                 ) {
+                    item { SelectionTabs(vm = vm, firmwareVersion = firmwareVersion) }
                     item {
                         FirmwareVersionCard(
                             vm = vm,
@@ -596,5 +483,123 @@ private fun TestStateChip(
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.dp),
         )
+    }
+}
+
+/**
+ * 机型选择页顶部的「KSU 驱动版本 + 提权引擎」选项卡。
+ *
+ * 从固定区域移进 LazyColumn 顶部：它们和机型列表一起滚动，不然两条选项卡 + 搜索框 +
+ * 地区/系列筛选会吃掉半屏，可视区域太小。
+ */
+@Composable
+private fun SelectionTabs(
+    vm: RootViewModel,
+    firmwareVersion: RootViewModel.FirmwareVersion,
+) {
+    val ksuVersions =
+        vm.availableFirmwareVersions
+            .flatMap { vm.ksuVersionsFor(it) }
+            .distinct()
+            .sortedDescending()
+    val ksuPref by vm.ksuVersionState.collectAsStateWithLifecycle()
+    val ksuEffective = vm.ksuVersionEffective(firmwareVersion, ksuPref)
+    if (ksuVersions.size > 1) {
+        Surface(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surfaceContainer,
+        ) {
+            Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+                Text(
+                    text = stringResource(R.string.rootflow_ksu_tab_title),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(Modifier.height(8.dp))
+                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                    ksuVersions.forEachIndexed { index, version ->
+                        SegmentedButton(
+                            selected = version == ksuEffective,
+                            onClick = { vm.setKsuVersion(version) },
+                            shape = SegmentedButtonDefaults.itemShape(index, ksuVersions.size),
+                            label = { Text(version) },
+                        )
+                    }
+                }
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text =
+                        stringResource(
+                            R.string.rootflow_ksu_tab_hint,
+                            ksuEffective.ifEmpty { "—" },
+                        ),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+
+    val engineOptions = vm.engineOptionsFor(firmwareVersion)
+    val enginePref by vm.engineState.collectAsStateWithLifecycle()
+    val engineEffective = vm.engineEffective(firmwareVersion, enginePref)
+    if (engineOptions.size > 1) {
+        Surface(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.surfaceContainer,
+        ) {
+            Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+                Text(
+                    text = stringResource(R.string.rootflow_engine_tab_title),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(Modifier.height(8.dp))
+                SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                    engineOptions.forEachIndexed { index, engine ->
+                        SegmentedButton(
+                            selected = engine == engineEffective,
+                            onClick = { vm.setEngine(engine) },
+                            shape = SegmentedButtonDefaults.itemShape(index, engineOptions.size),
+                            label = {
+                                Text(
+                                    stringResource(
+                                        if (engine == RootViewModel.Engine.SAMTIMER_98260) {
+                                            R.string.rootflow_engine_samtimer
+                                        } else {
+                                            R.string.rootflow_engine_ghostlock
+                                        }
+                                    )
+                                )
+                            },
+                        )
+                    }
+                }
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text =
+                        stringResource(
+                            R.string.rootflow_engine_tab_hint,
+                            stringResource(
+                                if (engineEffective == RootViewModel.Engine.SAMTIMER_98260) {
+                                    R.string.rootflow_engine_samtimer
+                                } else {
+                                    R.string.rootflow_engine_ghostlock
+                                }
+                            ),
+                        ),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
     }
 }

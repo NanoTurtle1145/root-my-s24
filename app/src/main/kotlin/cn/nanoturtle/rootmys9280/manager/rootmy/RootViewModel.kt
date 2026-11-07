@@ -695,6 +695,10 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         return pref?.takeIf { it in options } ?: if (v.engine in options) v.engine else options.first()
     }
 
+    /** 主页/日志展示用的载荷标签：SamTimer 引擎显示引擎名，不再显示 43499 载荷名。 */
+    fun payloadLabelFor(v: FirmwareVersion): String =
+        if (engineEffective(v) == Engine.SAMTIMER_98260) "SamTimer 98260" else v.assetName
+
     fun setEngine(engine: Engine?) {
         _enginePref.value = engine
         logI("engine: preference → ${engine?.name ?: "默认"}")
@@ -992,7 +996,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         appendLog("RUN-ID: $currentRunId")
         // 记下本轮用的载荷与 KSU 驱动版本：服务端据此把成功率按 KSU 版本拆开统计
         appendLog(
-            "载荷: ${firmwareVersion.assetName} · KSU: " +
+            "引擎: ${engineEffective(firmwareVersion).name} · 载荷: ${payloadLabelFor(firmwareVersion)} · KSU: " +
                 if (bakasuKernelEnabled) "BakaSU 35171 (三星适配) (ksud-bakasu-dzh3)"
                 else "${ksuLabelFor(firmwareVersion)} (${ksuAssetFor(firmwareVersion)})"
         )
@@ -1567,6 +1571,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             return@withContext
         }
 
+        appendLog("◆ 提示：late-load 可能触发一次软重启（framework 重启、内核 uptime 不重置），无害；KSU 模块仍在")
         appendLog("◆ 启动 exploit（umhpipe，最多等 7 分钟）……")
         svc.runExploit(callback)
 
@@ -1583,6 +1588,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             // 成功后**不解绑**：libtimer 还拿着页，解绑会让 Shizuku 杀掉整个 UserService。
             appendLog("✔ KernelSU 模块已加载（32601 / 3.3.0 KDP）；UserService 常驻保持，exploit 留在 parked")
             appendLog("◆ 先别清后台/别关 App：parked 进程还在 UserService 里拿着页")
+            appendLog("◆ 若随后出现软重启（黑屏/锁屏闪一下后回到桌面）：属正常，内核 uptime 不重置、KSU 模块仍在，root 有效")
             _state.value = _state.value.copy(rooted = true)
             runCatching { refreshKsuStatus() }
         } else if (samtimerParked.get()) {

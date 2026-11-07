@@ -440,7 +440,7 @@ private fun RootFlowContent(
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = stringResource(R.string.rootflow_firmware_hint, selectedVersion.assetName),
+                        text = stringResource(R.string.rootflow_firmware_hint, vm.payloadLabelFor(selectedVersion)),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
