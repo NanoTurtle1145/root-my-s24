@@ -5,7 +5,7 @@ unshare -m sh -c '
   mount --bind /data/local/tmp/ksud-s25u-kdp /system/bin/logcat || { echo mount_failed; exit 11; }
   echo "bind mounted kdp"
   /system/bin/logcat --version
-  /system/bin/logcat late-load --ephemeral --allow-shell --package-name me.weishu.kernelsu
+  /system/bin/logcat late-load --allow-shell --package-name me.weishu.kernelsu
   echo "late_rc=$?"
 '
 echo "outer_rc=$?"
