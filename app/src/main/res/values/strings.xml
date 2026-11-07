@@ -442,5 +442,6 @@ Auto-save log</string>
     <string name="rootflow_engine_ghostlock">GhostLock 43499</string>
     <string name="rootflow_engine_samtimer">98260 UAF</string>
     <string name="rootflow_engine_tab_hint">Current: %1$s. 98260 runs the posix-cpu-timers UAF chain (UMH pipe, no cred writes, KDP does not interfere); GhostLock runs the 43499 payload.</string>
-    <string name="rootflow_ksu330_warning">3.3.0 works but cannot run ephemeral late-load: it will restart the KernelSU manager (auto-open) and perform one soft reboot (framework restart, harmless). Use 3.2.5 if you want neither.</string>
+    <string name="rootflow_ksu330_warning">3.3.0 works but cannot run ephemeral late-load: it restarts the manager and performs one soft reboot. Any soft reboot during 98260 kills the parked exploit process and can escalate into a HARD reboot. Use 3.2.5 instead.</string>
+    <string name="rootflow_engine_98260_warning">98260 caveat (the original SamTimer has it too, unrelated to the KSU driver): any soft reboot (framework restart) kills the parked exploit process, and with the parked page gone the kernel can hard-reboot. Disable HMA / LSPosed / Zygisk-style hook modules before running, and prefer driver 3.2.5.</string>
 </resources>

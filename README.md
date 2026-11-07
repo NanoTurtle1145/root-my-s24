@@ -56,12 +56,16 @@
 - 失败时会 `parking without reap (zombie held)`：这是 payload 的保护动作，让 victim 永远 zombie、内核走不到
   那条会 panic 的清理路径。**parked 进程不能强杀**，失败就重启重来
 - **一次开机尽量只跑一次**：98260 的 stale timer 节点只能靠重启清掉，同一开机反复尝试会叠加残留
+- **软重启 = 高风险**：98260 跑起来后，parked 的 exploit 进程必须在。任何一次软重启
+  （framework/system_server 重启）都会把它杀掉 → 拿着的页提前释放 → **可能直接硬重启**。
+  这是 98260 这条链的固有缺点，原版 SamTimer 同样有，**与 KSU/ksud 驱动版本无关**。
+  所以跑 98260 之前建议先禁用 HMA / LSPosed / Zygisk 这类会让 framework 重启的 hook 模块。
 - 驱动选择（机型页 →「KernelSU 驱动版本」）：
 
   | 版本 | late-load 行为 | 结果 |
   |---|---|---|
   | **3.2.5**（默认） | 带 `--ephemeral`：只加载模块，不写 /data/adb、不跑 module stage | 不会自动打开 KSU 管理器，也不会软重启 |
-  | 3.3.0（实验） | stock 多 KMI KDP，不支持 ephemeral，走完整 late-load | 可用，但会 `am start` 管理器并软重启一次（framework 重启，无害） |
+  | 3.3.0（实验） | stock 多 KMI KDP，不支持 ephemeral，走完整 late-load | 可用，但会 `am start` 管理器并软重启一次；**软重启会杀掉 parked 进程，可能进一步导致硬重启**（不推荐） |
 
   > 为什么 3.3.0 不默认：`--ephemeral` 是我们给 3.2.5 那套 ksud 打的补丁；3.3.0 的现成构建没有这个分支，
   > 选它就会有"自动打开管理器 + 一次软重启"的副作用。两种模式在界面上都有提示。
