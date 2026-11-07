@@ -699,7 +699,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
     /** 主页/日志展示用的载荷标签：SamTimer 引擎显示引擎名，不再显示 43499 载荷名。 */
     fun payloadLabelFor(v: FirmwareVersion): String =
-        if (engineEffective(v) == Engine.SAMTIMER_98260) "SamTimer 98260" else v.assetName
+        if (engineEffective(v) == Engine.SAMTIMER_98260) "98260 UAF" else v.assetName
 
     fun setEngine(engine: Engine?) {
         _enginePref.value = engine
@@ -1534,7 +1534,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * UserService 是独立常驻进程，App 切走不影响它（原版就是这么稳的）。
      */
     private suspend fun runSamTimer98260() = withContext(Dispatchers.IO) {
-        appendLog("◆ 引擎: SamTimer 98260（Shizuku UserService 常驻进程模式，与原版一致）")
+        appendLog("◆ 引擎: 98260 UAF（posix-cpu-timers；实现参考 SamTimer v1.3，Shizuku UserService 常驻进程模式）")
         if (!Shizuku.pingBinder()) {
             throw IllegalStateException("Shizuku 未运行")
         }

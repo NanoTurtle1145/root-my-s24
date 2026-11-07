@@ -440,6 +440,7 @@ Auto-save log</string>
     <string name="settings_privacy_install_id_summary">Send this to the developer if you want your logs deleted</string>
     <string name="rootflow_engine_tab_title">Root engine</string>
     <string name="rootflow_engine_ghostlock">GhostLock 43499</string>
-    <string name="rootflow_engine_samtimer">SamTimer 98260</string>
-    <string name="rootflow_engine_tab_hint">Current: %1$s. SamTimer runs the 98260 UMH chain (no cred writes, KDP does not interfere); GhostLock runs the 43499 payload.</string>
+    <string name="rootflow_engine_samtimer">98260 UAF</string>
+    <string name="rootflow_engine_tab_hint">Current: %1$s. 98260 runs the posix-cpu-timers UAF chain (UMH pipe, no cred writes, KDP does not interfere); GhostLock runs the 43499 payload.</string>
+    <string name="rootflow_ksu330_warning">3.3.0 drivers do not work on this build (EZIF): the KDP ksud either fails to load the module or panics the kernel. Use 3.2.5 (works, and does not auto-open the manager).</string>
 </resources>

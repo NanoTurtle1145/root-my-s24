@@ -6,7 +6,7 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * Shizuku UserService：在 shell 进程里跑 CVE-2026-98260 的 SamTimer 链路。
+ * Shizuku UserService：在 shell 进程里跑 CVE-2026-98260（posix-cpu-timers UAF）链路。
  *
  * 与之前用 shellExecutor.exec() 从 App 进程起的差别（也是原版 SamTimer 的做法）：
  * UserService 是一个**常驻进程**，exploit 是它的子进程；App 切到后台/打开管理器

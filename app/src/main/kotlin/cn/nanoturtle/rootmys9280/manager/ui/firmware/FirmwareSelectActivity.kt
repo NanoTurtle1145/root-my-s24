@@ -584,6 +584,22 @@ private fun SelectionTabs(
                     }
                 }
                 Spacer(Modifier.height(6.dp))
+                if (engineEffective == RootViewModel.Engine.SAMTIMER_98260 && ksuEffective == "3.3.0") {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(10.dp),
+                        color = MaterialTheme.colorScheme.errorContainer,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.rootflow_ksu330_warning),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer,
+                            modifier = Modifier.padding(10.dp),
+                        )
+                    }
+                    Spacer(Modifier.height(6.dp))
+                }
+                Spacer(Modifier.height(6.dp))
                 Text(
                     text =
                         stringResource(
