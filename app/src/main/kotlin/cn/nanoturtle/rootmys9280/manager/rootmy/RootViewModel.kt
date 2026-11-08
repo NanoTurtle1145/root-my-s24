@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -1088,9 +1089,26 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                     }
                     LogSharing.NEVER -> Unit
                 }
+                // 本机存档：每轮都落盘，并给日志分配短编号（反馈时用户只需贴编号）。
+                runCatching {
+                    val outcome =
+                        when {
+                            _state.value.rooted -> "success"
+                            currentStage < 3 -> "not-started@stage$currentStage"
+                            else -> "failed@stage$currentStage"
+                        }
+                    val code = RunLogStore.codeOf(currentRunId)
+                    appendLog("◆ 本地日志编号: $code（运行日志页可复制，反馈时填这个编号）")
+                    RunLogStore.save(app, currentRunId, buildLogText(onlyCurrentRun = true), outcome)
+                    _lastLogCode.value = code
+                }
             }
         }
     }
+
+    /** 最近一轮运行的本地日志编号（反馈时给用户复制）。 */
+    private val _lastLogCode = MutableStateFlow<String?>(null)
+    val lastLogCode: StateFlow<String?> = _lastLogCode.asStateFlow()
 
     /** 设置页的"运行期间自动熄屏"开关（Shizuku 运行，读 prefs 实时生效） */
     fun setAutoScreenOff(enabled: Boolean) {

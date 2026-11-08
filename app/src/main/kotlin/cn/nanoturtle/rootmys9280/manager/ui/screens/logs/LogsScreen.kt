@@ -50,6 +50,7 @@ fun LogsScreen(
     var brief by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    val lastLogCode by vm.lastLogCode.collectAsStateWithLifecycle()
 
     val shown = if (brief) state.logLines.filter { it.summary } else state.logLines
     LaunchedEffect(shown.size, brief) {
@@ -91,6 +92,18 @@ fun LogsScreen(
                     }
                 },
             ) { Text(stringResource(R.string.logs_upload)) }
+            TextButton(
+                onClick = {
+                    val code = lastLogCode
+                    if (code == null) {
+                        android.widget.Toast.makeText(context, context.getString(R.string.logs_code_none), android.widget.Toast.LENGTH_SHORT).show()
+                    } else {
+                        val cm = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        cm.setPrimaryClip(android.content.ClipData.newPlainText("run-log-code", code))
+                        android.widget.Toast.makeText(context, context.getString(R.string.logs_code_copied, code), android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                },
+            ) { Text(stringResource(R.string.logs_copy_code)) }
             TextButton(onClick = { vm.clearLog() }) { Text(stringResource(R.string.logs_clear)) }
         }
 

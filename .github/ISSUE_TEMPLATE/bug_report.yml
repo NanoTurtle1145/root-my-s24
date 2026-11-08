@@ -82,13 +82,21 @@ body:
     validations:
       required: true
   - type: input
-    id: log_link
+    id: log_code
     attributes:
-      label: 运行日志链接 / Run-log link
-      description: App 内「上传日志」后得到的链接（服务器 log 页面），或 GitHub gist / 附件
-      placeholder: https://blog.nanoturtle.cn/rms24_api/...
+      label: 日志编号 / Run-log ID
+      description: App → 运行日志 → 右上角「复制编号」；跑完后日志页底部也会显示「本地日志编号: xxxxxxxx」
+      placeholder: 例如 3fa9c1d2
     validations:
       required: true
+  - type: input
+    id: log_link
+    attributes:
+      label: 日志链接或附件（可选） / Log link or attachment (optional)
+      description: 有服务器链接或 GitHub gist/附件就贴，没有可留空——编号已经够定位
+      placeholder: https://blog.nanoturtle.cn/rms24_api/...
+    validations:
+      required: false
   - type: textarea
     id: extra
     attributes:

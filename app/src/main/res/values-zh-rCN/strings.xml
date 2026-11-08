@@ -403,4 +403,7 @@
     <string name="rootflow_engine_tab_hint">当前：%1$s。98260 是 posix-cpu-timers UAF（走 UMH pipe，不写 cred，KDP 不影响）；GhostLock 走 43499 载荷。</string>
     <string name="rootflow_ksu330_warning">3.3.0 可用，但不支持 ephemeral：会重启管理器并软重启一次。98260 在软重启时 parked 进程会被杀，可能进一步变成硬重启。请改用 3.2.5。</string>
     <string name="rootflow_engine_98260_warning">98260 的固有缺点（原版 SamTimer 也有，与 KSU 驱动版本无关）：任何软重启（framework 重启）都会杀掉 parked 的 exploit 进程，页被提前释放就可能硬重启。跑之前先禁用 HMA / LSPosed / Zygisk 这类 hook 模块，驱动优先用 3.2.5。</string>
+    <string name="logs_copy_code">复制编号</string>
+    <string name="logs_code_none">日志编号：（先跑一次）</string>
+    <string name="logs_code_copied">已复制日志编号：%1$s</string>
 </resources>
