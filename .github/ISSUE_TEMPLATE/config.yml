@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 使用文档 / Documentation
+    url: https://github.com/NanoTurtle1145/root-my-s24#readme
+    about: 先看 README：机型支持表、引擎说明、KernelSU 驱动版本、常见问题。
+  - name: XDA 讨论帖 / XDA thread
+    url: https://xdaforums.com/t/i-made-a-one-click-rooting-tool-for-samsung-galaxy-devices-using-cve-2026-43499.4795400/
+    about: 非 bug 的讨论、经验分享可以去 XDA 帖子里聊。

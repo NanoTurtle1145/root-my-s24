@@ -1,0 +1,98 @@
+name: 🐞 Bug 报告 / Bug report
+description: 提权失败、卡死、重启、模块不加载等问题 / Exploit fails, hangs, reboot, module not loading
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提 bug 前请先确认：机型表里你的固件在「已实测成功」列表里（或你开了「启用未经测试的载荷」）。
+        日志请在 App 内上传后把服务器返回的链接贴进来（设置 → 运行日志），不要只贴截图。
+  - type: input
+    id: device
+    attributes:
+      label: 机型 / Device model
+      placeholder: 例如 SM-S9280 / SM-S921E / SM-S928B
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: 固件构建号 / Firmware build
+      description: 设置 → 关于手机 → 软件信息 → 版本号，或 `getprop ro.build.display.id`
+      placeholder: 例如 S9280ZHU6EZIF
+    validations:
+      required: true
+  - type: input
+    id: kernel
+    attributes:
+      label: 内核版本 / Kernel version
+      placeholder: 例如 6.1.162-android14-11-34343818
+    validations:
+      required: true
+  - type: input
+    id: app_version
+    attributes:
+      label: RootMyS24 版本 / App version
+      description: 设置 → 关于 里能看到版本号和 build 号
+      placeholder: 例如 v3.6.2-s24 (build 269)
+    validations:
+      required: true
+  - type: dropdown
+    id: engine
+    attributes:
+      label: 提权引擎 / Exploit engine
+      options:
+        - GhostLock 43499
+        - 98260 UAF（SamTimer）
+        - 不确定 / Not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: ksu_driver
+    attributes:
+      label: KSU 驱动版本 / KernelSU driver
+      options:
+        - 3.2.5
+        - 3.3.0（实验 / experimental）
+        - 没到这一步 / Never reached this step
+    validations:
+      required: true
+  - type: dropdown
+    id: symptom
+    attributes:
+      label: 现象 / Symptom
+      multiple: true
+      options:
+        - 提权失败（显示失败/错误）
+        - parking without reap（提示杀掉进程重开）
+        - 软重启 / soft reboot
+        - 硬重启 / hard reboot（整机重启）
+        - KSU 管理器自动打开
+        - Vector / Zygisk 模块不加载
+        - App 闪退 / crash
+        - 其他 / Other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤 / Steps to reproduce
+      placeholder: 1. 重启手机 2. 打开 App ... 3. ...
+    validations:
+      required: true
+  - type: input
+    id: log_link
+    attributes:
+      label: 运行日志链接 / Run-log link
+      description: App 内「上传日志」后得到的链接（服务器 log 页面），或 GitHub gist / 附件
+      placeholder: https://blog.nanoturtle.cn/rms24_api/...
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: 补充信息 / Extra
+      description: 是否解锁 BL、KNOX 状态、已装模块（Zygisk Next / Vector / HMA / LSPosed…）、是否开了 BakaSU
+    validations:
+      required: false

@@ -1,0 +1,80 @@
+name: ✅ 成功反馈 / Success report
+description: 在某个新固件/新机型上跑通了 / Root worked on a new firmware or device
+title: "Success: <机型> (<固件构建号>)"
+labels: ["success"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        谢谢反馈！成功案例会被整理进 README 的「已实测成功」表，也会让同机型的用户少走弯路。
+        一个日志链接比一句"成功了"有用得多 🙂
+  - type: input
+    id: device
+    attributes:
+      label: 机型 / Device model
+      placeholder: 例如 SM-S9280 / SM-S921E
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: 固件构建号 / Firmware build
+      placeholder: 例如 S9280ZHU6EZIF
+    validations:
+      required: true
+  - type: input
+    id: kernel
+    attributes:
+      label: 内核版本 / Kernel version
+      placeholder: 例如 6.1.162-android14-11-34343818
+    validations:
+      required: true
+  - type: input
+    id: app_version
+    attributes:
+      label: RootMyS24 版本 / App version
+      placeholder: 例如 v3.6.2-s24 (build 269)
+    validations:
+      required: true
+  - type: dropdown
+    id: engine
+    attributes:
+      label: 用的引擎 / Engine used
+      options:
+        - GhostLock 43499
+        - 98260 UAF（SamTimer）
+    validations:
+      required: true
+  - type: dropdown
+    id: ksu_driver
+    attributes:
+      label: KSU 驱动版本 / KernelSU driver
+      options:
+        - 3.2.5
+        - 3.3.0（实验 / experimental）
+    validations:
+      required: true
+  - type: dropdown
+    id: knox
+    attributes:
+      label: KNOX 状态 / KNOX status
+      options:
+        - 完好 warranty_bit=0
+        - 已熔断 warranty_bit=1
+        - 不确定 / Not sure
+    validations:
+      required: true
+  - type: input
+    id: log_link
+    attributes:
+      label: 运行日志链接 / Run-log link
+      placeholder: https://blog.nanoturtle.cn/rms24_api/...
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: 备注 / Notes
+      description: 例如：Shizuku 怎么起的、是否软重启过、软重启后模块是否正常、装了什么模块
+    validations:
+      required: false

@@ -1,0 +1,26 @@
+name: 💡 功能建议 / Feature request
+description: 想要的新功能或改进 / New feature or improvement
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 想解决什么问题 / Problem
+      description: 现在哪里不好用、卡在什么地方
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 你的想法 / Proposal
+      description: 希望 App 怎么做；有参考的 App/实现也可以贴
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: 机型与固件 / Device & firmware
+      placeholder: 例如 SM-S9280 / S9280ZHU6EZIF
+    validations:
+      required: false
