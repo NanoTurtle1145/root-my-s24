@@ -60,6 +60,11 @@
   （framework/system_server 重启）都会把它杀掉 → 拿着的页提前释放 → **可能直接硬重启**。
   这是 98260 这条链的固有缺点，原版 SamTimer 同样有，**与 KSU/ksud 驱动版本无关**。
   所以跑 98260 之前建议先禁用 HMA / LSPosed / Zygisk 这类会让 framework 重启的 hook 模块。
+- **v3.6.2 起**：3.2.5 驱动路径实机确认——软重启不再硬重启（parked 进程被 detach 到 init，
+  且 parked 前会把 held victim 的 stale timerqueue 树根置空），Vector/Zygisk 模块在软重启后也能正常加载。
+  3.3.0 仍是实验档（它的 stock 模块在 EZIF 上偶发 system_server 崩溃循环）。
+- **一次开机只跑一次**已在 v3.6.2 强制：同一开机会话里重复尝试会被 App 拦截并提示重启
+  （实测脏状态下 exploit 会在 plant 中途 panic）。
 - 驱动选择（机型页 →「KernelSU 驱动版本」）：
 
   | 版本 | late-load 行为 | 结果 |

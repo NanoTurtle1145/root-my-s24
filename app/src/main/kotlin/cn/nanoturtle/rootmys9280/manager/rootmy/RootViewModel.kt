@@ -1556,6 +1556,11 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * 会话上，App 切后台/跳管理器时会被回收，页提前释放 → 过一会卡死/重启。
      * UserService 是独立常驻进程，App 切走不影响它（原版就是这么稳的）。
      */
+    /** 当前开机会话标识（/proc/sys/kernel/random/boot_id）；读不到就返回空串（守卫自动失效）。 */
+    private fun currentBootId(): String = runCatching {
+        java.io.File("/proc/sys/kernel/random/boot_id").readText().trim()
+    }.getOrDefault("")
+
     private suspend fun runSamTimer98260() = withContext(Dispatchers.IO) {
         appendLog("◆ 引擎: 98260 UAF（posix-cpu-timers；实现参考 SamTimer v1.3，Shizuku UserService 常驻进程模式）")
         if (!Shizuku.pingBinder()) {
@@ -1564,6 +1569,21 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         if (Shizuku.checkSelfPermission() != android.content.pm.PackageManager.PERMISSION_GRANTED) {
             throw IllegalStateException("未授予 Shizuku 权限")
         }
+
+        // 98260 铁律：stale timer 节点只能靠重启清掉。之前没有强制，实测同一开机连跑多次后
+        // 内核状态变脏，exploit 会在 plant 中途直接 panic（run.log 断在 plant1，连 parking 都没到）。
+        val guardPrefs =
+            app.getSharedPreferences("samtimer_guard", android.content.Context.MODE_PRIVATE)
+        val bootId = currentBootId()
+        val lastAttemptBoot = guardPrefs.getString("attempt_boot", null)
+        val lastAttemptOk = guardPrefs.getBoolean("last_ok", false)
+        if (bootId.isNotEmpty() && lastAttemptBoot == bootId && !lastAttemptOk) {
+            throw IllegalStateException(
+                "本开机已经跑过 98260 且没有成功：残留的 timer 节点只有重启才能清掉。" +
+                    "同一开机反复尝试会让内核状态变脏、exploit 中途直接 panic —— 请先重启手机再跑。"
+            )
+        }
+        guardPrefs.edit().putString("attempt_boot", bootId).putBoolean("last_ok", false).apply()
 
         val callback = object : IRootCallback.Stub() {
             override fun onLog(line: String) {
@@ -1635,7 +1655,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
         if (live) {
             // 成功后**不解绑**：libtimer 还拿着页，解绑会让 Shizuku 杀掉整个 UserService。
-            appendLog("✔ KernelSU 模块已加载（32601 / 3.3.0 KDP）；UserService 常驻保持，exploit 留在 parked")
+            appendLog("✔ KernelSU 模块已加载（98260 驱动）；UserService 常驻保持，exploit 留在 parked")
+            guardPrefs.edit().putBoolean("last_ok", true).apply()
             appendLog("◆ 先别清后台/别关 App：parked 进程还在 UserService 里拿着页")
             appendLog("◆ 若随后出现软重启（黑屏/锁屏闪一下后回到桌面）：属正常，内核 uptime 不重置、KSU 模块仍在，root 有效")
             _state.value = _state.value.copy(rooted = true)
