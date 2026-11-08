@@ -447,4 +447,10 @@ Auto-save log</string>
     <string name="logs_copy_code">Copy log ID</string>
     <string name="logs_code_none">Log ID: (run once first)</string>
     <string name="logs_code_copied">Log ID copied: %1$s</string>
+    <string name="logs_history_title">Local run logs (%1$d)</string>
+    <string name="logs_history_open">Show</string>
+    <string name="logs_history_close">Hide</string>
+    <string name="logs_history_empty">No saved run yet. Logs are saved after each run.</string>
+    <string name="logs_history_view">View</string>
+    <string name="logs_history_detail">Run log %1$s</string>
 </resources>

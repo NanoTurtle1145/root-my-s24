@@ -406,4 +406,10 @@
     <string name="logs_copy_code">复制编号</string>
     <string name="logs_code_none">日志编号：（先跑一次）</string>
     <string name="logs_code_copied">已复制日志编号：%1$s</string>
+    <string name="logs_history_title">本机历史日志（%1$d）</string>
+    <string name="logs_history_open">展开</string>
+    <string name="logs_history_close">收起</string>
+    <string name="logs_history_empty">还没有保存过运行日志：每跑一次会自动存一条。</string>
+    <string name="logs_history_view">查看</string>
+    <string name="logs_history_detail">运行日志 %1$s</string>
 </resources>
