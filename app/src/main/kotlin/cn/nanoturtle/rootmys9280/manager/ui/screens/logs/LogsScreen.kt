@@ -116,21 +116,6 @@ fun LogsScreen(
             TextButton(onClick = { vm.clearLog() }) { Text(stringResource(R.string.logs_clear)) }
         }
 
-        if (shown.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    if (brief) {
-                        stringResource(R.string.logs_empty_brief)
-                    } else {
-                        stringResource(R.string.logs_empty)
-                    },
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
           Surface(
               color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
               shape = RoundedCornerShape(14.dp),
@@ -191,6 +176,22 @@ fun LogsScreen(
                   }
               }
           }
+
+        if (shown.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    if (brief) {
+                        stringResource(R.string.logs_empty_brief)
+                    } else {
+                        stringResource(R.string.logs_empty)
+                    },
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         } else {
             LazyColumn(
                 state = listState,
