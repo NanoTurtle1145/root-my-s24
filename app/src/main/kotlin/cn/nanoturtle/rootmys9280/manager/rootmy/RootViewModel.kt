@@ -1658,6 +1658,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             if (ksuVer == "3.3.0") "samtimer/ksud-32601" else "samtimer/ksud-32525"
         appendLog("◆ late-load 驱动: $ksuVer ($ksudAsset)")
         svc.setKsudAsset(ksudAsset)
+        svc.setDisableModules(disableKsuModules)
+        if (disableKsuModules) appendLog("◆ 已开启「禁用 KSU 模块」：late-load 前会由 root 上下文移走 /data/adb/modules")
 
         appendLog("◆ 启动 exploit（umhpipe，最多等 7 分钟）……")
         svc.runExploit(callback)

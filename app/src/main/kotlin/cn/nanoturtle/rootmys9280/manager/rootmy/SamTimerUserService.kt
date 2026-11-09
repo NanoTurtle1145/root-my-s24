@@ -27,6 +27,9 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
     /** 用哪份 ksud 做 late-load：3.3.0(32601 多 KMI，会重启管理器) / 3.2.5(原版，行为最稳)。 */
     @Volatile private var ksudAssetName: String = ASSET_KSUD_32601
 
+    /** issue #35：98260 路径也要支持「禁用 KSU 模块」——由 action 脚本在 root 上下文执行。 */
+    @Volatile private var disableModules: Boolean = false
+
     companion object {
         private const val WORK_DIR = "/data/local/tmp/w"
         private const val KSUD_STAGE_PATH = "/data/local/tmp/.ksud-stage"
@@ -63,6 +66,10 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
         }
     } catch (_: Exception) {
         false
+    }
+
+    override fun setDisableModules(disable: Boolean) {
+        disableModules = disable
     }
 
     override fun runExploit(callback: IRootCallback?) {
@@ -155,6 +162,16 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
         } catch (e: Exception) {
             log(callback, "warn: trace buffer write failed (${e.message})")
         }
+
+        // 把「禁用模块」意图传给 root 上下文里的 action 脚本：它能读写 /data/adb。
+        runCatching {
+            if (disableModules) {
+                java.io.File(WORK_DIR, "disable-modules").writeText("1")
+            } else {
+                java.io.File(WORK_DIR, "disable-modules").delete()
+            }
+        }
+        log(callback, if (disableModules) "disable-modules: on (action 会先移走模块)" else "disable-modules: off")
 
         log(callback, "starting exploit (umhpipe, detached)...")
         // 关键：不要用 ProcessBuilder 直接当子进程。那样 libtimer 的父进程是 UserService，
