@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.6.2-1E88E5?style=flat-square" alt="Version 3.6.2"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.6.3-1E88E5?style=flat-square" alt="Version 3.6.3"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
@@ -28,15 +28,15 @@
 
 ---
 
-## 最新版本 v3.6.2（2026-11-08）
+## 最新版本 v3.6.3（2026-11-10）
 
-- **98260 UAF 引擎正式可用**：One UI 9.0 / 6.1.162 设备（S9280 EZIF、S928B EZIF/EZJ1、S921E DZIF）走 98260 + KSU 3.2.5
-- **安全拆除（safe unlink）**：parked 前把 held victim 的 3 个 CPU-clock timerqueue 树根置空，软重启不再演变成硬重启
-- **一次开机只跑一次**已强制：脏状态下重复跑会在 plant 中途 panic，App 直接拦截并提示重启
-- **运行日志本机存档 + 日志编号**：反馈时贴编号即可
-- 3.3.0 驱动仍为实验档（stock 模块在 6.1.162 上偶发 system_server 崩溃循环）
+- **运行日志本机存档 + 日志编号**：每轮日志落盘，运行日志页可复制编号、查看本机历史；反馈时贴编号即可
+- **「禁用 KSU 模块」在 98260 路径生效**（issue #35）：late-load 前由 root 上下文移走模块，结束后恢复
+- **3.2.5 路径最终确认**：软重启不再硬重启，Vector/Zygisk 软重启后可正常加载
+- 98260 引擎继续覆盖 One UI 9.0 / 6.1.162：S9280 EZIF、S928B EZIF/EZJ1、S921E DZIF
+- README 重整 + 新 banner（Swiss 21:9）；3.3.0 仍为实验档
 
-完整说明见 [docs/release-v3.6.2.md](docs/release-v3.6.2.md)。
+完整说明见 [docs/release-v3.6.3.md](docs/release-v3.6.3.md)。
 
 ## 两种提权引擎
 
@@ -224,6 +224,7 @@ timer UAF → pipe 读写原语 → 伪造 workqueue → call_usermodehelper
 
 ### 入门与使用
 
+- [docs/release-v3.6.3.md](docs/release-v3.6.3.md) —— 最新发布说明（日志编号 / 本机历史 / #35）
 - [docs/release-v3.5.1.md](docs/release-v3.5.1.md) —— 最新发布说明（韩版 Z Flip6 支持 / BakaSU 实验模式 / 完整改动清单）
 - [docs/release-v3.4.0.md](docs/release-v3.4.0.md) —— v3.4.0 发布说明
 - [docs/forum-and-admin.md](docs/forum-and-admin.md) —— 讨论区与管理端说明
