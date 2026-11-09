@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.png" alt="RootMyS24 - 比那名居天子手持 S24 Ultra" width="100%">
+  <img src="docs/banner.png" alt="RootMyS24 — 双引擎临时 root（CVE-2026-98260 / CVE-2026-43499）" width="100%">
 </p>
 
 <h1 align="center">RootMyS24</h1>
