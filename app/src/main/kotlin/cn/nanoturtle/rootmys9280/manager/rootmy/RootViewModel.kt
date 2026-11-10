@@ -1649,15 +1649,15 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             return@withContext
         }
 
+        // KSU 版本选项卡决定用哪份 ksud 做 late-load：
+        //   3.3.0（32601 多 KMI）→ ksud 会自己重启管理器（上次"自动打开 KSU"就是它）
+        //   3.2.5（原版 fork）→ 行为最稳，43499 那条链用的也是 3.2.5 档
+        val ksuVer = ksuVersionEffective(firmwareVersion)
         if (ksuVer == "3.3.0") {
             appendLog("◆ late-load 驱动 3.3.0：stock ksud 不支持 --ephemeral，会照常跑 module stage")
         } else {
             appendLog("◆ late-load 用 --ephemeral（同 43499）：不装 /data/adb、不跑 module stage、不重启管理器")
         }
-        // KSU 版本选项卡决定用哪份 ksud 做 late-load：
-        //   3.3.0（32601 多 KMI）→ ksud 会自己重启管理器（上次"自动打开 KSU"就是它）
-        //   3.2.5（原版 fork）→ 行为最稳，43499 那条链用的也是 3.2.5 档
-        val ksuVer = ksuVersionEffective(firmwareVersion)
         val ksudAsset =
             if (ksuVer == "3.3.0") "samtimer/ksud-32601" else "samtimer/ksud-32525"
         appendLog("◆ late-load 驱动: $ksuVer ($ksudAsset)")
