@@ -7,26 +7,15 @@ unshare -m sh -c '
   echo "bind mounted kdp"
   /system/bin/logcat --version
   if [ -f /data/local/tmp/w/disable-modules ]; then
-      for d in /data/adb/modules /data/adb/modules_update; do
-          if [ -d "$d" ] && [ ! -e "$d.rms24bak" ]; then
-              mv "$d" "$d.rms24bak" && echo "modules disabled: $d"
-          fi
+      for d in /data/adb/modules/*/; do
+          [ -d "$d" ] || continue
+          [ -f "$d/disable" ] && continue
+          [ -f "$d/remove" ] && continue
+          touch "$d/disable" && echo "module disabled: $d"
       done
   fi
   /system/bin/logcat late-load --ephemeral --allow-shell --package-name me.weishu.kernelsu
   echo "late_rc=$?"
-  for d in /data/adb/modules /data/adb/modules_update; do
-      if [ -d "$d.rms24bak" ]; then
-          if [ -d "$d" ]; then
-              rmdir "$d" 2>/dev/null || true
-          fi
-          if [ ! -e "$d" ]; then
-              mv "$d.rms24bak" "$d" && echo "modules restored: $d"
-          else
-              echo "modules restore skipped: $d exists, backup kept at $d.rms24bak"
-          fi
-      fi
-  done
 '
 echo "outer_rc=$?"
 echo "after: module=$(grep -c kernelsu /proc/modules 2>/dev/null)"

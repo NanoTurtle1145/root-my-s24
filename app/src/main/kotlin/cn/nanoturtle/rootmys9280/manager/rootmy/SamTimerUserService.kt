@@ -171,7 +171,7 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
                 java.io.File(WORK_DIR, "disable-modules").delete()
             }
         }
-        log(callback, if (disableModules) "disable-modules: on (action 会先移走模块)" else "disable-modules: off")
+        log(callback, if (disableModules) "disable-modules: on (action 会给每个模块写 disable 标记)" else "disable-modules: off")
 
         log(callback, "starting exploit (umhpipe, detached)...")
         // 关键：不要用 ProcessBuilder 直接当子进程。那样 libtimer 的父进程是 UserService，
