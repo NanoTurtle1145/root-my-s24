@@ -205,6 +205,18 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // SM-S921E（国际版 S24，e1q / Exynos 2400）One UI 9.0 / kernel 6.1.162（构建号 34343818）：
         // 与 EZIF 同内核构建；issue #33 实测（v3.6.0 build 263）98260 UAF 引擎 + 3.2.5 驱动
         // 直接可用（日志里 engine=SAMTIMER_98260、ksud-32525），KNOX 完好。
+        // SM-S9280 国行 DZJ3（One UI 8.5 / kernel 6.1.145 / 构建号 3254743）
+        // 社区 98260 target：PR #44 / issue #40
+        S9280DZJ3(
+            "cve-2026-43499",
+            "One UI 8.5",
+            "SM-S9280 国行",
+            "DZJ3",
+            Region.CHINA,
+            "ksud-32525",
+            tested = false,
+            engine = Engine.SAMTIMER_98260,
+        ),
         S921EDZIF(
             "cve-2026-43499-S9280ZHU6EZIF",
             "One UI 9.0",
