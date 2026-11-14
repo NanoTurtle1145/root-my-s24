@@ -55,17 +55,19 @@ abstract class GitLatestTagValueSource : ValueSource<String, ValueSourceParamete
         }
         if (result.exitValue != 0 || output.toString().isBlank()) return "1.0"
 
-        // 只认**正式版 tag**（`v3.5.0` 这种裸版本号），跳过预发布 tag。
+        // base 版本取**最近的版本号 tag**，预发布 tag 也要参与——但只取 '-' 前面的基版本：
+        //   v3.6.4-beta.1        -> 3.6.4（预发布：base 尚未正式发布）
+        //   v3.5.2-beta.232      -> 3.5.2（base 已有正式版，结果不变）
+        //   v3.5.0               -> 3.5.0
         //
-        // 不跳过会踩一个真实的坑：预发布 tag 形如 `v3.5.0-alpha1.166`，
-        // 而 `--sort=-v:refname` 会把它排在 `v3.5.0` **前面**（实测确认），
-        // 于是下一次构建的 base 版本取到整串 `3.5.0-alpha1.166`，再拼上渠道后缀
-        // 就成了 `3.5.0-alpha1.166-alpha1.167` —— 版本号自我叠加。
-        // 预发布 tag 仍保留在仓库里（GitHub Release 需要它），只是不参与 base 取值。
+        // 之前完全跳过预发布 tag，导致"给下一个版本发 beta"时 base 还停在上一个正式版
+        // （例如打了 v3.6.4-beta.1，产物却显示 3.6.3-beta.292）。只取 '-' 前的部分即可
+        // 避免当年"整串 tag 拼两次渠道后缀"的自我叠加。
         return output.toString()
             .lineSequence()
             .map { it.trim().removePrefix("v") }
-            .firstOrNull { it.isNotEmpty() && !it.contains('-') }
+            .mapNotNull { raw -> raw.substringBefore('-').takeIf { it.matches(Regex("""\d+\.\d+\.\d+""")) } }
+            .firstOrNull()
             ?: "1.0"
     }
 }
