@@ -60,6 +60,7 @@ app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 �
 - `<TAG>` = 完整构建号大写（如 `S9280ZCS6DZJ3`）
 - 运行时优先用 `targets/<当前构建号>/`，不存在则回退公共载荷
 - 源码放 `app/src/main/cpp/targets/<TAG>/`，PR 附 SHA-256 / 体积 / 编译命令 / 定标记录
+- 目前已有：`S9280ZCS6DZJ3`（社区贡献，PR #44；手动 staging 真机验证通过，App 内待验证 → `tested=false`）
 
 ### 98260 UAF 链路
 
@@ -172,6 +173,7 @@ timer UAF → pipe 读写原语 → 伪造 workqueue → call_usermodehelper
 | SM-S928B（欧版，One UI 7.0） | S928BXXU4BYD9 | 6.1.99 | `cve-2026-43499-S928BXXU4BYD9` | 独立定标 |
 | SM-S928B（欧版，One UI 6.1） | S928BXXU4AXK5 | 6.1.75 | `cve-2026-43499-S928BXXU4AXK5` | 本 App 支持的最早 6.1 代际 |
 | W9023N（国行 心系天下 W23） | W9023ZCSAIZF1 | 5.10.236 | `cve-2026-43499-W9023ZCSAIZF1` | cape/SM8450，Android 12，beta |
+| **SM-S9280（国行 DZJ3）** | S9280ZCS6DZJ3 | 6.1.145 | 引擎：**98260 UAF**（per-target `samtimer/targets/S9280ZCS6DZJ3`） | 社区定标（#40/PR #44）：手动 staging 真机 root 成功；App 内待验证（`tested=false`） |
 
 ### 移植载荷（未经本 App 真机实测）
 
@@ -262,6 +264,7 @@ timer UAF → pipe 读写原语 → 伪造 workqueue → call_usermodehelper
 - [docs/oneui7-adaptation-report.md](docs/oneui7-adaptation-report.md) —— One UI 7 (BYH7) 可行性报告
 - [docs/byh7-target-complete.md](docs/byh7-target-complete.md) —— BYH7 定标完成报告
 - [docs/f741n-dze1-target-complete.md](docs/f741n-dze1-target-complete.md) —— 韩版 F741N DZE1 定标报告（b6q）
+- [docs/port-98260-S9280ZCS6DZJ3.md](docs/port-98260-S9280ZCS6DZJ3.md) —— DZJ3（6.1.145）98260 target 定标记录（社区）
 - [docs/s928b-ezif-target-complete.md](docs/s928b-ezif-target-complete.md) —— S24 Ultra 欧版 S928B EZIF 定标报告（One UI 9.0）
 
 ### 运行日志与故障定位
