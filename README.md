@@ -5,142 +5,82 @@
 <h1 align="center">RootMyS24</h1>
 
 <p align="center">
-  免解锁 root · Samsung Galaxy S24 系列（S9210 / S9260 / S9280 / S921E）与折叠屏<br>
-  双引擎：<strong>CVE-2026-98260</strong>（98260 UAF）· <strong>CVE-2026-43499</strong>（GhostLock）<br>
-  支持 One UI 9.0 / 内核 6.1.162，不写 boot、不熔断 KNOX
+  免解锁 bootloader 的三星临时 root · root 只活到重启，不写 boot、不熔断 KNOX<br>
+  双引擎：<strong>CVE-2026-98260</strong>（98260 UAF，One UI 9.0 / 6.1.162）·
+  <strong>CVE-2026-43499</strong>（GhostLock，6.1.145 及更早）
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.6.3-1E88E5?style=flat-square" alt="Version 3.6.3"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.6.4--beta.1-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
-  <a href="https://github.com/NanoTurtle1145/root-my-s24"><img src="https://img.shields.io/badge/platform-Android-1E88E5?style=flat-square" alt="Android"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-welcome-1E88E5?style=flat-square" alt="Contributing"></a>
 </p>
 
 <p align="center">
   <b>简体中文</b> · <a href="README.zh-TW.md">繁體中文（台灣）</a> · <a href="README.zh-HK.md">繁體中文（香港）</a> · <a href="README.en.md">English</a>
+  &nbsp;|&nbsp; <a href="docs/README.md">文档中心</a> · <a href="CONTRIBUTING.md">贡献指南</a> · <a href="docs/PRIVACY.md">隐私政策</a>
 </p>
 
-> 隐私：运行日志怎么上报、设备标识和 IP 怎么处理，见 [隐私政策](docs/PRIVACY.md)。
-
-> 安全研究声明：本项目仅用于安全研究与自有设备维护。使用内核漏洞提权存在导致系统崩溃、数据丢失、设备变砖的风险，使用者需自行承担一切后果。请勿用于非法用途。
+> **声明**：仅用于安全研究与自有设备维护。使用内核漏洞提权存在系统崩溃、数据丢失、设备变砖的风险，后果自负；请勿用于非法用途。
+> 运行日志共享是可选项，怎么上报、设备标识与 IP 如何处理见[隐私政策](docs/PRIVACY.md)。
 
 ---
 
-## 最新版本 v3.6.3（2026-11-10）
+## 一、这是什么
 
-- **运行日志本机存档 + 日志编号**：每轮日志落盘，运行日志页可复制编号、查看本机历史；反馈时贴编号即可
-- **「禁用 KSU 模块」在 98260 路径生效**（issue #35）：late-load 前由 root 上下文移走模块，结束后恢复
-- **3.2.5 路径最终确认**：软重启不再硬重启，Vector/Zygisk 软重启后可正常加载
-- 98260 引擎继续覆盖 One UI 9.0 / 6.1.162：S9280 EZIF、S928B EZIF/EZJ1、S921E DZIF
-- README 重整 + 新 banner（Swiss 21:9）；3.3.0 仍为实验档
+一个跑在三星 Galaxy（主要是 S24 系列及折叠屏）上的**临时 root** 工具：
 
-完整说明见 [docs/release-v3.6.3.md](docs/release-v3.6.3.md)。
+- **免解锁**：不刷 BL、不写 boot，`ro.boot.flash.locked` 保持 1
+- **不熔断**：KNOX e-fuse 不变（`warranty_bit` 保持 0）
+- **半持久**：每次重启后跑一次 App 重新加载 KernelSU 驱动，重启即干净
+- **双引擎**：新固件走 98260 UAF，旧固件走 GhostLock 43499
+- **一条链路到 KernelSU**：拿到 root 后 late-load KernelSU LKM，支持 Zygisk Next / LSPosed / KnoxPatch 等模块
 
-## 两种提权引擎
-
-机型选择页 →「提权引擎」可切换：
-
-| 引擎 | 漏洞 | 适用 | 说明 |
+| 引擎 | 漏洞 | 适用固件 | 关键点 |
 |---|---|---|---|
-| **98260 UAF** | CVE-2026-98260（`exec: Cleanup POSIX timers right after de_thread()`，posix-cpu-timers UAF） | One UI 9.0 / 6.1.162 | 实现参考 [SamTimer v1.3](https://github.com/RiosWesley/SamTimer)；走 UMH pipe 链路，**不写 cred** |
-| **GhostLock 43499** | CVE-2026-43499（rtmutex/futex waiter UAF） | 旧固件（6.1.145 及更早） | 本项目的原始引擎 |
+| **98260 UAF** | CVE-2026-98260（`exec: Cleanup POSIX timers right after de_thread()`，posix-cpu-timers UAF） | One UI 9.0 / 内核 6.1.162 | 实现参考 [SamTimer v1.3](https://github.com/RiosWesley/SamTimer)；UMH 链路，**不写 cred**，不撞 KDP/RKP/DEFEX |
+| **GhostLock 43499** | CVE-2026-43499（rtmutex/futex waiter 内核栈 UAF） | 6.1.145 及更早 | 本项目的原始引擎；较新固件已修复 |
 
-### 98260 载荷的 per-target 结构（issue #40）
+## 二、快速开始
 
-98260 引擎的公共载荷是 `samtimer/libtimer`（EZIF/EZJ1）。其他构建号的适配按下面的约定叠加：
+### 需要什么
 
-```
-app/src/main/assets/samtimer/targets/<TAG>/libtimer   # 必需，按构建号编译的载荷
-app/src/main/assets/samtimer/targets/<TAG>/uhexec     # 可选，与公共版本不同才放
-app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 加载不了才放
-```
+| 项 | 要求 |
+|---|---|
+| 设备 | 见下方「支持设备」表；固件构建号必须在覆盖范围内 |
+| 授权 | **Shizuku**（推荐）或 App 内「无线调试」直连 |
+| 管理器 | 与驱动版本匹配的**官方签名** KernelSU 管理器（见下表） |
+| 环境 | 建议熄屏运行、系统负载低、一轮跑完前别切后台 |
 
-- `<TAG>` = 完整构建号大写（如 `S9280ZCS6DZJ3`）
-- 运行时优先用 `targets/<当前构建号>/`，不存在则回退公共载荷
-- 源码放 `app/src/main/cpp/targets/<TAG>/`，PR 附 SHA-256 / 体积 / 编译命令 / 定标记录
-- 目前已有：`S9280ZCS6DZJ3`（社区贡献，PR #44；手动 staging 真机验证通过，App 内待验证 → `tested=false`）
+### 三步
 
-### 98260 UAF 链路
+1. **选机型固件** → 机型页选你的构建号
+2. **选引擎与驱动** → One UI 9.0 选 `98260 UAF` + 驱动 `3.2.5`；旧固件选 `GhostLock`（默认驱动即可）
+3. **开始 Root** → 成功后装管理器，`su` 即可用
 
-```
-timer UAF → pipe 读写原语 → 伪造 workqueue → call_usermodehelper
-→ uhexec → 私有 mount ns 里 bind-mount KDP ksud → late-load 加载 KSU 驱动
-```
+### 管理器版本必须与驱动匹配
 
-- exploit 跑在 **Shizuku UserService 常驻进程**里，App 切后台不会被回收
-- 失败时 `parking without reap (zombie held)` 是保护动作：让 victim 永远 zombie，内核走不到会 panic 的清理路径
-- parked 进程不能强杀；**一次开机只尝试一次**，失败就重启（v3.6.2 起 App 会强制拦截重复尝试）
+| App 里选的驱动 | 装哪个管理器 |
+|---|---|
+| **3.2.5（32525）** — 98260 默认 | 官方 **v3.2.5（32525）** |
+| 3.3.0（32601）— 实验 | 官方 **v3.3.0（32601）** |
 
-### 驱动选择（98260 引擎）
+> 版本错配时 `su` 可能还能用，但管理器会显示「未安装」或装不了模块。重签名 / fork 版管理器一律「未安装」（驱动只认官方签名）。
+> **不要点管理器里的「安装 / 刷入」**：那是永久安装，会写 boot，锁定 BL 上有变砖风险。装模块只用「模块」页。
 
-| 版本 | late-load 行为 | 结果 |
-|---|---|---|
-| **3.2.5**（默认，推荐） | `--ephemeral`：只加载模块，不写 /data/adb、不跑 module stage | 不自动打开 KSU 管理器，也不软重启 |
-| 3.3.0（实验） | stock 多 KMI KDP，完整 late-load | 可用，但会重启管理器 + 软重启一次；其模块在 6.1.162 上偶发 system_server 崩溃循环，**不推荐** |
+### 98260 引擎的三条硬规则
 
-> 3.3.0 的 `--ephemeral` 是我们给 3.2.5 那套 ksud 打的补丁；现成 3.3.0 构建没有这个分支。
-> 3.3.0 的 DDK 构建（内嵌 DZH3 模块）在 EZIF 上加载即 panic，不要用。
+1. **一次开机只跑一次** —— 失败 / 软重启后先重启手机再跑，脏状态继续跑会在 plant 中途 panic（v3.6.2 起 App 会直接拦截）
+2. **别用 3.3.0 驱动** —— 该驱动在 6.1.162 上会让 system_server 崩溃循环，用 3.2.5
+3. **看到 `parking without reap (zombie held)` 就重启** —— 这是保护动作（parked 进程拿住页），不能强杀
 
-## 使用情况
+### 出问题了怎么反馈
 
-> 以下为**匿名聚合**统计（数据来自 App 内可选的运行日志共享）：不含 IP、城市或任何设备标识。
-> 图表由项目服务器动态生成，随数据自动更新。
+运行日志页 →「复制编号」（v3.6.3 起），把**日志编号**贴进 issue 即可；模板会自动要求机型、固件、内核、引擎、驱动。没有编号时贴完整日志也行。
 
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=summary" alt="RootMyS24 使用统计" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=country" alt="用户地区分布" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=outcome" alt="运行结果构成" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=firmware" alt="固件构建分布" width="100%">
-</p>
-
-## 仓库统计
-
-> 以下图表由项目服务器基于 GitHub 公开 API 动态生成，自动更新（Star、Issue / PR 与下载量）。
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=overview" alt="仓库概览（Star / Fork / 下载 / Issue / PR / 提交）" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=stars" alt="Star 增长历史" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=activity" alt="Issue / PR 历史（累计）" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=downloads" alt="Release 下载量" width="100%">
-</p>
-
-## 特性
-
-- 免解锁 bootloader：不刷 BL、不升 rev bit，bootloader 保持锁定
-- 不熔断 KNOX：e-fuse 状态保持原样（可搭配 KnoxPatch 恢复 Secure Folder 等 KNOX 功能）
-- 半持久化：每次重启后运行一次 App 即可重新加载 KernelSU 驱动
-- **双引擎可选**：98260 UAF（One UI 9.0 / 6.1.162）与 GhostLock 43499（旧固件）
-- **KernelSU 驱动版本可选**：3.2.5（98260 默认，稳定）/ 3.3.0（实验）；版本清单由服务端在线下发
-- **SELinux 隐藏（仅 3.3.0 驱动）**：管理器显示「强制执行」而内核实际宽容模式
-- **一次开机只跑一次**：v3.6.2 起检测到同开机重复尝试会直接拦截（脏状态会导致 exploit panic）
-- **运行日志本机存档 + 日志编号**：每轮日志落盘，反馈时只要贴编号
-- 「已实测」标记在线获取：机型卡片的实测状态由服务端下发，无需等 App 更新
-- 现代 Material 3 界面：动态 ambience 头部、悬浮导航、多语言
-- 首次启动必读指南：说明临时 root 不解锁 bootloader、重启即恢复，警告不要用 KernelSU 永久安装
-- 运行日志共享（可选）：始终提供 / 每次询问 / 不提供
-- 调试模式：设置页点版本号七下开启
-
-## 支持设备
+## 三、支持设备
 
 ### 已实测成功
 
@@ -188,7 +128,7 @@ timer UAF → pipe 读写原语 → 伪造 workqueue → call_usermodehelper
 | 折叠屏 | 5.15 / 6.1 / 6.6 | Z Flip5/6/7、Z Fold5/6/7 国行，F956U 美版，F966B 欧版 |
 | 心系天下 | 6.1 / 6.6 | W25 DZF2/DZG3、W26 BZG3/BZF1 |
 
-> 同平台（e3q/e1q）同构建号固件内核符号一致，可直接通用；港版与台版同构建号共用同一载荷。跨构建号需逐符号对比修正；跨平台/跨大版本需完整重新定标，且漏洞可能已被修复。适配方法与各目标定标报告见[文档导航](#文档导航)。
+> 同平台（e3q/e1q）同构建号固件内核符号一致，可直接通用；港版与台版同构建号共用同一载荷。跨构建号需逐符号对比修正；跨平台/跨大版本需完整重新定标，且漏洞可能已被修复。适配方法与各目标定标报告见[文档导航](#九文档导航)。
 >
 > **EZIF 条目同时覆盖 EZJ1（S9280ZHS6EZJ1 / S928BXXS6EZJ1）**：内核构建号同为 `34343818`，只是新构建串；
 > 用 98260 引擎 + 3.2.5 驱动即可（不要用 3.3.0，该模块在 6.1.162 上会让 system_server 崩溃循环）。
@@ -196,112 +136,116 @@ timer UAF → pipe 读写原语 → 伪造 workqueue → call_usermodehelper
 > **国行 DZF2 载荷自 v3.5.0 起覆盖 DZE2–DZH3**（同一条 6.1.145 内核线）；外版 DZE2 载荷覆盖 DZE2–DZG1。
 >
 > ⚠ **美版 S24 系列（SM-S921U / S926U1 / S928U / S928U1）暂不支持**。按内核构建号为单位适配：美版 DZF2 构建号与国行不同，`kmalloc_caches` 0x176c6f8（美版）vs 0x176cbb8（国行）。美版 S24+（S926U1/XAA）DZE2 已完成定标（`cve-2026-43499-dze2-xaa`，p0 指纹按美版内核重生成），因缺真机实测暂未随包发布；S928U/U1 尚未取到 boot 镜像，`.rodata` 字符串区未核对。
-## KernelSU 驱动版本
 
-机型页有独立的「KernelSU 驱动版本」选项卡，切换它只决定**加载哪个 KernelSU 驱动**，exploit 载荷本身与版本无关。
+## 四、引擎与驱动（进阶）
+
+### 98260 UAF 链路
+
+```
+timer UAF → pipe 读写原语 → 伪造 workqueue → call_usermodehelper
+→ uhexec → 私有 mount ns 里 bind-mount KDP ksud → late-load 加载 KernelSU 驱动
+```
+
+- exploit 跑在 **Shizuku UserService 常驻进程**里，App 切后台不会被回收
+- 失败时 `parking without reap (zombie held)` 是保护动作：让 victim 永远 zombie，内核走不到会 panic 的清理路径
+- v3.6.2 起有**安全拆除（safe unlink）**：parked 前把 held victim 的 3 个 CPU-clock timerqueue 树根置空，软重启不再演变成硬重启（补丁已提交上游 [SamTimer PR #2](https://github.com/RiosWesley/SamTimer/pull/2)）
+
+### 98260 载荷的 per-target 结构
+
+公共载荷是 `samtimer/libtimer`（覆盖 EZIF/EZJ1）。其他构建号的适配按下面的约定叠加，**不改公共载荷**：
+
+```
+app/src/main/assets/samtimer/targets/<TAG>/libtimer   # 必需，按构建号编译的载荷
+app/src/main/assets/samtimer/targets/<TAG>/uhexec     # 可选，与公共版本不同才放
+app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 加载不了才放
+```
+
+- `<TAG>` = 完整构建号大写（如 `S9280ZCS6DZJ3`）；运行时优先 targets 目录，缺失回退公共载荷
+- 目前已合入：`S9280ZCS6DZJ3`（社区贡献，PR #44；手动 staging 真机验证通过，App 内待验证 → `tested=false`）
+- 适配流程与 PR 要求见 [CONTRIBUTING.md](CONTRIBUTING.md) →「98260 载荷适配」
+
+### 驱动版本
 
 | 版本 | 适用 | 说明 |
 |---|---|---|
-| **3.2.5（32525）** | 98260 引擎（默认） | **推荐**。`--ephemeral` late-load：不写 /data/adb、不跑 module stage、不自动打开管理器、不软重启。配套管理器：官方 **v3.2.5** |
-| 3.3.0（32601） | GhostLock 旧固件 / 实验 | 支持 SELinux 隐藏；但在 6.1.162 上 stock 模块偶发 system_server 崩溃循环，98260 引擎**不推荐**。配套管理器：官方 **v3.3.0** |
+| **3.2.5（32525）** | 98260 引擎（默认） | **推荐**。`--ephemeral` late-load：不写 /data/adb、不跑 module stage、不自动打开管理器、不软重启 |
+| 3.3.0（32601） | GhostLock 旧固件 / 实验 | 支持 SELinux 隐藏；6.1.162 上 stock 模块偶发 system_server 崩溃循环，98260 引擎**不推荐** |
 
-版本清单由服务端在线下发，且只对**提供该驱动的固件**生效——不适用的固件自动回退默认驱动，并在选项卡下方提示。
+版本清单由服务端在线下发，只对提供该驱动的固件生效，不适用的固件自动回退默认驱动并提示。
 
-> **管理器版本要跟驱动版本对上**：驱动 3.2.5 → 官方 KernelSU **v3.2.5（32525）** 管理器；驱动 3.3.0 → 官方 **v3.3.0（32601）**。
-> 版本错配时 `su` 可能还能用，但管理器会显示「未安装」或装不了模块。另外驱动只认**官方签名**的管理器，重签名/fork 版一律显示「未安装」。
+### BakaSU 内核模式（实验）
 
-## 使用流程
+设置里「BakaSU 内核（实验）」开关（默认关）改用三星适配的 BakaSU LKM：
 
-1. 安装 App，授权方式：
-   - **Shizuku**（默认）：安装并启动 Shizuku（无线/有线 ADB 授权）
-   - **无线调试**（实验性）：设置页开启「无线调试授权」后，主页支持通知配对 / 配对码 / 直连
-2. 选择机型/固件，并在「**提权引擎**」里选引擎（One UI 9.0 选中 98260 UAF，旧固件选 GhostLock）
-3. 在「**KernelSU 驱动版本**」里选驱动（98260 → 3.2.5；GhostLock 按机型默认）
-4. 点击「开始 Root」。98260 建议：**一次开机只跑一次**，失败就重启再试
-5. 安装与驱动版本匹配的官方管理器（默认 3.2.5 驱动 → 官方 **v3.2.5 / 32525**），跑完后首页显示「工作中 [越狱模式]」
+- 仅 **SM-S9280 / S9280ZCS6DZH3（6.1.145）** 实测通过
+- 每次开机需重跑；**别点管理器「安装/刷入」**
+- 详见 [docs/bakasu-kernel-mode.md](docs/bakasu-kernel-mode.md)，构建仓库 <https://github.com/NanoTurtle1145/BakaSU-S9280>
 
-> 成功标记：98260 是 `KERNELSU_LIVE` / 模块已加载；GhostLock 是 `exploit completed` + `retval=0 socket=1`。
-> 运行日志页可复制**日志编号**，反馈时贴编号即可。
+## 五、注意事项
 
-## BakaSU 内核模式（实验）
+- **停在已适配固件**：升级可能修掉漏洞；新固件优先按「支持设备」表核对构建号
+- exploit 概率性成功：GhostLock 失败可多试，98260 **失败要重启**
+- 运行期间建议熄屏、别切后台、别开省电；系统负载高时成功率骤降
+- 每次重启后需要重新跑一次「开始 Root」
+- **跑完别久留**：exploit 会留 parked 进程占住内核页，事情做完就重启；避免长时间高负载（游戏 / 大量后台 / 反复锁屏）
+- **管理器版本与驱动匹配**且必须官方签名（见「二、快速开始」）
+- 3.3.0 驱动在 6.1.162 上不稳（system_server 崩溃循环 → RescueParty → 整机重启）
 
-设置卡里新增「BakaSU 内核（实验）」开关（默认关）。打开后 root 流程改用
-**三星适配的 BakaSU LKM** 替代 KernelSU，并自动安装 BakaSU 管理器：
+## 六、版本历史
 
-- 仅 **SM-S9280 / S9280ZCS6DZH3（内核 6.1.145）** 实测通过
-- 每次开机需要重新运行（late-load 不持久，与 KernelSU 模式一致）
-- **不要点管理器里的「安装/刷入」页面**（会写 boot，有变砖风险），装模块走「模块」页
-- 详细说明见 [`docs/bakasu-kernel-mode.md`](docs/bakasu-kernel-mode.md)，
-  构建与脚本仓库：<https://github.com/NanoTurtle1145/BakaSU-S9280>
+| 版本 | 时间 | 要点 |
+|---|---|---|
+| [v3.6.4-beta.1](docs/release-v3.6.4-beta.1.md) | 2026-11-14 | 预发布：per-target 载荷（首个 DZJ3）、#35 禁用模块改 disable 标记 |
+| [v3.6.3](docs/release-v3.6.3.md) | 2026-11-10 | 运行日志本机存档 + 日志编号、本机历史日志 |
+| [v3.6.2](docs/release-v3.6.2.md) | 2026-11-08 | 安全拆除（软重启不再硬重启）、一次开机一次尝试强制 |
+| [v3.6.0](docs/release-v3.6.0.md) | 2026-11-07 | 新增 98260 UAF 引擎（双引擎切换） |
+| [v3.5.x](docs/README.md#一入门与使用) | 2026-10 | KSU 3.3.0 适配、欧版 EZIF 支持、BakaSU 实验、地区分组等 |
 
----
+完整历史见 [docs/README.md](docs/README.md) 的发布分组。
 
-## 文档导航
+## 七、项目结构
 
-完整文档中心见 [docs/README.md](docs/README.md)。
+```
+RootMyS24/
+├── app/                     主 App（Kotlin + Jetpack Compose）
+│   └── src/main/
+│       ├── kotlin/cn/nanoturtle/rootmys9280/manager/
+│       │   ├── rootmy/      提权流程核心（RootViewModel / 引擎 / UserService / 载荷选择）
+│       │   ├── ui/          Compose 界面（首页 / 机型页 / 设置 / 日志 / 关于）
+│       │   ├── data/        日志解析与本地存储
+│       │   ├── net/         服务端接口（公告 / 载荷清单 / 日志上报）
+│       │   └── ipc/、di/    进程通信与依赖注入
+│       ├── cpp/             exploit 源码
+│       │   ├── timer_samtimer.c        98260 UAF 公共载荷（含 safe unlink）
+│       │   └── targets/<TAG>/          按构建号的 offsets.h（如 S9280ZCS6DZJ3）
+│       ├── aidl/            UserService 接口（IRootService / IRootCallback）
+│       ├── assets/
+│       │   ├── cve-2026-43499*         GhostLock 载荷与 root helper
+│       │   └── samtimer/               98260 引擎：libtimer / uhexec / action 脚本 / ksud
+│       │       └── targets/<TAG>/      per-target 载荷
+│       ├── res/            多语言资源（20+ 语言）
+│       └── AndroidManifest.xml
+├── manager-ui/              管理器 UI 复用模块
+├── services/manager-service/ 前台服务模块
+├── server/                  自建接口（公告 / 载荷清单 / 论坛 / 统计）
+├── tools/                   构建与发布脚本（ci_release / release_flavors / split_assets）
+├── docs/                    文档：发布说明、定标报告、技术原理、隐私政策
+├── .github/workflows/       CI：签名构建 + GitHub Release
+└── .github/ISSUE_TEMPLATE/  Issue 模板（Bug / 成功反馈 / 功能建议）
+```
 
-### 入门与使用
+各目录职责：
 
-- [docs/release-v3.6.3.md](docs/release-v3.6.3.md) —— 最新发布说明（日志编号 / 本机历史 / #35）
-- [docs/release-v3.5.1.md](docs/release-v3.5.1.md) —— 最新发布说明（韩版 Z Flip6 支持 / BakaSU 实验模式 / 完整改动清单）
-- [docs/release-v3.4.0.md](docs/release-v3.4.0.md) —— v3.4.0 发布说明
-- [docs/forum-and-admin.md](docs/forum-and-admin.md) —— 讨论区与管理端说明
-- [docs/auth-plan.md](docs/auth-plan.md) —— 授权方案规划（Shizuku / 无线调试各方案状态）
-- [docs/release-v2.5.5.md](docs/release-v2.5.5.md) —— v2.5.5 发布说明（无线调试收敛为实验性开关）
-- [docs/release-v2.2.md](docs/release-v2.2.md) —— v2.2 发布说明（历史）
+| 目录 | 职责 |
+|---|---|
+| `app/src/main/kotlin/.../rootmy/` | 双引擎调度、Shizuku/无线调试授权、载荷与驱动选择、late-load、日志 |
+| `app/src/main/cpp/` | exploit 与载荷源码（按目标放 `targets/<TAG>/offsets.h`） |
+| `app/src/main/assets/` | 随包分发的二进制载荷与脚本（构建链在开发者侧） |
+| `server/` | App 在线能力：公告、载荷/驱动清单、运行统计、论坛 |
+| `tools/` | 发布流水线辅助脚本 |
+| `docs/` | 全部文档（索引见 [docs/README.md](docs/README.md)） |
 
-### 技术原理
-
-- [docs/technical-principles.md](docs/technical-principles.md) —— 本 App 技术原理（漏洞成因 / 利用链 / 为什么免解锁 / 风险）
-- [研究仓库 VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) —— 完整漏洞原理剖析（研究笔记，权威）
-
-### 固件适配与定标
-
-- **[docs/adaptation-guide-full.md](docs/adaptation-guide-full.md) —— 完整适配指南（手把手，照着做即可；含判据与失败分类）⭐**
-- [docs/adaptation-guide.md](docs/adaptation-guide.md) —— 适配方法论（旧版，偏原理）
-- [docs/dze2-target-complete.md](docs/dze2-target-complete.md) —— 港版 DZE2 定标报告
-- [docs/dzg1-target-complete.md](docs/dzg1-target-complete.md) —— 国行 DZG1 定标报告
-- [docs/cza1-target-complete.md](docs/cza1-target-complete.md) —— 港版 CZA1 定标报告
-- [docs/oneui7-adaptation-report.md](docs/oneui7-adaptation-report.md) —— One UI 7 (BYH7) 可行性报告
-- [docs/byh7-target-complete.md](docs/byh7-target-complete.md) —— BYH7 定标完成报告
-- [docs/f741n-dze1-target-complete.md](docs/f741n-dze1-target-complete.md) —— 韩版 F741N DZE1 定标报告（b6q）
-- [docs/port-98260-S9280ZCS6DZJ3.md](docs/port-98260-S9280ZCS6DZJ3.md) —— DZJ3（6.1.145）98260 target 定标记录（社区）
-- [docs/s928b-ezif-target-complete.md](docs/s928b-ezif-target-complete.md) —— S24 Ultra 欧版 S928B EZIF 定标报告（One UI 9.0）
-
-### 运行日志与故障定位
-
-- [docs/run-log-analysis.md](docs/run-log-analysis.md) —— 成功/失败日志逐行对比与判读
-- [docs/sm-s9380-rmg-root-experience.md](docs/sm-s9380-rmg-root-experience.md) —— SM-S9380 实战经验归档
-
-### 研究资料
-
-- [docs/research-index.md](docs/research-index.md) —— 研究资料全量索引
-- [docs/blog-s9280-root.md](docs/blog-s9280-root.md) —— 博客：S24 Ultra 国行免解锁 Root 实践
-- [samsung-root-research](https://github.com/NanoTurtle1145/samsung-root-research) —— 研究仓库（固件/exploit 工程/定标报告权威镜像）
-
-## 技术原理（概要）
-
-- **GhostLock（CVE-2026-43499）**：rtmutex 内核栈 use-after-free。通过 PI futex 链死锁回滚触发错误清理路径，留下指向已释放内核栈的悬垂指针；复用该栈伪造 `rt_mutex_waiter` 后获得物理内存读写，依次绕过 KASLR、降级 SELinux、以 root 执行辅助程序，最终 late-load KernelSU 驱动。
-- **98260 UAF（CVE-2026-98260）**：`exec: Cleanup POSIX timers right after de_thread()` 时序缺陷导致 posix-cpu-timers 的 `timerqueue_node` use-after-free。利用 pipe 读写原语伪造 workqueue → `call_usermodehelper` 以 root 执行 uhexec，在私有 mount ns 中 bind-mount KDP ksud 后 late-load。不写 cred，因此不触发 KDP/RKP/DEFEX 的凭据保护。
-
-两条链全程不改动持久化分区，bootloader 保持锁定、KNOX e-fuse 不熔断。
-
-> 完整原理见 [docs/technical-principles.md](docs/technical-principles.md) 与研究仓库 [VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md)。
-
-## 注意事项
-
-- **停在已适配固件，不要升级**：新固件可能修复漏洞
-- **98260 引擎一次开机只跑一次**：重复跑会让内核状态变脏、exploit 在 plant 中途 panic；失败就重启
-- exploit 概率性成功：GhostLock 失败可多试，98260 失败要重启
-- 运行期间建议熄屏（降低内核竞态概率）；系统负载高时成功率骤降
-- 每次重启后需要重新运行一次「开始 Root」加载 KernelSU 驱动
-- **跑完别久留**：exploit 会留 parked 进程占住内核页；拿到 root 后把事做完就重启，避免长时间高负载
-- **管理器版本必须与驱动匹配**（3.2.5 驱动 → 官方 v3.2.5 管理器；3.3.0 驱动 → 官方 v3.3.0），且必须是官方签名版：重签名/改包会显示「未安装」
-- **3.3.0 驱动在 6.1.162 上不稳**：偶发 system_server 崩溃循环 → RescueParty → 整机重启；98260 请用 3.2.5
-
----
-
-## 构建
+## 八、构建
 
 ```sh
 ./gradlew :app:assembleDebug    # debug APK
@@ -318,19 +262,83 @@ timer UAF → pipe 读写原语 → 伪造 workqueue → call_usermodehelper
 
 产物命名 `RootMyS24-v{版本}-{渠道}-build{versionCode}.apk`。
 
+> 渠道语义：`alphaN` = 引擎/框架试验，`betaN` = 机型/固件适配预览，`stable` = 正式发布。
+> 打 tag 推送到 GitHub 会触发 `.github/workflows/release.yml` 自动签名构建并发 Release（详见 [docs/ci-release.md](docs/ci-release.md)）。
+
 载荷（exploit / root helper / ksud）已内置在 `app/src/main/assets/`，构建链属开发者职责。
 
-## 依赖与致谢
+## 九、文档导航
+
+完整索引见 [docs/README.md](docs/README.md)。
+
+| 分类 | 文档 |
+|---|---|
+| 入门 | [快速开始](#二快速开始) · [贡献指南](CONTRIBUTING.md) · [授权方案](docs/auth-plan.md) · [隐私政策](docs/PRIVACY.md) |
+| 原理 | [技术原理](docs/technical-principles.md) · [研究仓库 VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) |
+| 适配 | [完整适配指南 ⭐](docs/adaptation-guide-full.md) · [适配方法论](docs/adaptation-guide.md) · [CONTRIBUTING → 机型适配](CONTRIBUTING.md#机型适配最有价值的贡献) |
+| 定标报告 | [DZJ3（98260）](docs/port-98260-S9280ZCS6DZJ3.md) · [S9210 DZI1](docs/port-e1q-S9210ZCS6DZI1.md) · [DZE2](docs/dze2-target-complete.md) · [CZA1](docs/cza1-target-complete.md) · [DZG1](docs/dzg1-target-complete.md) · [F741N DZE1](docs/f741n-dze1-target-complete.md) · [S928B EZIF](docs/s928b-ezif-target-complete.md) · [BYH7](docs/byh7-target-complete.md) |
+| 日志与排障 | [运行日志判读](docs/run-log-analysis.md) · [SM-S9380 实战](docs/sm-s9380-rmg-root-experience.md) |
+| 发布与 CI | [发布说明索引](docs/README.md#一入门与使用) · [CI 与发布](docs/ci-release.md) · [分系列构建](docs/separate-builds.md) |
+| 实验 | [BakaSU 内核模式](docs/bakasu-kernel-mode.md) · [DirtyFrag 引擎规划](docs/dirtyfrag-engine-plan.md) |
+
+## 十、技术原理（概要）
+
+- **98260 UAF**：`exec: Cleanup POSIX timers right after de_thread()` 时序缺陷 → posix-cpu-timers 的 `timerqueue_node` use-after-free。pipe 读写原语伪造 workqueue → `call_usermodehelper` 以 root 执行 uhexec，在私有 mount ns 中 bind-mount KDP ksud 后 late-load。**不写 cred**，不触发 KDP/RKP/DEFEX 的凭据保护。
+- **GhostLock 43499**：rtmutex 内核栈 use-after-free。PI futex 链死锁回滚触发错误清理路径，留下指向已释放内核栈的悬垂指针；复用该栈伪造 `rt_mutex_waiter` 获得物理内存读写，绕过 KASLR、降级 SELinux、以 root 执行 helper，最后 late-load KernelSU。
+
+两条链都不改动持久化分区，bootloader 保持锁定、KNOX e-fuse 不熔断。详见 [docs/technical-principles.md](docs/technical-principles.md)。
+
+## 十一、项目数据
+
+> 匿名聚合统计（App 内可选的运行日志共享）：不含 IP、城市或任何设备标识；图表由项目服务器动态生成。
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=summary" alt="使用统计" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=outcome" alt="运行结果构成" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=firmware" alt="固件构建分布" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=overview" alt="仓库概览" width="100%">
+</p>
+
+<details>
+<summary>更多图表（地区分布 / Star 增长 / Issue-PR 历史 / 下载量）</summary>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=country" alt="用户地区分布" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=stars" alt="Star 增长历史" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=activity" alt="Issue / PR 历史" width="100%">
+</p>
+
+<p align="center">
+  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=downloads" alt="Release 下载量" width="100%">
+</p>
+
+</details>
+
+## 十二、依赖与致谢
 
 - [CVE-2026-43499](https://github.com/NebuSec/CyberMeowfia/tree/main/IonStack/CVE-2026-43499) 安全研究（IonStack / NebuSec）
-- [SamTimer](https://github.com/RiosWesley/SamTimer)（98260 引擎参考实现；安全拆除补丁已提交 [PR #2](https://github.com/RiosWesley/SamTimer/pull/2)）
-- [Root-My-Galaxy](https://github.com/BuSung-dev/Root-My-Galaxy) 免解锁 root 参考工程
+- [SamTimer](https://github.com/RiosWesley/SamTimer) —— 98260 引擎参考实现；安全拆除补丁已回提 [PR #2](https://github.com/RiosWesley/SamTimer/pull/2)
+- [Root-My-Galaxy](https://github.com/BuSung-dev/Root-My-Galaxy) / [Root-My-Galaxy-Payloads](https://github.com/BuSung-dev/Root-My-Galaxy-Payloads) 免解锁 root 参考工程与载荷（Apache-2.0）
 - [KernelSU](https://github.com/tiann/KernelSU)（GPL-2.0）
-- [Zygisk-Next](https://github.com/Dr-TSNG/ZygiskNext)
-- [LSPosed](https://github.com/LSPosed/LSPosed)（GPL-3.0）
-- [KnoxPatch](https://github.com/salvogiangri/KnoxPatch)
+- [Zygisk-Next](https://github.com/Dr-TSNG/ZygiskNext) · [LSPosed](https://github.com/LSPosed/LSPosed)（GPL-3.0）· [KnoxPatch](https://github.com/salvogiangri/KnoxPatch)
 - [Vector](https://github.com/JingMatrix/Vector) 界面模板（Material 3 / ambience）
+- 以及所有提交 issue、测试新固件的用户
 
 ## License
 
-[GNU General Public License v3.0](LICENSE)
+[GNU General Public License v3.0](LICENSE)。第三方组件许可见 [THIRD_PARTY_NOTICES](docs/README.md) 与各载荷目录内的声明。
