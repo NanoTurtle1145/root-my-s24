@@ -131,7 +131,7 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
     private fun stageAsset(name: String, dest: File): Boolean = try {
         dest.parentFile?.mkdirs()
         if (dest.exists()) dest.delete()
-        context.assets.open(name).use { input ->
+        openAsset(name).use { input ->
             dest.outputStream().use { output -> input.copyTo(output) }
         }
         dest.setReadable(true, false)
