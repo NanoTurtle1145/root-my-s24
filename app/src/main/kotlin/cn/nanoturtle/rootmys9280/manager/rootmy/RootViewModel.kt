@@ -1661,6 +1661,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val ksudAsset =
             if (ksuVer == "3.3.0") "samtimer/ksud-32601" else "samtimer/ksud-32525"
         appendLog("◆ late-load 驱动: $ksuVer ($ksudAsset)")
+        svc.setTargetTag(effectiveBuildTag)
         svc.setKsudAsset(ksudAsset)
         svc.setDisableModules(disableKsuModules)
         if (disableKsuModules) appendLog("◆ 已开启「禁用 KSU 模块」：late-load 前会由 root 上下文移走 /data/adb/modules")

@@ -47,6 +47,20 @@
 | **98260 UAF** | CVE-2026-98260（`exec: Cleanup POSIX timers right after de_thread()`，posix-cpu-timers UAF） | One UI 9.0 / 6.1.162 | 实现参考 [SamTimer v1.3](https://github.com/RiosWesley/SamTimer)；走 UMH pipe 链路，**不写 cred** |
 | **GhostLock 43499** | CVE-2026-43499（rtmutex/futex waiter UAF） | 旧固件（6.1.145 及更早） | 本项目的原始引擎 |
 
+### 98260 载荷的 per-target 结构（issue #40）
+
+98260 引擎的公共载荷是 `samtimer/libtimer`（EZIF/EZJ1）。其他构建号的适配按下面的约定叠加：
+
+```
+app/src/main/assets/samtimer/targets/<TAG>/libtimer   # 必需，按构建号编译的载荷
+app/src/main/assets/samtimer/targets/<TAG>/uhexec     # 可选，与公共版本不同才放
+app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 加载不了才放
+```
+
+- `<TAG>` = 完整构建号大写（如 `S9280ZCS6DZJ3`）
+- 运行时优先用 `targets/<当前构建号>/`，不存在则回退公共载荷
+- 源码放 `app/src/main/cpp/targets/<TAG>/`，PR 附 SHA-256 / 体积 / 编译命令 / 定标记录
+
 ### 98260 UAF 链路
 
 ```

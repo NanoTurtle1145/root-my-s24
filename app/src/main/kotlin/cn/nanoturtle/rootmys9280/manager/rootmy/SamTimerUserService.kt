@@ -30,6 +30,9 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
     /** issue #35：98260 路径也要支持「禁用 KSU 模块」——由 action 脚本在 root 上下文执行。 */
     @Volatile private var disableModules: Boolean = false
 
+    /** 设备构建号；有 samtimer/targets/<tag>/ 下的专属载荷时优先用它（issue #40 约定）。 */
+    @Volatile private var targetTag: String = ""
+
     companion object {
         private const val WORK_DIR = "/data/local/tmp/w"
         private const val KSUD_STAGE_PATH = "/data/local/tmp/.ksud-stage"
@@ -68,6 +71,10 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
         false
     }
 
+    override fun setTargetTag(tag: String) {
+        targetTag = tag.trim().uppercase()
+    }
+
     override fun setDisableModules(disable: Boolean) {
         disableModules = disable
     }
@@ -101,6 +108,24 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
             java.io.File(WORK_DIR, "service.log").appendText(line + "\n")
         }
         runCatching { callback.onLog(line) }
+    }
+
+    /**
+     * 打开一个资产：优先用 samtimer/targets/<TAG>/<basename>（按构建号专属载荷），
+     * 不存在再回退到 samtimer/<basename>。12260 target 目录结构见 issue #40。
+     */
+    private fun openAsset(name: String): java.io.InputStream {
+        val base = name.substringAfterLast('/')
+        val tag = targetTag
+        if (tag.isNotEmpty() && (base == "libtimer" || base == "uhexec" || base == "ksud" || base.startsWith("ksud-"))) {
+            val override = "samtimer/targets/$tag/$base"
+            try {
+                return context.assets.open(override)
+            } catch (_: java.io.FileNotFoundException) {
+                // fall through to shared asset
+            }
+        }
+        return context.assets.open(name)
     }
 
     private fun stageAsset(name: String, dest: File): Boolean = try {
