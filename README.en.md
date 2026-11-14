@@ -1,281 +1,268 @@
 <p align="center">
-  <img src="docs/banner.png" alt="RootMyS24 - Tenshi Hinanawi holding an S24 Ultra" width="100%">
+  <img src="docs/banner.png" alt="RootMyS24 — dual-engine temporary root (CVE-2026-98260 / CVE-2026-43499)" width="100%">
 </p>
 
 <h1 align="center">RootMyS24</h1>
 
 <p align="center">
-  Root without unlocking · Samsung Galaxy S24 series (S9210 / S9260 / S9280) + China Z Fold6<br>
-  A security research project built on kernel vulnerability <strong>CVE-2026-43499</strong>
+  Temporary root for Samsung Galaxy devices without unlocking the bootloader — root lasts until reboot,<br>
+  nothing is written to boot, KNOX e-fuse stays intact.<br>
+  Dual engine: <strong>CVE-2026-98260</strong> (98260 UAF, One UI 9.0 / kernel 6.1.162) ·
+  <strong>CVE-2026-43499</strong> (GhostLock, 6.1.145 and older)
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.5.1-1E88E5?style=flat-square" alt="Version 3.5.1"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.6.4--beta.1-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
-  <a href="https://github.com/NanoTurtle1145/root-my-s24"><img src="https://img.shields.io/badge/platform-Android-1E88E5?style=flat-square" alt="Android"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/blob/main/CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-welcome-1E88E5?style=flat-square" alt="Contributing"></a>
 </p>
 
 <p align="center">
   <a href="README.md">简体中文</a> · <a href="README.zh-TW.md">繁體中文（台灣）</a> · <a href="README.zh-HK.md">繁體中文（香港）</a> · <b>English</b>
+  &nbsp;|&nbsp; <a href="docs/README.md">Docs</a> · <a href="CONTRIBUTING.md">Contributing</a> · <a href="docs/PRIVACY.md">Privacy</a>
 </p>
 
-> **Security research notice:** This project is intended solely for security research and the
-> maintenance of your own device. Privilege escalation through a kernel vulnerability carries the
-> risk of system crashes, data loss and a bricked device. You bear full responsibility for any
-> consequences. Do not use it for unlawful purposes.
+> **Disclaimer**: for security research and your own devices only. Kernel exploitation can crash the system, lose data or brick the device; you accept the risk. Do not use it on devices you do not own.
 
 ---
 
-## Usage
+## 1. What this is
 
-> The figures below are **anonymised aggregates** (from the App's optional run-log sharing):
-> no IP addresses, cities or any device identifiers. The charts are generated dynamically by the
-> project server and update automatically.
+A one-tap **temporary root** for Samsung Galaxy devices (mainly S24 series and foldables):
 
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=summary" alt="RootMyS24 usage statistics" width="100%">
-</p>
+- **No bootloader unlock**: nothing is flashed, `boot` is untouched, `ro.boot.flash.locked` stays `1`
+- **KNOX intact**: the e-fuse is not tripped (`warranty_bit` stays `0`)
+- **Semi-persistent**: run the app once per boot to late-load the KernelSU driver; reboot to clean up
+- **Two engines**: 98260 UAF for new firmware, GhostLock 43499 for older builds
+- **KernelSU late-load**: Zygisk Next / LSPosed / KnoxPatch and friends work as usual
 
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=country" alt="User region distribution" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=outcome" alt="Run outcome breakdown" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=firmware" alt="Firmware build distribution" width="100%">
-</p>
-
-## Repository stats
-
-> The charts below are generated on the project server from GitHub's public API and update
-> automatically (stars, issues / PRs and release downloads).
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=overview" alt="Repository overview (stars / forks / downloads / issues / PRs / commits)" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=stars" alt="Star history" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=activity" alt="Issue / PR history (cumulative)" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=downloads" alt="Release downloads" width="100%">
-</p>
-
-## Features
-
-- **No bootloader unlock**: no BL flashing, no rev-bit bump — the bootloader stays locked
-- **KNOX e-fuse untouched**: e-fuse state is left as-is (pair with KnoxPatch to restore Secure Folder and other KNOX features)
-- **Semi-persistent**: just run the App once after each reboot to reload the KernelSU driver
-- **KernelSU ecosystem**: Zygisk-Next / LSPosed / KnoxPatch and other modules
-- **Selectable KernelSU driver version** (its own tab on the device page): **3.3.0 (recommended)** or 3.2.5.
-  The version list is delivered online by the server; firmware that does not offer a given driver
-  falls back to its own default automatically
-- **SELinux hiding (3.3.0 only)**: the manager reports `SELinux status: Enforcing` while the kernel is
-  actually permissive, making the modification harder to detect. 3.2.5 lacks this and reports
-  "Permissive"
-- **"Verified" marks fetched online**: the tested status shown on device cards comes from the server,
-  so it can be adjusted without shipping a new App
-- **Modern Material 3 UI**: dynamic ambience header, floating navigation, 19 languages
-- **First-run guide**: explains that root is temporary and does not unlock the bootloader, that a
-  reboot restores the original state, and warns against KernelSU's permanent install (which can brick
-  a locked device). Re-readable from the About page at any time
-- **Optional run-log sharing**: always / ask each time / never — changeable in Settings, used to
-  diagnose failures on new firmware
-- **Debug mode**: tap the version number seven times in Settings to test log-endpoint connectivity,
-  view the machine identifier, or replay the first-run guide
-
-## Supported devices
-
-| Model | Firmware | Kernel | Status |
+| Engine | Vulnerability | Firmware | Notes |
 |---|---|---|---|
-| SM-S9280 (China DZF2) | S9280ZCS6DZF2 | 6.1.145 | Verified working (baseline) |
-| **SM-S9280 (China DZH3)** | **S9280ZCS6DZH3** | **6.1.145** | **Verified working (KernelSU 3.3.0)** |
-| SM-F9580 (China Z Fold6) | shares the DZF2 payload | same GKI build | Verified by a Coolapk user |
-| SM-S9280 (HK/TW DZE2) | S9280ZHS6DZE2 | 6.1.145 | Verified working (HK/TW share one payload) |
-| SM-S9280 (China DZG1) | S9280ZCS6DZG1 | 6.1.145 | Merged into the DZF2 payload (since v2.5.6) |
-| SM-S9280 (HK/TW DZH3) | S9280ZHS6DZH3 | 6.1.145 | Merged into the DZE2 (overseas) payload |
-| SM-S9280 (HK/TW CZA1) | S9280ZHS4CZA1 | 6.1.128 | Calibrated (shared by HK/TW) |
-| SM-S9260 (TW DZG1) | S9260ZHS6DZG1 | 6.1.145 | Verified on a single device (HK/TW DZE2 payload, see issue #3) |
-| SM-F741N (Korea Z Flip6) | F741NKSS4DZE1 | 6.1.145 | Verified working (beta.191, see issue #16) |
-| SM-S9210 (China BYH7, One UI 7) | S9210ZCU4BYH7 | 6.1.99 | Calibrated, awaiting device verification |
-| SM-S9310/S9360/S9380 (China S25, One UI 8.5) | S9310ZCSCCZG1 | 6.6.98 | Calibrated (Android 15 kernel, separate payload) |
+| **98260 UAF** | CVE-2026-98260 (`exec: Cleanup POSIX timers right after de_thread()`, posix-cpu-timers UAF) | One UI 9.0 / kernel 6.1.162 | Reference implementation: [SamTimer v1.3](https://github.com/RiosWesley/SamTimer); UMH chain, **never writes creds**, so KDP/RKP/DEFEX are not triggered |
+| **GhostLock 43499** | CVE-2026-43499 (rtmutex/futex waiter kernel-stack UAF) | 6.1.145 and older | The original engine of this project; patched on newer builds |
 
-> Firmware sharing the same platform (e3q/e1q) and the same build number has identical kernel
-> symbols and can be used interchangeably; HK and TW builds of the same number share one payload.
-> Across build numbers every symbol must be compared and corrected; across platforms or major
-> versions a full recalibration is required — and the vulnerability may already be patched.
-> See the [documentation](#documentation) for the adaptation method and per-target calibration reports.
->
-> **The China DZF2 payload covers DZE2–DZH3 since v3.5.0** (same 6.1.145 kernel line); the overseas
-> DZE2 payload covers DZE2–DZG1.
+## 2. Quick start
 
-## KernelSU driver version
+### Requirements
 
-The device page has a dedicated **"KernelSU driver version"** tab. Switching it only decides
-**which KernelSU driver gets loaded** — the exploit payload itself is independent of the version.
-
-| Version | Notes |
+| Item | Requirement |
 |---|---|
-| **3.3.0 (32601)** | **Recommended.** Supports SELinux hiding — the manager reports `SELinux status: Enforcing` while the kernel is actually permissive |
-| 3.2.5 (32525) | Fallback. Root works fine, but it **cannot hide SELinux modifications**; the manager reports "Permissive" |
+| Device | Firmware build must be listed in "Supported devices" below |
+| Authorization | **Shizuku** (recommended) or the in-app wireless-debugging option |
+| Manager | **Officially signed** KernelSU manager matching your driver (see below) |
+| Environment | Screen off during the run, low system load, do not background the app |
 
-The version list is delivered online by the server (the first entry is the current recommendation),
-and each version only applies to **firmware that offers that driver** — other firmware falls back to
-its own default and says so below the tab.
+### Three steps
 
-> The driver only trusts a KernelSU Manager with the **official signature**. Install the official
-> v3.3.0; a manager signed with any other key shows "Not installed", and the home screen then offers
-> only a "Jailbreak" button instead of "Working [Jailbreak mode]".
+1. Pick your model/firmware on the model screen
+2. Pick engine + driver: One UI 9.0 → `98260 UAF` + driver `3.2.5`; older firmware → `GhostLock`
+3. Tap **Start Root**, install the manager, `su` works
 
-## How to use
+### The manager version must match the driver
 
-1. Install the App and pick an authorisation method (wireless debugging is an experimental toggle,
-   off by default, since v2.5.5):
-   - **Shizuku** (default): install and start Shizuku (wireless or wired ADB authorisation)
-   - **Wireless debugging** (experimental): enable "Wireless debugging authorisation" in Settings and
-     use notification pairing / pairing code / direct connect from the home screen
-2. Pick the target firmware (grouped by region: China / HK-TW), choose a version under
-   **"KernelSU driver version"** (3.3.0 by default), then tap **"Start Root"**
-   (running with the screen off is recommended — it lowers the chance of a kernel race)
-3. Wait for the exploit to finish; KernelSU late-load runs automatically
-4. Install the **official KernelSU Manager v3.3.0**; the home screen then shows
-   **"Working [Jailbreak mode] · version 32601-2"**
+| Driver selected in app | Manager to install |
+|---|---|
+| **3.2.5 (32525)** — default for 98260 | official **v3.2.5 (32525)** |
+| 3.3.0 (32601) — experimental | official **v3.3.0 (32601)** |
 
-> The exploit is probabilistic: if it fails, retry (or reboot and retry). Success markers:
-> `exploit completed` + `retval=0 socket=1`.
+> A mismatch usually shows "Not installed" or fails to install modules even if `su` works in a terminal. Only the officially signed manager is accepted; re-signed or repacked builds always show "Not installed".
+> **Never tap "Install / Update" inside the manager** — that writes the boot image (permanent install) and can brick a locked device. Use the "Modules" page only.
 
----
+### Three hard rules for the 98260 engine
 
-## Documentation
+1. **One attempt per boot** — after a failure or a soft reboot, reboot before retrying; a dirty kernel state panics mid-plant (the app blocks this since v3.6.2)
+2. **Do not use the 3.3.0 driver** — it can crash-loop `system_server` on 6.1.162; use 3.2.5
+3. **If you see `parking without reap (zombie held)`, reboot** — it is a protective action (the parked process holds the pages); never force-kill it
 
-The full documentation index lives in [docs/README.md](docs/README.md) (Chinese).
+### Reporting a problem
 
-### Getting started
+Run logs → "Copy log ID" (v3.6.3+), paste the **log ID** into an issue; the templates ask for device, firmware, kernel, engine and driver. A full log paste works too.
 
-- [docs/release-v3.5.1.md](docs/release-v3.5.1.md) — latest release notes (Korean Z Flip6 support, BakaSU experimental mode, full changelog)
-- [docs/release-v3.4.0.md](docs/release-v3.4.0.md) — v3.4.0 release notes
-- [docs/forum-and-admin.md](docs/forum-and-admin.md) — discussion board and admin console
-- [docs/auth-plan.md](docs/auth-plan.md) — authorisation options (status of each Shizuku / wireless-debugging approach)
+## 3. Supported devices
 
-### Technical background
+### Verified on real devices
 
-- [docs/technical-principles.md](docs/technical-principles.md) — how this App works (root cause / exploit chain / why no unlock is needed / risks)
-- [VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) — full vulnerability analysis (research notes, authoritative)
+| Model | Build | Kernel | Payload | Status |
+|---|---|---|---|---|
+| SM-S9280 (CHC DZF2) | S9280ZCS6DZF2 | 6.1.145 | `cve-2026-43499-S9280ZCS6DZF2` | baseline |
+| SM-S9280 (CHC DZH3) | S9280ZCS6DZH3 | 6.1.145 | same as DZF2 | verified |
+| SM-S9280 (HK/TW DZE2) | S9280ZHS6DZE2 | 6.1.145 | `cve-2026-43499-dze2` | verified (HK/TW share it) |
+| SM-S9280 (HK/TW DZH3) | S9280ZHS6DZH3 | 6.1.145 | as DZE2 | verified |
+| SM-S9280 (CHC DZG1) | S9280ZCS6DZG1 | 6.1.145 | as DZF2 | verified |
+| SM-S9210 (CHC DZI1) | S9210ZCS6DZI1 | 6.1.145 | `cve-2026-43499-S9210ZCS6DZI1` | verified |
+| SM-S9260 (TW DZG1) | S9260ZHS6DZG1 | 6.1.145 | HK/TW DZE2 | verified (single device) |
+| SM-F741N (KR Z Flip6) | F741NKSS4DZE1 | 6.1.145 | `cve-2026-43499-F741NKSS4DZE1` | verified |
+| SM-F9580 (CHC Z Fold6) | shares DZF2 | 6.1.145 | as DZF2 | verified |
+| SM-S928B (EU S24U, One UI 9.0) | S928BXXU6EZIF | 6.1.162 | `cve-2026-43499-S928BXXU6EZIF` | verified |
+| **SM-S9280 (HK/CHC EZIF, One UI 9.0)** | S9280ZHU6EZIF | 6.1.162 | **98260 UAF** engine | **verified**, KSU 3.2.5 driver |
+| SM-S921E (global S24, One UI 9.0) | S921EXXU3DZIF | 6.1.162 | 98260 UAF (same build 34343818) | verified (issue #33) |
+| SM-S928B (EU S24U EZJ1) | S928BXXS6EZJ1 | 6.1.162 | 98260 UAF (same build) | verified (issue #32) |
+| SM-S921W (CA S24, One UI 9.0) | S921USQU6EZIF | 6.1.162 | 98260 UAF (same build) | reported working (issue #42) |
 
-### Firmware adaptation and calibration
+### Other entries
 
-- **[docs/adaptation-guide-full.md](docs/adaptation-guide-full.md) — complete adaptation guide (step by step; includes criteria and failure classes) ⭐**
-- [docs/adaptation-guide.md](docs/adaptation-guide.md) — adaptation methodology (older, more theoretical)
-- [docs/dze2-target-complete.md](docs/dze2-target-complete.md) — HK/TW DZE2 calibration report
-- [docs/dzg1-target-complete.md](docs/dzg1-target-complete.md) — China DZG1 calibration report
-- [docs/cza1-target-complete.md](docs/cza1-target-complete.md) — HK/TW CZA1 calibration report
-- [docs/oneui7-adaptation-report.md](docs/oneui7-adaptation-report.md) — One UI 7 (BYH7) feasibility report
-- [docs/byh7-target-complete.md](docs/byh7-target-complete.md) — BYH7 calibration report
+- **Calibrated, awaiting device verification**: CZA1 / CZB2 / BYH7 / S25 CZG1 / S928B AXK5·BYD9·CZA1 / W23 — see the Simplified Chinese README tables.
+- **Community 98260 target**: `S9280ZCS6DZJ3` (CHC DZJ3, 6.1.145) — merged via PR #44, verified by manual staging, `tested=false` until an in-app run log exists.
+- **Ported payloads** (unverified, enable "Show untested payloads"): S23/S24/S25/S26/foldables/Heart-of-the-World ports from RootMyGalaxy — see the Chinese README.
 
-### Run logs and troubleshooting
+### How matching works
 
-- [docs/run-log-analysis.md](docs/run-log-analysis.md) — line-by-line comparison of successful and failed logs
-- [docs/sm-s9380-rmg-root-experience.md](docs/sm-s9380-rmg-root-experience.md) — SM-S9380 field notes
+Payloads are matched by **kernel build number**, not by model name or region:
 
-### Research material
+- Same platform + same build number → same symbols, payload is reusable (HK and TW builds share theirs)
+- Different build number → needs symbol-by-symbol re-calibration
+- Different platform, even with the same build number → still needs re-checking (e3q vs e1q differ in 11 offsets)
+- **EZIF entries also cover EZJ1** (`S9280ZHS6EZJ1` / `S928BXXS6EZJ1`): same kernel build `34343818`, use the 98260 engine with the 3.2.5 driver
 
-- [docs/research-index.md](docs/research-index.md) — full research index
-- [samsung-root-research](https://github.com/NanoTurtle1145/samsung-root-research) — research repository (firmware / exploit engineering / calibration reports)
+> ⚠ **US S24 models (SM-S921U / SM-S926U1 / S928U / S928U1) are not supported yet.** US builds differ (`kmalloc_caches` 0x176c6f8 US vs 0x176cbb8 CHC). S926U1 DZE2 is calibrated but unreleased pending a device test; S928U/U1 kernels have not been extracted yet.
 
-> Most linked documents are written in Chinese; English translations are not available yet.
+## 4. Engines and drivers (advanced)
 
-## How it works (summary)
+### The 98260 UAF chain
 
-This App exploits kernel vulnerability **CVE-2026-43499** (an rtmutex kernel-stack use-after-free):
-a PI-futex chain deadlock rollback triggers an error-cleanup path that leaves a dangling pointer to a
-freed kernel stack. That stack is reused to forge an `rt_mutex_waiter`, which yields physical memory
-read/write; the chain then bypasses KASLR, relaxes SELinux, executes a helper as root, and finally
-late-loads the KernelSU driver. Nothing persistent is ever written, so the bootloader stays locked and
-the KNOX e-fuse stays intact.
+```
+timer UAF -> pipe read/write primitive -> fake workqueue -> call_usermodehelper
+-> uhexec -> bind-mount KDP ksud in a private mount ns -> late-load the KernelSU driver
+```
 
-> Full details (root cause / exploit chain / bypassing mitigations / source references) are in
-> [docs/technical-principles.md](docs/technical-principles.md) and
-> [VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) (Chinese).
+- The exploit runs inside a **Shizuku UserService** persistent process, so backgrounding the app does not kill it
+- `parking without reap (zombie held)` is intentional: the victim stays a zombie so the kernel never walks the panicking cleanup path
+- Since v3.6.2 there is a **safe teardown**: before parking, the three CPU-clock timerqueue roots of the held victim are nulled, so a soft reboot no longer escalates into a hard reboot (patch submitted upstream as [SamTimer PR #2](https://github.com/RiosWesley/SamTimer/pull/2))
 
-## Caveats
+### Per-target payload layout
 
-- **Stay on a supported firmware build and do not update**: newer firmware patches CVE-2026-43499
-- The exploit is probabilistic: retry a few times, reboot if needed
-- Running with the screen off is recommended (fewer kernel races → fewer crashes)
-- KernelSU must be re-loaded by running "Start Root" once after every reboot
-- **You can keep using the device afterwards, but do not linger**: the exploit leaves a process
-  holding a few reclaimed kernel pages (`stability keeper`). The kernel still accounts those pages as
-  free, so under heavy memory pressure they can occasionally be hit and the device may reset.
-  **Day-to-day use is normally fine** (the early "black screen on unlock" crash was fixed by forking
-  the keeper earlier), but it is best to finish what you need with root and reboot rather than
-  staying in heavy-load scenarios (games, many background tasks, repeated lock/unlock) for long.
-  This holds whether the run succeeded or failed — a failed run has already modified kernel memory too.
-- **Reboot before retrying**: running again without a reboot after a failed attempt usually just
-  keeps failing (stale kernel state is not cleaned up)
-- **The manager must be the official KernelSU v3.3.0**: the driver only trusts the official signature;
-  any other build shows "Not installed"
-- **A loaded system kills the success rate**: right after boot, or while heavy background work runs
-  (downloads, games, screen recording), the kernel race is far more likely to fail or crash — wait
-  until `load` drops to single digits
+The shared payload is `samtimer/libtimer` (EZIF/EZJ1). Other builds add their own target, **without touching the shared payload**:
 
----
+```
+app/src/main/assets/samtimer/targets/<TAG>/libtimer   # required
+app/src/main/assets/samtimer/targets/<TAG>/uhexec     # optional
+app/src/main/assets/samtimer/targets/<TAG>/ksud       # optional
+```
 
-## Building
+- `<TAG>` is the full build code in upper case (e.g. `S9280ZCS6DZJ3`); the app prefers the target directory and falls back to the shared payload
+- Merged so far: `S9280ZCS6DZJ3` (community port, PR #44 — verified on device via manual staging, `tested=false` until an in-app run log exists)
+- Porting flow and PR requirements: [CONTRIBUTING.md](CONTRIBUTING.md)
+
+### Driver versions
+
+| Version | Use | Notes |
+|---|---|---|
+| **3.2.5 (32525)** | 98260 engine (default) | **Recommended.** `--ephemeral` late-load: no /data/adb writes, no module stages, no manager restart, no soft reboot |
+| 3.3.0 (32601) | GhostLock legacy / experimental | Supports SELinux hiding; occasional `system_server` crash loop on 6.1.162 — **not recommended** for 98260 |
+
+The list is delivered by the online payload manifest and only applies to firmware that actually ships that driver.
+
+### BakaSU kernel mode (experimental)
+
+A settings toggle (off by default) that loads a Samsung-adapted BakaSU LKM instead of KernelSU:
+
+- Verified only on **SM-S9280 / S9280ZCS6DZH3 (6.1.145)**
+- Must be re-run every boot; **do not use "Install" in its manager**
+- See [docs/bakasu-kernel-mode.md](docs/bakasu-kernel-mode.md)
+
+## 5. Caveats
+
+- **Stay on a supported build** — newer firmware may have fixed the bug
+- Exploits are probabilistic: GhostLock can be retried, **98260 needs a reboot after a failure**
+- Keep the screen off during the run and avoid heavy load; success rate drops sharply under load
+- Re-run "Start Root" after every reboot
+- **Do not linger after success**: a parked process holds kernel pages; reboot when you are done and avoid long heavy sessions
+- Manager version must match the driver and be officially signed
+- The 3.3.0 driver is unstable on 6.1.162
+
+## 6. Version history
+
+| Version | Date | Highlights |
+|---|---|---|
+| [v3.6.4-beta.1](docs/release-v3.6.4-beta.1.md) | 2026-11-14 | Pre-release: per-target payloads (first: DZJ3), #35 disable-modules via `disable` markers |
+| [v3.6.3](docs/release-v3.6.3.md) | 2026-11-10 | Local run-log archive + log IDs, local history list |
+| [v3.6.2](docs/release-v3.6.2.md) | 2026-11-08 | Safe teardown (soft reboot no longer hard-reboots), one-attempt-per-boot enforcement |
+| [v3.6.0](docs/release-v3.6.0.md) | 2026-11-07 | Added the 98260 UAF engine (dual-engine switch) |
+
+Full history: [docs/README.md](docs/README.md).
+
+## 7. Project layout
+
+```
+RootMyS24/
+├── app/                     main app (Kotlin + Jetpack Compose)
+│   └── src/main/
+│       ├── kotlin/.../rootmy/   exploit orchestration (engines, payloads, UserService)
+│       ├── cpp/                 exploit sources (timer_samtimer.c, targets/<TAG>/)
+│       ├── aidl/                UserService interfaces
+│       └── assets/              bundled payloads (GhostLock, samtimer/, per-target)
+├── manager-ui/              shared manager UI module
+├── services/manager-service/ foreground service module
+├── server/                  online endpoints (announcements, payload manifest, stats)
+├── tools/                   build and release scripts
+├── docs/                    documentation (releases, calibration reports, privacy)
+└── .github/                 CI workflow + issue templates
+```
+
+## 8. Building
 
 ```sh
 ./gradlew :app:assembleDebug    # debug APK
 ./gradlew :app:assembleRelease  # release APK (configure your own signing)
 ```
 
-The version is still derived from git (`versionCode` = commit count, `versionName` = latest tag), but
-**pre-release channels** append a suffix to `versionName` so beta builds stay distinguishable from
-official releases (shown in About/Settings, the APK manifest and the `appVersion` field of uploaded
-run logs):
+`versionCode` is the commit count and `versionName` comes from the nearest git tag; pre-release channels append a suffix:
 
 ```sh
-./gradlew :app:assembleRelease -Prms24Channel=alpha1   # → 3.5.1-alpha1 (157)  engine experiments
-./gradlew :app:assembleRelease -Prms24Channel=alpha2   # → 3.5.1-alpha2 (157)
-./gradlew :app:assembleRelease -Prms24Channel=beta1    # → 3.5.1-beta1  (157)  device/firmware previews
-./gradlew :app:assembleRelease -Prms24Channel=beta2    # → 3.5.1-beta2  (157)
-./gradlew :app:assembleRelease -Prms24Channel=stable   # official → 3.5.1
+./gradlew :app:assembleRelease -Prms24Channel=alpha1   # engine experiments
+./gradlew :app:assembleRelease -Prms24Channel=beta1    # device/firmware preview
+./gradlew :app:assembleRelease -Prms24Channel=stable   # formal release
 ```
 
-Channel semantics (do not mix them up):
+Artifacts are named `RootMyS24-v{version}-{channel}-build{versionCode}.apk`.
 
-| Channel | Meaning | Typical content |
-| --- | --- | --- |
-| `alphaN` | **Engine / framework experiments** (internal + volunteer testers) | New exploit chains (e.g. the DirtyFrag engine), reworked injection flow |
-| `betaN` | **Device / firmware adaptation previews** | New firmware payloads, ksud adaptation for a model |
-| `stable` | Official release | Only changes already verified on real hardware |
+> Channels: `alphaN` = engine/framework experiments, `betaN` = device/firmware previews, `stable` = formal release.
+> Pushing a `v*` tag triggers `.github/workflows/release.yml` (signed build + GitHub Release); see [docs/ci-release.md](docs/ci-release.md).
 
-Artifacts are named `RootMyS24-v{version}-{channel}-build{versionCode}.apk` (e.g.
-`RootMyS24-v3.5.1-alpha1-build157.apk`), so a single glance tells you which build and which line a
-device is running. The channel suffix **does not change the version number itself** (neither
-`versionCode` nor the tag-derived base version moves).
+Payloads (exploit / root helper / ksud) are bundled in `app/src/main/assets/`; their build chain is the maintainer's responsibility.
 
-The payloads (exploit / root helper / ksud) are bundled in `app/src/main/assets/`. Their build chain
-is a developer responsibility and out of scope for this repository.
+If you fork and build your own APK, read the "如果你是 fork 后自行编译" section in the project `AGENTS.md`: change the statistics endpoints and use your own signing key first.
 
-## Credits
+## 9. Documentation
 
-- [CVE-2026-43499](https://github.com/NebuSec/CyberMeowfia/tree/main/IonStack/CVE-2026-43499) security research (IonStack / NebuSec)
-- [Root-My-Galaxy](https://github.com/BuSung-dev/Root-My-Galaxy) reference project for unlock-free root
-- [KernelSU](https://github.com/tiann/KernelSU) (GPL-2.0)
-- [Zygisk-Next](https://github.com/Dr-TSNG/ZygiskNext)
-- [LSPosed](https://github.com/LSPosed/LSPosed) (GPL-3.0)
-- [KnoxPatch](https://github.com/salvogiangri/KnoxPatch)
+Full index: [docs/README.md](docs/README.md).
+
+| Topic | Docs |
+|---|---|
+| Getting started | [Quick start](#2-quick-start) · [Contributing](CONTRIBUTING.md) · [Authorization](docs/auth-plan.md) · [Privacy](docs/PRIVACY.md) |
+| Internals | [Technical principles](docs/technical-principles.md) · [VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) |
+| Porting | [Full adaptation guide](docs/adaptation-guide-full.md) · [CONTRIBUTING → device support](CONTRIBUTING.md) |
+| Calibration reports | [DZJ3 (98260)](docs/port-98260-S9280ZCS6DZJ3.md) · [DZE2](docs/dze2-target-complete.md) · [CZA1](docs/cza1-target-complete.md) · [F741N](docs/f741n-dze1-target-complete.md) · [S928B EZIF](docs/s928b-ezif-target-complete.md) |
+| Logs & debugging | [Run-log analysis](docs/run-log-analysis.md) |
+| Build & release | [CI release](docs/ci-release.md) · [Separate builds](docs/separate-builds.md) |
+
+## 10. How it works (summary)
+
+- **98260 UAF**: a timing bug in `exec: Cleanup POSIX timers right after de_thread()` leaves a `timerqueue_node` use-after-free. A pipe read/write primitive builds a fake workqueue, `call_usermodehelper` runs `uhexec` as root, which bind-mounts a KDP-patched ksud in a private mount namespace and late-loads the driver. Credentials are never forged, so KDP/RKP/DEFEX are not involved.
+- **GhostLock 43499**: a kernel-stack use-after-free in rtmutex. Rolling back a PI-futex deadlock leaves a dangling pointer into a freed kernel stack; reusing that stack as a fake `rt_mutex_waiter` yields physical memory read/write, KASLR is bypassed, SELinux downgraded, and the helper finally late-loads KernelSU.
+
+Neither chain touches persistent partitions; the bootloader stays locked and the KNOX e-fuse is not tripped. See [docs/technical-principles.md](docs/technical-principles.md).
+
+## 11. Project data
+
+> Anonymous aggregate statistics (optional in-app log sharing): no IP, city or device identifier. Charts are generated by the project server.
+
+<p align="center"><img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=summary" alt="Usage" width="100%"></p>
+<p align="center"><img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=outcome" alt="Outcomes" width="100%"></p>
+<p align="center"><img src="https://blog.nanoturtle.cn/rms24_api/stats.php?svg=firmware" alt="Firmware distribution" width="100%"></p>
+<p align="center"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?svg=overview" alt="Repository overview" width="100%"></p>
+
+## 12. Credits
+
+- [CVE-2026-43499](https://github.com/NebuSec/CyberMeowfia/tree/main/IonStack/CVE-2026-43499) research (IonStack / NebuSec)
+- [SamTimer](https://github.com/RiosWesley/SamTimer) — reference implementation for the 98260 engine; safe-teardown patch submitted as [PR #2](https://github.com/RiosWesley/SamTimer/pull/2)
+- [Root-My-Galaxy](https://github.com/BuSung-dev/Root-My-Galaxy) / [Root-My-Galaxy-Payloads](https://github.com/BuSung-dev/Root-My-Galaxy-Payloads) reference project and payloads (Apache-2.0)
+- [KernelSU](https://github.com/tiann/KernelSU) (GPL-2.0), [Zygisk-Next](https://github.com/Dr-TSNG/ZygiskNext), [LSPosed](https://github.com/LSPosed/LSPosed) (GPL-3.0), [KnoxPatch](https://github.com/salvogiangri/KnoxPatch)
 - [Vector](https://github.com/JingMatrix/Vector) UI template (Material 3 / ambience)
+- Everyone who reported devices and tested new firmware
 
 ## License
 
-[GNU General Public License v3.0](LICENSE)
+[GNU General Public License v3.0](LICENSE).
