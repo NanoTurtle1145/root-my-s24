@@ -228,6 +228,38 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             engine = Engine.SAMTIMER_98260,
         ),
 
+        // —— EZJ1（One UI 9.0 / kernel 6.1.162 / 构建号 34343818）——
+        // 和 EZIF 同一份内核，只是构建串不同；43499 已修复，必须用 98260 引擎。
+        // 云端日志（近 45 天）：S928BXXS6EZJ1 22 个独立 install 用 98260 成功、S9280ZHS6EZJ1 4 个，
+        // 因此单独建条目，避免 EZJ1 用户误选 GHOSTLOCK 的 EZIF 条目（3.6% 成功率）。
+        S928BEZJ1(
+            "cve-2026-43499",
+            "One UI 9.0",
+            "SM-S928B 欧版 S24 Ultra",
+            "EZJ1",
+            Region.HONGKONG_TAIWAN,
+            "ksud-32525",
+            tested = true,
+            engine = Engine.SAMTIMER_98260,
+        ),
+        S9280EZJ1(
+            "cve-2026-43499",
+            "One UI 9.0",
+            "SM-S9280 港版 S24 Ultra",
+            "EZJ1",
+            Region.HONGKONG_TAIWAN,
+            "ksud-32525",
+            tested = true,
+            engine = Engine.SAMTIMER_98260,
+        ),
+        // —— 折叠屏 / 心系天下 / 韩版：共用最近载荷（日志实测）——
+        // F9560ZCS4DZH5：14 个独立 install 用 DZF2 载荷成功（issue #36 也两次手动成功）
+        F9560DZH5("cve-2026-43499", "One UI 8.5", "SM-F9560 港版 Z Fold6", "DZH5", Region.HONGKONG_TAIWAN, "ksud-selected", tested = true),
+        // F956NKSU4EZIH（韩版 Fold6）：6 个独立 install 用 S928B EZIF 载荷成功
+        F956NEZIH("cve-2026-43499-S928BXXU6EZIF", "One UI 9.0", "SM-F956N 韩版 Z Fold6", "EZIH", Region.KOREA, "ksud-ezif-32601", tested = true),
+        // W9025ZCS4DZH5（W25 国行）：3 个独立 install 用 DZF2 载荷成功
+        W9025DZH5("cve-2026-43499", "One UI 8.5", "W9025 国行 心系天下 W25", "DZH5", Region.CHINA, "ksud-selected", tested = true),
+
         // SM-S928B（EUR）One UI 8.0 / kernel 6.1.128（构建号 31999054）：与港版 CZA1 同构建号但
         // **非同一机型**（欧版 S928B vs 港版 S9280），.rodata 差 8 字节（nfnetlink_log 0x0160b70d vs
         // 港版 0x0160b705），故独立定标、不可与港版 CZA1 载荷互换。
@@ -251,7 +283,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 与 S24 是完全不同的平台与内核世代，独立定标；KSU 用 android12-5.10 线。
         W9023AIZF1("cve-2026-43499-W9023ZCSAIZF1", "Android 12", "W9023N 国行 心系天下 W23", "AIZF1", Region.CHINA, "ksud-android12-5.10", tested = false),
         W9025DZF2("cve-2026-43499-W9025ZCS4DZF2", "One UI 8.5", "W9025 国行 心系天下 W25", "DZF2", Region.CHINA, "ksud-selected", tested = false),
-        W9025DZG3("cve-2026-43499-W9025ZCS4DZG3", "One UI 8.5", "W9025 国行 心系天下 W25", "DZG3", Region.CHINA, "ksud-selected", tested = false),
+        W9025DZG3("cve-2026-43499-W9025ZCS4DZG3", "One UI 8.5", "W9025 国行 心系天下 W25", "DZG3", Region.CHINA, "ksud-selected", tested = true),
         W9026BZG3("cve-2026-43499-W9026ZCS8BZG3", "One UI 8.5", "W9026 国行 心系天下 W26", "BZG3", Region.CHINA, "ksud-android15-6.6", tested = false),
         W9026BZF1("cve-2026-43499-W9026ZCU7BZF1", "One UI 8.5", "W9026 国行 心系天下 W26", "BZF1", Region.CHINA, "ksud-android15-6.6", tested = false),
         ;

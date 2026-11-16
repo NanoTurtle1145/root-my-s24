@@ -70,6 +70,7 @@
 | 文档 | 内容 |
 |---|---|
 | [run-log-analysis.md](run-log-analysis.md) | DZF2 成功 vs BYH7 失败逐行对比；失败特征判读表（cache gate / vmemmap / struct page 偏移） |
+| [run-log-success-analysis.md](run-log-success-analysis.md) | 云日志成功率整理：按构建号+引擎统计独立 install，定义「转已测试」的判定规则 |
 | [sm-s9380-rmg-root-experience.md](sm-s9380-rmg-root-experience.md) | SM-S9380 实战经验：boot quiet window 时序、struct page 四项偏移、Shell/App 域差异 |
 
 > 反馈问题时请附 **运行日志编号**（App → 运行日志 →「复制编号」，v3.6.3 起）。

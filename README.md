@@ -99,6 +99,11 @@
 | **SM-S9280（港版/国行 EZIF，One UI 9.0）** | S9280ZHU6EZIF | 6.1.162 | 引擎：**98260 UAF**（实现参考 SamTimer v1.3） | **已实测（2026-11-07）**，KSU 3.2.5 驱动 |
 | SM-S921E（国际版 S24，One UI 9.0） | S921EXXU3DZIF | 6.1.162 | 引擎：98260 UAF（与 EZIF 同内核构建 34343818） | 已实测（2026-11-07，issue #33） |
 | SM-S928B（欧版 S24 Ultra，EZJ1） | S928BXXS6EZJ1 | 6.1.162 | 引擎：98260 UAF（同 34343818） | 已实测（2026-11-10，issue #32） |
+| SM-S9280（港版/国行 EZJ1） | S9280ZHS6EZJ1 | 6.1.162 | 引擎：98260 UAF（专用 EZJ1 条目） | 已实测（云日志 4 个独立 install） |
+| SM-F9560（港版 Z Fold6 DZH5） | F9560ZCS4DZH5 | 6.1.145 | 共用 DZF2 载荷 | 已实测（云日志 10 个独立 install + issue #36） |
+| SM-F956N（韩版 Z Fold6 EZIH） | F956NKSU4EZIH | 6.1.162 | 共用 S928B EZIF 载荷 | 已实测（云日志 6 个独立 install） |
+| W9025（国行 W25 DZH5） | W9025ZCS4DZH5 | 6.1.145 | 共用 DZF2 载荷 | 已实测（云日志 3 个独立 install） |
+| W9025（国行 W25 DZG3） | W9025ZCS4DZG3 | 6.1.145 | 共用 DZF2 载荷 | 已实测（云日志 4 个独立 install 全成功） |
 
 ### 已定标，待真机验证
 
@@ -277,7 +282,7 @@ RootMyS24/
 | 原理 | [技术原理](docs/technical-principles.md) · [研究仓库 VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) |
 | 适配 | [完整适配指南 ⭐](docs/adaptation-guide-full.md) · [适配方法论](docs/adaptation-guide.md) · [CONTRIBUTING → 机型适配](CONTRIBUTING.md#机型适配最有价值的贡献) |
 | 定标报告 | [DZJ3（98260）](docs/port-98260-S9280ZCS6DZJ3.md) · [S9210 DZI1](docs/port-e1q-S9210ZCS6DZI1.md) · [DZE2](docs/dze2-target-complete.md) · [CZA1](docs/cza1-target-complete.md) · [DZG1](docs/dzg1-target-complete.md) · [F741N DZE1](docs/f741n-dze1-target-complete.md) · [S928B EZIF](docs/s928b-ezif-target-complete.md) · [BYH7](docs/byh7-target-complete.md) |
-| 日志与排障 | [运行日志判读](docs/run-log-analysis.md) · [SM-S9380 实战](docs/sm-s9380-rmg-root-experience.md) |
+| 日志与排障 | [运行日志判读](docs/run-log-analysis.md) · [成功率整理](docs/run-log-success-analysis.md) · [SM-S9380 实战](docs/sm-s9380-rmg-root-experience.md) |
 | 发布与 CI | [发布说明索引](docs/README.md#一入门与使用) · [CI 与发布](docs/ci-release.md) · [分系列构建](docs/separate-builds.md) |
 | 实验 | [BakaSU 内核模式](docs/bakasu-kernel-mode.md) · [DirtyFrag 引擎规划](docs/dirtyfrag-engine-plan.md) |
 
