@@ -54,3 +54,26 @@ GitHub 的 302 签名跳转（跳转后的 blob 地址不能携带 Authorization
 `tools/release_flavors.py` 仍是**主发布路径**（会同时上传服务器 `dl/` 并写 `latest.json`，
 国内下载走镜像）。GitHub Actions 是备份/验证路径：产物可下载，Release 可独立发布。
 服务器上传未放进 CI（需要 SSH 凭据），如以后需要可加 `RMS24_SSH_*` secrets 并扩展 workflow。
+
+## nightly（每日构建）
+
+`.github/workflows/nightly.yml` 每天从 `main` 自动构建一版**未发布**产物，用来尽早发现 main 挂掉：
+
+| 项 | 值 |
+|---|---|
+| 触发 | 每天 20:00 UTC（= 次日 04:00 Asia/Shanghai）+ 手动 `workflow_dispatch` |
+| 渠道 | 固定 `alpha`（可用 dispatch 改成 `beta`） |
+| 构建 | 默认 `s24,all` 两个 release flavor |
+| 签名 | 有 secrets → 官方 keystore；没有 → **debug 签名**并打 warning（fork 也能跑，只是不能分发） |
+| 产物 | `dist/RootMyS24-nightly-<YYYYMMDD>-<sha8>-v<ver>-build<code>[-flavor].apk` + `SHA256SUMS.txt` |
+| 保留 | Actions Artifact 7 天，**不建 tag、不发 Release、不碰服务器** |
+
+本地冒烟等价命令：
+
+```sh
+./gradlew :app:assembleS24Release -Prms24Channel=alpha
+# versionName 形如 3.6.4-alpha.297-s24
+```
+
+> nightly 的 versionName 会带 `-alpha.<提交数>`，与正式版/预发布版区分；看到 alpha 号不对，先检查
+> 最近一次 tag 是否推上去了（base 版本来自 tag）。

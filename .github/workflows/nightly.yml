@@ -1,0 +1,187 @@
+# RootMyS24 nightly：每天从 main 自动构建一版「未发布」产物，用来尽早发现 main 挂掉。
+#
+# 与 release.yml 的区别：
+#   - 只构建 + 上传 Actions Artifact（7 天），**不建 tag、不发 Release、不碰服务器**
+#   - 渠道固定 alpha（引擎/框架试验线），versionName 形如 3.6.4-alpha.<提交数>
+#   - 签名 secret 缺失时自动退化为 debug 签名（fork 也能跑），并跳过签名校验
+#
+# 触发：
+#   - 每天 20:00 UTC（= 次日 04:00 Asia/Shanghai）
+#   - 手动 workflow_dispatch（可指定 flavors / 渠道）
+name: nightly
+
+on:
+  schedule:
+    - cron: '0 20 * * *'
+  workflow_dispatch:
+    inputs:
+      flavors:
+        description: '要构建的 flavor（逗号分隔）'
+        default: 's24,all'
+      channel:
+        description: '渠道后缀（alpha/beta）'
+        type: choice
+        options: [alpha, beta]
+        default: alpha
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout（完整历史；versionCode = 提交数）
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: 补齐 origin/main 引用
+        run: git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main || true
+
+      - name: Setup JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Gradle 缓存
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: 定位 runner 预装 SDK
+        run: |
+          SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          CT="$(ls -d "$SDK"/cmdline-tools/*/bin 2>/dev/null | head -1)"
+          echo "$CT" >> "$GITHUB_PATH"
+          echo "$SDK/platform-tools" >> "$GITHUB_PATH"
+
+      - name: 安装 SDK 组件
+        run: |
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-37.0" \
+            "build-tools;37.0.0" \
+            "ndk;29.0.14206865" || {
+              echo "::warning::回退 platforms;android-37"
+              sdkmanager --install "platforms;android-37" "build-tools;37.0.0" "ndk;29.0.14206865"
+            }
+          python3 -m pip install --quiet --upgrade cmake ninja
+          cmake --version | head -1
+
+      - name: 注入签名（可选）
+        id: sign
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASS: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "::warning::未配置签名 secrets，本次 nightly 用 debug 签名（仅用于自测，不要分发）"
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/s9280.keystore"
+          {
+            echo "androidStoreFile=$RUNNER_TEMP/s9280.keystore"
+            printf 'androidStorePassword=%s\n' "$STORE_PASS"
+            printf 'androidKeyAlias=%s\n' "$KEY_ALIAS"
+            printf 'androidKeyPassword=%s\n' "$KEY_PASS"
+          } >> gradle.properties
+          echo "signed=true" >> "$GITHUB_OUTPUT"
+
+      - name: 解析参数
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            FLAVORS="${{ inputs.flavors }}"
+            CHANNEL="${{ inputs.channel }}"
+          else
+            FLAVORS="s24,all"
+            CHANNEL="alpha"
+          fi
+          echo "flavors=$FLAVORS" >> "$GITHUB_OUTPUT"
+          echo "channel=$CHANNEL" >> "$GITHUB_OUTPUT"
+          echo "date=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+          echo "sha8=${GITHUB_SHA::8}" >> "$GITHUB_OUTPUT"
+
+      - name: 构建
+        run: |
+          set -euo pipefail
+          CHANNEL="${{ steps.meta.outputs.channel }}"
+          IFS=',' read -ra FS <<< "${{ steps.meta.outputs.flavors }}"
+          TASKS=()
+          for f in "${FS[@]}"; do
+            f="$(echo "$f" | tr -d ' ')"
+            [ -z "$f" ] && continue
+            TASKS+=(":app:assemble${f^}Release")
+          done
+          echo "gradle tasks: ${TASKS[*]}"
+          ./gradlew "${TASKS[@]}" -Prms24Channel="$CHANNEL" --no-daemon --console=plain
+
+      - name: 收集产物
+        id: pack
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          AAPT="$ANDROID_HOME/build-tools/37.0.0/aapt"
+          APKSIGNER="$ANDROID_HOME/build-tools/37.0.0/apksigner"
+          DATE="${{ steps.meta.outputs.date }}"
+          SHA8="${{ steps.meta.outputs.sha8 }}"
+          IFS=',' read -ra FS <<< "${{ steps.meta.outputs.flavors }}"
+          for f in "${FS[@]}"; do
+            f="$(echo "$f" | tr -d ' ')"
+            [ -z "$f" ] && continue
+            APK="app/build/outputs/apk/$f/release/app-$f-release.apk"
+            [ -f "$APK" ] || { echo "::error::缺少产物 $APK"; exit 1; }
+            BADGING="$("$AAPT" dump badging "$APK" | head -1)"
+            CODE="$(echo "$BADGING" | sed -n "s/.*versionCode='\([0-9]*\)'.*/\1/p")"
+            VER="$(echo "$BADGING" | sed -n "s/.*versionName='\([^']*\)'.*/\1/p")"
+            SUFFIX=""
+            if [ "$f" != "all" ]; then
+              case "$VER" in *"-$f") ;; *) SUFFIX="-$f" ;; esac
+            fi
+            OUT="dist/RootMyS24-nightly-${DATE}-${SHA8}-v${VER}-build${CODE}${SUFFIX}.apk"
+            cp "$APK" "$OUT"
+            if [ "${{ steps.sign.outputs.signed }}" = "true" ]; then
+              "$APKSIGNER" verify --print-certs "$OUT" | head -2
+            else
+              echo "unsigned/debug-signed: $(basename "$OUT")"
+            fi
+            echo "$(sha256sum "$OUT" | cut -d' ' -f1)  $(basename "$OUT")" >> dist/SHA256SUMS.txt
+          done
+          cat dist/SHA256SUMS.txt
+
+      - name: 生成摘要
+        run: |
+          {
+            echo "## RootMyS24 nightly"
+            echo ""
+            echo "- 提交：\`${GITHUB_SHA}\`（${{ github.ref_name }}）"
+            echo "- 渠道：${{ steps.meta.outputs.channel }}"
+            echo "- 签名：${{ steps.sign.outputs.signed == 'true' && '官方 keystore' || 'debug（未配置 secrets）' }}"
+            echo ""
+            echo "| 文件 | 大小 |"
+            echo "|---|---|"
+            for f in dist/*.apk; do
+              echo "| \`$(basename "$f")\` | $(du -h "$f" | cut -f1) |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat dist/SHA256SUMS.txt >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 上传 Artifact（保留 7 天）
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-${{ steps.meta.outputs.date }}-${{ steps.meta.outputs.sha8 }}
+          path: dist/*
+          retention-days: 7
+          if-no-files-found: error
