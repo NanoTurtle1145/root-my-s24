@@ -38,6 +38,7 @@ import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -55,6 +56,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -133,6 +135,9 @@ fun SettingsScreen(
         mutableStateOf(prefs.getBoolean(KEY_DF_ENGINE_ENABLED, false))
     }
     // late-load 前禁用已安装的 KernelSU 模块：默认关闭，用于规避冲突模块导致的自动重启
+    // 设置分两页：常用 / 高级与诊断（提案：主页不超过一屏）
+    var settingsTab by rememberSaveable { mutableStateOf(0) }
+
     var disableKsuModules by remember {
         mutableStateOf(prefs.getBoolean(KEY_DISABLE_KSU_MODULES, false))
     }
@@ -300,6 +305,27 @@ fun SettingsScreen(
         }
 
         item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                FilterChip(
+                    selected = settingsTab == 0,
+                    onClick = { settingsTab = 0 },
+                    label = { Text(stringResource(R.string.settings_tab_common)) },
+                )
+                FilterChip(
+                    selected = settingsTab == 1,
+                    onClick = { settingsTab = 1 },
+                    label = { Text(stringResource(R.string.settings_tab_advanced)) },
+                )
+            }
+        }
+
+        if (settingsTab == 0) {
+        item {
             SectionLabel(stringResource(R.string.settings_section_run))
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 GroupedRow(index = 0, count = 2) {
@@ -341,7 +367,9 @@ fun SettingsScreen(
                 }
             }
         }
+        }
 
+        if (settingsTab == 0) {
         item {
             SectionLabel(stringResource(R.string.settings_section_root_channel))
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -387,7 +415,9 @@ fun SettingsScreen(
                 }
             }
         }
+        }
 
+        if (settingsTab == 1) {
         item {
             SectionLabel(stringResource(R.string.settings_section_log))
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -444,7 +474,9 @@ fun SettingsScreen(
                 }
             }
         }
+        }
 
+        if (settingsTab == 1) {
         item {
             SectionLabel(stringResource(R.string.settings_section_experimental))
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -510,7 +542,9 @@ fun SettingsScreen(
                 }
             }
         }
+        }
 
+        if (settingsTab == 1) {
         item {
             SectionLabel(stringResource(R.string.settings_section_about))
             // 大小圆角分组：2 行 —— 第一行上大圆角，最后一行下大圆角
@@ -595,7 +629,9 @@ fun SettingsScreen(
                 }
             }
         }
+        }
 
+        if (settingsTab == 1) {
         item {
             SectionLabel(stringResource(R.string.settings_section_feedback))
             GroupedRow(index = 0, count = 1) {
@@ -609,7 +645,9 @@ fun SettingsScreen(
                 ) { Text(stringResource(R.string.settings_feedback)) }
             }
         }
+        }
 
+        if (settingsTab == 0) {
         item {
             SectionLabel(stringResource(R.string.settings_section_privacy))
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -674,11 +712,13 @@ fun SettingsScreen(
 
             }
         }
+        }
 
         // 隐私政策：渲染 assets 里的 privacy.md（与仓库 docs/PRIVACY.md 同一份）。
 
         // 调试分区只在「点版本号七下」之后出现，普通用户看不到这些危险/诊断入口。
         if (debugMode) {
+            if (settingsTab == 1) {
             item {
                 SectionLabel(stringResource(R.string.settings_section_debug))
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -797,6 +837,7 @@ fun SettingsScreen(
                         }
                     }
                 }
+            }
             }
         }
 

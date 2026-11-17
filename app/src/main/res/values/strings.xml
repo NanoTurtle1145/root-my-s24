@@ -461,4 +461,6 @@ Auto-save log</string>
     <string name="firmware_auto_applied">This configuration is selected</string>
     <string name="firmware_target_expand">Details</string>
     <string name="firmware_target_collapse">Collapse</string>
+    <string name="settings_tab_common">Common</string>
+    <string name="settings_tab_advanced">Advanced &amp; diagnostics</string>
 </resources>

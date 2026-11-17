@@ -420,4 +420,6 @@
     <string name="firmware_auto_applied">已选中此配置</string>
     <string name="firmware_target_expand">展开</string>
     <string name="firmware_target_collapse">收起</string>
+    <string name="settings_tab_common">常用</string>
+    <string name="settings_tab_advanced">高级与诊断</string>
 </resources>
