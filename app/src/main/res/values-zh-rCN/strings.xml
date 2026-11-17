@@ -412,4 +412,10 @@
     <string name="logs_history_empty">还没有保存过运行日志：每跑一次会自动存一条。</string>
     <string name="logs_history_view">查看</string>
     <string name="logs_history_detail">运行日志 %1$s</string>
+    <string name="firmware_auto_title">当前设备（自动检测）</string>
+    <string name="firmware_auto_recommend">推荐：%1$s · 驱动 %2$s · %3$s</string>
+    <string name="firmware_auto_tested">已实测</string>
+    <string name="firmware_auto_untested">未验证</string>
+    <string name="firmware_auto_apply">使用推荐配置</string>
+    <string name="firmware_auto_applied">已选中此配置</string>
 </resources>

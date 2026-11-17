@@ -750,6 +750,26 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     /** 供独立选择页收集的版本状态流（进程级单例 VM，跨 Activity 同步） */
     val firmwareVersionState: StateFlow<FirmwareVersion> = _firmwareVersion
 
+    /**
+     * 自动检测：按当前设备的构建串 + 内核构建号，挑一条最合适的固件条目。
+     *
+     * 排序优先级：98260 引擎 > 已实测 > 当前选中；全部条件都来自条目自身的
+     * `coversBuild(构建串, 内核 release)`，所以 userspace 更新（EZJB/EZJD…）自动命中。
+     * 没有候选时返回 null（页面展示"未匹配，请手动选择"）。
+     */
+    fun detectRecommendedTarget(): FirmwareVersion? {
+        val kernel = System.getProperty("os.version").orEmpty()
+        val candidates = availableFirmwareVersions.filter { v ->
+            v.coversBuild(effectiveBuildTag, kernel) && (v.tested || untestedPayloadsEnabled.value)
+        }
+        if (candidates.isEmpty()) return null
+        return candidates.sortedWith(
+            compareByDescending<FirmwareVersion> { it.engine == Engine.SAMTIMER_98260 }
+                .thenByDescending { it.tested }
+                .thenByDescending { it.name == firmwareVersion.name }
+        ).first()
+    }
+
     // ── 载荷在线状态与 KSU 版本选择 ────────────────────────────────
     //
     // 「已实测」与「该固件能用哪些 KSU 驱动」都由服务端 payloads.php 下发（见 [PayloadStatus]）：

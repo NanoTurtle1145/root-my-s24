@@ -125,6 +125,72 @@ private fun FirmwareSelectContent(
                 .fillMaxSize()
                 .padding(padding),
         ) {
+            // 自动检测卡（Target 模型第一步）：默认展示"当前设备 + 推荐配置"，
+            // 大部分用户不需要往下翻列表。
+            val recommended = remember(payload, untestedEnabled, firmwareVersion) {
+                vm.detectRecommendedTarget()
+            }
+            if (recommended != null) {
+                val kernelRelease = System.getProperty("os.version").orEmpty()
+                val currentApplied = recommended.name == firmwareVersion.name
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Text(
+                            text = stringResource(R.string.firmware_auto_title),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "${Build.MODEL} · ${vm.effectiveBuildTag}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        )
+                        Text(
+                            text = kernelRelease,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(
+                                R.string.firmware_auto_recommend,
+                                vm.payloadLabelFor(recommended),
+                                vm.ksuLabelFor(recommended),
+                                stringResource(
+                                    if (recommended.tested) R.string.firmware_auto_tested
+                                    else R.string.firmware_auto_untested
+                                ),
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        )
+                        if (!currentApplied) {
+                            Spacer(Modifier.height(8.dp))
+                            androidx.compose.material3.FilledTonalButton(
+                                onClick = { vm.firmwareVersion = recommended },
+                            ) {
+                                Text(stringResource(R.string.firmware_auto_apply))
+                            }
+                        } else {
+                            Spacer(Modifier.height(6.dp))
+                            Text(
+                                text = stringResource(R.string.firmware_auto_applied),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            )
+                        }
+                    }
+                }
+            }
+
+
             // MD3 搜索框：全圆角药丸形
             OutlinedTextField(
                 value = query,

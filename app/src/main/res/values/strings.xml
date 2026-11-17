@@ -453,4 +453,10 @@ Auto-save log</string>
     <string name="logs_history_empty">No saved run yet. Logs are saved after each run.</string>
     <string name="logs_history_view">View</string>
     <string name="logs_history_detail">Run log %1$s</string>
+    <string name="firmware_auto_title">Detected device</string>
+    <string name="firmware_auto_recommend">Recommended: %1$s · driver %2$s · %3$s</string>
+    <string name="firmware_auto_tested">tested</string>
+    <string name="firmware_auto_untested">not verified</string>
+    <string name="firmware_auto_apply">Use this configuration</string>
+    <string name="firmware_auto_applied">This configuration is selected</string>
 </resources>
