@@ -99,6 +99,7 @@
 | **SM-S9280（港版/国行 EZIF，One UI 9.0）** | S9280ZHU6EZIF | 6.1.162 | 引擎：**98260 UAF**（实现参考 SamTimer v1.3） | **已实测（2026-11-07）**，KSU 3.2.5 驱动 |
 | SM-S921E（国际版 S24，One UI 9.0） | S921EXXU3DZIF | 6.1.162 | 引擎：98260 UAF（与 EZIF 同内核构建 34343818） | 已实测（2026-11-07，issue #33） |
 | SM-S928B（欧版 S24 Ultra，EZJ1） | S928BXXS6EZJ1 | 6.1.162 | 引擎：98260 UAF（同 34343818） | 已实测（2026-11-10，issue #32） |
+| SM-S928B（欧版 S24 Ultra，EZJB） | S928BXXU6EZJB | 6.1.162 | 引擎：98260 UAF（同 34343818，userspace 更新） | 已实测（issue #45，kernel 未变） |
 | SM-S9280（港版/国行 EZJ1） | S9280ZHS6EZJ1 | 6.1.162 | 引擎：98260 UAF（专用 EZJ1 条目） | 已实测（云日志 4 个独立 install） |
 | SM-F9560（港版 Z Fold6 DZH5） | F9560ZCS4DZH5 | 6.1.145 | 共用 DZF2 载荷 | 已实测（云日志 10 个独立 install + issue #36） |
 | SM-F956N（韩版 Z Fold6 EZIH） | F956NKSU4EZIH | 6.1.162 | 共用 S928B EZIF 载荷 | 已实测（云日志 6 个独立 install） |

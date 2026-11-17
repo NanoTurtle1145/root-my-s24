@@ -252,6 +252,19 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             tested = true,
             engine = Engine.SAMTIMER_98260,
         ),
+        // EZJB（2026-10 的第二次更新）：内核串仍是 6.1.162-android14-11-34343818-abS928BXXU6EZJB，
+        // 与 EZIF/EZJ1 **同一份内核**，只是 userspace 更新（修电池耗电），所以 98260 仍可打。
+        // 云日志已有 2 个独立 install 在 EZJB 上成功；kernel build 相同 → 沿用 EZJ1 的结论即可。
+        S928BEZJB(
+            "cve-2026-43499",
+            "One UI 9.0",
+            "SM-S928B 欧版 S24 Ultra",
+            "EZJB",
+            Region.HONGKONG_TAIWAN,
+            "ksud-32525",
+            tested = true,
+            engine = Engine.SAMTIMER_98260,
+        ),
         // —— 折叠屏 / 心系天下 / 韩版：共用最近载荷（日志实测）——
         // F9560ZCS4DZH5：14 个独立 install 用 DZF2 载荷成功（issue #36 也两次手动成功）
         F9560DZH5("cve-2026-43499", "One UI 8.5", "SM-F9560 港版 Z Fold6", "DZH5", Region.HONGKONG_TAIWAN, "ksud-selected", tested = true),
