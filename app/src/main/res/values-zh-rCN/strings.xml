@@ -418,4 +418,6 @@
     <string name="firmware_auto_untested">未验证</string>
     <string name="firmware_auto_apply">使用推荐配置</string>
     <string name="firmware_auto_applied">已选中此配置</string>
+    <string name="firmware_target_expand">展开</string>
+    <string name="firmware_target_collapse">收起</string>
 </resources>

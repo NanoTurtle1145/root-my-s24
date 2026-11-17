@@ -363,16 +363,27 @@ private fun FirmwareSelectContent(
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             )
                         }
-                        item {
-                            FirmwareVersionCard(
-                                vm = vm,
-                                versions = versions,
-                                selected = firmwareVersion,
-                                onSelect = {
-                                    vm.firmwareVersion = it
-                                    onBack()
-                                },
+                        // 冗余收敛（提案 phase 2）：同一份载荷的多个机型/构建只显示一行，
+                        // 需要精确挑选时再展开。
+                        val groups = versions.groupBy { it.engine.name + "|" + it.assetName }
+                            .values
+                            .sortedWith(
+                                compareByDescending<List<RootViewModel.FirmwareVersion>> { g -> g.any { it.tested } }
+                                    .thenByDescending { g -> g.first().engine == RootViewModel.Engine.SAMTIMER_98260 }
+                                    .thenByDescending { g -> g.size },
                             )
+                        groups.forEach { group ->
+                            item(key = "target-" + group.first().name) {
+                                TargetGroupCard(
+                                    vm = vm,
+                                    versions = group,
+                                    selected = firmwareVersion,
+                                    onSelect = {
+                                        vm.firmwareVersion = it
+                                        onBack()
+                                    },
+                                )
+                            }
                         }
                     }
                     item {
@@ -406,6 +417,105 @@ private fun FirmwareSelectContent(
 }
 
 /** 固件版本列表：每行 系统版本 + 适配机型 + 适配系统范围，大小圆角分组。 */
+@Composable
+private fun TargetGroupCard(
+    vm: RootViewModel,
+    versions: List<RootViewModel.FirmwareVersion>,
+    selected: RootViewModel.FirmwareVersion,
+    onSelect: (RootViewModel.FirmwareVersion) -> Unit,
+) {
+    // 同一份载荷（engine + asset）的多个机型/构建合并成一行；展开后仍是原来的单选列表。
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val anyTested = versions.any { it.tested }
+    val containsSelected = versions.any { it.name == selected.name }
+    val engineLabel =
+        if (versions.first().engine == RootViewModel.Engine.SAMTIMER_98260) "98260 UAF"
+        else "GhostLock 43499"
+    val title = versions.first().kernelBuildNumber?.let { "kernel $it" } ?: versions.first().range
+    val aliases = versions.map { it.device }.distinct()
+    val defaultEntry = versions.firstOrNull { it.name == selected.name }
+        ?: versions.firstOrNull { it.tested }
+        ?: versions.first()
+
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 3.dp)
+            .fillMaxWidth(),
+    ) {
+        Surface(
+            shape = RoundedCornerShape(if (expanded) 16.dp else 18.dp),
+            color =
+                if (containsSelected) MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+                else MaterialTheme.colorScheme.surfaceContainer,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onSelect(defaultEntry) }
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "$engineLabel · $title",
+                            style = MaterialTheme.typography.titleSmall,
+                        )
+                        Text(
+                            text = aliases.take(3).joinToString(" / ") +
+                                if (aliases.size > 3) " 等 ${aliases.size} 个机型" else "",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 2,
+                        )
+                    }
+                    Text(
+                        text = stringResource(
+                            if (anyTested) R.string.firmware_auto_tested else R.string.firmware_auto_untested
+                        ),
+                        style = MaterialTheme.typography.labelSmall,
+                        color =
+                            if (anyTested) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 8.dp, bottom = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = versions.size.toString() + " 个构建",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.weight(1f))
+                    if (versions.size > 1) {
+                        androidx.compose.material3.TextButton(onClick = { expanded = !expanded }) {
+                            Text(
+                                stringResource(
+                                    if (expanded) R.string.firmware_target_collapse
+                                    else R.string.firmware_target_expand
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        if (expanded) {
+            Spacer(Modifier.height(4.dp))
+            FirmwareVersionCard(
+                vm = vm,
+                versions = versions,
+                selected = selected,
+                onSelect = onSelect,
+            )
+        }
+    }
+}
+
+
 @Composable
 private fun FirmwareVersionCard(
     vm: RootViewModel,

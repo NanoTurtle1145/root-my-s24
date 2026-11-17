@@ -459,4 +459,6 @@ Auto-save log</string>
     <string name="firmware_auto_untested">not verified</string>
     <string name="firmware_auto_apply">Use this configuration</string>
     <string name="firmware_auto_applied">This configuration is selected</string>
+    <string name="firmware_target_expand">Details</string>
+    <string name="firmware_target_collapse">Collapse</string>
 </resources>
