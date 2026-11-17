@@ -52,6 +52,13 @@ import java.io.OutputStreamWriter
  *  - 美版 S24+（S926U1）DZE2：字符串区偏移与港版不同，独立载荷 cve-2026-43499-dze2-xaa（issue #10）
  *  - DZG1 已禁用：DZG1 载荷真机早期无声崩溃，且与 DZF2 同构建号，直接走 DZF2 载荷
  */
+    /**
+     * 从内核 release 取构建号：`6.1.162-android14-11-34343818-abS928BXXU6EZJB` → `34343818`。
+     * 取不到返回 null（调用方自行决定放过还是拦截）。
+     */
+    private fun kernelBuildNumberOf(kernelRelease: String): String? =
+        Regex("-([0-9]{5,})-ab").find(kernelRelease)?.groupValues?.get(1)
+
 class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val app: Application = app
 
@@ -91,6 +98,14 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         val enabled: Boolean = true,
         /** 使用哪条提权引擎；默认 GhostLock(43499)，SamTimer 走 98260 的 UMH pipe 链路。 */
         val engine: Engine = Engine.GHOSTLOCK_43499,
+        /**
+         * 该载荷适用的**内核构建号**（如 `34343818`，即 `uname -r` 里的 `-<build>-ab...`）。
+         *
+         * 98260 的公共载荷只按内核构建定标：EZIF / EZJ1 / EZJB / EZJD … 这些 userspace
+         * 更新共用同一份内核，用内核构建号判定覆盖范围，就不用每次更新再加条目。
+         * 为 null 时退回构建码比较（GhostLock 的逐载荷定标仍用构建码）。
+         */
+        val kernelBuildNumber: String? = null,
     ) {
         // —— 国行（实测稳定）——
         // 覆盖范围按实测放宽到 DZH3：云端日志里 S9280/S9210 国行 DZH3 用本载荷均成功
@@ -201,6 +216,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
               "ksud-32525",
               tested = true,
               engine = Engine.SAMTIMER_98260,
+              kernelBuildNumber = "34343818",
           ),
         // SM-S921E（国际版 S24，e1q / Exynos 2400）One UI 9.0 / kernel 6.1.162（构建号 34343818）：
         // 与 EZIF 同内核构建；issue #33 实测（v3.6.0 build 263）98260 UAF 引擎 + 3.2.5 驱动
@@ -226,6 +242,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             "ksud-32525",
             tested = true,
             engine = Engine.SAMTIMER_98260,
+            kernelBuildNumber = "34343818",
         ),
 
         // —— EZJ1（One UI 9.0 / kernel 6.1.162 / 构建号 34343818）——
@@ -241,6 +258,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             "ksud-32525",
             tested = true,
             engine = Engine.SAMTIMER_98260,
+            kernelBuildNumber = "34343818",
         ),
         S9280EZJ1(
             "cve-2026-43499",
@@ -251,6 +269,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             "ksud-32525",
             tested = true,
             engine = Engine.SAMTIMER_98260,
+            kernelBuildNumber = "34343818",
         ),
         // EZJB（2026-10 的第二次更新）：内核串仍是 6.1.162-android14-11-34343818-abS928BXXU6EZJB，
         // 与 EZIF/EZJ1 **同一份内核**，只是 userspace 更新（修电池耗电），所以 98260 仍可打。
@@ -264,6 +283,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             "ksud-32525",
             tested = true,
             engine = Engine.SAMTIMER_98260,
+            kernelBuildNumber = "34343818",
         ),
         // —— 折叠屏 / 心系天下 / 韩版：共用最近载荷（日志实测）——
         // F9560ZCS4DZH5：14 个独立 install 用 DZF2 载荷成功（issue #36 也两次手动成功）
@@ -326,7 +346,14 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
          * 解析不出构建码时返回 true（宁可放过也不误报）——判据不足就不打扰用户。
          * 范围内的两个端点按字典序比较即可：DZE2 < DZF1 < DZF2 < DZG1。
          */
-        fun coversBuild(deviceBuildTag: String): Boolean {
+        fun coversBuild(deviceBuildTag: String, deviceKernelRelease: String = ""): Boolean {
+            // 98260 这类"按内核构建定标"的载荷：只看内核构建号，不看构建串。
+            // EZIF/EZJ1/EZJB/EZJD… 都共用同一份内核，这样 userspace 更新无需每次加条目。
+            kernelBuildNumber?.let { want ->
+                val have = kernelBuildNumberOf(deviceKernelRelease)
+                if (have != null) return have == want
+                // 内核串读不到就退回构建码判断（宁可放过也不误报）
+            }
             val dev = deviceBuildTag.takeLast(4).uppercase()
             if (dev.length < 4 || !dev.matches(Regex("[A-Z]{3}\\d"))) return true
             val codes = coveredBuildCodes
@@ -339,7 +366,8 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
 
         /** 供不匹配提示展示：这个条目实际覆盖的构建描述。 */
         val coveredLabel: String
-            get() = coveredBuildCodes.joinToString(" / ").ifEmpty { range }
+            get() = kernelBuildNumber?.let { "kernel $it" }
+                ?: coveredBuildCodes.joinToString(" / ").ifEmpty { range }
 
         /** 机型系列（固件选择页筛选用）：从机型字符串识别 S23/S24/S25/S26/折叠屏/心系天下 */
         val series: Series
@@ -356,6 +384,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     /** 地区分组：国行 / 港版台版 / 韩版（同构建号共用载荷） */
+    
     enum class Region(val label: String) {
         CHINA("国行"),
         HONGKONG_TAIWAN("港版/台版"),
@@ -1073,7 +1102,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private fun startInternal(force: Boolean) {
         if (_state.value.busy) return
         // 载荷按内核构建定标：构建不符时先提醒，避免拿另一个构建的载荷空跑几十轮
-        if (!force && !firmwareVersion.coversBuild(deviceBuildTag)) {
+        if (!force && !firmwareVersion.coversBuild(deviceBuildTag, System.getProperty("os.version").orEmpty())) {
             _buildMismatch.value =
                 app.getString(
                     R.string.rootflow_build_mismatch_body,

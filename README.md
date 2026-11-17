@@ -99,7 +99,7 @@
 | **SM-S9280（港版/国行 EZIF，One UI 9.0）** | S9280ZHU6EZIF | 6.1.162 | 引擎：**98260 UAF**（实现参考 SamTimer v1.3） | **已实测（2026-11-07）**，KSU 3.2.5 驱动 |
 | SM-S921E（国际版 S24，One UI 9.0） | S921EXXU3DZIF | 6.1.162 | 引擎：98260 UAF（与 EZIF 同内核构建 34343818） | 已实测（2026-11-07，issue #33） |
 | SM-S928B（欧版 S24 Ultra，EZJ1） | S928BXXS6EZJ1 | 6.1.162 | 引擎：98260 UAF（同 34343818） | 已实测（2026-11-10，issue #32） |
-| SM-S928B（欧版 S24 Ultra，EZJB） | S928BXXU6EZJB | 6.1.162 | 引擎：98260 UAF（同 34343818，userspace 更新） | 已实测（issue #45，kernel 未变） |
+| SM-S928B（欧版 S24 Ultra，EZJB / EZJD） | S928BXXU6EZJB / …EZJD | 6.1.162 | 引擎：98260 UAF（同 34343818，userspace 更新） | 已实测（issue #45，kernel 未变；由内核构建号统一覆盖） |
 | SM-S9280（港版/国行 EZJ1） | S9280ZHS6EZJ1 | 6.1.162 | 引擎：98260 UAF（专用 EZJ1 条目） | 已实测（云日志 4 个独立 install） |
 | SM-F9560（港版 Z Fold6 DZH5） | F9560ZCS4DZH5 | 6.1.145 | 共用 DZF2 载荷 | 已实测（云日志 10 个独立 install + issue #36） |
 | SM-F956N（韩版 Z Fold6 EZIH） | F956NKSU4EZIH | 6.1.162 | 共用 S928B EZIF 载荷 | 已实测（云日志 6 个独立 install） |
@@ -155,6 +155,15 @@ timer UAF → pipe 读写原语 → 伪造 workqueue → call_usermodehelper
 - exploit 跑在 **Shizuku UserService 常驻进程**里，App 切后台不会被回收
 - 失败时 `parking without reap (zombie held)` 是保护动作：让 victim 永远 zombie，内核走不到会 panic 的清理路径
 - v3.6.2 起有**安全拆除（safe unlink）**：parked 前把 held victim 的 3 个 CPU-clock timerqueue 树根置空，软重启不再演变成硬重启（补丁已提交上游 [SamTimer PR #2](https://github.com/RiosWesley/SamTimer/pull/2)）
+
+### 98260 的覆盖范围按**内核构建号**判定
+
+98260 的公共载荷只按内核构建定标，所以覆盖判断不看构建串，只看 `uname -r` 里的构建号
+（如 `6.1.162-android14-11-34343818-abS928BXXU6EZJB` → `34343818`）：
+
+- **同一内核构建号**的固件共用同一份载荷：EZIF / EZJ1 / EZJB / EZJD … 这些 userspace 更新
+  （系统更新只改 userspace、不动内核）都会自动覆盖，不用每次加条目
+- 内核构建号变了（三星换了内核）→ 需要新的 target；App 会在启动前提示
 
 ### 98260 载荷的 per-target 结构
 
