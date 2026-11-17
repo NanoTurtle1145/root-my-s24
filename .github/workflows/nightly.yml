@@ -1,7 +1,8 @@
 # RootMyS24 nightly：每天从 main 自动构建一版「未发布」产物，用来尽早发现 main 挂掉。
 #
 # 与 release.yml 的区别：
-#   - 只构建 + 上传 Actions Artifact（7 天），**不建 tag、不发 Release、不碰服务器**
+#   - 构建 + Actions Artifact（7 天）**并发布一个滚动 pre-release（tag: nightly）**：
+#     每次覆盖同一个 tag/release，只用于验证 main 没挂，不占用正式发布历史
 #   - 渠道固定 alpha（引擎/框架试验线），versionName 形如 3.6.4-alpha.<提交数>
 #   - 签名 secret 缺失时自动退化为 debug 签名（fork 也能跑），并跳过签名校验
 #
@@ -20,13 +21,13 @@ on:
         description: '要构建的 flavor（逗号分隔）'
         default: 's24,all'
       channel:
-        description: '渠道后缀（alpha/beta）'
+        description: '渠道后缀（nightly/alpha/beta）'
         type: choice
-        options: [alpha, beta]
-        default: alpha
+        options: [nightly, alpha, beta]
+        default: nightly
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: nightly-${{ github.ref }}
@@ -108,7 +109,7 @@ jobs:
             CHANNEL="${{ inputs.channel }}"
           else
             FLAVORS="s24,all"
-            CHANNEL="alpha"
+            CHANNEL="nightly"
           fi
           echo "flavors=$FLAVORS" >> "$GITHUB_OUTPUT"
           echo "channel=$CHANNEL" >> "$GITHUB_OUTPUT"
@@ -186,3 +187,31 @@ jobs:
           path: dist/*
           retention-days: 7
           if-no-files-found: error
+
+      - name: "发布滚动 pre-release（tag: nightly）"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # 滚动：每次删掉旧的 nightly release + tag，再按本次提交重建。
+          # 不用 v* 前缀，所以不会触发 release.yml。
+          gh release delete nightly --yes --cleanup-tag 2>/dev/null || true
+          {
+            echo "每日自动构建（nightly），**不是正式版本**，不保证可用。"
+            echo
+            echo "- 提交：\`${GITHUB_SHA}\`"
+            echo "- 渠道：nightly（versionName 见文件名）"
+            echo "- 签名：${{ steps.sign.outputs.signed == 'true' && '官方 keystore' || 'debug 签名（未配置 secrets，勿分发）' }}"
+            echo "- Artifact：Actions 保留 7 天，本 release 每日覆盖"
+            echo
+            echo '```'
+            cat dist/SHA256SUMS.txt
+            echo '```'
+          } > release-notes.md
+          gh release create nightly dist/* \
+            --prerelease \
+            --title "Nightly $(date -u +%Y-%m-%d)" \
+            --notes-file release-notes.md \
+            --target "$GITHUB_SHA"
+          gh release view nightly --json tagName,isPrerelease,assets \
+            --jq '"  tag=\(.tagName) prerelease=\(.isPrerelease) assets=\(.assets|length)"'

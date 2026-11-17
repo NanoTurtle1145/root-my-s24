@@ -62,17 +62,21 @@ GitHub 的 302 签名跳转（跳转后的 blob 地址不能携带 Authorization
 | 项 | 值 |
 |---|---|
 | 触发 | 每天 **19:30 UTC**（= 次日 03:30 Asia/Shanghai）+ 手动 `workflow_dispatch`<br>避开整点：GitHub schedule 在整点最拥堵，实测可能延迟数小时 |
-| 渠道 | 固定 `alpha`（可用 dispatch 改成 `beta`） |
+| 渠道 | 固定 **`nightly`**（versionName 形如 `3.6.4-nightly.307`；dispatch 可改 alpha/beta） |
 | 构建 | 默认 `s24,all` 两个 release flavor |
 | 签名 | 有 secrets → 官方 keystore；没有 → **debug 签名**并打 warning（fork 也能跑，只是不能分发） |
 | 产物 | `dist/RootMyS24-nightly-<YYYYMMDD>-<sha8>-v<ver>-build<code>[-flavor].apk` + `SHA256SUMS.txt` |
-| 保留 | Actions Artifact 7 天，**不建 tag、不发 Release、不碰服务器** |
+| 发布 | **滚动 pre-release**：tag/release 名都是 `nightly`，每次删旧建新（prerelease + 附 APK），`v*` 前缀不触发 `release.yml` |
+| 保留 | Actions Artifact 7 天；`nightly` release 每日覆盖（不占用正式发布历史） |
 
 本地冒烟等价命令：
 
 ```sh
-./gradlew :app:assembleS24Release -Prms24Channel=alpha
-# versionName 形如 3.6.4-alpha.297-s24
+./gradlew :app:assembleS24Release -Prms24Channel=nightly
+# versionName 形如 3.6.4-nightly.307-s24
+
+# 渠道白名单（build.gradle.kts 校验，写错会直接构建失败）：
+#   stable / alpha / beta / nightly
 ```
 
 > nightly 的 versionName 会带 `-alpha.<提交数>`，与正式版/预发布版区分；看到 alpha 号不对，先检查

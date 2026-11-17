@@ -238,11 +238,19 @@ val versionNameProvider = providers.of(GitLatestTagValueSource::class.java) {}
  *     - 每次提交 +1，不会重名、不会跳号，无需手工维护计数器；
  *     - 看到 `beta.166` 就能和 git 的某个提交一一对应、精确回溯；
  *     - 正式版仍是裸 tag（`3.5.0`），不带后缀。
- * 渠道语义不变：alpha=引擎试验，beta=机型/固件适配预览，stable=正式发布。
+ * 渠道语义：
+ *   - `alpha`   = 引擎/框架试验
+ *   - `beta`    = 机型/固件适配预览（默认）
+ *   - `nightly` = 每天自动构建的临时包，只用于验证 main 没挂；发布为滚动 pre-release
+ *   - `stable`  = 正式发布（裸 tag 版本）
  *
  * `-Prms24Channel=beta` 是默认值；传 `-Prms24Channel=stable`（或空值）得到裸 tag 版本。
  */
-val appChannel = providers.gradleProperty("rms24Channel").orElse("beta").get().trim().lowercase()
+  val allowedChannels = setOf("stable", "alpha", "beta", "nightly")
+  val appChannel = providers.gradleProperty("rms24Channel").orElse("beta").get().trim().lowercase()
+  require(appChannel.isEmpty() || appChannel in allowedChannels) {
+      "未知渠道 '$appChannel'：可用值 ${allowedChannels.joinToString(" / ")}（空值等价 stable）"
+  }
 
 val reportedVersionName =
     versionNameProvider.get().let { base ->

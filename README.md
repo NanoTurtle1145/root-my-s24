@@ -272,12 +272,13 @@ RootMyS24/
 ```sh
 ./gradlew :app:assembleRelease -Prms24Channel=alpha1   # 引擎试验包
 ./gradlew :app:assembleRelease -Prms24Channel=beta1    # 机型/固件适配预览
+./gradlew :app:assembleRelease -Prms24Channel=nightly  # 每日自动构建（滚动 pre-release）
 ./gradlew :app:assembleRelease -Prms24Channel=stable   # 正式版
 ```
 
 产物命名 `RootMyS24-v{版本}-{渠道}-build{versionCode}.apk`。
 
-> 渠道语义：`alphaN` = 引擎/框架试验，`betaN` = 机型/固件适配预览，`stable` = 正式发布。
+> 渠道语义：`alpha` = 引擎/框架试验，`beta` = 机型/固件适配预览，`nightly` = 每日自动构建（只发滚动 pre-release），`stable` = 正式发布。
 > 打 tag 推送到 GitHub 会触发 `.github/workflows/release.yml` 自动签名构建并发 Release（详见 [docs/ci-release.md](docs/ci-release.md)）。
 
 载荷（exploit / root helper / ksud）已内置在 `app/src/main/assets/`，构建链属开发者职责。

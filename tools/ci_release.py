@@ -210,8 +210,8 @@ def menu():
             if choice == '4':
                 continue
             if choice == '1' or choice == '2':
-                channel = ask('渠道 beta/stable:', 'beta')
-                if channel not in ('beta', 'stable'):
+                channel = ask('渠道 beta/stable/nightly:', 'beta')
+                if channel not in ('beta', 'stable', 'nightly'):
                     print('  无效渠道'); continue
                 default_flavors = 'all,s24,fold,exp'
                 flavors = [x.strip() for x in ask('flavors（逗号分隔）:', default_flavors).split(',') if x.strip()]
@@ -268,7 +268,7 @@ def main():
     ap = argparse.ArgumentParser(description='RootMyS24 GitHub Actions 发布交互脚本')
     ap.add_argument('--status', action='store_true', help='打印最近运行状态')
     ap.add_argument('--build', action='store_true', help='直接构建')
-    ap.add_argument('--channel', default='beta')
+    ap.add_argument('--channel', default='beta', choices=['beta', 'stable', 'nightly'])
     ap.add_argument('--flavors', default='all,s24,fold,exp')
     ap.add_argument('--publish', action='store_true')
     ap.add_argument('--tag', default='')
