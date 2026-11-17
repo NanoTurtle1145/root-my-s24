@@ -6,13 +6,14 @@
 #   - 签名 secret 缺失时自动退化为 debug 签名（fork 也能跑），并跳过签名校验
 #
 # 触发：
-#   - 每天 20:00 UTC（= 次日 04:00 Asia/Shanghai）
+#   - 每天 19:30 UTC（= 次日 03:30 Asia/Shanghai）
+#     故意避开整点：GitHub 的 schedule 在整点最拥堵，实测会被延迟数小时
 #   - 手动 workflow_dispatch（可指定 flavors / 渠道）
 name: nightly
 
 on:
   schedule:
-    - cron: '0 20 * * *'
+    - cron: '30 19 * * *'
   workflow_dispatch:
     inputs:
       flavors:

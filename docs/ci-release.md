@@ -61,7 +61,7 @@ GitHub 的 302 签名跳转（跳转后的 blob 地址不能携带 Authorization
 
 | 项 | 值 |
 |---|---|
-| 触发 | 每天 20:00 UTC（= 次日 04:00 Asia/Shanghai）+ 手动 `workflow_dispatch` |
+| 触发 | 每天 **19:30 UTC**（= 次日 03:30 Asia/Shanghai）+ 手动 `workflow_dispatch`<br>避开整点：GitHub schedule 在整点最拥堵，实测可能延迟数小时 |
 | 渠道 | 固定 `alpha`（可用 dispatch 改成 `beta`） |
 | 构建 | 默认 `s24,all` 两个 release flavor |
 | 签名 | 有 secrets → 官方 keystore；没有 → **debug 签名**并打 warning（fork 也能跑，只是不能分发） |
