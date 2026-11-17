@@ -380,7 +380,6 @@ private fun FirmwareSelectContent(
                                     selected = firmwareVersion,
                                     onSelect = {
                                         vm.firmwareVersion = it
-                                        onBack()
                                     },
                                 )
                             }
@@ -403,7 +402,6 @@ private fun FirmwareSelectContent(
                             selected = firmwareVersion,
                             onSelect = {
                                 vm.firmwareVersion = it
-                                onBack()
                             },
                         )
                     }
