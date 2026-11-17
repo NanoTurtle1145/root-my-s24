@@ -150,6 +150,8 @@ fun AboutScreen(
     val forumContext = LocalContext.current
     val forumScope = rememberCoroutineScope()
     var showForumDialog by remember { mutableStateOf(false) }
+    // 关于页收敛（提案 phase 4）：FAQ 默认折叠，避免首屏被 8 条问答占满
+    var faqExpanded by remember { mutableStateOf(false) }
     var forumToken by remember { mutableStateOf("") }
     var forumBusy by remember { mutableStateOf(false) }
     var forumError by remember { mutableStateOf<String?>(null) }
@@ -415,12 +417,27 @@ fun AboutScreen(
 
         item {
             SectionLabel(stringResource(R.string.about_section_faq))
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                val faqs = faqList()
-                faqs.forEachIndexed { index, faq ->
-                    GroupedRow(index = index, count = faqs.size) {
-                        FaqRow(faq = faq)
+            val faqs = faqList()
+            if (!faqExpanded) {
+                GroupedRow(index = 0, count = 1) {
+                    ListItem(
+                        modifier = Modifier.fillMaxWidth().clickable { faqExpanded = true },
+                        leadingContent = { Icon(Icons.Rounded.Info, contentDescription = null) },
+                        headlineContent = { Text(stringResource(R.string.about_faq_expand, faqs.size)) },
+                        trailingContent = { Icon(Icons.Rounded.ExpandMore, contentDescription = null) },
+                        colors = cardRowColors,
+                    )
+                }
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    faqs.forEachIndexed { index, faq ->
+                        GroupedRow(index = index, count = faqs.size) {
+                            FaqRow(faq = faq)
+                        }
                     }
+                }
+                androidx.compose.material3.TextButton(onClick = { faqExpanded = false }) {
+                    Text(stringResource(R.string.about_faq_collapse))
                 }
             }
         }

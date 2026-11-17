@@ -422,4 +422,6 @@
     <string name="firmware_target_collapse">收起</string>
     <string name="settings_tab_common">常用</string>
     <string name="settings_tab_advanced">高级与诊断</string>
+    <string name="about_faq_expand">展开 %1$d 条常见问题</string>
+    <string name="about_faq_collapse">收起</string>
 </resources>

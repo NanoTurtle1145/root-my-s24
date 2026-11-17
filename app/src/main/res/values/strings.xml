@@ -463,4 +463,6 @@ Auto-save log</string>
     <string name="firmware_target_collapse">Collapse</string>
     <string name="settings_tab_common">Common</string>
     <string name="settings_tab_advanced">Advanced &amp; diagnostics</string>
+    <string name="about_faq_expand">Show %1$d frequently asked questions</string>
+    <string name="about_faq_collapse">Collapse</string>
 </resources>
