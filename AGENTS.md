@@ -103,3 +103,16 @@ keytool -genkeypair -v -keystore my.keystore -alias mykey \
 同型号不同地区、甚至**同构建号**的内核，偏移都可能不同
 （e3q 与 e1q 同为 `…-android14-11-3254743-…` 却有 11 项偏移不同）。
 详见 `docs/` 下的移植报告。**照抄别人的载荷大概率失败，甚至 kernel panic。**
+
+## UI 改动规范（硬性）
+
+**改任何界面之前先读 [`docs/UI-GUIDELINES.md`](docs/UI-GUIDELINES.md)。**不要在 PR 里临时拍圆角/尺寸。
+
+- 圆角只用主题尺度：`8 / 12 / 20 / 28 / 32 dp`（`MaterialTheme.shapes`）；卡片 = **20 dp**，行卡片关节 = 20→4。
+- 间距只用 4 的倍数；页面水平内边距 **16 dp**；卡片内行间距 **4 dp**（`spacedBy(4.dp)`）。
+- **`GroupedRow` 一行只能放一个 `ListItem`**——它是 `Surface { content() }`，Surface 内部是 `Box`，
+  放两个子项会重叠（设置页「禁用 KSU 模块」+「隐藏 su 兼容模式」真实踩过）。
+- 触控目标 ≥ 48 dp；行内图标 20/24 dp；空状态图标 72 dp；搜索框圆角 28 dp。
+- 颜色只用 `MaterialTheme.colorScheme.*`；卡片内行用 `cardRowColors`（transparent）。
+- 本仓库 Material3 版本不能用 `SegmentedButton`（解析不到），分段选择用 `FilterChip` 拼。
+- 改完在真机看一眼：暗色 + AMOLED + `fontScale 1.3` 下不能截断/重叠。
