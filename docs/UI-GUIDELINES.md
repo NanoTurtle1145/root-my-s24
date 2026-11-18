@@ -56,6 +56,7 @@ private fun GroupedRow(index: Int, count: Int, content: @Composable () -> Unit) 
 | 小徽标 / 状态 pill | 10～12 dp | 机型页状态标签 |
 | 代码块 / 行内 code | 4～6 dp（Markdown） | `ui/components/Markdown.kt` |
 | Toast / Snackbar 气泡 | 20 dp | `VectorSnackbar` |
+| 状态徽标 / chip | 8～12 dp | `TestStateChip` 用 8 dp（`shapes.extraSmall`），标签类 10～12 dp |
 
 ## 2. 尺寸与间距
 

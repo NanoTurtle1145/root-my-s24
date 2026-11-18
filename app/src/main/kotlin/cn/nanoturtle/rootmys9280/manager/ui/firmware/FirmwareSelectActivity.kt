@@ -137,7 +137,7 @@ private fun FirmwareSelectContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 6.dp),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = MaterialTheme.shapes.medium,
                     color = MaterialTheme.colorScheme.primaryContainer,
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
@@ -250,7 +250,7 @@ private fun FirmwareSelectContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp, vertical = 4.dp),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = MaterialTheme.shapes.small,
                         color = MaterialTheme.colorScheme.errorContainer,
                     ) {
                         Text(
@@ -341,7 +341,7 @@ private fun FirmwareSelectContent(
                                 Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 4.dp),
-                            shape = androidx.compose.foundation.shape.RoundedCornerShape(14.dp),
+                            shape = MaterialTheme.shapes.small,
                             color = MaterialTheme.colorScheme.surfaceContainer,
                         ) {
                             Text(
@@ -441,7 +441,7 @@ private fun TargetGroupCard(
             .fillMaxWidth(),
     ) {
         Surface(
-            shape = RoundedCornerShape(if (expanded) 16.dp else 18.dp),
+            shape = MaterialTheme.shapes.medium,
             color =
                 if (containsSelected) MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
                 else MaterialTheme.colorScheme.surfaceContainer,
@@ -684,7 +684,7 @@ private fun SelectionTabs(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 6.dp),
-            shape = RoundedCornerShape(16.dp),
+            shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
@@ -727,7 +727,7 @@ private fun SelectionTabs(
                 Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 6.dp),
-            shape = RoundedCornerShape(16.dp),
+            shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colorScheme.surfaceContainer,
         ) {
             Column(Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
