@@ -550,6 +550,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      */
     private val KEY_DISABLE_KSU_MODULES = "disable_ksu_modules"
 
+    /** 环境隐藏：跑完后关闭 su_compat（隐藏 /system/bin/su），重启后驱动默认值恢复 */
+    private val KEY_HIDE_SU_COMPAT = "hide_su_compat"
+
     /** 当前 shell 执行器（Shizuku 或无线调试 adb），全部命令经由此执行。 */
     var shellExecutor: ShellExecutor = ShizukuController
         private set
@@ -1276,15 +1279,26 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
             .getBoolean(KEY_BAKASU_KERNEL, false)
 
-    /** 设置页开关：late-load 前把已安装的 KernelSU 模块目录移走。读 prefs 实时生效。 */
+    /** 设置页开关：late-load 后关闭 su 兼容模式（隐藏 /system/bin/su）。读 prefs 实时生效。 */
+    val hideSuCompat: Boolean
+        get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getBoolean(KEY_HIDE_SU_COMPAT, false)
+
+    fun setHideSuCompat(hide: Boolean) {
+        app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .edit().putBoolean(KEY_HIDE_SU_COMPAT, hide).apply()
+        logI("hide-su-compat: preference → $hide")
+    }
+
+    /** 设置页开关：late-load 前给已安装的 KernelSU 模块写 disable 标记。读 prefs 实时生效。 */
+    val disableKsuModules: Boolean
+        get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
+            .getBoolean(KEY_DISABLE_KSU_MODULES, false)
+
     fun setDisableKsuModules(enabled: Boolean) {
         app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
             .edit().putBoolean(KEY_DISABLE_KSU_MODULES, enabled).apply()
     }
-
-    val disableKsuModules: Boolean
-        get() = app.getSharedPreferences(PREFS_SETTINGS, android.content.Context.MODE_PRIVATE)
-            .getBoolean(KEY_DISABLE_KSU_MODULES, false)
 
     /** 调试选项：自动保存日志到磁盘（崩溃/重启后自动恢复）。默认开启。 */
     fun setAutoSaveLog(enabled: Boolean) {
@@ -1770,7 +1784,9 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         svc.setTargetTag(effectiveBuildTag)
         svc.setKsudAsset(ksudAsset)
         svc.setDisableModules(disableKsuModules)
+        svc.setHideSuCompat(hideSuCompat)
         if (disableKsuModules) appendLog("◆ 已开启「禁用 KSU 模块」：late-load 前会由 root 上下文移走 /data/adb/modules")
+        if (hideSuCompat) appendLog("◆ 已开启「隐藏 su 兼容模式」：late-load 后关闭 su_compat（/system/bin/su 消失）")
 
         appendLog("◆ 启动 exploit（umhpipe，最多等 7 分钟）……")
         svc.runExploit(callback)

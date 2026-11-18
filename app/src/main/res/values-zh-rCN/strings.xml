@@ -424,4 +424,6 @@
     <string name="settings_tab_advanced">高级与诊断</string>
     <string name="about_faq_expand">展开 %1$d 条常见问题</string>
     <string name="about_faq_collapse">收起</string>
+    <string name="settings_hide_su_compat">隐藏 su 兼容模式</string>
+    <string name="settings_hide_su_compat_summary">跑完 root 后关闭 su_compat，应用看不到 /system/bin/su。代价：adb/Termux 的 su 也会失效，重启后恢复。</string>
 </resources>

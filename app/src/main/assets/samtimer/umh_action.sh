@@ -16,6 +16,9 @@ unshare -m sh -c '
   fi
   /system/bin/logcat late-load --ephemeral --allow-shell --package-name me.weishu.kernelsu
   echo "late_rc=$?"
+  if [ -f /data/local/tmp/w/hide-su-compat ]; then
+      /system/bin/logcat feature set su_compat 0 && echo "su_compat disabled (hide /system/bin/su)" || echo "su_compat disable failed"
+  fi
 '
 echo "outer_rc=$?"
 echo "after: module=$(grep -c kernelsu /proc/modules 2>/dev/null)"

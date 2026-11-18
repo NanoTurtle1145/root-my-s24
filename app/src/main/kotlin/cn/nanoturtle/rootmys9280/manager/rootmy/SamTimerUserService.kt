@@ -29,6 +29,7 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
 
     /** issue #35：98260 路径也要支持「禁用 KSU 模块」——由 action 脚本在 root 上下文执行。 */
     @Volatile private var disableModules: Boolean = false
+    @Volatile private var hideSuCompat: Boolean = false
 
     /** 设备构建号；有 samtimer/targets/<tag>/ 下的专属载荷时优先用它（issue #40 约定）。 */
     @Volatile private var targetTag: String = ""
@@ -77,6 +78,10 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
 
     override fun setDisableModules(disable: Boolean) {
         disableModules = disable
+    }
+
+    override fun setHideSuCompat(hide: Boolean) {
+        hideSuCompat = hide
     }
 
     override fun runExploit(callback: IRootCallback?) {
@@ -197,6 +202,16 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
             }
         }
         log(callback, if (disableModules) "disable-modules: on (action 会给每个模块写 disable 标记)" else "disable-modules: off")
+
+        // 环境隐藏：跑完后关掉 su_compat，去掉 /system/bin/su 这个检测面。
+        runCatching {
+            if (hideSuCompat) {
+                java.io.File(WORK_DIR, "hide-su-compat").writeText("1")
+            } else {
+                java.io.File(WORK_DIR, "hide-su-compat").delete()
+            }
+        }
+        log(callback, if (hideSuCompat) "hide-su-compat: on (late-load 后 ksud feature set su_compat 0)" else "hide-su-compat: off")
 
         log(callback, "starting exploit (umhpipe, detached)...")
         // 关键：不要用 ProcessBuilder 直接当子进程。那样 libtimer 的父进程是 UserService，

@@ -8,6 +8,8 @@ interface IRootService {
     void setTargetTag(String tag);
     /** 本次运行是否在 late-load 前禁用 KSU 模块（98260 路径，root 上下文里执行）。 */
     void setDisableModules(boolean disable);
+    /** 跑完后关闭 KernelSU 的 su 兼容模式（隐藏 /system/bin/su） */
+    void setHideSuCompat(boolean hide);
     void runExploit(IRootCallback callback);
     boolean isReady();
     boolean isRooted();

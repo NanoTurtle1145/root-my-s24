@@ -85,6 +85,7 @@ private const val KEY_ADB_WIRELESS_ENABLED = "adb_wireless_enabled"
 private const val KEY_UNTESTED_PAYLOADS_ENABLED = "untested_payloads_enabled"
 private const val KEY_DF_ENGINE_ENABLED = "df_engine_enabled"
 private const val KEY_DISABLE_KSU_MODULES = "disable_ksu_modules"
+private const val KEY_HIDE_SU_COMPAT = "hide_su_compat"
 private const val KEY_DEBUG_MODE = "debug_mode"
 
 /** 点版本号多少下开启调试模式 */
@@ -138,6 +139,9 @@ fun SettingsScreen(
     // 设置分两页：常用 / 高级与诊断（提案：主页不超过一屏）
     var settingsTab by rememberSaveable { mutableStateOf(0) }
 
+    var hideSuCompat by remember {
+        mutableStateOf(prefs.getBoolean(KEY_HIDE_SU_COMPAT, false))
+    }
     var disableKsuModules by remember {
         mutableStateOf(prefs.getBoolean(KEY_DISABLE_KSU_MODULES, false))
     }
@@ -455,7 +459,7 @@ fun SettingsScreen(
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_auto_save_log)) }
                 }
-                GroupedRow(index = 2, count = 3) {
+                GroupedRow(index = 2, count = 4) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -520,7 +524,7 @@ fun SettingsScreen(
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_df_engine)) }
                 }
-                GroupedRow(index = 2, count = 3) {
+                GroupedRow(index = 2, count = 4) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -539,6 +543,24 @@ fun SettingsScreen(
                         trailingContent = { Switch(checked = disableKsuModules, onCheckedChange = null) },
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_disable_ksu_modules)) }
+                    ListItem(
+                        modifier =
+                            Modifier.toggleable(
+                                value = hideSuCompat,
+                                role = Role.Switch,
+                                onValueChange = { enabled ->
+                                    hideSuCompat = enabled
+                                    prefs.edit().putBoolean(KEY_HIDE_SU_COMPAT, enabled).apply()
+                                    runCatching {
+                                        ServiceLocator.rootViewModel.setHideSuCompat(enabled)
+                                    }
+                                },
+                            ),
+                        leadingContent = { Icon(Icons.Rounded.Lock, contentDescription = null) },
+                        supportingContent = { Text(stringResource(R.string.settings_hide_su_compat_summary)) },
+                        trailingContent = { Switch(checked = hideSuCompat, onCheckedChange = null) },
+                        colors = cardRowColors,
+                    ) { Text(stringResource(R.string.settings_hide_su_compat)) }
                 }
             }
         }

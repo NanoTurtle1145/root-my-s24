@@ -465,4 +465,6 @@ Auto-save log</string>
     <string name="settings_tab_advanced">Advanced &amp; diagnostics</string>
     <string name="about_faq_expand">Show %1$d frequently asked questions</string>
     <string name="about_faq_collapse">Collapse</string>
+    <string name="settings_hide_su_compat">Hide su compatibility mode</string>
+    <string name="settings_hide_su_compat_summary">After root, turn off su_compat so apps cannot see /system/bin/su. Side effect: su in adb/Termux stops working until reboot.</string>
 </resources>

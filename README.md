@@ -204,6 +204,7 @@ app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 �
 - 每次重启后需要重新跑一次「开始 Root」
 - **跑完别久留**：exploit 会留 parked 进程占住内核页，事情做完就重启；避免长时间高负载（游戏 / 大量后台 / 反复锁屏）
 - **管理器版本与驱动匹配**且必须官方签名（见「二、快速开始」）
+- **环境隐藏**：设置 → 高级与诊断 →「隐藏 su 兼容模式」会在 root 后关掉 `su_compat`，应用看不到 `/system/bin/su`；代价是 adb/Termux 的 `su` 失效直到重启
 - 3.3.0 驱动在 6.1.162 上不稳（system_server 崩溃循环 → RescueParty → 整机重启）
 
 ## 六、版本历史
