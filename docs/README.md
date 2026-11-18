@@ -33,14 +33,20 @@
 | [v3.4.0](release-v3.4.0.md) | 2026-09 | 历史版本 |
 | [v2.5.6](release-v2.5.6.md) / [v2.5.5](release-v2.5.5.md) / [v2.2](release-v2.2.md) | 2026-09 | 地区分组、无线调试收敛、列表式固件选择 |
 
-### 三、技术原理
+### 三、设计规范
+
+| 文档 | 内容 |
+|---|---|
+| [UI-GUIDELINES.md](UI-GUIDELINES.md) | **改界面之前先读**：圆角尺度（8/12/20/28/32）、行卡片 index/count 规则、间距刻度、标准组件、7 条常见错误、改动检查清单 |
+
+### 四、技术原理
 
 | 文档 | 内容 |
 |---|---|
 | [technical-principles.md](technical-principles.md) | 本 App 技术原理：漏洞成因、利用链全景、为什么免解锁、风险提示、源码对照 |
 | [研究仓库 VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) | 完整漏洞原理剖析（权威）：rtmutex UAF 成因、防护绕过、worklist 竞态 |
 
-### 四、固件适配与定标
+### 五、固件适配与定标
 
 **方法论**
 
@@ -65,7 +71,7 @@
 | 43499 | 国行 BYH7（One UI 7，待验证） | e1q-S9210ZCU4BYH7 | 6.1.99 | [oneui7-adaptation-report.md](oneui7-adaptation-report.md) → [byh7-target-complete.md](byh7-target-complete.md) |
 | 43499 | S928B 欧版 AXK5/BYD9/CZA1 | e3q-S928BXXU4* | 6.1.75–6.1.128 | [s928b-eur-axk5-byd9-cza1-target-complete.md](s928b-eur-axk5-byd9-cza1-target-complete.md) |
 
-### 五、运行日志与故障定位
+### 六、运行日志与故障定位
 
 | 文档 | 内容 |
 |---|---|
@@ -75,14 +81,14 @@
 
 > 反馈问题时请附 **运行日志编号**（App → 运行日志 →「复制编号」，v3.6.3 起）。
 
-### 六、构建与发布
+### 七、构建与发布
 
 | 文档 | 内容 |
 |---|---|
 | [ci-release.md](ci-release.md) | GitHub Actions 签名构建与 Release 流程、所需 Secrets |
 | [separate-builds.md](separate-builds.md) | 分系列 APK（all / s24 / fold / exp）构建与渠道语义 |
 
-### 七、实验与规划
+### 八、实验与规划
 
 | 文档 | 内容 |
 |---|---|
@@ -90,7 +96,7 @@
 | [dirtyfrag-engine-plan.md](dirtyfrag-engine-plan.md) | DirtyFrag 引擎规划（alpha，未采用） |
 | [dzg1-resukisu-plan.md](dzg1-resukisu-plan.md) | DZG1 ReSukiSU / BakaSU 路线规划 |
 
-### 八、研究资料
+### 九、研究资料
 
 | 文档 | 内容 |
 |---|---|

@@ -291,6 +291,7 @@ RootMyS24/
 | 分类 | 文档 |
 |---|---|
 | 入门 | [快速开始](#二快速开始) · [贡献指南](CONTRIBUTING.md) · [授权方案](docs/auth-plan.md) · [隐私政策](docs/PRIVACY.md) |
+| 设计 | [UI 设计规范](docs/UI-GUIDELINES.md)（改界面前必读） |
 | 原理 | [技术原理](docs/technical-principles.md) · [研究仓库 VULNERABILITY_ANALYSIS.md](https://github.com/NanoTurtle1145/samsung-root-research/blob/main/VULNERABILITY_ANALYSIS.md) |
 | 适配 | [完整适配指南 ⭐](docs/adaptation-guide-full.md) · [适配方法论](docs/adaptation-guide.md) · [CONTRIBUTING → 机型适配](CONTRIBUTING.md#机型适配最有价值的贡献) |
 | 定标报告 | [DZJ3（98260）](docs/port-98260-S9280ZCS6DZJ3.md) · [S9210 DZI1](docs/port-e1q-S9210ZCS6DZI1.md) · [DZE2](docs/dze2-target-complete.md) · [CZA1](docs/cza1-target-complete.md) · [DZG1](docs/dzg1-target-complete.md) · [F741N DZE1](docs/f741n-dze1-target-complete.md) · [S928B EZIF](docs/s928b-ezif-target-complete.md) · [BYH7](docs/byh7-target-complete.md) |
