@@ -459,7 +459,7 @@ fun SettingsScreen(
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_auto_save_log)) }
                 }
-                GroupedRow(index = 2, count = 4) {
+                GroupedRow(index = 2, count = 3) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -524,7 +524,7 @@ fun SettingsScreen(
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_df_engine)) }
                 }
-                GroupedRow(index = 2, count = 4) {
+                GroupedRow(index = 2, count = 3) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
@@ -543,6 +543,8 @@ fun SettingsScreen(
                         trailingContent = { Switch(checked = disableKsuModules, onCheckedChange = null) },
                         colors = cardRowColors,
                     ) { Text(stringResource(R.string.settings_disable_ksu_modules)) }
+                }
+                GroupedRow(index = 0, count = 1) {
                     ListItem(
                         modifier =
                             Modifier.toggleable(
