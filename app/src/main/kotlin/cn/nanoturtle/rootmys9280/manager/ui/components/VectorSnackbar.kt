@@ -113,8 +113,8 @@ fun VectorSnackbarHost(hostState: SnackbarHostState, modifier: Modifier = Modifi
         // Lifted rather than inverted: it still reads as laid over the screen without being the
         // opposite colour to it.
         Snackbar(
-            modifier = Modifier.padding(horizontal = 12.dp).shadow(6.dp, RoundedCornerShape(20.dp)),
-            shape = RoundedCornerShape(20.dp),
+            modifier = Modifier.padding(horizontal = 12.dp).shadow(6.dp, MaterialTheme.shapes.medium),
+            shape = MaterialTheme.shapes.medium,
             containerColor = container,
             contentColor = content,
         ) {

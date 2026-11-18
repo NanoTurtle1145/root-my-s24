@@ -118,7 +118,7 @@ fun LogsScreen(
 
           Surface(
               color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-              shape = RoundedCornerShape(14.dp),
+              shape = MaterialTheme.shapes.small,
               modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
           ) {
               Column(modifier = Modifier.fillMaxWidth()) {

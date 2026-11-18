@@ -13,7 +13,17 @@
 
 ## 1. 圆角尺度
 
-主题里已经定义好 `MaterialTheme.shapes`（`ui/theme/Theme.kt`）：
+主题里已经定义好 `MaterialTheme.shapes`（`ui/theme/Theme.kt`）。**代码里优先写 token，不写裸 dp**：
+
+- 卡片 / 气泡 → `MaterialTheme.shapes.medium`
+- 小提示块 / chip → `MaterialTheme.shapes.small`
+- 搜索框 → `MaterialTheme.shapes.large`
+- 底部 panel → `MaterialTheme.shapes.extraLarge`
+
+仍允许写裸 dp 的**只有四类例外**（都在下表和 §1.1/§1.2 里说明）：
+① 行卡片"关节"圆角公式（20→4）；② Markdown 代码块 4/6；③ 72dp 图标底座 16；④ 徽标 8/10。
+
+| Token | 值 | 用在哪 |
 
 | Token | 值 | 用在哪 |
 |---|---|---|

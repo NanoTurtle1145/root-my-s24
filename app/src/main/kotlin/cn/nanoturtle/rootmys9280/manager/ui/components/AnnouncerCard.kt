@@ -85,7 +85,7 @@ fun AnnouncerCard(
                 // 整卡可点：公告在主页是持久显示，点内容进详情页；不再提供"关闭"
                 // （关掉之后入口会一起消失，用户就再也找不回来了）
                 modifier = Modifier.fillMaxWidth().clickable { onOpenItem(item) },
-                shape = RoundedCornerShape(20.dp),
+                shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(containerColor = container),
             ) {
                 Row(

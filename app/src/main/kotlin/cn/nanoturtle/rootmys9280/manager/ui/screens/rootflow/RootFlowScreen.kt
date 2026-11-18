@@ -475,7 +475,7 @@ private fun RootFlowContent(
                         }
                         if (state.rooted) {
                             Surface(
-                                shape = RoundedCornerShape(16.dp),
+                                shape = MaterialTheme.shapes.small,
                                 color = Color(0xFF4CAF50).copy(alpha = 0.15f),
                                 contentColor = Color(0xFF2E7D32),
                             ) {

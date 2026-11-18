@@ -124,7 +124,7 @@ fun FeedbackScreen(onNavigateBack: () -> Unit) {
                                 Modifier
                                     .fillMaxWidth()
                                     .selectable(selected = kind == k, onClick = { kind = k }),
-                            shape = RoundedCornerShape(14.dp),
+                            shape = MaterialTheme.shapes.small,
                             color =
                                 if (kind == k) MaterialTheme.colorScheme.primaryContainer
                                 else MaterialTheme.colorScheme.surfaceContainer,
@@ -164,7 +164,7 @@ fun FeedbackScreen(onNavigateBack: () -> Unit) {
             item {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = MaterialTheme.shapes.medium,
                     color = MaterialTheme.colorScheme.surfaceContainer,
                 ) {
                     Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -188,7 +188,7 @@ fun FeedbackScreen(onNavigateBack: () -> Unit) {
                 Spacer(Modifier.height(12.dp))
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = MaterialTheme.shapes.medium,
                     color = MaterialTheme.colorScheme.surfaceContainer,
                 ) {
                     Row(

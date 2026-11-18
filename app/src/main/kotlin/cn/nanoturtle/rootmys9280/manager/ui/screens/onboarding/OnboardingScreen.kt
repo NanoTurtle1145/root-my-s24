@@ -247,7 +247,7 @@ private fun LogSharingRow(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth().selectable(selected = selected, onClick = onSelect),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
+        shape = MaterialTheme.shapes.medium,
         color =
             if (selected) MaterialTheme.colorScheme.primaryContainer
             else MaterialTheme.colorScheme.surfaceContainer,
