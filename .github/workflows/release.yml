@@ -20,7 +20,7 @@ on:
       channel:
         description: '发布渠道（beta=预发布，stable=正式）'
         type: choice
-        options: [beta, stable]
+        options: [alpha, beta, stable]
         default: beta
       flavors:
         description: '要构建的 flavor（逗号分隔）'
@@ -124,7 +124,14 @@ jobs:
             FLAVORS="${{ inputs.flavors }}"
           else
             # tag：含 '-' 视为预发布 → beta；裸版本号 → stable
-            if echo "${GITHUB_REF_NAME}" | grep -q '-'; then CHANNEL=beta; else CHANNEL=stable; fi
+            # tag：含 alpha → alpha；其它含 "-" → beta；裸版本号 → stable
+            if echo "${GITHUB_REF_NAME}" | grep -qi "alpha"; then
+              CHANNEL=alpha
+            elif echo "${GITHUB_REF_NAME}" | grep -q "-"; then
+              CHANNEL=beta
+            else
+              CHANNEL=stable
+            fi
             FLAVORS="all,s24,fold,exp"
           fi
           echo "channel=$CHANNEL" >> "$GITHUB_OUTPUT"
@@ -201,5 +208,9 @@ jobs:
           else
             gh release create "$TAG" dist/*.apk dist/SHA256SUMS.txt \
               --title "RootMyS24 $TAG" "${NOTES_ARGS[@]}" \
-              $( [ "${{ github.event_name }}" = "workflow_dispatch" ] && echo "--prerelease" || true )
+              CH="${{ steps.meta.outputs.channel }}"
+              PRE=""
+              if [ "$CH" != "stable" ]; then PRE="--prerelease"; fi
+              gh release create "$TAG" dist/*.apk dist/SHA256SUMS.txt \
+                --title "RootMyS24 $TAG" "${NOTES_ARGS[@]}" $PRE
           fi
