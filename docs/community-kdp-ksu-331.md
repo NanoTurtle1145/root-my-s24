@@ -147,3 +147,19 @@ Release `v3.3.1-dzj3-kdp-0.1`：
 
 - 官方：`emulating soft_reboot!` → `stop` → `start`
 - 补丁：`module-effective soft reboot: post-fs-data / service / restart zygote`
+
+### 追加：管理器升到 v3.3.1 之后的行为（2026-11-20 现场）
+
+管理器 v3.3.1（内置 ksud 也是 3.3.1，uapi 5）与驱动 3.3.1（uapi 5）**版本匹配**，
+`ensure_uapi_version_matched()` 通过 → 管理器按钮真正执行了官方 `soft_reboot()`：
+
+- 屏幕先黑、随后出现开机动画 → 用户视角「像硬重启」
+- 但内核 **uptime 连续**（实测 891 s → 之后继续增长），LKM 仍在 `kernelsu` 列表里
+- `zygote64` / `system_server` 是重新启动的（框架重启）
+- QQ 的 maps 里出现 `zygisk_vector` / `zygisksu` → **模块借这次 zygote 重启完成注入**
+- dmesg 无 panic / Oops（98260 的 parked 被杀但安全拆除生效）
+
+结论：**判断"软重启"还是"硬重启"不能看屏幕有没有开机动画，要看内核 uptime 是否归零**。
+官方 `soft_reboot()` 的 `stop`/`start` 会让 init 重放开机动画，但内核与 LKM 都没动。
+
+（之后用户又做了一次真重启，uptime 归零、`/proc/modules` 里 kernelsu 消失、需重新跑 exploit，符合临时 root 预期。）
