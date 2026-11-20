@@ -10,6 +10,8 @@ interface IRootService {
     void setDisableModules(boolean disable);
     /** 跑完后关闭 KernelSU 的 su 兼容模式（隐藏 /system/bin/su） */
     void setHideSuCompat(boolean hide);
+    /** 走补丁版 ksud soft-reboot：重跑 module stage + 重启 zygote（KDP 上不真重启） */
+    void softReboot();
     void runExploit(IRootCallback callback);
     boolean isReady();
     boolean isRooted();

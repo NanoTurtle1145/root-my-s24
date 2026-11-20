@@ -467,4 +467,9 @@ Auto-save log</string>
     <string name="about_faq_collapse">Collapse</string>
     <string name="settings_hide_su_compat">Hide su compatibility mode</string>
     <string name="settings_hide_su_compat_summary">After root, turn off su_compat so apps cannot see /system/bin/su. Side effect: su in adb/Termux stops working until reboot.</string>
+    <string name="logs_soft_reboot">Soft reboot (load modules)</string>
+    <string name="logs_soft_reboot_title">Soft reboot to load modules?</string>
+    <string name="logs_soft_reboot_body">Runs the patched ksud soft-reboot: re-runs module stages and restarts zygote — no real reboot. Zygisk/LSPosed then load. The 98260 parked process will be killed, so a hard reboot is possible; root is gone after any reboot and must be re-obtained.</string>
+    <string name="logs_soft_reboot_confirm">Soft reboot</string>
+    <string name="logs_soft_reboot_cancel">Cancel</string>
 </resources>

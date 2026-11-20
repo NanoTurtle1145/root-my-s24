@@ -1855,6 +1855,27 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /**
+     * 软重启（加载模块）：调用 UserService 里的补丁版 `ksud soft-reboot`。
+     *
+     * 只在 KSU 已加载时可用；会重跑 module stage + 重启 zygote，正常不真重启。
+     * 98260 的 parked 进程会被框架重启杀掉，有概率硬重启（调用方要先确认）。
+     */
+    fun softRebootForModules(): Boolean {
+        val svc = samtimerBinder ?: run {
+            appendLog("✗ 软重启失败：UserService 未连接（重新跑一次 root 后再试）")
+            return false
+        }
+        appendLog("◆ 请求软重启（加载模块）……")
+        return runCatching {
+            svc.softReboot()
+            true
+        }.getOrElse {
+            appendLog("✗ 软重启请求失败：${it.message}")
+            false
+        }
+    }
+
     /** 解绑并销毁 UserService（parked 重来 / 用户主动清理时用）。 */
     private fun releaseSamTimerService() {
         val args = samtimerArgs ?: return

@@ -426,4 +426,11 @@
     <string name="about_faq_collapse">收起</string>
     <string name="settings_hide_su_compat">隐藏 su 兼容模式</string>
     <string name="settings_hide_su_compat_summary">跑完 root 后关闭 su_compat，应用看不到 /system/bin/su。代价：adb/Termux 的 su 也会失效，重启后恢复。</string>
+    <string name="logs_soft_reboot">软重启（加载模块）</string>
+    <string name="logs_soft_reboot_title">软重启以加载模块？</string>
+    <string name="logs_soft_reboot_body">执行补丁版 ksud soft-reboot：重跑 module stage 并重启 zygote，不真重启，之后 Zygisk/LSPosed 才会注入。
+
+注意：98260 的 parked 进程会被杀掉，有概率硬重启；任何重启后 root 都会消失，需要重新获取。</string>
+    <string name="logs_soft_reboot_confirm">软重启</string>
+    <string name="logs_soft_reboot_cancel">取消</string>
 </resources>

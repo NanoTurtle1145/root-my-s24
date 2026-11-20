@@ -107,3 +107,17 @@ su -c '/data/adb/ksud soft-reboot'     # 走 0002 补丁：重跑 module stage +
 - 模块生效需要一次 zygote 重启，而 98260 的 parked 进程与 zygote 重启互斥——这是这条临时 root 链路的固有限制，
   不是驱动版本问题；
 - 如果必须「root + 模块」同时可用，只能改用**非临时**方案（写 boot/内核），与「不写分区」原则冲突。
+
+### App 内提供的软重启入口（v3.6.4-beta.318+）
+
+管理器按钮不可用，但 App 里补了一个正确入口：
+
+**运行日志页 → 跑完后从底部浮出「软重启（加载模块）」按钮**
+
+- 只有 `state.rooted` 且当前驱动是 3.3.x 时才出现（3.2.5 的 ksud 没有这个补丁）
+- 点击 → 二次确认（说明会杀 parked、有硬重启风险）→ 通过 UserService 执行
+  `su -c '/data/adb/ksud soft-reboot'`
+- 执行输出实时追加到日志页，方便判断成功/失败
+
+> 按钮的显示/收起用 `AnimatedVisibility`（slideInVertically + fadeIn），
+> 遵循 `docs/UI-GUIDELINES.md` 的圆角与间距规范。

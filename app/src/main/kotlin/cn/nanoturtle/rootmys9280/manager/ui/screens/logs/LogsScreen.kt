@@ -1,5 +1,7 @@
 package cn.nanoturtle.rootmys9280.manager.ui.screens.logs
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -59,6 +61,7 @@ fun LogsScreen(
     var history by remember { mutableStateOf(RunLogStore.list(context)) }
     var historyOpen by remember { mutableStateOf(false) }
     var viewing by remember { mutableStateOf<Pair<String, String>?>(null) }
+    var showSoftReboot by remember { mutableStateOf(false) }
     LaunchedEffect(lastLogCode) { history = RunLogStore.list(context) }
 
     val shown = if (brief) state.logLines.filter { it.summary } else state.logLines
@@ -177,6 +180,7 @@ fun LogsScreen(
               }
           }
 
+        Box(modifier = Modifier.fillMaxSize()) {
         if (shown.isEmpty()) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -228,6 +232,51 @@ fun LogsScreen(
                     }
                 }
             }
+        }
+
+        val canSoftReboot = state.rooted &&
+            vm.ksuVersionEffective(vm.firmwareVersion).startsWith("3.3")
+        androidx.compose.animation.AnimatedVisibility(
+            visible = canSoftReboot,
+            enter = androidx.compose.animation.slideInVertically(initialOffsetY = { it }) +
+                androidx.compose.animation.fadeIn(),
+            exit = androidx.compose.animation.slideOutVertically(targetOffsetY = { it }) +
+                androidx.compose.animation.fadeOut(),
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
+        ) {
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                shadowElevation = 6.dp,
+                modifier = Modifier.clickable { showSoftReboot = true },
+            ) {
+                Text(
+                    text = stringResource(R.string.logs_soft_reboot),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+                )
+            }
+        }
+        }
+        if (showSoftReboot) {
+            AlertDialog(
+                onDismissRequest = { showSoftReboot = false },
+                title = { Text(stringResource(R.string.logs_soft_reboot_title)) },
+                text = { Text(stringResource(R.string.logs_soft_reboot_body)) },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showSoftReboot = false
+                            vm.softRebootForModules()
+                        },
+                    ) { Text(stringResource(R.string.logs_soft_reboot_confirm)) }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showSoftReboot = false }) {
+                        Text(stringResource(R.string.logs_soft_reboot_cancel))
+                    }
+                },
+            )
         }
     }
     viewing?.let { (code, text) ->

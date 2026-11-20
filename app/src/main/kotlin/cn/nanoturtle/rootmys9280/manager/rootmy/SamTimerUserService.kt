@@ -30,6 +30,7 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
     /** issue #35：98260 路径也要支持「禁用 KSU 模块」——由 action 脚本在 root 上下文执行。 */
     @Volatile private var disableModules: Boolean = false
     @Volatile private var hideSuCompat: Boolean = false
+    @Volatile private var uiCallback: IRootCallback? = null
 
     /** 设备构建号；有 samtimer/targets/<tag>/ 下的专属载荷时优先用它（issue #40 约定）。 */
     @Volatile private var targetTag: String = ""
@@ -86,8 +87,31 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
         hideSuCompat = hide
     }
 
+    /**
+     * 软重启（加载模块）：调用补丁版 `ksud soft-reboot`——重跑 module stage 并重启 zygote，
+     * 不走内核官方 stop/start（KDP 上那条会真重启）。
+     */
+    override fun softReboot() {
+        Thread({
+            val cb = uiCallback
+            fun say(msg: String) {
+                cb?.let { runCatching { it.onLog(msg) } }
+            }
+            say("◆ 软重启（ksud soft-reboot）：重跑 module stage + 重启 zygote ……")
+            val ok = runCatching {
+                val p = ProcessBuilder("/system/bin/sh", "-c", "su -c '/data/adb/ksud soft-reboot'")
+                    .redirectErrorStream(true)
+                    .start()
+                p.inputStream.bufferedReader().forEachLine { line -> say("  $line") }
+                p.waitFor() == 0
+            }.getOrDefault(false)
+            say(if (ok) "✔ 软重启命令已返回（框架会短暂重启）" else "✗ 软重启命令失败（看上面输出）")
+        }, "rms24-softreboot").start()
+    }
+
     override fun runExploit(callback: IRootCallback?) {
         if (callback == null) return
+        uiCallback = callback
         if (!running.compareAndSet(false, true)) {
             callback.onLog("error: another run is already in progress")
             callback.onComplete(1, false)
