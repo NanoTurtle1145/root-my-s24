@@ -51,7 +51,7 @@ Release `v3.3.1-dzj3-kdp-0.1`：
 > One UI 9（EZIF/EZJ1/EZJB/EZJD）与 DZJ3 都是 `android14-6.1` KMI；
 > KernelSU v3.3.1 的 late-load 用用户态 `init_module` 加载，vermagic 不匹配时会
 > 从内核日志取目标 vermagic 改写后重试，所以同一份 ksud 可跨构建号使用。
-> **仍需真机验证**：加载失败最坏是 kernel panic + 重启。
+> **已真机验证**：One UI 9（EZJ1）加载成功，详见文末记录；模块仍需 zygote 重启。
 
 ## 其它可选路（原评估）
 
@@ -62,3 +62,20 @@ Release `v3.3.1-dzj3-kdp-0.1`：
 | C. 服务端下发 | 上传到服务器 `dl/`，`payloads.json` 加一条带 sha256 的 ksud 选项，App 按需下载 | 不增 APK 体积；仍然只对官方包生效；需要真机验证 |
 
 无论哪条，都**必须先有 DZJ3 真机验证**（我们手上是 EZJ1，跑不了这个构建）。
+
+## 真机验证记录（2026-11-20，SM-S9280 / S9280ZHS6EZJ1 / One UI 9）
+
+跑 `v3.6.4-beta.317-s24`，KSU 驱动选 **3.3.1 KDP**：
+
+| 项 | 结果 |
+|---|---|
+| exploit | 成功（`KERNELSU_LIVE`，98260 链路正常） |
+| 内核模块 | `kernelsu 233472 0 - Live` 已加载 |
+| ksud | `ksud 3.3.1 (uapi: 5)`，`/system/bin/su` 可用（`u:r:ksu:s0`） |
+| KDP 兼容 | dmesg `Samsung KDP task-scoped credential install` 正常 |
+| 版本替换 | LKM 按 EZJ1 的 `-abS9280ZHS6EZJ1` 构建，跨构建号加载路径跑通 |
+| **模块 stage** | **未生效**：zygote 在 boot 时已启动，late-load 的 stage 不重开 zygote；QQ/system_server 的 maps 里没有 `zygisk_vector`/`lspd` |
+| 管理器 | 机上还是 **v3.3.0 (32601)**，与 3.3.1 驱动（32680）不匹配，需换官方 **v3.3.1** |
+
+> 模块补齐要一次「module-effective 软重启」（`ksud soft-reboot`：重跑 stage + `ctl.restart zygote`）。
+> 98260 的 parked 进程会被这次框架重启杀掉，有硬重启风险（v3.6.2 的安全拆除能降但不能归零）。
