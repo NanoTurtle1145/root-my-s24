@@ -80,33 +80,25 @@ Release `v3.3.1-dzj3-kdp-0.1`：
 > 模块补齐要一次「module-effective 软重启」（`ksud soft-reboot`：重跑 stage + `ctl.restart zygote`）。
 > 98260 的 parked 进程会被这次框架重启杀掉，有硬重启风险（v3.6.2 的安全拆除能降但不能归零）。
 
-### 2026-11-20 事故记录：管理器软重启按钮 → 真重启
+### 2026-11-20 现场复核：那不是内核重启，是框架重启
 
-在同一台 EZJ1 上（3.3.1 KDP 驱动已加载、root 正常），点了 **KernelSU 管理器自带的「软重启」**，
-结果设备**真重启**（adb 断开、root 消失）。
+一开始按「硬重启」记录，后续复核推翻了：
 
-这正是社区 README 里写明的限制：
+| 证据 | 数值 |
+|---|---|
+| 内核 uptime | **891 s 连续**（boot 于 21:34，事件发生在 21:37 之后） |
+| `zygote64` / `system_server` ETIME | **11:15 / 11:14** → 只有这两个重启了 |
+| `/proc/modules` | `kernelsu` 仍在（LKM 在内核内存，框架重启不会卸载） |
+| QQ 的 `/proc/pid/maps` | `zygisk_vector` / `zygisksu` 命中 **6 处** → 模块确实注入了 |
+| dmesg | 未见 panic / Oops（98260 的 parked 被杀但没有出事，v3.6.2 安全拆除生效） |
 
-> 「KernelSU 管理器自带的软重启按钮：仍走官方 stop/start，会真重启，请勿使用；
-> 官方完整 soft-reboot 暂不推荐在 KDP 上使用。」
-
-原因：管理器按钮走的是内核里的官方 soft-reboot 路径（`stop`/`start`），没有用上
-我们 `0002` 补丁改过的 `ksud soft_reboot()`。
-
-**在 KDP 上想加载模块，只能用命令行**：
-
-```sh
-su -c '/data/adb/ksud soft-reboot'     # 走 0002 补丁：重跑 module stage + ctl.restart zygote
-```
-
-> 注意：98260 的 parked 进程会被这次框架重启杀掉，有概率硬重启（v3.6.2 的安全拆除能降风险）。
-> 真正重启后 root 消失，需要重新跑一次 exploit（一次开机一次机会）。
-
-**结论**：
-- 3.3.1 KDP 只解决「驱动加载 + KDP 兼容」，**不解决「late-load 后模块生效」**；
-- 模块生效需要一次 zygote 重启，而 98260 的 parked 进程与 zygote 重启互斥——这是这条临时 root 链路的固有限制，
-  不是驱动版本问题；
-- 如果必须「root + 模块」同时可用，只能改用**非临时**方案（写 boot/内核），与「不写分区」原则冲突。
+结论：
+- 管理器那个「软重启」实际执行的是 **module-effective 路径**（重跑 stage + `ctl.restart zygote`），
+  不是内核官方 `stop`/`start`——否则 KDP 上会真重启；
+- 屏幕上看起来像"重启"（黑屏、桌面重建、adb 掉线）是**框架重启**，内核从未重启；
+- **这正是我们想要的结果**：root 还在、模块也加载了、没有硬重启；
+- 代价只有：Shizuku 侧 UserService / parked 进程被杀，App 里 `state.rooted` 变 false，
+  但 KSU 驱动与管理器仍然工作，直到下一次真重启。
 
 ### App 内提供的软重启入口（v3.6.4-beta.318+）
 
