@@ -60,7 +60,28 @@ jobs:
             CONFIG_KSU_SAMSUNG_DEFEX=y CONFIG_KSU_SAMSUNG_NO_PATCH_TEXT=y \
             CC=clang make -j"$(nproc)"
           llvm-strip -d kernelsu.ko
-          strings kernelsu.ko | grep -m1 vermagic
+          strings kernelsu.ko > /tmp/vm.txt || true
+          grep -m1 vermagic /tmp/vm.txt || true
+          # 补 module_layout 的 __versions CRC：Samsung 内核开了 modversions，
+          # 用 GKI 默认 CRC 会被拒（disagrees about version of symbol module_layout）。
+          python3 - 0xea759d7f kernelsu.ko <<'PY'
+          import struct, sys
+          crc=int(sys.argv[1],16); dst=sys.argv[2]
+          d=bytearray(open(dst,'rb').read())
+          so=struct.unpack_from('<Q',d,0x28)[0]; es=struct.unpack_from('<H',d,0x3a)[0]
+          n=struct.unpack_from('<H',d,0x3c)[0]; si=struct.unpack_from('<H',d,0x3e)[0]
+          sh=[]
+          for i in range(n):
+              h=so+i*es; v=struct.unpack_from('<IIQQQQIIQQ',d,h); sh.append({'hdr':h,'name':v[0],'off':v[4],'size':v[5]})
+          st=d[sh[si]['off']:sh[si]['off']+sh[si]['size']]
+          nm=lambda x: st[x:st.find(b'\0',x)].decode(errors='replace') if x<len(st) else ''
+          vers=[s for s in sh if nm(s['name'])=='__versions'][0]
+          ent=struct.pack('<Q',crc)+b'module_layout'.ljust(56,b'\0')
+          o=len(d); d+=ent
+          struct.pack_into('<Q',d,vers['hdr']+0x18,o); struct.pack_into('<Q',d,vers['hdr']+0x20,len(ent))
+          open(dst,'wb').write(bytes(d))
+          print('patched __versions module_layout crc=0x%x' % crc)
+          PY
           ls -l kernelsu.ko
       - uses: actions/upload-artifact@v4
         with:
