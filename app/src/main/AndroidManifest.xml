@@ -64,6 +64,12 @@
             android:exported="false"
             android:theme="@style/Theme.Vector" />
 
+        <!-- 本机历史运行日志页：运行日志页工具栏「历史日志」按钮进入。 -->
+        <activity
+            android:name=".ui.screens.logs.RunLogHistoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Vector" />
+
         <!--
           无线调试通知配对：通知上 RemoteInput 的 PendingIntent 指向此 Service，
           在后台接收配对码并执行配对，不打断系统设置里的配对码页面

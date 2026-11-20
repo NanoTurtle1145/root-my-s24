@@ -43,7 +43,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import cn.nanoturtle.rootmys9280.manager.rootmy.RunLogStore
 
 /**
  * 运行日志 tab：完整展示免解锁 Root 流程输出（详细/粗略切换、导出、清空）。
@@ -58,11 +57,7 @@ fun LogsScreen(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val lastLogCode by vm.lastLogCode.collectAsStateWithLifecycle()
-    var history by remember { mutableStateOf(RunLogStore.list(context)) }
-    var historyOpen by remember { mutableStateOf(false) }
-    var viewing by remember { mutableStateOf<Pair<String, String>?>(null) }
     var showSoftReboot by remember { mutableStateOf(false) }
-    LaunchedEffect(lastLogCode) { history = RunLogStore.list(context) }
 
     val shown = if (brief) state.logLines.filter { it.summary } else state.logLines
     LaunchedEffect(shown.size, brief) {
@@ -116,69 +111,15 @@ fun LogsScreen(
                     }
                 },
             ) { Text(stringResource(R.string.logs_copy_code)) }
+            TextButton(
+                onClick = {
+                    context.startActivity(
+                        android.content.Intent(context, RunLogHistoryActivity::class.java),
+                    )
+                },
+            ) { Text(stringResource(R.string.logs_history_button)) }
             TextButton(onClick = { vm.clearLog() }) { Text(stringResource(R.string.logs_clear)) }
         }
-
-          Surface(
-              color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-              shape = MaterialTheme.shapes.small,
-              modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-          ) {
-              Column(modifier = Modifier.fillMaxWidth()) {
-                  Row(
-                      modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 2.dp),
-                      verticalAlignment = Alignment.CenterVertically,
-                  ) {
-                      Text(
-                          text = stringResource(R.string.logs_history_title, history.size),
-                          style = MaterialTheme.typography.labelMedium,
-                          color = MaterialTheme.colorScheme.onSurfaceVariant,
-                      )
-                      Spacer(Modifier.weight(1f))
-                      TextButton(onClick = {
-                          history = RunLogStore.list(context)
-                          historyOpen = !historyOpen
-                      }) {
-                          Text(stringResource(if (historyOpen) R.string.logs_history_close else R.string.logs_history_open))
-                      }
-                  }
-                  if (historyOpen) {
-                      if (history.isEmpty()) {
-                          Text(
-                              text = stringResource(R.string.logs_history_empty),
-                              style = MaterialTheme.typography.bodySmall,
-                              color = MaterialTheme.colorScheme.onSurfaceVariant,
-                              modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 10.dp),
-                          )
-                      } else {
-                          history.take(10).forEach { e ->
-                              Row(
-                                  modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
-                                  verticalAlignment = Alignment.CenterVertically,
-                              ) {
-                                  Text(
-                                      text = e.code,
-                                      fontFamily = FontFamily.Monospace,
-                                      fontWeight = FontWeight.Medium,
-                                      fontSize = 13.sp,
-                                      color = MaterialTheme.colorScheme.primary,
-                                  )
-                                  Spacer(Modifier.width(10.dp))
-                                  Text(
-                                      text = e.timeLabel() + "  " + e.outcome,
-                                      style = MaterialTheme.typography.labelSmall,
-                                      color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                      modifier = Modifier.weight(1f),
-                                  )
-                                  TextButton(onClick = { viewing = e.code to (RunLogStore.read(context, e.code) ?: "") }) {
-                                      Text(stringResource(R.string.logs_history_view))
-                                  }
-                              }
-                          }
-                      }
-                  }
-              }
-          }
 
         Box(modifier = Modifier.fillMaxSize()) {
         if (shown.isEmpty()) {
@@ -278,30 +219,6 @@ fun LogsScreen(
                 },
             )
         }
-    }
-    viewing?.let { (code, text) ->
-        AlertDialog(
-            onDismissRequest = { viewing = null },
-            title = { Text(stringResource(R.string.logs_history_detail, code)) },
-            text = {
-                Text(
-                    text = text,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 11.sp,
-                    modifier = Modifier.verticalScroll(rememberScrollState()),
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    val cm = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                    cm.setPrimaryClip(android.content.ClipData.newPlainText("run-log-code", code))
-                    android.widget.Toast.makeText(context, context.getString(R.string.logs_code_copied, code), android.widget.Toast.LENGTH_SHORT).show()
-                }) { Text(stringResource(R.string.logs_copy_code)) }
-            },
-            dismissButton = {
-                TextButton(onClick = { viewing = null }) { Text(stringResource(R.string.logs_history_close)) }
-            },
-        )
     }
 
 }

@@ -1173,6 +1173,10 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         runStartIndex = _state.value.logLines.size
         // 每轮开头写一行运行编号，供服务端精确去重（见 currentRunId 注释）
         currentRunId = newRunId()
+        // 日志编号在**开跑时**就生成并对外暴露：用户跑一半就能复制编号反馈，
+        // 不用等这轮结束（结束时用同一个编号落盘）
+        _lastLogCode.value = RunLogStore.codeOf(currentRunId)
+        appendLog("◆ 日志编号: " + (_lastLogCode.value ?: "?"))
         appendLog("RUN-ID: $currentRunId")
         // 记下本轮用的载荷与 KSU 驱动版本：服务端据此把成功率按 KSU 版本拆开统计
         appendLog(

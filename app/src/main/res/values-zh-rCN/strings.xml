@@ -433,4 +433,5 @@
 注意：98260 的 parked 进程会被杀掉，有概率硬重启；任何重启后 root 都会消失，需要重新获取。</string>
     <string name="logs_soft_reboot_confirm">软重启</string>
     <string name="logs_soft_reboot_cancel">取消</string>
+    <string name="logs_history_button">历史日志</string>
 </resources>
