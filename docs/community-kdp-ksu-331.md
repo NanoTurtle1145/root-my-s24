@@ -113,3 +113,37 @@ Release `v3.3.1-dzj3-kdp-0.1`：
 
 > 按钮的显示/收起用 `AnimatedVisibility`（slideInVertically + fadeIn），
 > 遵循 `docs/UI-GUIDELINES.md` 的圆角与间距规范。
+
+## 官方 KernelSU 的「软重启」到底做了什么
+
+`userspace/ksud/src/soft_reboot.rs`（v3.3.1）里的 `soft_reboot()`：
+
+1. `ensure_uapi_version_matched()` —— 管理器内置 ksud 与内核 uapi 不匹配时**直接跳过**；
+2. `daemonize_with(true, switch_mnt_ns(1))` —— 切到 init 的 mount namespace；
+3. `reset_boot_completed()` —— 把 `sys.boot_completed` 置 0；
+4. `run_stage("emulated-soft-reboot")` —— 跑模块的模拟软重启脚本；
+5. 起内嵌的 `waitsys` 辅助进程，观察 service 状态；
+6. **`stop`** → `on_post_fs_data()` → **`start`** → `on_services()` → 等 `sys.boot_completed` → `on_boot_completed()`；
+7. `_exit(0)`。
+
+关键点：
+
+- `stop`/`start` 是 **init 的框架启停**，**内核不重启**；
+- KernelSU 的 LKM 在内核内存里，框架重启**不会卸载它** → 所以「软重启后 KSU 还在」是**设计行为**，不是 KDP 特例；
+- 官方代码**没有任何 KDP 分支**；KDP 适配来自社区补丁 `0002`，它把第 6 步换成
+  「重跑 post-fs-data/service + `setprop ctl.restart zygote`」，避免某些三星构建上 `stop`/`start` 变成真重启。
+
+## 两个入口跑的不是同一份 ksud
+
+| 入口 | 实际执行 | 是否含 0002 补丁 |
+|---|---|---|
+| KSU 管理器「软重启」按钮 | 管理器 APK 内置的 `libksud.so soft-reboot`（`KsuCli.getKsuDaemonPath()`） | ❌ 官方版 |
+| 本 App 日志页「软重启（加载模块）」按钮 | `/data/adb/ksud soft-reboot`（由我们的 ksud-331-kdp 安装） | ✅ 含补丁 |
+
+所以：**管理器按钮永远走官方 stop/start**（哪怕管理器升到 3.3.1），
+要稳定拿到 module-effective 行为，用 App 里那个按钮（或命令行 `/data/adb/ksud soft-reboot`）。
+
+区分两条路径看 logcat：
+
+- 官方：`emulating soft_reboot!` → `stop` → `start`
+- 补丁：`module-effective soft reboot: post-fs-data / service / restart zygote`
