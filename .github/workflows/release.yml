@@ -203,14 +203,13 @@ jobs:
           fi
           NOTES="docs/release-${TAG}.md"
           if [ -f "$NOTES" ]; then NOTES_ARGS=(--notes-file "$NOTES"); else NOTES_ARGS=(--generate-notes); fi
+          # alpha/beta 一律创建 prerelease；stable 才是正式发布
+          CH="${{ steps.meta.outputs.channel }}"
+          PRE=""
+          if [ "$CH" != "stable" ]; then PRE="--prerelease"; fi
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" dist/*.apk dist/SHA256SUMS.txt --clobber
           else
             gh release create "$TAG" dist/*.apk dist/SHA256SUMS.txt \
-              --title "RootMyS24 $TAG" "${NOTES_ARGS[@]}" \
-              CH="${{ steps.meta.outputs.channel }}"
-              PRE=""
-              if [ "$CH" != "stable" ]; then PRE="--prerelease"; fi
-              gh release create "$TAG" dist/*.apk dist/SHA256SUMS.txt \
-                --title "RootMyS24 $TAG" "${NOTES_ARGS[@]}" $PRE
+              --title "RootMyS24 $TAG" "${NOTES_ARGS[@]}" $PRE
           fi
