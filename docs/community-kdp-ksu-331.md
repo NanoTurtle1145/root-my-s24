@@ -39,7 +39,21 @@ Release `v3.3.1-dzj3-kdp-0.1`：
 - 管理器需配官方 **KernelSU v3.3.1**（驱动 32680），和我们的 3.2.5 管理器不通用
 - 许可：KernelSU GPL-3.0、BakaSU 三星补丁 MIT；我们若要内置，需要保留 LICENSE/NOTICE
 
-## 若要并入 RootMyS24，可选三条路
+## 已并入（方案 B，2026-11-20）
+
+- 补丁与构建流水线已进仓库：`tools/ksu-kdp/patches/` + `.github/workflows/ksu-kdp.yml`
+  （DDK 编 LKM，按目标设置 vermagic，补 `module_layout` CRC `0xea759d7f`，内嵌进 ksud）
+- App 侧资产：`app/src/main/assets/samtimer/ksud-331-kdp`（一份，KMI `android14-6.1` 通用）
+- 机型页「KSU 驱动版本」新增 **3.3.1 KDP（实验）** 选项，仅当资产存在时出现
+- 3.3.x 走 stock action（会跑 module stage），3.2.5 仍走 `--ephemeral`
+- 配套管理器：官方 **KernelSU v3.3.1**（驱动 32680）
+
+> One UI 9（EZIF/EZJ1/EZJB/EZJD）与 DZJ3 都是 `android14-6.1` KMI；
+> KernelSU v3.3.1 的 late-load 用用户态 `init_module` 加载，vermagic 不匹配时会
+> 从内核日志取目标 vermagic 改写后重试，所以同一份 ksud 可跨构建号使用。
+> **仍需真机验证**：加载失败最坏是 kernel panic + 重启。
+
+## 其它可选路（原评估）
 
 | 方案 | 做法 | 代价 / 风险 |
 |---|---|---|

@@ -59,7 +59,9 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
     override fun destroy() {}
 
     override fun setKsudAsset(name: String) {
-        if (name == ASSET_KSUD_32601 || name == ASSET_KSUD_32525) {
+        // 允许 3.2.5 / 3.3.0 / 3.3.1 KDP 三种；以后新增驱动只要仍以 ksud- 开头即可
+        val base = name.substringAfterLast('/')
+        if (base.startsWith("ksud-")) {
             ksudAssetName = name
         }
     }
@@ -173,7 +175,8 @@ class SamTimerUserService(private val context: Context) : IRootService.Stub() {
         // 3.3.0 的 stock ksud 不认 --ephemeral（会当成未知参数/或跑完整流程），
         // 所以按选择的驱动切换 action 脚本：3.2.5 用 ephemeral 版，3.3.0 用原版。
         val actionAsset =
-            if (ksudAssetName.endsWith("32601")) ASSET_ACTION_STOCK else ASSET_ACTION
+            // 3.2.5 走 --ephemeral；3.3.x（含 3.3.1 KDP）走 stock：会跑 module stage
+            if (ksudAssetName.endsWith("32525")) ASSET_ACTION else ASSET_ACTION_STOCK
         if (!stageAsset(ASSET_LIBTIMER, timerBin) ||
             !stageAsset(ASSET_UHEXEC, uhexec) ||
             !stageAsset(actionAsset, action) ||

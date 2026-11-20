@@ -878,6 +878,22 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** 该设备构建是否内置了某个 per-target ksud（如 `ksud-331-kdp`）。 */
+    fun hasTargetKsud(base: String): Boolean {
+        // 先看 per-target 覆盖（vermagic 专属），再看共享资产（同 KMI 共用一份）
+        val tag = effectiveBuildTag
+        val candidates = buildList {
+            if (tag.isNotEmpty()) add("samtimer/targets/$tag/$base")
+            add("samtimer/$base")
+        }
+        return candidates.any { path ->
+            runCatching {
+                app.assets.open(path).close()
+                true
+            }.getOrDefault(false)
+        }
+    }
+
     /**
      * 该条目可用、且与本机匹配的 KSU 版本；服务端清单在前，内置默认兜底。
      *
@@ -894,17 +910,19 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                 version = defaultKsuVersion(v.ksud),
             )
         val base = (online + fallback).distinctBy { it.version.ifBlank { it.asset } }
-        // SamTimer 引擎额外内置 3.2.5 档（fork 原版 ksud，无 Restart Manager），
-        // 方便和 3.3.0 对比自动打开管理器/软重启的行为；服务端清单里没有它也能选。
+        // SamTimer 引擎额外内置 3.2.5 / 3.3.0 / 3.3.1 KDP；服务端清单里没有也能选。
+        // 3.3.1 只在目标构建（或共享资产）里真的内置了对应 ksud 时出现。
         if (v.engine == Engine.SAMTIMER_98260) {
-            val extras =
-                listOf(
+            val extras = buildList {
+                add(
                     PayloadStatus.KsuOption(
                         asset = "ksud-32601",
                         label = "3.3.0",
                         state = "experimental",
                         version = "3.3.0",
                     ),
+                )
+                add(
                     PayloadStatus.KsuOption(
                         asset = "ksud-32525",
                         label = "3.2.5",
@@ -912,9 +930,19 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
                         version = "3.2.5",
                     ),
                 )
+                if (hasTargetKsud("ksud-331-kdp")) {
+                    add(
+                        PayloadStatus.KsuOption(
+                            asset = "ksud-331-kdp",
+                            label = "3.3.1 KDP",
+                            state = "experimental",
+                            version = "3.3.1",
+                        ),
+                    )
+                }
+            }
             return (base + extras)
-                .distinctBy { it.version.ifBlank { it.asset } }
-                // 升序：3.2.5 在前（EZIF 默认），3.3.0 在后（实验档）
+                .distinctBy { it.version.ifBlank { it.asset }}
                 .sortedBy { it.version }
         }
         return base
@@ -974,6 +1002,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * 写成 "KSU 3.2.5" 会渲染成 "KSU: KSU 3.2.5"（真机 dump 里踩到过）。
      */
     private fun defaultKsuLabel(asset: String): String = when {
+        asset.contains("331") -> "3.3.1"
         asset.endsWith("-32601") -> "3.3.0"
         isKsu325(asset) -> "3.2.5"
         else -> asset.removePrefix("ksud-")
@@ -986,6 +1015,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      * `32525 + 3.2.5`，ksud-dzh3-32601 内嵌 `32601 + 3.3.0`。其余留空，不进选择行。
      */
     private fun defaultKsuVersion(asset: String): String = when {
+        asset.contains("331") -> "3.3.1"
         asset.endsWith("-32601") -> "3.3.0"
         isKsu325(asset) -> "3.2.5"
         else -> ""
@@ -1773,13 +1803,19 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         //   3.3.0（32601 多 KMI）→ ksud 会自己重启管理器（上次"自动打开 KSU"就是它）
         //   3.2.5（原版 fork）→ 行为最稳，43499 那条链用的也是 3.2.5 档
         val ksuVer = ksuVersionEffective(firmwareVersion)
-        if (ksuVer == "3.3.0") {
-            appendLog("◆ late-load 驱动 3.3.0：stock ksud 不支持 --ephemeral，会照常跑 module stage")
-        } else {
-            appendLog("◆ late-load 用 --ephemeral（同 43499）：不装 /data/adb、不跑 module stage、不重启管理器")
+        when {
+            ksuVer == "3.3.1" ->
+                appendLog("◆ late-load 驱动 3.3.1 KDP：stock 路径会跑 module stage（配官方 KernelSU v3.3.1 管理器）")
+            ksuVer == "3.3.0" ->
+                appendLog("◆ late-load 驱动 3.3.0：stock ksud 不支持 --ephemeral，会照常跑 module stage")
+            else ->
+                appendLog("◆ late-load 用 --ephemeral（同 43499）：不装 /data/adb、不跑 module stage、不重启管理器")
         }
-        val ksudAsset =
-            if (ksuVer == "3.3.0") "samtimer/ksud-32601" else "samtimer/ksud-32525"
+        val ksudAsset = when (ksuVer) {
+            "3.3.1" -> "samtimer/ksud-331-kdp"
+            "3.3.0" -> "samtimer/ksud-32601"
+            else -> "samtimer/ksud-32525"
+        }
         appendLog("◆ late-load 驱动: $ksuVer ($ksudAsset)")
         svc.setTargetTag(effectiveBuildTag)
         svc.setKsudAsset(ksudAsset)
