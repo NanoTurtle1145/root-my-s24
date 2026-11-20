@@ -96,6 +96,12 @@
 | [dirtyfrag-engine-plan.md](dirtyfrag-engine-plan.md) | DirtyFrag 引擎规划（alpha，未采用） |
 | [dzg1-resukisu-plan.md](dzg1-resukisu-plan.md) | DZG1 ReSukiSU / BakaSU 路线规划 |
 
+### 九、社区方案评估
+
+| 文档 | 内容 |
+|---|---|
+| [community-kdp-ksu-331.md](community-kdp-ksu-331.md) | DZJ3 的 KernelSU 3.3.1 KDP 实验版：解决的问题、产物 SHA-256 核对、构建方式、限制、并入本项目的三条路 |
+
 ### 九、研究资料
 
 | 文档 | 内容 |
