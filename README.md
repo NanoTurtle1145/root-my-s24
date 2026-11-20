@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.6.4--beta.1-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.7.0--alpha.1-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
@@ -211,6 +211,7 @@ app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 �
 
 | 版本 | 时间 | 要点 |
 |---|---|---|
+| [v3.7.0-alpha.1](docs/release-v3.7.0-alpha.1.md) | 2026-11-20 | alpha：KernelSU 3.3.1 KDP（含 One UI 9）、机型页自动检测、设置两页、日志页改造 |
 | [v3.6.4-beta.1](docs/release-v3.6.4-beta.1.md) | 2026-11-14 | 预发布：per-target 载荷（首个 DZJ3）、#35 禁用模块改 disable 标记 |
 | [v3.6.3](docs/release-v3.6.3.md) | 2026-11-10 | 运行日志本机存档 + 日志编号、本机历史日志 |
 | [v3.6.2](docs/release-v3.6.2.md) | 2026-11-08 | 安全拆除（软重启不再硬重启）、一次开机一次尝试强制 |
