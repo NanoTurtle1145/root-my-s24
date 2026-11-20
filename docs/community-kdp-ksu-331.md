@@ -148,7 +148,7 @@ Release `v3.3.1-dzj3-kdp-0.1`：
 - 官方：`emulating soft_reboot!` → `stop` → `start`
 - 补丁：`module-effective soft reboot: post-fs-data / service / restart zygote`
 
-### 追加：管理器升到 v3.3.1 之后的行为（2026-11-20 现场）
+### 追加：管理器升到 v3.3.1 之后的行为（2026-11-20 现场，含时间线校正）
 
 管理器 v3.3.1（内置 ksud 也是 3.3.1，uapi 5）与驱动 3.3.1（uapi 5）**版本匹配**，
 `ensure_uapi_version_matched()` 通过 → 管理器按钮真正执行了官方 `soft_reboot()`：
@@ -163,3 +163,18 @@ Release `v3.3.1-dzj3-kdp-0.1`：
 官方 `soft_reboot()` 的 `stop`/`start` 会让 init 重放开机动画，但内核与 LKM 都没动。
 
 （之后用户又做了一次真重启，uptime 归零、`/proc/modules` 里 kernelsu 消失、需重新跑 exploit，符合临时 root 预期。）
+
+#### 时间线（按设备实际时间戳校正）
+
+| 时间 | 事件 | 管理器版本 |
+|---|---|---|
+| 21:34 | 真重启（uptime 起点） | v3.3.0 |
+| 21:35:55 | 跑 root（3.3.1 KDP 驱动），日志 `◆ late-load 驱动: 3.3.1` | v3.3.0（还没升） |
+| **21:36:58** | 安装官方 KernelSU **v3.3.1 (32680)** 管理器 | → **v3.3.1** |
+| ~21:37–38 | 点管理器「软重启」 | v3.3.1（uapi 5，与驱动匹配） |
+| 21:38 | `zygote64` / `system_server` 重启；内核 uptime 连续；KSU 保留；模块注入 | — |
+| ~21:53 | 又做了一次**真重启**，此后 root 消失（`/proc/modules` 无 kernelsu） | v3.3.1 |
+
+> 校正说明：早先记录写成「管理器 3.3.0 + 驱动 3.3.1 → uapi 不匹配 → 跳过软重启」是**错的**。
+> 设备证据 `lastUpdateTime=2026-11-20 21:36:58` 表明管理器在点软重启**之前**已升级到 3.3.1，
+> 所以 `ensure_uapi_version_matched()` 是通过的，官方 `soft_reboot()` 真正执行了。
