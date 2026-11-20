@@ -79,3 +79,31 @@ Release `v3.3.1-dzj3-kdp-0.1`：
 
 > 模块补齐要一次「module-effective 软重启」（`ksud soft-reboot`：重跑 stage + `ctl.restart zygote`）。
 > 98260 的 parked 进程会被这次框架重启杀掉，有硬重启风险（v3.6.2 的安全拆除能降但不能归零）。
+
+### 2026-11-20 事故记录：管理器软重启按钮 → 真重启
+
+在同一台 EZJ1 上（3.3.1 KDP 驱动已加载、root 正常），点了 **KernelSU 管理器自带的「软重启」**，
+结果设备**真重启**（adb 断开、root 消失）。
+
+这正是社区 README 里写明的限制：
+
+> 「KernelSU 管理器自带的软重启按钮：仍走官方 stop/start，会真重启，请勿使用；
+> 官方完整 soft-reboot 暂不推荐在 KDP 上使用。」
+
+原因：管理器按钮走的是内核里的官方 soft-reboot 路径（`stop`/`start`），没有用上
+我们 `0002` 补丁改过的 `ksud soft_reboot()`。
+
+**在 KDP 上想加载模块，只能用命令行**：
+
+```sh
+su -c '/data/adb/ksud soft-reboot'     # 走 0002 补丁：重跑 module stage + ctl.restart zygote
+```
+
+> 注意：98260 的 parked 进程会被这次框架重启杀掉，有概率硬重启（v3.6.2 的安全拆除能降风险）。
+> 真正重启后 root 消失，需要重新跑一次 exploit（一次开机一次机会）。
+
+**结论**：
+- 3.3.1 KDP 只解决「驱动加载 + KDP 兼容」，**不解决「late-load 后模块生效」**；
+- 模块生效需要一次 zygote 重启，而 98260 的 parked 进程与 zygote 重启互斥——这是这条临时 root 链路的固有限制，
+  不是驱动版本问题；
+- 如果必须「root + 模块」同时可用，只能改用**非临时**方案（写 boot/内核），与「不写分区」原则冲突。
