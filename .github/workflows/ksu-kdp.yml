@@ -1,0 +1,123 @@
+# 构建 KernelSU 3.3.1 + Samsung KDP/RKP/DEFEX 补丁的 LKM 与 ksud（实验）
+#
+# 目的：给「需要 module stage / 软重启不真重启」的机型一个 3.3.x 驱动选项。
+# 补丁来源：tools/ksu-kdp/patches（0001 KDP 兼容层，0002 module-effective soft reboot），
+# 出处见 tools/ksu-kdp/README.md 与 THIRD_PARTY_NOTICES。
+#
+# 用法：workflow_dispatch 选 target（默认全部），产物为 Actions Artifact：
+#   lkm-<target> / ksud-<target>
+name: ksu-kdp
+
+on:
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: '要构建的目标（逗号分隔：dzj3,ezj1,ezif）'
+        default: 'dzj3,ezj1,ezif'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ksu-kdp
+  cancel-in-progress: true
+
+jobs:
+  lkm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    container:
+      image: ghcr.io/ylarod/ddk-min:android14-6.1-20260313
+      options: --privileged
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: dzj3
+            rel: 6.1.145-android14-11-3254743-abS9280ZCS6DZJ3
+          - name: ezj1
+            rel: 6.1.162-android14-11-34343818-abS9280ZHS6EZJ1
+          - name: ezif
+            rel: 6.1.162-android14-11-34343818-abS9280ZHU6EZIF
+    steps:
+      - uses: actions/checkout@v4
+      - name: 拉取 KernelSU v3.3.1 并打补丁
+        run: |
+          set -euo pipefail
+          git clone --quiet --branch v3.3.1 https://github.com/tiann/KernelSU.git KernelSU
+          cd KernelSU
+          for p in ../tools/ksu-kdp/patches/*.patch; do
+            echo "applying $p"; git apply "$p"
+          done
+      - name: 编译 LKM（vermagic = ${{ matrix.rel }}）
+        run: |
+          set -euo pipefail
+          cd KernelSU/kernel
+          REL="${{ matrix.rel }}"
+          echo "$REL" > /opt/ddk/kdir/android14-6.1/include/config/kernel.release
+          sed -i "s|^#define UTS_RELEASE .*|#define UTS_RELEASE \"$REL\"|" /opt/ddk/kdir/android14-6.1/include/generated/utsrelease.h
+          CONFIG_KSU=m CONFIG_KSU_SAMSUNG_KDP=y CONFIG_KSU_SAMSUNG_RKP=y \
+            CONFIG_KSU_SAMSUNG_DEFEX=y CONFIG_KSU_SAMSUNG_NO_PATCH_TEXT=y \
+            CC=clang make -j"$(nproc)"
+          llvm-strip -d kernelsu.ko
+          strings kernelsu.ko | grep -m1 vermagic
+          ls -l kernelsu.ko
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lkm-${{ matrix.name }}
+          path: KernelSU/kernel/kernelsu.ko
+          retention-days: 14
+
+  ksud:
+    needs: lkm
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: dzj3
+          - name: ezj1
+          - name: ezif
+    steps:
+      - uses: actions/checkout@v4
+      - name: 拉取 KernelSU v3.3.1 并打补丁
+        run: |
+          set -euo pipefail
+          git clone --quiet --branch v3.3.1 https://github.com/tiann/KernelSU.git KernelSU
+          cd KernelSU
+          for p in ../tools/ksu-kdp/patches/*.patch; do
+            echo "applying $p"; git apply "$p"
+          done
+      - uses: actions/download-artifact@v4
+        with:
+          name: lkm-${{ matrix.name }}
+          path: lkm
+      - name: 内嵌 LKM 到 ksud 资源目录
+        run: |
+          set -euo pipefail
+          mkdir -p KernelSU/userspace/ksud/bin/aarch64
+          cp lkm/kernelsu.ko KernelSU/userspace/ksud/bin/aarch64/android14-6.1_kernelsu.ko
+          ls -l KernelSU/userspace/ksud/bin/aarch64/
+      - name: Setup Rust
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup target add aarch64-linux-android
+      - uses: nttld/setup-ndk@v1
+        id: ndk
+        with:
+          ndk-version: r29
+      - name: 编译 ksud
+        env:
+          ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
+        run: |
+          set -euo pipefail
+          cd KernelSU
+          source .github/scripts/setup-rust-build.sh aarch64-linux-android 26
+          cargo build --release --target "$TRIPLE" --manifest-path ./userspace/ksud/Cargo.toml
+          ls -l target/aarch64-linux-android/release/ksud
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ksud-${{ matrix.name }}
+          path: KernelSU/target/aarch64-linux-android/release/ksud
+          retention-days: 14
