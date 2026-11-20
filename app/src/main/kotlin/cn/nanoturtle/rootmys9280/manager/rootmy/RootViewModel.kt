@@ -1864,19 +1864,55 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
      *
      * 只在 KSU 已加载时可用；会重跑 module stage + 重启 zygote，正常不真重启。
      * 98260 的 parked 进程会被框架重启杀掉，有概率硬重启（调用方要先确认）。
+     *
+     * App 被框架重启/被系统回收后 `samtimerBinder` 是空的，但 KSU 驱动还在——
+     * 这时现场重新绑一个 UserService 即可（soft-reboot 只需要 shell 权限执行 ksud）。
      */
-    fun softRebootForModules(): Boolean {
-        val svc = samtimerBinder ?: run {
-            appendLog("✗ 软重启失败：UserService 未连接（重新跑一次 root 后再试）")
-            return false
+    suspend fun softRebootForModules(): Boolean = withContext(Dispatchers.IO) {
+        val svc = ensureSamTimerService()
+        if (svc == null) {
+            appendLog("✗ 软重启失败：Shizuku 未运行或 UserService 连不上")
+            return@withContext false
         }
         appendLog("◆ 请求软重启（加载模块）……")
-        return runCatching {
+        runCatching {
             svc.softReboot()
             true
         }.getOrElse {
             appendLog("✗ 软重启请求失败：${it.message}")
             false
+        }
+    }
+
+    /** 确保 UserService 已连接（已连接直接复用；否则现场绑定，最多等 10s）。 */
+    private suspend fun ensureSamTimerService(): IRootService? {
+        samtimerBinder?.let { return it }
+        return runCatching {
+            if (!Shizuku.pingBinder()) {
+                appendLog("✗ Shizuku 未运行（软重启需要它来提供 shell 权限）")
+                return@runCatching null
+            }
+            val args = Shizuku.UserServiceArgs(
+                android.content.ComponentName(app, SamTimerUserService::class.java)
+            ).daemon(false).processNameSuffix("samtimer").version(1).tag("samtimer")
+            samtimerArgs = args
+            val conn = object : android.content.ServiceConnection {
+                override fun onServiceConnected(name: android.content.ComponentName?, service: android.os.IBinder?) {
+                    samtimerBinder = IRootService.Stub.asInterface(service)
+                }
+
+                override fun onServiceDisconnected(name: android.content.ComponentName?) {
+                    samtimerBinder = null
+                }
+            }
+            samtimerConn = conn
+            Shizuku.bindUserService(args, conn)
+            val t0 = SystemClock.elapsedRealtime()
+            while (samtimerBinder == null && SystemClock.elapsedRealtime() - t0 < 10_000) delay(200)
+            samtimerBinder
+        }.getOrElse {
+            appendLog("✗ 连接 UserService 失败：${it.message}")
+            null
         }
     }
 

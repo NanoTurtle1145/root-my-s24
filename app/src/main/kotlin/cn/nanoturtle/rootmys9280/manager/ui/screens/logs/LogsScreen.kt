@@ -208,7 +208,7 @@ fun LogsScreen(
                     TextButton(
                         onClick = {
                             showSoftReboot = false
-                            vm.softRebootForModules()
+                            scope.launch { vm.softRebootForModules() }
                         },
                     ) { Text(stringResource(R.string.logs_soft_reboot_confirm)) }
                 },
