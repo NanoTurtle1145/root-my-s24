@@ -1,5 +1,10 @@
 # 讨论区与服务端管理台
 
+> **2026-11-22 起：讨论区已迁移到 Discuz! X3.5（`https://blog.nanoturtle.cn/forum/`）。**
+> 本文档描述的是旧的自研讨论区（现保留在 `/rms24_api/forum.php` 作为存档/回滚）。
+> App 入口不变，`forum_gate.php` 现在返回 `/forum/sso.php?t=<票据>`，Discuz 自动登录；
+> 迁移细节见 [discuz-deployment.md](discuz-deployment.md)。
+
 > 更新日期：2026-09-28
 > 对应文件：`server/forum_gate.php`、`server/forum.php`、`server/forum_db.php`、`announce.php`，以及服务器上的 `admin.php`（不入库）
 
