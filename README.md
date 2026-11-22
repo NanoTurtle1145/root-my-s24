@@ -120,6 +120,7 @@
 | SM-S928B（欧版，One UI 6.1） | S928BXXU4AXK5 | 6.1.75 | `cve-2026-43499-S928BXXU4AXK5` | 本 App 支持的最早 6.1 代际 |
 | W9023N（国行 心系天下 W23） | W9023ZCSAIZF1 | 5.10.236 | `cve-2026-43499-W9023ZCSAIZF1` | cape/SM8450，Android 12，beta |
 | **SM-S9280（国行 DZJ3）** | S9280ZCS6DZJ3 | 6.1.145 | 引擎：**98260 UAF**（per-target `samtimer/targets/S9280ZCS6DZJ3`） | 社区定标（#40/PR #44）：手动 staging 真机 root 成功；App 内待验证（`tested=false`） |
+| **SM-S721B（欧版 S24 FE，r12s）** | S721BXXUEEZIF | 6.1.162 | 引擎：**98260 UAF**（per-target `samtimer/targets/S721BXXUEEZIF`） | 静态定标完成（issue #49）：EZIF 结构体布局完全一致，仅换符号/site；**待真机验证** |
 
 ### 移植载荷（未经本 App 真机实测）
 

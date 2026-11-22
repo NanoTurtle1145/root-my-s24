@@ -205,6 +205,20 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 目标设备 S9280ZHU6EZIF 真机确认运行同内核，KASLR/tracefs 已验证；
         // root 链路（fops）待本机实测确认，因此暂标记为未测试。
         // 标定来源：Root-My-Galaxy-Payloads src/targets/e3q-S9280ZHU6EZIF（2026-10-25）。
+        // SM-S721B（Galaxy S24 FE，r12s / Exynos 2400e）One UI 9.0 / kernel 6.1.162-android14-11：
+        // release 串没有 -<build>-ab<suffix> 后缀，与 S24 不是同一份内核；98260 载荷已按该内核
+        // 重新定标（app/src/main/cpp/targets/S721BXXUEEZIF/offsets.h），待真机验证（issue #49）。
+        S721BEZIF(
+            "cve-2026-43499",
+            "One UI 9.0",
+            "SM-S721B 欧版 S24 FE",
+            "EZIF",
+            Region.HONGKONG_TAIWAN,
+            "ksud-32525",
+            tested = false,
+            engine = Engine.SAMTIMER_98260,
+        ),
+
         S9280EZIF(
               "cve-2026-43499-S9280ZHU6EZIF",
               "One UI 9.0",

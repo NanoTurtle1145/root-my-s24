@@ -61,6 +61,7 @@
 | 引擎 | 目标 | 平台 / 固件 | 内核 | 文档 |
 |---|---|---|---|---|
 | 98260 | SM-S9280 国行 DZJ3 | e3q-S9280ZCS6DZJ3 | 6.1.145 | [port-98260-S9280ZCS6DZJ3.md](port-98260-S9280ZCS6DZJ3.md) |
+| 98260 | SM-S721B 欧版 S24 FE（**待验证**） | r12s-S721BXXUEEZIF | 6.1.162 | [port-98260-S721BXXUEEZIF.md](port-98260-S721BXXUEEZIF.md) |
 | 98260 | SM-S9280/928B 港版·欧版 EZIF | e3q-S9280ZHU6EZIF / S928BXXU6EZIF | 6.1.162 | [s928b-ezif-target-complete.md](s928b-ezif-target-complete.md) |
 | 43499 | 国行 DZF2（基线，已实测） | e3q-S9280ZCS6DZF2 | 6.1.145 | [adaptation-guide.md](adaptation-guide.md) |
 | 43499 | 港版 DZE2（已实测） | e3q-S9280ZHS6DZE2 | 6.1.145 | [dze2-target-complete.md](dze2-target-complete.md) |
