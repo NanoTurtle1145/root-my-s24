@@ -66,3 +66,26 @@ App → POST rms24_api/forum_gate.php（口令）→ {url: /forum/sso.php?t=<票
 - 论坛设置（板块名、时区 +8、`forumstatus=1`、`regstatus=1`）已写入 `cdb_common_setting`
 - Discuz 连接 MySQL 时会 `SET sql_mode=''`；用 PDO 手工改数据时也要先 `SET SESSION sql_mode=''`，
   否则 `common_member_profile.bio` 这类无默认值列会报 1364
+
+## CSS 不加载（`style__common.css` 404）
+
+装完后首页能开但样式全丢，HTML 里是 `data/cache/style__common.css`（STYLEID 为空）。
+根因：`data/sysdata/` 里的 Discuz 缓存没建全（安装器最后一步的 AJAX 链我们只跑到 `ext_info`），
+`loadcache('style_default')` 取不到东西 → `define('STYLEID', '')` → CSS 文件名缺 `1`。
+
+修法（在论坛根目录跑一次全量缓存）：
+
+```php
+define('IN_DISCUZ', true);
+define('DISCUZ_ROOT', '/www/wwwroot/ntblog_cn/forum/');
+$_SERVER['HTTP_HOST']='blog.nanoturtle.cn';
+$_SERVER['REQUEST_URI']='/forum/'; $_SERVER['SCRIPT_NAME']='/forum/index.php';
+require DISCUZ_ROOT.'source/class/class_core.php';
+$discuz = C::app(); $discuz->init();
+require_once libfile('function/cache');
+updatecache();          // 空参 = 全量，别只传 'setting'
+```
+
+之后 HTML 变成 `data/cache/style_1_common.css`，`data/cache/style_1_*.css` 由模板实时生成并 200。
+
+> 注意缓存目录是 `data/sysdata/`（不是 `data/cache/`），清缓存别清错地方。
