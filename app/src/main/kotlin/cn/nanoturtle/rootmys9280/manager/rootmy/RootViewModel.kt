@@ -270,12 +270,15 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // SM-S921E（国际版 S24，e1q / Exynos 2400）One UI 9.0 / kernel 6.1.162（构建号 34343818）：
         // 与 EZIF 同内核构建；issue #33 实测（v3.6.0 build 263）98260 UAF 引擎 + 3.2.5 驱动
         // 直接可用（日志里 engine=SAMTIMER_98260、ksud-32525），KNOX 完好。
-        // SM-S9280 国行 DZJ3（One UI 8.5 / kernel 6.1.145 / 构建号 3254743）
-        // 社区 98260 target：PR #44 / issue #40
+        // S24 全系国行 DZJ3（One UI 8.5 / kernel 6.1.145 / 构建号 3254743）：
+        // S9280ZCS6DZJ3（e3q）与 S9210ZCS6DZJ3（e1q）共用同一份内核镜像
+        // （changelist 3254743、构建时间相同），offsets 无需区分；
+        // per-target 载荷目录按设备构建号取：targets/S9280ZCS6DZJ3、targets/S9210ZCS6DZJ3。
+        // 社区定标 PR #44 / issue #40；e1q 真机验证见 mrlihx/galaxy-s24-e1q-dzj3-temp-root。
         S9280DZJ3(
             "cve-2026-43499",
             "One UI 8.5",
-            "SM-S9280 国行",
+            "S24 全系 · 国行（S9280 / S9210）DZJ3",
             "DZJ3",
             Region.CHINA,
             "ksud-32525",

@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.7.2-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.7.3-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
@@ -119,7 +119,7 @@
 | SM-S928B（欧版，One UI 7.0） | S928BXXU4BYD9 | 6.1.99 | `cve-2026-43499-S928BXXU4BYD9` | 独立定标 |
 | SM-S928B（欧版，One UI 6.1） | S928BXXU4AXK5 | 6.1.75 | `cve-2026-43499-S928BXXU4AXK5` | 本 App 支持的最早 6.1 代际 |
 | W9023N（国行 心系天下 W23） | W9023ZCSAIZF1 | 5.10.236 | `cve-2026-43499-W9023ZCSAIZF1` | cape/SM8450，Android 12，beta |
-| **SM-S9280（国行 DZJ3）** | S9280ZCS6DZJ3 | 6.1.145 | 引擎：**98260 UAF**（per-target `samtimer/targets/S9280ZCS6DZJ3`） | 社区定标（#40/PR #44）+ 维护者确认实测通过（v3.7.2 起进入 s24 官方包） |
+| **S24 全系国行 DZJ3（S9280 / S9210）** | S9280ZCS6DZJ3 · S9210ZCS6DZJ3 | 6.1.145 | 引擎：**98260 UAF**（per-target `targets/{S9280,S9210}ZCS6DZJ3`） | 社区定标（#40/PR #44）+ 维护者确认实测；e1q 由 mrlihx 真机验证（同一内核镜像） |
 | **SM-S721B（欧版 S24 FE，r12s）** | S721BXXUEEZIF | 6.1.162 | 引擎：**98260 UAF**（per-target `samtimer/targets/S721BXXUEEZIF`） | 静态定标完成（issue #49）：EZIF 结构体布局完全一致，仅换符号/site；**待真机验证** |
 
 ### 移植载荷（未经本 App 真机实测）
@@ -177,7 +177,7 @@ app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 �
 ```
 
 - `<TAG>` = 完整构建号大写（如 `S9280ZCS6DZJ3`）；运行时优先 targets 目录，缺失回退公共载荷
-- 目前已合入：`S9280ZCS6DZJ3`（社区贡献，PR #44；已实测 → `tested=true`，v3.7.2 起进入 s24 包）
+- 目前已合入：`S9280ZCS6DZJ3`、`S9210ZCS6DZJ3`（社区贡献 PR #44 + mrlihx e1q 移植；同一内核，v3.7.3 起 e1q 也进入 s24 包）
 - 适配流程与 PR 要求见 [CONTRIBUTING.md](CONTRIBUTING.md) →「98260 载荷适配」
 
 ### 驱动版本
@@ -212,6 +212,7 @@ app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 �
 
 | 版本 | 时间 | 要点 |
 |---|---|---|
+| [v3.7.3](docs/release-v3.7.3.md) | 2026-11-28 | DZJ3 扩展到 SM-S9210（e1q）：同一内核镜像，新增 S9210ZCS6DZJ3 target |
 | [v3.7.2](docs/release-v3.7.2.md) | 2026-11-28 | DZJ3 载荷提升为已实测，进入 s24 官方包（11 条） |
 | [v3.7.1](docs/release-v3.7.1.md) | 2026-11-28 | 修复 3.7.0 载荷打包：补回 DZJ3/S24 FE 等 9 个条目到 all/exp，s24/fold/w 补回实测条目 |
 | [v3.7.0](docs/release-v3.7.0.md) | 2026-11-28 | 正式版：KernelSU 3.3.1 KDP、S24 FE 定标、内核构建安全闸门、机型/设置/日志页重构 |
@@ -356,6 +357,7 @@ RootMyS24/
 
 - [CVE-2026-43499](https://github.com/NebuSec/CyberMeowfia/tree/main/IonStack/CVE-2026-43499) 安全研究（IonStack / NebuSec）
 - [SamTimer](https://github.com/RiosWesley/SamTimer) —— 98260 引擎参考实现；安全拆除补丁已回提 [PR #2](https://github.com/RiosWesley/SamTimer/pull/2)
+- [mrlihx/galaxy-s24-e1q-dzj3-temp-root](https://github.com/mrlihx/galaxy-s24-e1q-dzj3-temp-root) —— DZJ3 在 SM-S9210（e1q）上的移植与真机验证（同一内核镜像的证据）
 - [Root-My-Galaxy](https://github.com/BuSung-dev/Root-My-Galaxy) / [Root-My-Galaxy-Payloads](https://github.com/BuSung-dev/Root-My-Galaxy-Payloads) 免解锁 root 参考工程与载荷（Apache-2.0）
 - [KernelSU](https://github.com/tiann/KernelSU)（GPL-2.0）
 - [Zygisk-Next](https://github.com/Dr-TSNG/ZygiskNext) · [LSPosed](https://github.com/LSPosed/LSPosed)（GPL-3.0）· [KnoxPatch](https://github.com/salvogiangri/KnoxPatch)
