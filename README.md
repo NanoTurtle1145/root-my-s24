@@ -177,7 +177,7 @@ app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 �
 ```
 
 - `<TAG>` = 完整构建号大写（如 `S9280ZCS6DZJ3`）；运行时优先 targets 目录，缺失回退公共载荷
-- 目前已合入：`S9280ZCS6DZJ3`、`S9210ZCS6DZJ3`（社区贡献 PR #44 + mrlihx e1q 移植；同一内核，v3.7.3 起 e1q 也进入 s24 包）
+- 目前已合入：`S9280ZCS6DZJ3`、`S9210ZCS6DZJ3`（社区贡献 PR #44 + mrlihx e1q 移植；同一内核，v3.7.2 起 e1q 也进入 s24 包）
 - 适配流程与 PR 要求见 [CONTRIBUTING.md](CONTRIBUTING.md) →「98260 载荷适配」
 
 ### 驱动版本
