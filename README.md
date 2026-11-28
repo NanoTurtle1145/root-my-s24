@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.7.3-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.7.2-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
@@ -212,8 +212,7 @@ app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 �
 
 | 版本 | 时间 | 要点 |
 |---|---|---|
-| [v3.7.3](docs/release-v3.7.3.md) | 2026-11-28 | DZJ3 扩展到 SM-S9210（e1q）：同一内核镜像，新增 S9210ZCS6DZJ3 target |
-| [v3.7.2](docs/release-v3.7.2.md) | 2026-11-28 | DZJ3 载荷提升为已实测，进入 s24 官方包（11 条） |
+| [v3.7.2](docs/release-v3.7.2.md) | 2026-11-28 | DZJ3 提升为已实测并进入 s24 官方包（11 条）；扩展到 SM-S9210（e1q） |
 | [v3.7.1](docs/release-v3.7.1.md) | 2026-11-28 | 修复 3.7.0 载荷打包：补回 DZJ3/S24 FE 等 9 个条目到 all/exp，s24/fold/w 补回实测条目 |
 | [v3.7.0](docs/release-v3.7.0.md) | 2026-11-28 | 正式版：KernelSU 3.3.1 KDP、S24 FE 定标、内核构建安全闸门、机型/设置/日志页重构 |
 | [v3.7.0-alpha.1](docs/release-v3.7.0-alpha.1.md) | 2026-11-20 | alpha：KernelSU 3.3.1 KDP（含 One UI 9）、机型页自动检测、设置两页、日志页改造 |
