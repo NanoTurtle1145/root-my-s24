@@ -473,4 +473,6 @@ Auto-save log</string>
     <string name="logs_soft_reboot_confirm">Soft reboot</string>
     <string name="logs_soft_reboot_cancel">Cancel</string>
     <string name="logs_history_button">History</string>
+    <string name="firmware_kernel_build">Kernel build %1$s</string>
+    <string name="firmware_kernel_unsupported">Kernel build %1$s is known to break 98260 (EZK1 reboots after ~4 s) — do not retry</string>
 </resources>

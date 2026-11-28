@@ -434,4 +434,6 @@
     <string name="logs_soft_reboot_confirm">软重启</string>
     <string name="logs_soft_reboot_cancel">取消</string>
     <string name="logs_history_button">历史日志</string>
+    <string name="firmware_kernel_build">内核构建 %1$s</string>
+    <string name="firmware_kernel_unsupported">当前内核构建（%1$s）已知无法使用 98260：EZK1 实测 4 秒重启，请勿重试</string>
 </resources>

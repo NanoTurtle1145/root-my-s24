@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -183,7 +184,12 @@ fun LogsScreen(
                 androidx.compose.animation.fadeIn(),
             exit = androidx.compose.animation.slideOutVertically(targetOffsetY = { it }) +
                 androidx.compose.animation.fadeOut(),
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
+            modifier =
+                Modifier.align(Alignment.BottomCenter)
+                    // 再兜一层：脚手架在浮动导航模式下不消费底部 inset（外层 NavDisplay 已补，
+                    // 正常会消费成 0）；写成局部规则后，这个按钮不再依赖外壳的实现。
+                    .navigationBarsPadding()
+                    .padding(bottom = 16.dp),
         ) {
             Surface(
                 shape = MaterialTheme.shapes.medium,

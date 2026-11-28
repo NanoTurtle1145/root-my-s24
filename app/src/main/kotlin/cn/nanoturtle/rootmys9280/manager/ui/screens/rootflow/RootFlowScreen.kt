@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.runtime.Composable
 import cn.nanoturtle.rootmys9280.manager.ui.navigation.LocalNavigator
 import cn.nanoturtle.rootmys9280.manager.ui.navigation.TopLevelRoute
@@ -471,13 +473,13 @@ private fun RootFlowContent(
                         }
                         Spacer(Modifier.width(12.dp))
                         if (state.busy) {
-                            CircularProgressIndicator(modifier = Modifier.height(20.dp).width(20.dp))
+                            LoadingIndicator(modifier = Modifier.size(20.dp))
                         }
                         if (state.rooted) {
                             Surface(
                                 shape = MaterialTheme.shapes.small,
-                                color = Color(0xFF4CAF50).copy(alpha = 0.15f),
-                                contentColor = Color(0xFF2E7D32),
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                             ) {
                                 Text(
                                     "✓ ${stringResource(R.string.rootflow_done)}",
@@ -732,7 +734,7 @@ private fun AuthCard(
                             enabled = !connecting && !pairing,
                         ) {
                             if (pairing) {
-                                CircularProgressIndicator(modifier = Modifier.height(16.dp).width(16.dp))
+                                LoadingIndicator(modifier = Modifier.size(16.dp))
                             } else {
                                 Text(stringResource(R.string.rootflow_auth_adb_pair))
                             }
@@ -771,7 +773,7 @@ private fun AuthCard(
                             enabled = !connecting && !pairing,
                         ) {
                             if (connecting) {
-                                CircularProgressIndicator(modifier = Modifier.height(16.dp).width(16.dp))
+                                LoadingIndicator(modifier = Modifier.size(16.dp))
                             } else {
                                 Text(stringResource(R.string.rootflow_auth_adb_connect))
                             }

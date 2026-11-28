@@ -33,6 +33,7 @@ import cn.nanoturtle.rootmys9280.manager.R
 import cn.nanoturtle.rootmys9280.manager.rootmy.Announcer
 import cn.nanoturtle.rootmys9280.manager.ui.components.AnnouncerCard
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
@@ -97,7 +98,7 @@ fun AnnouncementsScreen(onNavigateBack: () -> Unit) {
             when {
                 loading -> {
                     Spacer(Modifier.height(48.dp))
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                    LoadingIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
 
                 items.isEmpty() -> {

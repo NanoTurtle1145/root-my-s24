@@ -17,6 +17,7 @@ import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material3.Card
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -86,7 +87,7 @@ fun AnnouncerCard(
                 // （关掉之后入口会一起消失，用户就再也找不回来了）
                 modifier = Modifier.fillMaxWidth().clickable { onOpenItem(item) },
                 shape = MaterialTheme.shapes.medium,
-                colors = CardDefaults.cardColors(containerColor = container),
+                colors = CardDefaults.cardColors(containerColor = container, contentColor = content),
             ) {
                 Row(
                     modifier = Modifier.padding(start = 14.dp, top = 12.dp, end = 6.dp, bottom = 8.dp),
@@ -118,12 +119,18 @@ fun AnnouncerCard(
                             Spacer(Modifier.height(2.dp))
                             Row {
                                 if (hasLink) {
-                                    TextButton(onClick = { onOpenLink(item.link!!) }) {
+                                    TextButton(
+                                        onClick = { onOpenLink(item.link!!) },
+                                        colors = ButtonDefaults.textButtonColors(contentColor = content),
+                                    ) {
                                         Text(item.linkText)
                                     }
                                 }
                                 if (hasAction) {
-                                    TextButton(onClick = { onAction(item) }) {
+                                    TextButton(
+                                        onClick = { onAction(item) },
+                                        colors = ButtonDefaults.textButtonColors(contentColor = content),
+                                    ) {
                                         Text(item.actionText)
                                     }
                                 }
@@ -143,26 +150,23 @@ fun AnnouncerCard(
     }
 }
 
-/** 档位 → 图标/底色/前景色。低调为主：主页上不该被公告抢走注意力。 */
-private fun styleOf(level: Announcer.Level): Triple<ImageVector, Color, Color> = when (level) {
-    Announcer.Level.WARN -> Triple(
-        Icons.Rounded.Error,
-        Color(0xFFFFF3E0),
-        Color(0xFF8A4B00),
-    )
-    Announcer.Level.CRITICAL -> Triple(
-        Icons.Rounded.Error,
-        Color(0xFFFFEBEE),
-        Color(0xFF9B1C1C),
-    )
-    Announcer.Level.UPDATE -> Triple(
-        Icons.Rounded.SystemUpdate,
-        Color(0xFFE8F0FE),
-        Color(0xFF1B3A6B),
-    )
-    Announcer.Level.INFO -> Triple(
-        Icons.Rounded.Info,
-        Color(0xFFF1F3F6),
-        Color(0xFF33383D),
-    )
+/**
+ * 档位 → 图标/底色/前景色。低调为主：主页上不该被公告抢走注意力。
+ *
+ * 从写死的浅色套色换成 role 配对：那四组 hex 只在浅色下成立，暗色/AMOLED 下会变成黑底上
+ * 四张近白卡片；而容器/前景是官方保证对比度的配对，也随动态取色和 AMOLED 一起走。
+ */
+@Composable
+private fun styleOf(level: Announcer.Level): Triple<ImageVector, Color, Color> {
+    val colors = MaterialTheme.colorScheme
+    return when (level) {
+        Announcer.Level.WARN ->
+            Triple(Icons.Rounded.Error, colors.tertiaryContainer, colors.onTertiaryContainer)
+        Announcer.Level.CRITICAL ->
+            Triple(Icons.Rounded.Error, colors.errorContainer, colors.onErrorContainer)
+        Announcer.Level.UPDATE ->
+            Triple(Icons.Rounded.SystemUpdate, colors.primaryContainer, colors.onPrimaryContainer)
+        Announcer.Level.INFO ->
+            Triple(Icons.Rounded.Info, colors.surfaceContainerHigh, colors.onSurfaceVariant)
+    }
 }

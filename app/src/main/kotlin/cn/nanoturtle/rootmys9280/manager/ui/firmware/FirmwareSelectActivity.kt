@@ -125,9 +125,28 @@ private fun FirmwareSelectContent(
                 .fillMaxSize()
                 .padding(padding),
         ) {
+            val kernelBuildDate by vm.deviceKernelBuildDateState.collectAsStateWithLifecycle()
+            LaunchedEffect(Unit) { vm.refreshKernelBuildDate() }
+            // 内核构建信息：同构建号可能被三星重编（EZIF 09-19 / EZJ1 10-21 / EZK1 11-09）。
+            // 构建码拦截不依赖 /proc/version，日期拿不到时也能挡住 EZK1。
+            val blockedByCode = vm.isBuildCodeBlocked(vm.effectiveBuildTag)
+            val blockedByDate = vm.isKernelBuildDateBlocked(kernelBuildDate)
+            if (blockedByCode || blockedByDate || kernelBuildDate != null) {
+                Text(
+                    text = stringResource(
+                        if (blockedByCode || blockedByDate) R.string.firmware_kernel_unsupported
+                        else R.string.firmware_kernel_build,
+                        kernelBuildDate ?: vm.effectiveBuildTag,
+                    ),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (blockedByCode || blockedByDate) MaterialTheme.colorScheme.error
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp),
+                )
+            }
             // 自动检测卡（Target 模型第一步）：默认展示"当前设备 + 推荐配置"，
             // 大部分用户不需要往下翻列表。
-            val recommended = remember(payload, untestedEnabled, firmwareVersion) {
+            val recommended = remember(payload, untestedEnabled, firmwareVersion, kernelBuildDate) {
                 vm.detectRecommendedTarget()
             }
             if (recommended != null) {

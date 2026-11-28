@@ -35,6 +35,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -263,8 +264,8 @@ fun WebScreen(url: String, onNavigateBack: () -> Unit) {
                 label = "webProgressAlpha",
             )
             if (shown > 0f) {
-                LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth().height(2.dp).alpha(shown)
+                LinearWavyProgressIndicator(
+                    modifier = Modifier.fillMaxWidth().height(3.dp).alpha(shown)
                 )
             }
             Box(Modifier.fillMaxSize()) {

@@ -59,6 +59,35 @@ import java.io.OutputStreamWriter
     private fun kernelBuildNumberOf(kernelRelease: String): String? =
         Regex("-([0-9]{5,})-ab").find(kernelRelease)?.groupValues?.get(1)
 
+    /**
+     * 已知**不能**用 98260 载荷的内核构建日期（ISO）。
+     *
+     * 同一个构建号会被三星重编：EZIF 是 2026-09-19、EZJ1/EZJB 是 2026-10-21
+     * （这两个都要能用），而 EZK1 是 2026-11-09——实测 98260 在 EZK1 上 4 秒重启，
+     * 大概率该版 backport 了 posix-cpu-timers 的修复。
+     */
+    val KNOWN_BAD_KERNEL_BUILD_DATES: Set<String> = setOf("2026-11-09")
+
+    /**
+     * 已知**不能用 98260** 的构建码（构建串后 4 位）。
+     *
+     * `/proc/version` 在部分 app 域读不到（拿不到构建日期），而构建码从 getprop 来、
+     * 一定拿得到，所以再按构建码兜一层：EZK1 实测 98260 4 秒重启。
+     */
+    val KNOWN_BAD_BUILD_CODES: Set<String> = setOf("EZK1")
+
+    /** 从 `/proc/version` 取内核构建日期（ISO yyyy-MM-dd）；解析失败返回 null。 */
+    fun kernelBuildDateOf(versionText: String): String? {
+        if (versionText.isBlank()) return null
+        val months = listOf("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+        val m = Regex("([A-Z][a-z]{2})\\s+(\\d{1,2})\\s+\\d{2}:\\d{2}:\\d{2}\\s+\\w+\\s+(\\d{4})")
+            .find(versionText) ?: return null
+        val (mon, day, year) = m.destructured
+        val month = months.indexOf(mon) + 1
+        if (month <= 0) return null
+        return String.format("%04d-%02d-%02d", year.toInt(), month, day.toInt())
+    }
+
 class RootViewModel(app: Application) : AndroidViewModel(app) {
     private val app: Application = app
 
@@ -106,6 +135,12 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
          * 为 null 时退回构建码比较（GhostLock 的逐载荷定标仍用构建码）。
          */
         val kernelBuildNumber: String? = null,
+        /**
+         * 该载荷定标时的内核**构建日期**（`yyyy-MM-dd`，来自 /proc/version）。
+         *
+         * 与 [kernelBuildNumber] 一起才能唯一确定内核：同一个构建号可能被三星重编
+         * （EZIF Sep 19 → EZK1 Nov 9），载荷不能互用。为 null 表示不校验日期。
+         */
     ) {
         // —— 国行（实测稳定）——
         // 覆盖范围按实测放宽到 DZH3：云端日志里 S9280/S9210 国行 DZH3 用本载荷均成功
@@ -360,7 +395,22 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
          * 解析不出构建码时返回 true（宁可放过也不误报）——判据不足就不打扰用户。
          * 范围内的两个端点按字典序比较即可：DZE2 < DZF1 < DZF2 < DZG1。
          */
-        fun coversBuild(deviceBuildTag: String, deviceKernelRelease: String = ""): Boolean {
+        fun coversBuild(
+              deviceBuildTag: String,
+              deviceKernelRelease: String = "",
+              deviceKernelBuildDate: String? = null,
+          ): Boolean {
+              // 已知会坏的内核构建（同一构建号被重编后 98260 已修/行为变化），
+              // 不能再给 98260 载荷：EZK1（2026-11-09 构建）实测 4 秒后重启。
+              // 注意不能要求日期完全相等：EZIF 是 09-19、EZJ1/EZJB 是 10-21，
+              // 同一份载荷都实测可用，所以只拦黑名单。
+              if (engine == Engine.SAMTIMER_98260) {
+                  if (deviceKernelBuildDate != null &&
+                      deviceKernelBuildDate in KNOWN_BAD_KERNEL_BUILD_DATES
+                  ) return false
+                  if (deviceBuildTag.takeLast(4).uppercase() in KNOWN_BAD_BUILD_CODES)
+                      return false
+              }
             // 98260 这类"按内核构建定标"的载荷：只看内核构建号，不看构建串。
             // EZIF/EZJ1/EZJB/EZJD… 都共用同一份内核，这样 userspace 更新无需每次加条目。
             kernelBuildNumber?.let { want ->
@@ -777,7 +827,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     fun detectRecommendedTarget(): FirmwareVersion? {
         val kernel = System.getProperty("os.version").orEmpty()
         val candidates = availableFirmwareVersions.filter { v ->
-            v.coversBuild(effectiveBuildTag, kernel) && (v.tested || untestedPayloadsEnabled.value)
+            v.coversBuild(effectiveBuildTag, kernel, deviceKernelBuildDate) && (v.tested || untestedPayloadsEnabled.value)
         }
         if (candidates.isEmpty()) return null
         return candidates.sortedWith(
@@ -1169,7 +1219,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
     private fun startInternal(force: Boolean) {
         if (_state.value.busy) return
         // 载荷按内核构建定标：构建不符时先提醒，避免拿另一个构建的载荷空跑几十轮
-        if (!force && !firmwareVersion.coversBuild(deviceBuildTag, System.getProperty("os.version").orEmpty())) {
+        if (!force && !firmwareVersion.coversBuild(deviceBuildTag, System.getProperty("os.version").orEmpty(), deviceKernelBuildDate)) {
             _buildMismatch.value =
                 app.getString(
                     R.string.rootflow_build_mismatch_body,
@@ -1191,6 +1241,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         // 不用等这轮结束（结束时用同一个编号落盘）
         _lastLogCode.value = RunLogStore.codeOf(currentRunId)
         appendLog("◆ 日志编号: " + (_lastLogCode.value ?: "?"))
+        appendLog("◆ 内核构建日期: " + (deviceKernelBuildDate ?: "未知"))
         appendLog("RUN-ID: $currentRunId")
         // 记下本轮用的载荷与 KSU 驱动版本：服务端据此把成功率按 KSU 版本拆开统计
         appendLog(
@@ -2946,6 +2997,38 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
         get() =
             deviceBuildTag.takeIf { it.isNotBlank() && it != "unknown" }
                 ?: detectedBuildTag().ifEmpty { "unknown" }
+
+    /**
+     * 本机内核的**构建日期**（`/proc/version` 里的 `Mon Nov  9 ...` → `2026-11-09`）。
+     *
+     * 用来拦下「版本串/构建号相同但被重编过」的内核（EZIF Sep 19 vs EZK1 Nov 9）：
+     * `/proc/version` 在 app 域读不到时返回 null，此时不做日期校验（保持旧行为）。
+     */
+    /** 该内核构建是否已知不能用 98260（如 EZK1 的 2026-11-09 构建）。 */
+    fun isKernelBuildDateBlocked(date: String?): Boolean =
+        date != null && date in KNOWN_BAD_KERNEL_BUILD_DATES
+
+    /** 当前构建码（如 EZK1）是否已知不能用 98260。 */
+    fun isBuildCodeBlocked(buildTag: String): Boolean =
+        buildTag.takeLast(4).uppercase() in KNOWN_BAD_BUILD_CODES
+
+    /** 本机内核构建日期（yyyy-MM-dd，来自 shell 侧 /proc/version；读不到为 null）。 */
+    private val _deviceKernelBuildDate = MutableStateFlow<String?>(null)
+    val deviceKernelBuildDateState: StateFlow<String?> = _deviceKernelBuildDate.asStateFlow()
+    val deviceKernelBuildDate: String? get() = _deviceKernelBuildDate.value
+
+    /** 用 shellExecutor（Shizuku/adb 侧）读一次 /proc/version 并解析构建日期；失败静默。 */
+    suspend fun refreshKernelBuildDate() {
+        if (_deviceKernelBuildDate.value != null) return
+        runCatching {
+            val text = withContext(Dispatchers.IO) {
+                shellExecutor.capture(
+                    arrayOf("/system/bin/sh", "-c", "cat /proc/version 2>/dev/null | head -c 400")
+                )
+            }
+            kernelBuildDateOf(text)?.let { _deviceKernelBuildDate.value = it }
+        }
+    }
 
     /** 反馈里的「问题类型」。这几项覆盖了实际收到的问题，选项化后用户不用组织语言。 */
     enum class FeedbackKind {

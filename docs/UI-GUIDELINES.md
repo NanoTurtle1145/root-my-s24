@@ -90,7 +90,7 @@ private fun GroupedRow(index: Int, count: Int, content: @Composable () -> Unit) 
 | 图标（空状态/头图） | 72 dp |
 | 搜索框 | 高 56 dp，圆角 **28 dp**（药丸） |
 | `FilterChip` | Material 默认（高 32 dp），横向 `spacedBy(8.dp)` |
-| 分段按钮 | 用 `FilterChip` 拼（本仓库 Material3 版本的 `SegmentedButton` 会因实验 API 解析失败） |
+| 分段按钮 | `SingleChoiceSegmentedButtonRow` + `SegmentedButton`（material3 1.5.0-alpha25 起可用，`AppearanceSheet` 在用）；三选一以下的轻量场景也可用 `FilterChip` 拼 |
 | 开关 `Switch` | Material 默认，不自定义尺寸 |
 
 ### 2.3 文字
@@ -132,7 +132,24 @@ private fun GroupedRow(index: Int, count: Int, content: @Composable () -> Unit) 
 4. ❌ 页面内边距写 12/14/24 → 默认 **16 dp**，只有特殊窄布局才用 12。
 5. ❌ 在 `Box` 里叠两个内容不为对齐、而是当"顺序布局"用 → 需要顺序一律 `Column`。
 6. ❌ 写死颜色 → 用 `colorScheme`（否则暗色/AMOLED 下会瞎）。
-7. ❌ 用 `SegmentedButton`（本仓库 Material3 版本解析不到）→ 用 `FilterChip`。
+7. ❌ 贴底的可点元素（pill / FAB / 底部操作条）直接 `align(BottomCenter|BottomEnd)` + 固定 padding → **浮动导航模式下会被系统三键导航栏或手势条盖住**。必须加 `Modifier.navigationBarsPadding()`（见 §5.8）。
+8. ❌ 用 `SegmentedButton` → 现在已经可以了（1.5.0-alpha25 起），旧的禁令已撤销。
+
+
+### 5.8 浮动导航模式与系统栏（2026-11 实际踩过）
+
+「浮动导航」（设置里的球）走的是 `NavigationSuiteType.None`：`NavigationSuiteScaffold` 在这个模式下
+**不消费任何 `WindowInsets`、也不为底部系统导航栏预留高度**（脚手架源码 `consumeWindowInsets(NoWindowInsets)`）。
+所以内容会一直铺到窗口底边，三键导航栏（48 dp）会把贴底元素盖住——日志页的「软重启」pill 就这样中招了，
+列表最后一行、跳转 FAB 同理。
+
+约定：
+- 外壳已在 `VectorApp` 给 `NavDisplay` 加了 `Modifier.navigationBarsPadding()`（导航栏/导航轨模式下该 padding 为 0），
+  所以页面里**一般不用再写**；浮动球是 `NavDisplay` 的兄弟节点，仍按 `safeDrawing` 定位，不受影响。
+- 但**自绘 overlay**（不经过 `NavDisplay`、或要脱离页面骨架浮在窗口上的东西）必须自己加
+  `Modifier.navigationBarsPadding()`——它依赖的是「外层已消费 inset」这个事实，外层变了它仍成立。
+- 判断方法：把设置里的浮动导航打开 + 系统切三键导航，看贴底元素是否与导航栏重叠；
+  再切手势导航，确认没有多出一截空白。
 
 ## 6. 改 UI 前的检查清单
 
@@ -142,6 +159,7 @@ private fun GroupedRow(index: Int, count: Int, content: @Composable () -> Unit) 
 - [ ] 颜色全部走 `MaterialTheme.colorScheme`？
 - [ ] 新增组件有没有复用 `BannerHeader` / `SectionLabel` / `GroupedRow`？
 - [ ] 真机看一眼：暗色模式 + AMOLED + 大字体（`fontScale 1.3`）下有没有截断/重叠？
+- [ ] 浮动导航 + 系统三键导航下，贴底元素有没有被导航栏盖住（见 §5.8）？
 
 ## 7. 相关文件
 

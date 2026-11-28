@@ -48,6 +48,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
@@ -623,10 +624,7 @@ fun SettingsScreen(
                         },
                         trailingContent = {
                             if (checkingUpdate) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(18.dp),
-                                    strokeWidth = 2.dp,
-                                )
+                                LoadingIndicator(modifier = Modifier.size(18.dp))
                             } else {
                                 Icon(Icons.Rounded.Download, contentDescription = null)
                             }

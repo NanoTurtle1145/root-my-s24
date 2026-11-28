@@ -1,8 +1,15 @@
 package cn.nanoturtle.rootmys9280.manager.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
@@ -16,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.EntryProviderScope
@@ -72,6 +80,13 @@ fun VectorApp() {
         val editing = navigator.editingPanels
         val atRoot = !navigator.canGoBack
 
+        // Navigation3 defaults to a 700 ms cross-fade with no direction; expressive page-level
+        // motion is 150–500 ms, and going a level deeper is a slide, not a fade. Specs are read
+        // here because a transitionSpec lambda is not a composable.
+        val pageEffects = MaterialTheme.motionScheme.fastEffectsSpec<Float>()
+        val settleEffects = MaterialTheme.motionScheme.defaultEffectsSpec<Float>()
+        val pageSpatial = MaterialTheme.motionScheme.defaultSpatialSpec<IntOffset>()
+
         val suiteState = rememberNavigationSuiteScaffoldState()
         LaunchedEffect(atRoot) { if (atRoot) suiteState.show() else suiteState.hide() }
 
@@ -102,8 +117,26 @@ fun VectorApp() {
         ) {
             Box(Modifier.fillMaxSize()) {
                 NavDisplay(
+                    // 浮动导航模式（suiteType = None）下 NavigationSuiteScaffold 不消费任何 inset，
+                    // 也不会为系统导航栏留出高度：内容会一直铺到窗口底边，于是贴底的可点元素
+                    // （日志页的软重启按钮、列表最后一行、跳转 FAB…）被三键导航栏或手势条盖住。
+                    // 导航栏/导航轨模式下脚手架已经消费了底部 inset，这里的 padding 为 0，
+                    // 所以无条件加上是安全的，也是唯一不需要每个页面各写一遍的位置。
+                    // 球本身不动：FloatingPanelNav 在同一个 Box 的兄弟节点里，仍按 safeDrawing 定位。
+                    modifier = Modifier.navigationBarsPadding(),
                     backStack = navigator.backStack,
                     onBack = { navigator.back() },
+                    // Peers and top-level panels: quick, no direction.
+                    transitionSpec = {
+                        (fadeIn(pageEffects) + scaleIn(pageEffects, initialScale = 0.98f))
+                            .togetherWith(fadeOut(pageEffects))
+                    },
+                    // Going a level deeper: a small shared-axis slide, the "forward and backward"
+                    // pattern, with a slower spring so the direction is legible.
+                    popTransitionSpec = {
+                        (fadeIn(settleEffects) + slideInHorizontally(pageSpatial) { it / 8 })
+                            .togetherWith(fadeOut(settleEffects))
+                    },
                     entryDecorators =
                         listOf(
                             rememberSaveableStateHolderNavEntryDecorator(),

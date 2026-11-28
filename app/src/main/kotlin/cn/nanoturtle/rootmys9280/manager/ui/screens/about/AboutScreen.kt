@@ -59,6 +59,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.unit.IntSize
 import androidx.core.graphics.drawable.toBitmap
 import cn.nanoturtle.rootmys9280.manager.BuildConfig
 import cn.nanoturtle.rootmys9280.manager.R
@@ -482,11 +486,20 @@ fun AboutScreen(
 @Composable
 private fun FaqRow(faq: Faq) {
     var expanded by remember { mutableStateOf(false) }
+    val chevron by
+        animateFloatAsState(
+            targetValue = if (expanded) 180f else 0f,
+            animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
+            label = "faqChevron",
+        )
     Column(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .clickable { expanded = !expanded }
+                .animateContentSize(
+                    MaterialTheme.motionScheme.defaultSpatialSpec<IntSize>()
+                )
                 .padding(16.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -497,9 +510,10 @@ private fun FaqRow(faq: Faq) {
                 modifier = Modifier.weight(1f),
             )
             Icon(
-                imageVector = if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
+                imageVector = Icons.Rounded.ExpandMore,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.rotate(chevron),
             )
         }
         if (expanded) {
