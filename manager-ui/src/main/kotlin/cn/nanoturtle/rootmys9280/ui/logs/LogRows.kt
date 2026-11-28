@@ -201,7 +201,9 @@ private fun EntryRow(
     // margin rather than a column.
     val railWidth = with(LocalDensity.current) { 4.5.dp.toPx() }
 
-    val muted = MaterialTheme.colorScheme.outline
+    // onSurfaceVariant, not outline: outline is a border role (tone 50 in light, 4.27:1) and
+    // this is a timestamp the user has to read.
+    val muted = MaterialTheme.colorScheme.onSurfaceVariant
     // The badge is washed with the level's own colour rather than one fixed container pair, so the
     // level reads from the widest thing on the row and not only from the rail at its edge and the
     // single letter at its start. A scan down a page now separates on a band of colour.

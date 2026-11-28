@@ -24,4 +24,13 @@ fun ColorScheme.toAmoled(): ColorScheme =
         surfaceContainer = Color(0xFF101010),
         surfaceContainerHigh = Color(0xFF161616),
         surfaceContainerHighest = Color(0xFF1C1C1C),
+        // The three roles the first pass missed. `surfaceBright` is the "brightest surface" role
+        // and would otherwise stay at tone 24 — a grey block on true black. `surfaceVariant` is
+        // still what Markdown code blocks and log washes use, and at its dark tone it reads as a
+        // light grey patch. `outlineVariant` draws dividers; at 1.8:1 against the container it was
+        // a divider nobody could see, so it moves up with the surface ladder rather than staying
+        // at its un-pressed tone.
+        surfaceBright = Color(0xFF1C1C1C),
+        surfaceVariant = Color(0xFF1A1A1A),
+        outlineVariant = Color(0xFF2E2E2E),
     )

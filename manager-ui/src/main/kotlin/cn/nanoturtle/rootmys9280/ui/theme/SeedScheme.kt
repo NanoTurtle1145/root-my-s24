@@ -68,14 +68,22 @@ object SeedScheme {
         // that a washed-out seed still yields a usable accent, the supporting roles are
         // deliberately quieter, and the neutrals keep a trace of the hue so that surfaces feel
         // related to the accent instead of grey next to it.
-        val primary = Ramp(hue, chroma.coerceAtLeast(48f))
+        // Floored so a washed-out seed still yields a usable accent, capped because a very vivid
+        // seed at chroma 100 is not a Material accent: the tone 40 end is in gamut at full chroma
+        // while tone 80 gets clipped by the gamut search, so the same theme would look electric in
+        // light and pastel in dark. 72 keeps the seed recognisable without that split.
+        val primary = Ramp(hue, chroma.coerceIn(48f, 72f))
         val secondary = Ramp(hue, 16f)
         val tertiary = Ramp(hue + 60f, 24f)
         val neutral = Ramp(hue, 4f)
         val variant = Ramp(hue, 8f)
         // Error stays red whatever the seed. A destructive action must not become negotiable
         // because someone picked a green theme.
-        val error = Ramp(25f, 84f)
+        //
+        // The hue is 36.4, not Material HCT's 25: HCT's hue is CAM16, and this ramp is CIE LCh, so
+        // feeding 25 into it produced #BF0031 (a magenta red). #B3261E, Material's own error40, is
+        // Lab hue 36.4 at chroma 68 — these two numbers are that colour.
+        val error = Ramp(36.4f, 68f)
 
         return if (dark) {
             darkColorScheme(
@@ -116,6 +124,7 @@ object SeedScheme {
                 surfaceContainerHigh = neutral[17],
                 surfaceContainerHighest = neutral[22],
             )
+                .withFixedRoles(primary, secondary, tertiary)
         } else {
             lightColorScheme(
                 primary = primary[40],
@@ -155,8 +164,37 @@ object SeedScheme {
                 surfaceContainerHigh = neutral[92],
                 surfaceContainerHighest = neutral[90],
             )
+                .withFixedRoles(primary, secondary, tertiary)
         }
     }
+
+    /**
+     * The twelve `*Fixed*` roles, which keep one tone in both brightnesses.
+     *
+     * `lightColorScheme()` / `darkColorScheme()` leave them at Material's baseline palette, so
+     * without this a scheme generated from the user's seed still hands out Material purple for the
+     * roles an expressive "brand block" reaches for first. The tone mapping is the same one
+     * Material's own tokens use: fixed = 90, fixed dim = 80, on-fixed = 10, on-fixed-variant = 30.
+     */
+    private fun ColorScheme.withFixedRoles(
+        primary: Ramp,
+        secondary: Ramp,
+        tertiary: Ramp,
+    ): ColorScheme =
+        copy(
+            primaryFixed = primary[90],
+            primaryFixedDim = primary[80],
+            onPrimaryFixed = primary[10],
+            onPrimaryFixedVariant = primary[30],
+            secondaryFixed = secondary[90],
+            secondaryFixedDim = secondary[80],
+            onSecondaryFixed = secondary[10],
+            onSecondaryFixedVariant = secondary[30],
+            tertiaryFixed = tertiary[90],
+            tertiaryFixedDim = tertiary[80],
+            onTertiaryFixed = tertiary[10],
+            onTertiaryFixedVariant = tertiary[30],
+        )
 
     /** The tones the palette preview shows, light to dark. */
     val PREVIEW_TONES = intArrayOf(95, 90, 80, 70, 60, 50, 40, 30, 20, 10)

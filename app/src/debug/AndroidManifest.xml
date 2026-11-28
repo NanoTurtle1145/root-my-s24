@@ -25,5 +25,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+          The Material 3 Expressive design-language demo: debug only, like the scenarios above,
+          because it exists to be looked at rather than shipped.
+        -->
+        <activity
+            android:name="cn.nanoturtle.rootmys9280.manager.demo.expressive.ExpressiveDemoActivity"
+            android:exported="true"
+            android:label="M3 Expressive demo"
+            android:taskAffinity="cn.nanoturtle.rootmys9280.manager.demo.expressive">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

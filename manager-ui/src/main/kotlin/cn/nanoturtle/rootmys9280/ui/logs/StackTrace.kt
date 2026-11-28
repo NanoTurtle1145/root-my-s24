@@ -172,7 +172,7 @@ private fun StackTraceFrame(frame: CrashFrame, onCopy: () -> Unit) {
             Text(
                 frame.location ?: frame.method,
                 style = Mono.copy(fontSize = 11.sp),
-                color = colors.onSurfaceVariant.copy(alpha = if (frame.ours) 1f else 0.7f),
+                color = colors.onSurfaceVariant,
                 softWrap = false,
                 maxLines = 1,
             )

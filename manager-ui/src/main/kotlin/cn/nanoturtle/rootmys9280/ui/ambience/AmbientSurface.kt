@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.MotionDurationScale
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -21,6 +22,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.toSize
+import kotlin.coroutines.coroutineContext
 import kotlinx.coroutines.android.awaitFrame
 
 /**
@@ -55,7 +57,28 @@ fun AmbientSurface(
 
     LaunchedEffect(kind) {
         var last = 0L
+        // Whether the "animations are off" static frame has been painted. It has to be remembered
+        // rather than inferred from `last`, or the loop would repaint the same frame every vsync.
+        var paintedStatic = false
         while (true) {
+            // A hand-written frame loop is the one kind of animation AnimationSpec's duration scale
+            // does not reach. The system's animator scale is in this effect's coroutine context, so
+            // read it: at 0 (or "remove animations") the surface paints one static frame and holds
+            // it, the same end state every Compose animation snaps to.
+            val scale = coroutineContext[MotionDurationScale]?.scaleFactor ?: 1f
+            if (scale == 0f) {
+                // Wait for a real size before painting: the first tick can land before the Canvas has
+                // reported one, and a frame drawn at zero size would be the only one there is.
+                if (!paintedStatic && canvasSize != Size.Zero) {
+                    renderer.update(16f, canvasSize)
+                    frame += 1f
+                    paintedStatic = true
+                }
+                awaitFrame()
+                last = 0L
+                continue
+            }
+            paintedStatic = false
             if (!renderer.isAnimating) {
                 awaitFrame()
                 last = 0L

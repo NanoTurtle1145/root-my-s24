@@ -40,6 +40,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.animation.animateContentSize
+import androidx.compose.ui.unit.IntSize
 
 /** The module's icon, and the slot it is drawn in whether or not it is selected. */
 private val ICON_SIZE = 48.dp
@@ -179,7 +181,14 @@ fun ModuleRow(
                     else Modifier
                 )
         ) {
-            Column(Modifier.padding(bottom = if (hasReach) REACH_BAND else 0.dp)) {
+            Column(
+                Modifier.padding(bottom = if (hasReach) REACH_BAND else 0.dp)
+                    // Expanding a description changes this column's height; without this the text
+                    // pops to its new height instead of the row growing the way the chevron turns.
+                    .animateContentSize(
+                        MaterialTheme.motionScheme.defaultSpatialSpec<IntSize>()
+                    )
+            ) {
                 // The title's band. Both halves are fixed and both scroll, so however long a name or
                 // version string becomes neither can reach the other.
                 Row(verticalAlignment = Alignment.CenterVertically) {

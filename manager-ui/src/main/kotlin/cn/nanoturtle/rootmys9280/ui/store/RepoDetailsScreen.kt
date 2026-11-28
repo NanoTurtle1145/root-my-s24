@@ -66,6 +66,8 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.LoadingIndicator
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -212,7 +214,7 @@ fun RepoDetailsScreen(
             val module = state.module
             if (module == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    if (state.fetch == DetailFetch.Loading) CircularProgressIndicator()
+                    if (state.fetch == DetailFetch.Loading) LoadingIndicator()
                     else
                         RetryMessage(
                             message = stringResource(UiR.string.store_unreachable),
@@ -399,12 +401,12 @@ private fun InstallBar(
                     )
                     Spacer(Modifier.height(8.dp))
                     if (install.total > 0) {
-                        LinearProgressIndicator(
+                        LinearWavyProgressIndicator(
                             progress = { install.bytes.toFloat() / install.total },
                             modifier = Modifier.fillMaxWidth(),
                         )
                     } else {
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                        LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth())
                     }
                 }
                 is InstallStep.Installing,
@@ -418,7 +420,7 @@ private fun InstallBar(
                         style = MaterialTheme.typography.labelLarge,
                     )
                     Spacer(Modifier.height(8.dp))
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
                 is InstallStep.Failed -> {
                     // Named, not swallowed: an install that fails silently leaves the user with a
@@ -504,7 +506,7 @@ private fun ReadmeTab(
         // statement about the module when it is really a statement about the network.
         fetch == DetailFetch.Loading ->
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                LoadingIndicator()
             }
         fetch == DetailFetch.Unavailable ->
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -570,6 +572,7 @@ private fun ReleasesTab(
                 onToggleNotes = { expanded = if (expanded == key) null else key },
                 onOpenUrl = onOpenUrl,
                 onInstall = { onInstall(release) },
+                modifier = Modifier.animateItem(),
             )
             if (index < state.releases.lastIndex) {
                 HorizontalDivider(
@@ -601,10 +604,11 @@ private fun ReleaseCard(
     onToggleNotes: () -> Unit,
     onOpenUrl: (String) -> Unit,
     onInstall: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
     val locale = currentLocale()
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 14.dp)) {
+    Column(modifier = modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = release.name ?: release.tagName.orEmpty(),

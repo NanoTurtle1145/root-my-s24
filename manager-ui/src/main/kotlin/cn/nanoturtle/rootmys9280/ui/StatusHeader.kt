@@ -117,6 +117,9 @@ fun StatusHeader(
     detail: (@Composable (contentColor: Color) -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
+    // Colour is an effects animation and the badge's shape is a spatial one; the two settle on
+    // different springs in the expressive scheme, which is the whole point of separating them.
+    val effectSpec = MaterialTheme.motionScheme.defaultEffectsSpec<Color>()
 
     val container by
         animateColorAsState(
@@ -126,7 +129,7 @@ fun StatusHeader(
                 StatusTone.Error -> colors.errorContainer
                 StatusTone.Neutral -> colors.surfaceContainer
             },
-            animationSpec = tween(420),
+            animationSpec = effectSpec,
             label = "headerContainer",
         )
     val onContainer by
@@ -137,7 +140,7 @@ fun StatusHeader(
                 StatusTone.Error -> colors.onErrorContainer
                 StatusTone.Neutral -> colors.onSurfaceVariant
             },
-            animationSpec = tween(420),
+            animationSpec = effectSpec,
             label = "headerOnContainer",
         )
 
@@ -198,7 +201,7 @@ fun StatusHeader(
                                 text = brand,
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Normal,
-                                color = onContainer.copy(alpha = 0.62f),
+                                color = onContainer.copy(alpha = 0.8f),
                                 modifier = brandModifier,
                             )
                             Spacer(Modifier.width(10.dp))
@@ -279,6 +282,9 @@ private fun StatusIndicator(
     onClick: (() -> Unit)?,
     contentDescription: String,
 ) {
+    val shapeSpec = MaterialTheme.motionScheme.defaultSpatialSpec<Float>()
+    val fastSpatialSpec = MaterialTheme.motionScheme.fastSpatialSpec<Float>()
+
     val corner by
         animateFloatAsState(
             when (tone) {
@@ -286,18 +292,13 @@ private fun StatusIndicator(
                 StatusTone.Warning -> 42f
                 else -> 50f
             },
-            animationSpec = tween(420),
+            animationSpec = shapeSpec,
             label = "indicatorCorner",
         )
 
-    val breathing = rememberInfiniteTransition(label = "indicatorBreath")
-    val pulse by
-        breathing.animateFloat(
-            initialValue = 1f,
-            targetValue = 1.05f,
-            animationSpec = infiniteRepeatable(tween(1900), RepeatMode.Reverse),
-            label = "indicatorPulse",
-        )
+    // Only a live status breathes. Created unconditionally, this kept a 1900 ms pulse running
+    // behind every tone, including the ones that never draw it.
+    val pulse = if (tone == StatusTone.Active) rememberBreathingPulse() else 1f
 
     val icon =
         when (tone) {
@@ -335,11 +336,11 @@ private fun StatusIndicator(
     }
 
     val morph by
-        animateFloatAsState(if (asGear) 1f else 0f, tween(MORPH_MS), label = "indicatorMorph")
+        animateFloatAsState(if (asGear) 1f else 0f, fastSpatialSpec, label = "indicatorMorph")
 
     val base =
         Modifier.size(52.dp)
-            .scale(if (tone == StatusTone.Active) pulse else 1f)
+            .scale(pulse)
             .clip(RoundedCornerShape(percent = corner.toInt()))
             .background(tint.copy(alpha = lerp(RESTING_FILL, HINTING_FILL, morph)))
     Box(
@@ -408,3 +409,22 @@ private const val HINTING_FILL = 0.24f
 
 /** The height of the row the wordmark shares with those buttons; the badge is centred against it. */
 private val HEADLINE_ROW = ICON_BUTTON * 2
+
+/**
+ * The "still running" pulse, scoped to a status that is actually running.
+ *
+ * Kept as its own composable so the infinite transition only exists in the tree while the header is
+ * showing a live state — the animation is skipped entirely for neutral, warning and error.
+ */
+@Composable
+private fun rememberBreathingPulse(): Float {
+    val transition = rememberInfiniteTransition(label = "indicatorBreath")
+    return transition
+        .animateFloat(
+            initialValue = 1f,
+            targetValue = 1.05f,
+            animationSpec = infiniteRepeatable(tween(1900), RepeatMode.Reverse),
+            label = "indicatorPulse",
+        )
+        .value
+}

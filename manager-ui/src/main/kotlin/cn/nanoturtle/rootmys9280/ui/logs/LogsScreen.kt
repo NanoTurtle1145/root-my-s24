@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -74,6 +75,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetState
+import androidx.compose.material3.LoadingIndicator
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -401,9 +404,9 @@ private fun LogPane(
 
         val scanning = state.status as? LogStatus.Scanning
         if (scanning != null) {
-            LinearProgressIndicator(
+            LinearWavyProgressIndicator(
                 progress = { scanning.progress },
-                modifier = Modifier.fillMaxWidth().height(3.dp),
+                modifier = Modifier.fillMaxWidth().height(4.dp),
             )
         }
 
@@ -441,7 +444,7 @@ private fun LogPane(
                     )
                 is LogStatus.Loading ->
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                        LoadingIndicator()
                     }
                 else ->
                     LogList(
@@ -508,7 +511,10 @@ private fun LogList(
                     // upwards without the viewport lurching: the list re-resolves its first visible
                     // item by key after rows are inserted above it.
                     items(state.rows, key = { it.key }) { row ->
-                        LogRowItem(
+                        androidx.compose.foundation.layout.Box(
+                            Modifier.fillMaxWidth().animateItem()
+                        ) {
+                            LogRowItem(
                             row = row,
                             wordWrap = wordWrap,
                             showTag = state.query.tag == null,
@@ -518,7 +524,8 @@ private fun LogList(
                             onTagClick = { viewModel.setTag(tab, it) },
                             onCopy = onCopy,
                             onOpenTrace = onOpenTrace,
-                        )
+                            )
+                        }
                     }
                 }
             }
@@ -532,6 +539,9 @@ private fun LogList(
             Row(
                 modifier =
                     Modifier.align(Alignment.BottomEnd)
+                        // 浮动导航模式下脚手架不消费底部 inset，不在这里补系统导航栏高度的话
+                        // 两个跳转按钮会被三键导航栏盖住；导航栏模式下这个 padding 为 0。
+                        .navigationBarsPadding()
                         .onSizeChanged { onJumpInset(it.height) }
                         .padding(12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),

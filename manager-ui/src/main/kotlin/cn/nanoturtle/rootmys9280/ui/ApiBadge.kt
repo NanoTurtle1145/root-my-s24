@@ -28,7 +28,7 @@ fun ApiBadge(label: String, value: String, incompatible: Boolean = false) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall.copy(fontSize = 8.sp),
-            color = colors.onSurfaceVariant.copy(alpha = 0.7f),
+            color = colors.onSurfaceVariant,
         )
         Text(
             text = value,
