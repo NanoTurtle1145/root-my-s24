@@ -279,7 +279,7 @@ class RootViewModel(app: Application) : AndroidViewModel(app) {
             "DZJ3",
             Region.CHINA,
             "ksud-32525",
-            tested = false,
+            tested = true,
             engine = Engine.SAMTIMER_98260,
         ),
         S921EDZIF(

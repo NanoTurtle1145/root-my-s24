@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.7.1-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
+  <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://img.shields.io/badge/version-3.7.2-1E88E5?style=flat-square" alt="Version 3.6.4-beta.1"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/releases"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=downloads" alt="Downloads"></a>
   <a href="https://github.com/NanoTurtle1145/root-my-s24/stargazers"><img src="https://blog.nanoturtle.cn/rms24_api/repo.php?badge=stars" alt="Stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1E88E5?style=flat-square" alt="GPL-3.0"></a>
@@ -119,7 +119,7 @@
 | SM-S928B（欧版，One UI 7.0） | S928BXXU4BYD9 | 6.1.99 | `cve-2026-43499-S928BXXU4BYD9` | 独立定标 |
 | SM-S928B（欧版，One UI 6.1） | S928BXXU4AXK5 | 6.1.75 | `cve-2026-43499-S928BXXU4AXK5` | 本 App 支持的最早 6.1 代际 |
 | W9023N（国行 心系天下 W23） | W9023ZCSAIZF1 | 5.10.236 | `cve-2026-43499-W9023ZCSAIZF1` | cape/SM8450，Android 12，beta |
-| **SM-S9280（国行 DZJ3）** | S9280ZCS6DZJ3 | 6.1.145 | 引擎：**98260 UAF**（per-target `samtimer/targets/S9280ZCS6DZJ3`） | 社区定标（#40/PR #44）：手动 staging 真机 root 成功；App 内待验证（`tested=false`） |
+| **SM-S9280（国行 DZJ3）** | S9280ZCS6DZJ3 | 6.1.145 | 引擎：**98260 UAF**（per-target `samtimer/targets/S9280ZCS6DZJ3`） | 社区定标（#40/PR #44）+ 维护者确认实测通过（v3.7.2 起进入 s24 官方包） |
 | **SM-S721B（欧版 S24 FE，r12s）** | S721BXXUEEZIF | 6.1.162 | 引擎：**98260 UAF**（per-target `samtimer/targets/S721BXXUEEZIF`） | 静态定标完成（issue #49）：EZIF 结构体布局完全一致，仅换符号/site；**待真机验证** |
 
 ### 移植载荷（未经本 App 真机实测）
@@ -177,7 +177,7 @@ app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 �
 ```
 
 - `<TAG>` = 完整构建号大写（如 `S9280ZCS6DZJ3`）；运行时优先 targets 目录，缺失回退公共载荷
-- 目前已合入：`S9280ZCS6DZJ3`（社区贡献，PR #44；手动 staging 真机验证通过，App 内待验证 → `tested=false`）
+- 目前已合入：`S9280ZCS6DZJ3`（社区贡献，PR #44；已实测 → `tested=true`，v3.7.2 起进入 s24 包）
 - 适配流程与 PR 要求见 [CONTRIBUTING.md](CONTRIBUTING.md) →「98260 载荷适配」
 
 ### 驱动版本
@@ -212,6 +212,7 @@ app/src/main/assets/samtimer/targets/<TAG>/ksud       # 可选，公共 3.2.5 �
 
 | 版本 | 时间 | 要点 |
 |---|---|---|
+| [v3.7.2](docs/release-v3.7.2.md) | 2026-11-28 | DZJ3 载荷提升为已实测，进入 s24 官方包（11 条） |
 | [v3.7.1](docs/release-v3.7.1.md) | 2026-11-28 | 修复 3.7.0 载荷打包：补回 DZJ3/S24 FE 等 9 个条目到 all/exp，s24/fold/w 补回实测条目 |
 | [v3.7.0](docs/release-v3.7.0.md) | 2026-11-28 | 正式版：KernelSU 3.3.1 KDP、S24 FE 定标、内核构建安全闸门、机型/设置/日志页重构 |
 | [v3.7.0-alpha.1](docs/release-v3.7.0-alpha.1.md) | 2026-11-20 | alpha：KernelSU 3.3.1 KDP（含 One UI 9）、机型页自动检测、设置两页、日志页改造 |
