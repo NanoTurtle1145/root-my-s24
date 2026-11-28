@@ -55,3 +55,26 @@
 - [ ] 需确认 `CRED_ALLOC_KDP`（0xd0，KDP 专用 cred slab）是否与该内核一致
       —— 该值来自 EZIF 经验，若不符会在 KDP 凭据安装阶段打印失败
 - [ ] 失败时抓运行日志编号，比较 stage 输出定位是哪个常量偏了
+
+## 实测记录
+
+### alpha.331（2026-11-22，issue #49）
+
+用户实测日志（本地编号 `99245289`）：
+
+- `[+] pid=... [base] made=512 best=0xffffff7eb8066000 count=31` → UAF 触发正常
+- `[+] plant1 ... marker pfn verified=0x91d9f6` → 物理 plant / marker 校验正常
+- `[+] umh wq=0x9b3aee3c00000000` → **读回垃圾**
+- `[!] umh bad wq -- parking without reap`
+
+结论：per-build 符号/site 定标是对的（UAF、slide、pipe、plant 全过），错在
+**内核镜像物理基址**：公共载荷假设 `phys = KERNEL_PHYS_LOAD + slide + (sym - KERNEL_VA_BASE)`
+（e3q 成立），r12s 不成立。
+
+修法：新增 `-DRMS_PHYS_SCAN=1`，运行时扫描 2MB 对齐的物理候选，用
+`wq → dfl_pwq → pool → worklist` 校验确定 `g_kphys_base`，之后统一用
+`static_phys()` / `runtime_phys()` 换算。
+
+### alpha.3
+
+待实测。

